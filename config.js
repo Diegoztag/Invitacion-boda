@@ -10,8 +10,8 @@ const WEDDING_CONFIG = {
             name: "Fernanda",
             fullName: "Fernanda López"
         },
-        displayName: "Diego & Fernanda", // Como aparece en la invitación
-        hashtag: "#DiegoYFerSeCasan"
+        displayName: "Fernanda & Diego", // Como aparece en la invitación
+        hashtag: "#FerYDiegoSeCasan"
     },
     
     // Detalles del evento
@@ -22,14 +22,14 @@ const WEDDING_CONFIG = {
             month: "Febrero",
             year: "2026"
         },
-        confirmationDeadline: "1 de Febrero",
+        confirmationDeadline: "15 de Enero",
         type: "Nuestra Boda" // Puede ser "Nuestra Boda", "Nuestro Matrimonio", etc.
     },
     
     // Ubicación
     location: {
         venue: {
-            name: "Hacienda los Reyes",
+            name: "Campestre los Reyes",
             address: "Ejido el 30",
             city: "Ciudad",
             state: "Estado"
@@ -45,8 +45,8 @@ const WEDDING_CONFIG = {
             description: "Celebración y fiesta"
         },
         coordinates: {
-            lat: 19.4326,
-            lng: -99.1332
+            lat: 124.6091666,
+            lng: -107.3824951
         }
     },
     
@@ -133,9 +133,10 @@ const WEDDING_CONFIG = {
     // Configuración del mapa
     map: {
         // URL del iframe de Google Maps o cualquier otro servicio de mapas
-        iframeSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.8114695040684!2d-99.13519668509372!3d19.432608086886584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92b75aa014d%3A0x17d810d20da6e8cf!2sPalacio%20de%20Bellas%20Artes!5e0!3m2!1ses!2smx!4v1640995200000!5m2!1ses!2smx",
+        
+        iframeSrc: "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d1813.715114293496!2d-107.38345446114589!3d24.608852433113903!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjTCsDM2JzMxLjkiTiAxMDfCsDIyJzU1LjgiVw!5e0!3m2!1ses-419!2smx!4v1766980966696!5m2!1ses-419!2smx",
         // URL para el botón "Cómo llegar" - puede ser Google Maps, Waze, etc.
-        directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=19.4326,-99.1332"
+        directionsUrl: "https://maps.app.goo.gl/Ss1WbQUuMR9o7VF38"
     },
     
     // Configuración de WhatsApp
