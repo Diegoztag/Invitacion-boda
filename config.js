@@ -130,6 +130,14 @@ const WEDDING_CONFIG = {
         googleMapsApiKey: "YOUR_API_KEY"
     },
     
+    // Configuración del mapa
+    map: {
+        // URL del iframe de Google Maps o cualquier otro servicio de mapas
+        iframeSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.8114695040684!2d-99.13519668509372!3d19.432608086886584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92b75aa014d%3A0x17d810d20da6e8cf!2sPalacio%20de%20Bellas%20Artes!5e0!3m2!1ses!2smx!4v1640995200000!5m2!1ses!2smx",
+        // URL para el botón "Cómo llegar" - puede ser Google Maps, Waze, etc.
+        directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=19.4326,-99.1332"
+    },
+    
     // Configuración de WhatsApp
     whatsapp: {
         invitationMessage: (names, passes, url) => 

@@ -27,6 +27,9 @@ const modalMessage = document.getElementById('modalMessage');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+    // Update all dynamic content from config
+    updateDynamicContent();
+    
     // Check for invitation code in URL
     const urlParams = new URLSearchParams(window.location.search);
     invitationCode = urlParams.get('invitation');
@@ -43,6 +46,71 @@ document.addEventListener('DOMContentLoaded', () => {
     initPhotoUpload();
     initAnimations();
 });
+
+// Update all dynamic content from configuration
+function updateDynamicContent() {
+    // Hero section
+    document.getElementById('heroTitle').textContent = WEDDING_CONFIG.couple.displayName;
+    document.getElementById('heroSubtitle').textContent = WEDDING_CONFIG.messages.welcome;
+    document.getElementById('dateDay').textContent = WEDDING_CONFIG.event.dateDisplay.day;
+    document.getElementById('dateMonth').textContent = WEDDING_CONFIG.event.dateDisplay.month;
+    document.getElementById('dateYear').textContent = WEDDING_CONFIG.event.dateDisplay.year;
+    
+    // Event details
+    document.getElementById('ceremonyName').textContent = WEDDING_CONFIG.location.ceremony.name;
+    document.getElementById('ceremonyTime').textContent = WEDDING_CONFIG.location.ceremony.time;
+    document.getElementById('ceremonyVenue').textContent = WEDDING_CONFIG.location.venue.name;
+    document.getElementById('ceremonyAddress').textContent = WEDDING_CONFIG.location.venue.address;
+    
+    document.getElementById('receptionName').textContent = WEDDING_CONFIG.location.reception.name;
+    document.getElementById('receptionTime').textContent = WEDDING_CONFIG.location.reception.time;
+    document.getElementById('receptionVenue').textContent = WEDDING_CONFIG.location.venue.name;
+    document.getElementById('receptionAddress').textContent = WEDDING_CONFIG.location.venue.address;
+    
+    // Dress code
+    document.getElementById('dressCodeTitle').textContent = WEDDING_CONFIG.dressCode.title;
+    document.getElementById('dressCodeDescription').textContent = WEDDING_CONFIG.dressCode.description;
+    document.getElementById('dressCodeNote').textContent = WEDDING_CONFIG.dressCode.note;
+    
+    // Itinerary
+    const itineraryTimeline = document.getElementById('itineraryTimeline');
+    itineraryTimeline.innerHTML = '';
+    WEDDING_CONFIG.schedule.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'itinerary-item';
+        div.innerHTML = `
+            <div class="itinerary-time">${item.time}</div>
+            <div class="itinerary-content">
+                <h4>${item.title}</h4>
+                <p>${item.description}</p>
+            </div>
+        `;
+        itineraryTimeline.appendChild(div);
+    });
+    
+    // Location
+    document.getElementById('locationVenueName').textContent = WEDDING_CONFIG.location.venue.name;
+    document.getElementById('locationAddress').textContent = WEDDING_CONFIG.location.venue.address;
+    
+    // Map iframe
+    document.getElementById('mapIframe').src = WEDDING_CONFIG.map.iframeSrc;
+    
+    // RSVP section
+    document.getElementById('rsvpTitle').textContent = WEDDING_CONFIG.messages.rsvpTitle;
+    document.getElementById('rsvpSubtitle').textContent = `${WEDDING_CONFIG.messages.rsvpSubtitle} ${WEDDING_CONFIG.event.confirmationDeadline}`;
+    
+    // Photo section
+    document.getElementById('photoSectionTitle').textContent = WEDDING_CONFIG.messages.photoSectionTitle;
+    document.getElementById('photoSectionSubtitle').textContent = WEDDING_CONFIG.messages.photoSectionSubtitle;
+    
+    // Footer
+    document.getElementById('footerNames').textContent = WEDDING_CONFIG.couple.displayName;
+    document.getElementById('footerDate').textContent = `${WEDDING_CONFIG.event.dateDisplay.day} de ${WEDDING_CONFIG.event.dateDisplay.month} del ${WEDDING_CONFIG.event.dateDisplay.year}`;
+    document.getElementById('footerHashtag').textContent = WEDDING_CONFIG.couple.hashtag;
+    
+    // Update page title
+    document.title = `${WEDDING_CONFIG.event.type} - ${WEDDING_CONFIG.couple.displayName}`;
+}
 
 // Load invitation data
 async function loadInvitation(code) {
@@ -553,8 +621,7 @@ function initMap() {
 
 // Open in Maps
 function openInMaps() {
-    const url = `https://www.google.com/maps/search/?api=1&query=${CONFIG.location.lat},${CONFIG.location.lng}`;
-    window.open(url, '_blank');
+    window.open(WEDDING_CONFIG.map.directionsUrl, '_blank');
 }
 
 // Modal
