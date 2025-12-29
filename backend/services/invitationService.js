@@ -23,7 +23,9 @@ class InvitationService {
             createdAt: new Date().toISOString(),
             confirmed: false,
             confirmedPasses: 0,
-            confirmationDetails: null
+            confirmationDetails: null,
+            invitationSentAt: null, // Track when invitation was sent
+            reminderSentAt: null    // Track when reminder was sent
         };
 
         // Guardar en Google Sheets
@@ -108,6 +110,46 @@ class InvitationService {
     // Generar URL de invitación
     generateInvitationUrl(code, baseUrl = '') {
         return `${baseUrl}/?invitation=${code}`;
+    }
+
+    // Marcar invitación como enviada
+    async markInvitationAsSent(code) {
+        const invitation = await this.getInvitationByCode(code);
+        invitation.invitationSentAt = new Date().toISOString();
+        await googleSheetsService.updateInvitation(code, invitation);
+        return invitation;
+    }
+
+    // Marcar recordatorio como enviado
+    async markReminderAsSent(code) {
+        const invitation = await this.getInvitationByCode(code);
+        invitation.reminderSentAt = new Date().toISOString();
+        await googleSheetsService.updateInvitation(code, invitation);
+        return invitation;
+    }
+
+    // Obtener invitaciones pendientes de recordatorio
+    async getInvitationsNeedingReminder() {
+        const invitations = await this.getAllInvitations();
+        const daysBeforeReminder = parseInt(process.env.DAYS_BEFORE_REMINDER || '7');
+        const now = new Date();
+        
+        return invitations.filter(invitation => {
+            // Skip if already confirmed or no phone number
+            if (invitation.confirmed || !invitation.phone) return false;
+            
+            // Skip if reminder already sent
+            if (invitation.reminderSentAt) return false;
+            
+            // Skip if invitation not sent yet
+            if (!invitation.invitationSentAt) return false;
+            
+            // Check if enough days have passed since invitation was sent
+            const invitationSentDate = new Date(invitation.invitationSentAt);
+            const daysSinceSent = Math.floor((now - invitationSentDate) / (1000 * 60 * 60 * 24));
+            
+            return daysSinceSent >= daysBeforeReminder;
+        });
     }
 }
 

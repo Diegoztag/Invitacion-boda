@@ -95,6 +95,15 @@
                     <button class="btn btn-primary" onclick="showCreateForm()">
                         <i class="fas fa-plus"></i> Nueva Invitación
                     </button>
+                    <button class="btn btn-secondary" onclick="showBatchSendModal()">
+                        <i class="fab fa-whatsapp"></i> Enviar por Lotes
+                    </button>
+                    <button class="btn btn-info" onclick="showQueueStatus()">
+                        <i class="fas fa-list"></i> Ver Cola
+                    </button>
+                    <button class="btn btn-warning" onclick="showRemindersModal()">
+                        <i class="fas fa-bell"></i> Enviar Recordatorios
+                    </button>
                 </div>
                 <div class="table-container">
                     <table class="invitations-table">
@@ -183,6 +192,62 @@
             <span class="modal-close">&times;</span>
             <h2>Detalles de la Invitación</h2>
             <div id="invitationDetails"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Batch Send -->
+    <div id="batchSendModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeBatchModal()">&times;</span>
+            <h2>Enviar Invitaciones por Lotes</h2>
+            <div class="batch-send-content">
+                <p>Selecciona las invitaciones que deseas enviar por WhatsApp:</p>
+                <div class="batch-filters">
+                    <button class="btn btn-sm" onclick="selectAllPending()">Seleccionar Pendientes</button>
+                    <button class="btn btn-sm" onclick="deselectAll()">Deseleccionar Todo</button>
+                </div>
+                <div id="batchInvitationsList" class="batch-list">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+                <div class="batch-config">
+                    <h3>Configuración de Envío</h3>
+                    <div class="form-group">
+                        <label>Mensajes por lote: <span id="batchSizeValue">5</span></label>
+                        <input type="range" id="batchSize" min="1" max="10" value="5" onchange="updateBatchSize()">
+                    </div>
+                    <div class="form-group">
+                        <label>Segundos entre mensajes: <span id="delayMessagesValue">3</span></label>
+                        <input type="range" id="delayMessages" min="1" max="10" value="3" onchange="updateDelayMessages()">
+                    </div>
+                    <div class="form-group">
+                        <label>Segundos entre lotes: <span id="delayBatchesValue">30</span></label>
+                        <input type="range" id="delayBatches" min="10" max="60" value="30" step="5" onchange="updateDelayBatches()">
+                    </div>
+                </div>
+                <div class="batch-actions">
+                    <button class="btn btn-primary" onclick="sendBatchInvitations()">
+                        <i class="fab fa-whatsapp"></i> Enviar Seleccionados
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeBatchModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Queue Status -->
+    <div id="queueStatusModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeQueueModal()">&times;</span>
+            <h2>Estado de la Cola de Mensajes</h2>
+            <div id="queueStatusContent">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <div class="queue-actions">
+                <button class="btn btn-secondary" onclick="refreshQueueStatus()">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+                <button class="btn btn-secondary" onclick="closeQueueModal()">Cerrar</button>
+            </div>
         </div>
     </div>
 

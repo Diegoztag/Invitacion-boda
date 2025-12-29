@@ -1,214 +1,298 @@
-const twilio = require('twilio');
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const path = require('path');
+const messageQueue = require('./messageQueue');
 
 class WhatsAppService {
     constructor() {
         this.client = null;
-        this.connected = false;
-        this.fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886'; // Twilio Sandbox number
+        this.isReady = false;
         this.initialize();
     }
 
-    initialize() {
+    async initialize() {
         try {
-            const accountSid = process.env.TWILIO_ACCOUNT_SID;
-            const authToken = process.env.TWILIO_AUTH_TOKEN;
+            // Create WhatsApp client with persistent session
+            this.client = new Client({
+                authStrategy: new LocalAuth({
+                    dataPath: path.join(__dirname, '../.wwebjs_auth')
+                }),
+                puppeteer: {
+                    headless: true,
+                    args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-accelerated-2d-canvas',
+                        '--no-first-run',
+                        '--no-zygote',
+                        '--disable-gpu'
+                    ]
+                }
+            });
 
-            if (!accountSid || !authToken) {
-                console.warn('Twilio credentials not found. WhatsApp service will be disabled.');
-                return;
-            }
+            // QR Code generation for first time authentication
+            this.client.on('qr', (qr) => {
+                console.log('\n📱 Escanea este código QR con WhatsApp:');
+                qrcode.generate(qr, { small: true });
+            });
 
-            this.client = twilio(accountSid, authToken);
-            this.connected = true;
-            console.log('WhatsApp service initialized successfully');
+            // Client ready
+            this.client.on('ready', () => {
+                console.log('✅ WhatsApp Web está listo!');
+                this.isReady = true;
+            });
+
+            // Authentication successful
+            this.client.on('authenticated', () => {
+                console.log('✅ WhatsApp autenticado correctamente');
+            });
+
+            // Authentication failure
+            this.client.on('auth_failure', (msg) => {
+                console.error('❌ Error de autenticación:', msg);
+            });
+
+            // Disconnection
+            this.client.on('disconnected', (reason) => {
+                console.log('📵 WhatsApp desconectado:', reason);
+                this.isReady = false;
+                // Try to reconnect
+                setTimeout(() => {
+                    this.initialize();
+                }, 5000);
+            });
+
+            // Initialize the client
+            await this.client.initialize();
         } catch (error) {
-            console.error('Error initializing WhatsApp service:', error);
-            this.connected = false;
+            console.error('Error initializing WhatsApp:', error);
+            this.isReady = false;
         }
     }
 
-    async sendConfirmation(phoneNumber, name) {
-        if (!this.connected) {
-            console.log('WhatsApp service not connected. Skipping message.');
-            return false;
+    // Format phone number for WhatsApp
+    formatPhoneNumber(phone) {
+        // Remove all non-numeric characters
+        let cleaned = phone.replace(/\D/g, '');
+        
+        // If it starts with 52 (Mexico), ensure it's properly formatted
+        if (cleaned.startsWith('52')) {
+            return cleaned + '@c.us';
+        }
+        
+        // If it's a 10-digit Mexican number, add country code
+        if (cleaned.length === 10) {
+            return '52' + cleaned + '@c.us';
+        }
+        
+        // Otherwise, assume it's already properly formatted
+        return cleaned + '@c.us';
+    }
+
+    // Send a message directly (internal use)
+    async sendMessageDirect(phone, message) {
+        if (!this.isReady) {
+            throw new Error('WhatsApp no está listo. Por favor espera a que se conecte.');
         }
 
         try {
-            const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            
-            const message = `¡Hola ${name}! 🎉
+            const chatId = this.formatPhoneNumber(phone);
+            await this.client.sendMessage(chatId, message);
+            return true;
+        } catch (error) {
+            console.error(`Error enviando mensaje a ${phone}:`, error);
+            throw error;
+        }
+    }
 
-Hemos recibido tu confirmación de asistencia a nuestra boda. ¡Estamos muy emocionados de celebrar este día tan especial contigo!
+    // Send a message (adds to queue)
+    async sendMessage(phone, message, priority = false) {
+        return new Promise((resolve, reject) => {
+            const messageData = {
+                phone,
+                message,
+                type: 'generic',
+                sendFunction: async () => {
+                    await this.sendMessageDirect(phone, message);
+                }
+            };
 
-📅 Fecha: 15 de Junio de 2024
-⏰ Hora: 4:00 PM (Ceremonia)
-📍 Lugar: Iglesia San José
+            // Listen for this specific message completion
+            const handleSent = (sentMessage) => {
+                if (sentMessage.phone === phone && sentMessage.message === message) {
+                    messageQueue.removeListener('messageSent', handleSent);
+                    messageQueue.removeListener('messageFailed', handleFailed);
+                    resolve(true);
+                }
+            };
 
-No olvides:
-• Llegar con tiempo
-• Código de vestimenta: Formal (colores pasteles preferidos)
-• Traer muchas ganas de celebrar 🥳
+            const handleFailed = (failedMessage, error) => {
+                if (failedMessage.phone === phone && failedMessage.message === message) {
+                    messageQueue.removeListener('messageSent', handleSent);
+                    messageQueue.removeListener('messageFailed', handleFailed);
+                    reject(error);
+                }
+            };
 
-Si tienes alguna pregunta, no dudes en contactarnos.
+            messageQueue.on('messageSent', handleSent);
+            messageQueue.on('messageFailed', handleFailed);
+
+            // Add to queue
+            messageQueue.addToQueue(messageData);
+        });
+    }
+
+    // Send confirmation message
+    async sendConfirmation(phone, name) {
+        const message = `¡Hola ${name}! 🎉
+
+Hemos recibido tu confirmación de asistencia a nuestra boda. ¡Estamos muy felices de que nos acompañes en este día tan especial!
+
+Si necesitas hacer algún cambio en tu confirmación, puedes hacerlo desde el mismo enlace de tu invitación.
 
 ¡Nos vemos pronto!
-Con amor,
-Nombre & Pareja 💕`;
+Con cariño,
+${process.env.COUPLE_NAMES || 'Los novios'} 💑`;
 
-            const response = await this.client.messages.create({
-                body: message,
-                from: this.fromNumber,
-                to: `whatsapp:${formattedPhone}`
-            });
-
-            console.log(`Confirmation message sent to ${phoneNumber}:`, response.sid);
-            return true;
-        } catch (error) {
-            console.error('Error sending confirmation message:', error);
-            return false;
-        }
+        return this.sendMessage(phone, message);
     }
 
-    async sendReminder(phoneNumber, name) {
-        if (!this.connected) {
-            console.log('WhatsApp service not connected. Skipping reminder.');
-            return false;
-        }
+    // Send reminder message
+    async sendReminder(phone, name, invitationUrl) {
+        const message = `Hola ${name} 👋
 
-        try {
-            const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            
-            const message = `Hola ${name} 👋
+Te recordamos que aún no hemos recibido tu confirmación de asistencia a nuestra boda.
 
-¡Te recordamos que nuestra boda es el próximo 15 de Junio! 
+Por favor, confirma tu asistencia lo antes posible usando el siguiente enlace:
+${invitationUrl}
 
-Aún no hemos recibido tu confirmación de asistencia. Tu presencia es muy importante para nosotros. 💕
+La fecha límite es el ${process.env.CONFIRMATION_DEADLINE || '1 de Febrero'}.
 
-Por favor, confirma tu asistencia en:
-🔗 [Link a la invitación]
+¡Esperamos contar con tu presencia!
+${process.env.COUPLE_NAMES || 'Los novios'} 💕`;
 
-O responde a este mensaje con:
-✅ "SÍ" si asistirás
-❌ "NO" si no podrás acompañarnos
-
-¡Esperamos poder celebrar contigo!
-Nombre & Pareja`;
-
-            const response = await this.client.messages.create({
-                body: message,
-                from: this.fromNumber,
-                to: `whatsapp:${formattedPhone}`
-            });
-
-            console.log(`Reminder sent to ${phoneNumber}:`, response.sid);
-            return true;
-        } catch (error) {
-            console.error('Error sending reminder:', error);
-            return false;
-        }
+        return this.sendMessage(phone, message);
     }
 
-    async sendCustomMessage(phoneNumber, message) {
-        if (!this.connected) {
-            console.log('WhatsApp service not connected. Skipping message.');
-            return false;
-        }
+    // Send invitation with personalized link
+    async sendInvitation(phone, name, invitationUrl) {
+        const message = `¡Hola ${name}! 💌
 
-        try {
-            const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            
-            const response = await this.client.messages.create({
-                body: message,
-                from: this.fromNumber,
-                to: `whatsapp:${formattedPhone}`
-            });
+Con mucha alegría queremos invitarte a nuestra boda. 
 
-            console.log(`Custom message sent to ${phoneNumber}:`, response.sid);
-            return true;
-        } catch (error) {
-            console.error('Error sending custom message:', error);
-            return false;
-        }
+Hemos preparado una invitación digital especial para ti. Puedes verla y confirmar tu asistencia en el siguiente enlace:
+
+${invitationUrl}
+
+¡Esperamos celebrar este día tan especial contigo!
+
+Con cariño,
+${process.env.COUPLE_NAMES || 'Los novios'} 💑`;
+
+        return this.sendMessage(phone, message);
     }
 
-    async sendPhotoNotification(phoneNumber, photoCount) {
-        if (!this.connected) {
-            console.log('WhatsApp service not connected. Skipping notification.');
-            return false;
-        }
-
-        try {
-            const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            
-            const message = `¡Nuevas fotos de la boda! 📸
-
-Se han subido ${photoCount} nueva(s) foto(s) de nuestra boda.
-
-Puedes verlas y descargarlas en:
-🔗 [Link al álbum de fotos]
-
-¡Gracias por compartir estos momentos especiales con nosotros!
-
-Nombre & Pareja 💕`;
-
-            const response = await this.client.messages.create({
-                body: message,
-                from: this.fromNumber,
-                to: `whatsapp:${formattedPhone}`
-            });
-
-            console.log(`Photo notification sent to ${phoneNumber}:`, response.sid);
-            return true;
-        } catch (error) {
-            console.error('Error sending photo notification:', error);
-            return false;
-        }
+    // Send custom message
+    async sendCustomMessage(phone, customMessage) {
+        return this.sendMessage(phone, customMessage);
     }
 
-    formatPhoneNumber(phoneNumber) {
-        // Remove any non-numeric characters
-        let cleaned = phoneNumber.replace(/\D/g, '');
+    // Send multiple invitations (batch)
+    async sendInvitationsBatch(invitations) {
+        const messages = invitations.map(inv => ({
+            phone: inv.phone,
+            message: `¡Hola ${inv.name}! 💌
+
+Con mucha alegría queremos invitarte a nuestra boda. 
+
+Hemos preparado una invitación digital especial para ti. Puedes verla y confirmar tu asistencia en el siguiente enlace:
+
+${inv.url}
+
+¡Esperamos celebrar este día tan especial contigo!
+
+Con cariño,
+${process.env.COUPLE_NAMES || 'Los novios'} 💑`,
+            type: 'invitation',
+            name: inv.name,
+            sendFunction: async () => {
+                await this.sendMessageDirect(inv.phone, this.message);
+            }
+        }));
+
+        messageQueue.addBatchToQueue(messages);
         
-        // If the number doesn't start with country code, assume Mexico (+52)
-        if (!cleaned.startsWith('52') && cleaned.length === 10) {
-            cleaned = '52' + cleaned;
-        }
-        
-        // Add + if not present
-        if (!cleaned.startsWith('+')) {
-            cleaned = '+' + cleaned;
-        }
-        
-        return cleaned;
+        return {
+            queued: messages.length,
+            status: messageQueue.getStatus()
+        };
     }
 
+    // Get queue status
+    getQueueStatus() {
+        return messageQueue.getStatus();
+    }
+
+    // Update queue configuration
+    updateQueueConfig(config) {
+        messageQueue.updateConfig(config);
+        return messageQueue.getConfig();
+    }
+
+    // Send multiple reminders (batch)
+    async sendRemindersBatch(reminders) {
+        const messages = reminders.map(rem => ({
+            phone: rem.phone,
+            message: `Hola ${rem.name} 👋
+
+Te recordamos que aún no hemos recibido tu confirmación de asistencia a nuestra boda.
+
+Por favor, confirma tu asistencia lo antes posible usando el siguiente enlace:
+${rem.url}
+
+La fecha límite es el ${process.env.CONFIRMATION_DEADLINE || '1 de Febrero'}.
+
+¡Esperamos contar con tu presencia!
+${process.env.COUPLE_NAMES || 'Los novios'} 💕`,
+            type: 'reminder',
+            name: rem.name,
+            code: rem.code,
+            sendFunction: async function() {
+                await this.sendMessageDirect(this.phone, this.message);
+            }.bind(this)
+        }));
+
+        messageQueue.addBatchToQueue(messages);
+        
+        return {
+            queued: messages.length,
+            status: messageQueue.getStatus()
+        };
+    }
+
+    // Check if service is connected
     isConnected() {
-        return this.connected;
+        return this.isReady;
     }
 
-    async validatePhoneNumber(phoneNumber) {
-        if (!this.connected) {
-            return { valid: false, error: 'Service not connected' };
-        }
+    // Get connection status
+    getStatus() {
+        return {
+            connected: this.isReady,
+            service: 'WhatsApp Web'
+        };
+    }
 
-        try {
-            const formattedPhone = this.formatPhoneNumber(phoneNumber);
-            const phoneNumberInfo = await this.client.lookups.v1
-                .phoneNumbers(formattedPhone)
-                .fetch();
-            
-            return {
-                valid: true,
-                formatted: phoneNumberInfo.phoneNumber,
-                countryCode: phoneNumberInfo.countryCode
-            };
-        } catch (error) {
-            return {
-                valid: false,
-                error: error.message
-            };
+    // Disconnect client (for cleanup)
+    async disconnect() {
+        if (this.client) {
+            await this.client.destroy();
+            this.isReady = false;
+            console.log('WhatsApp client disconnected');
         }
     }
 }
 
+// Export singleton instance
 module.exports = new WhatsAppService();

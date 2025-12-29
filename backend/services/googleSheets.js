@@ -451,6 +451,64 @@ class GoogleSheetsService {
         }
     }
 
+    async updateInvitation(code, invitation) {
+        if (!this.connected) {
+            throw new Error('Google Sheets service not connected');
+        }
+
+        try {
+            // Get all invitations to find the row
+            const response = await this.sheets.spreadsheets.values.get({
+                spreadsheetId: this.spreadsheetId,
+                range: 'Invitaciones!A:A'
+            });
+
+            const codes = response.data.values || [];
+            let rowIndex = -1;
+
+            // Find invitation by code
+            for (let i = 1; i < codes.length; i++) {
+                if (codes[i][0] === code) {
+                    rowIndex = i + 1; // Sheet rows are 1-indexed
+                    break;
+                }
+            }
+
+            if (rowIndex > 0) {
+                // Update the entire row with all invitation data
+                const values = [[
+                    invitation.code,
+                    invitation.guestNames.join(', '),
+                    invitation.numberOfPasses,
+                    invitation.email,
+                    invitation.phone,
+                    invitation.createdAt,
+                    invitation.confirmed ? 'Sí' : 'No',
+                    invitation.confirmedPasses || 0,
+                    invitation.confirmationDetails?.willAttend ? 'Sí' : '',
+                    invitation.confirmationDetails?.attendingNames?.join(', ') || '',
+                    invitation.confirmationDetails?.email || '',
+                    invitation.confirmationDetails?.phone || '',
+                    invitation.confirmationDetails?.dietaryRestrictions || '',
+                    invitation.confirmationDetails?.message || '',
+                    invitation.confirmationDetails?.confirmedAt || '',
+                    invitation.invitationSentAt || '',
+                    invitation.reminderSentAt || ''
+                ]];
+
+                await this.sheets.spreadsheets.values.update({
+                    spreadsheetId: this.spreadsheetId,
+                    range: `Invitaciones!A${rowIndex}:Q${rowIndex}`,
+                    valueInputOption: 'USER_ENTERED',
+                    resource: { values }
+                });
+            }
+        } catch (error) {
+            console.error('Error updating invitation:', error);
+            throw error;
+        }
+    }
+
     isConnected() {
         return this.connected;
     }

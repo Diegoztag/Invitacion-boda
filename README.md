@@ -17,6 +17,8 @@ Sistema web completo para gestionar invitaciones personalizadas de boda con conf
 - **Seguimiento de Confirmaciones**: Ver quién ha confirmado y cuántos asistirán
 - **Exportación de Datos**: Descargar lista de confirmaciones en formato CSV
 - **Integración con WhatsApp**: Enviar invitaciones directamente por WhatsApp
+- **Sistema de Cola**: Envío por lotes con protección anti-spam
+- **Recordatorios Automáticos**: Sistema de recordatorios programados para invitados sin confirmar
 
 ## Tecnologías Utilizadas
 
@@ -24,8 +26,8 @@ Sistema web completo para gestionar invitaciones personalizadas de boda con conf
 - **Backend**: Node.js, Express.js
 - **Base de Datos**: Google Sheets API
 - **Almacenamiento**: Google Drive API
-- **Notificaciones**: WhatsApp API (Twilio)
-- **Mapas**: Google Maps API
+- **Notificaciones**: WhatsApp Web (whatsapp-web.js)
+- **Mapas**: Google Maps (iframe embebido)
 
 ## Instalación
 
@@ -52,11 +54,23 @@ npm install
 Crear archivo `backend/.env` con:
 ```env
 PORT=3000
-GOOGLE_SHEETS_ID=tu_spreadsheet_id
-GOOGLE_DRIVE_FOLDER_ID=tu_folder_id
-TWILIO_ACCOUNT_SID=tu_twilio_sid
-TWILIO_AUTH_TOKEN=tu_twilio_token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
+
+# Google APIs Configuration
+GOOGLE_SHEETS_ID="tu_spreadsheet_id"
+GOOGLE_DRIVE_FOLDER_ID="tu_folder_id"
+
+# WhatsApp Web Configuration
+COUPLE_NAMES="Diego & Fernanda"
+CONFIRMATION_DEADLINE="1 de Febrero"
+
+# Reminder Configuration
+DAYS_BEFORE_REMINDER=7  # Days after invitation sent before sending reminder
+ENABLE_AUTO_REMINDERS=true  # Enable automatic reminders
+REMINDER_HOUR=10  # Hour of day to send reminders (24-hour format)
+
+# Admin credentials
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=tu_contraseña_segura
 ```
 
 4. **Configurar credenciales de Google**
@@ -76,7 +90,11 @@ cd backend
 npm start
 ```
 
-El servidor estará disponible en `http://localhost:3000`
+**IMPORTANTE para WhatsApp Web:**
+- La primera vez que inicies el servidor, aparecerá un código QR en la consola
+- Escanea el código QR con WhatsApp en tu teléfono (WhatsApp > Configuración > Dispositivos vinculados)
+- La sesión se guardará automáticamente para futuros usos
+- El servidor estará disponible en `http://localhost:3000`
 
 ## Uso
 
@@ -117,6 +135,41 @@ El servidor estará disponible en `http://localhost:3000`
 
 4. **Compartir fotos**
    - Después del evento, subir fotos en la sección correspondiente
+
+## Sistema de Envío por Lotes y Recordatorios
+
+### Envío por Lotes
+El sistema incluye protección anti-spam para WhatsApp:
+
+1. **Configuración de Cola**:
+   - Mensajes por lote: 1-10 (recomendado: 5)
+   - Delay entre mensajes: 1-10 segundos (recomendado: 3)
+   - Delay entre lotes: 10-60 segundos (recomendado: 30)
+
+2. **Cómo usar**:
+   - En el panel de admin, click en "Enviar por Lotes"
+   - Seleccionar invitaciones a enviar
+   - Ajustar configuración si es necesario
+   - El sistema enviará automáticamente respetando los límites
+
+### Sistema de Recordatorios
+
+1. **Recordatorios Automáticos**:
+   - Se activan después de X días sin confirmación (configurable)
+   - Se envían a la hora programada (por defecto 10 AM)
+   - Solo a invitaciones con teléfono y sin confirmar
+
+2. **Recordatorios Manuales**:
+   - Botón individual en cada invitación pendiente
+   - Opción de "Enviar Recordatorios" para envío masivo
+   - Respeta la misma cola anti-spam
+
+3. **Configuración**:
+   ```env
+   DAYS_BEFORE_REMINDER=7      # Días después del envío inicial
+   ENABLE_AUTO_REMINDERS=true  # Activar/desactivar automáticos
+   REMINDER_HOUR=10           # Hora del día (formato 24h)
+   ```
 
 ## Estructura del Proyecto
 

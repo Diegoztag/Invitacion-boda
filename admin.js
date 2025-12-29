@@ -154,6 +154,11 @@ function displayInvitations(invitations) {
                 <button class="btn-icon" onclick="sendInvitation('${invitation.code}')" title="Enviar por WhatsApp">
                     <i class="fab fa-whatsapp"></i>
                 </button>
+                ${!invitation.confirmed && invitation.invitationSentAt ? `
+                    <button class="btn-icon" onclick="sendReminder('${invitation.code}')" title="Enviar recordatorio">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                ` : ''}
             </td>
         `;
         tbody.appendChild(row);
@@ -211,19 +216,44 @@ function copyToClipboard(text) {
 }
 
 // Send Invitation via WhatsApp
-function sendInvitation(code) {
+async function sendInvitation(code) {
     const invitation = allInvitations.find(inv => inv.code === code);
     if (!invitation) return;
     
-    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
-    const message = WEDDING_CONFIG.whatsapp.invitationMessage(
-        invitation.guestNames.join(' y '),
-        invitation.numberOfPasses,
-        invitationUrl
-    );
+    if (!invitation.phone) {
+        showNotification('Esta invitación no tiene número de teléfono', 'error');
+        return;
+    }
     
-    const whatsappUrl = `https://wa.me/${invitation.phone}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    // Check WhatsApp status first
+    try {
+        const statusResponse = await fetch(`${CONFIG.backendUrl}/whatsapp-status`);
+        const statusData = await statusResponse.json();
+        
+        if (!statusData.connected) {
+            showNotification('WhatsApp no está conectado. Por favor verifica la consola del servidor.', 'error');
+            return;
+        }
+        
+        // Send invitation via backend
+        const response = await fetch(`${CONFIG.backendUrl}/send-invitation`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ invitationCode: code })
+        });
+        
+        if (response.ok) {
+            showNotification('Invitación enviada por WhatsApp exitosamente');
+        } else {
+            const error = await response.json();
+            showNotification(error.error || 'Error al enviar invitación', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al enviar invitación por WhatsApp', 'error');
+    }
 }
 
 // Initialize Create Form
@@ -412,3 +442,353 @@ function showNotification(message, type = 'success') {
         }, 300);
     }, 3000);
 }
+
+// Batch Send Functions
+function showBatchSendModal() {
+    const modal = document.getElementById('batchSendModal');
+    const listContainer = document.getElementById('batchInvitationsList');
+    
+    // Clear previous list
+    listContainer.innerHTML = '';
+    
+    // Filter invitations with phone numbers
+    const invitationsWithPhone = allInvitations.filter(inv => inv.phone);
+    
+    if (invitationsWithPhone.length === 0) {
+        listContainer.innerHTML = '<p>No hay invitaciones con número de teléfono.</p>';
+    } else {
+        invitationsWithPhone.forEach(invitation => {
+            const item = document.createElement('div');
+            item.className = 'batch-item';
+            item.innerHTML = `
+                <label>
+                    <input type="checkbox" value="${invitation.code}" 
+                           ${!invitation.confirmed ? 'checked' : ''}>
+                    <span>${invitation.guestNames.join(' y ')}</span>
+                    <small>${invitation.phone} - ${invitation.confirmed ? 'Confirmado' : 'Pendiente'}</small>
+                </label>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeBatchModal() {
+    document.getElementById('batchSendModal').style.display = 'none';
+}
+
+function selectAllPending() {
+    const checkboxes = document.querySelectorAll('#batchInvitationsList input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        const invitation = allInvitations.find(inv => inv.code === checkbox.value);
+        if (invitation && !invitation.confirmed) {
+            checkbox.checked = true;
+        }
+    });
+}
+
+function deselectAll() {
+    const checkboxes = document.querySelectorAll('#batchInvitationsList input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+function updateBatchSize() {
+    const value = document.getElementById('batchSize').value;
+    document.getElementById('batchSizeValue').textContent = value;
+}
+
+function updateDelayMessages() {
+    const value = document.getElementById('delayMessages').value;
+    document.getElementById('delayMessagesValue').textContent = value;
+}
+
+function updateDelayBatches() {
+    const value = document.getElementById('delayBatches').value;
+    document.getElementById('delayBatchesValue').textContent = value;
+}
+
+async function sendBatchInvitations() {
+    const checkboxes = document.querySelectorAll('#batchInvitationsList input[type="checkbox"]:checked');
+    const selectedCodes = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (selectedCodes.length === 0) {
+        showNotification('Por favor selecciona al menos una invitación', 'error');
+        return;
+    }
+    
+    // Get configuration values
+    const batchSize = parseInt(document.getElementById('batchSize').value);
+    const delayMessages = parseInt(document.getElementById('delayMessages').value) * 1000;
+    const delayBatches = parseInt(document.getElementById('delayBatches').value) * 1000;
+    
+    try {
+        // Update queue configuration
+        await fetch(`${CONFIG.backendUrl}/queue-config`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                batchSize,
+                delayBetweenMessages: delayMessages,
+                delayBetweenBatches: delayBatches
+            })
+        });
+        
+        // Send batch
+        const response = await fetch(`${CONFIG.backendUrl}/send-invitations-batch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ invitationCodes: selectedCodes })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            showNotification(data.message);
+            closeBatchModal();
+            
+            // Show queue status
+            setTimeout(() => {
+                showQueueStatus();
+            }, 500);
+        } else {
+            const error = await response.json();
+            showNotification(error.error || 'Error al enviar invitaciones', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al enviar invitaciones por lote', 'error');
+    }
+}
+
+// Queue Status Functions
+async function showQueueStatus() {
+    const modal = document.getElementById('queueStatusModal');
+    modal.style.display = 'block';
+    await refreshQueueStatus();
+}
+
+function closeQueueModal() {
+    document.getElementById('queueStatusModal').style.display = 'none';
+}
+
+async function refreshQueueStatus() {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/queue-status`);
+        if (response.ok) {
+            const data = await response.json();
+            updateQueueDisplay(data);
+        }
+    } catch (error) {
+        console.error('Error fetching queue status:', error);
+    }
+}
+
+function updateQueueDisplay(data) {
+    const content = document.getElementById('queueStatusContent');
+    
+    const statusClass = data.isProcessing ? 'processing' : 'idle';
+    const statusText = data.isProcessing ? 'Procesando' : 'Inactiva';
+    
+    content.innerHTML = `
+        <div class="queue-status ${statusClass}">
+            <h3>Estado: ${statusText}</h3>
+            <div class="queue-stats">
+                <div class="stat">
+                    <span class="label">En cola:</span>
+                    <span class="value">${data.queueLength}</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Enviados:</span>
+                    <span class="value">${data.processedCount}</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Fallidos:</span>
+                    <span class="value">${data.failedCount}</span>
+                </div>
+            </div>
+            <div class="queue-config">
+                <h4>Configuración Actual</h4>
+                <p>Tamaño de lote: ${data.batchSize} mensajes</p>
+                <p>Delay entre mensajes: ${data.delayBetweenMessages / 1000} segundos</p>
+                <p>Delay entre lotes: ${data.delayBetweenBatches / 1000} segundos</p>
+            </div>
+            ${data.isProcessing ? `
+                <div class="queue-progress">
+                    <p>⏳ Procesando mensajes...</p>
+                    <small>La cola se actualiza automáticamente</small>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    // Auto-refresh if processing
+    if (data.isProcessing) {
+        setTimeout(() => {
+            if (document.getElementById('queueStatusModal').style.display === 'block') {
+                refreshQueueStatus();
+            }
+        }, 2000);
+    }
+}
+
+// Send Reminder
+async function sendReminder(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
+    
+    if (!invitation.phone) {
+        showNotification('Esta invitación no tiene número de teléfono', 'error');
+        return;
+    }
+    
+    if (invitation.confirmed) {
+        showNotification('Esta invitación ya está confirmada', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/send-reminder`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ invitationCode: code })
+        });
+        
+        if (response.ok) {
+            showNotification('Recordatorio enviado exitosamente');
+            // Reload invitations to update status
+            loadInvitations();
+        } else {
+            const error = await response.json();
+            showNotification(error.error || 'Error al enviar recordatorio', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al enviar recordatorio', 'error');
+    }
+}
+
+// Show Reminders Modal
+async function showRemindersModal() {
+    try {
+        // Get invitations needing reminder
+        const response = await fetch(`${CONFIG.backendUrl}/invitations-needing-reminder`);
+        if (!response.ok) throw new Error('Error fetching invitations');
+        
+        const data = await response.json();
+        const invitations = data.invitations;
+        
+        // Create modal content
+        const modalHtml = `
+            <div id="remindersModal" class="modal" style="display: block;">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="closeRemindersModal()">&times;</span>
+                    <h2>Enviar Recordatorios</h2>
+                    <div class="batch-send-content">
+                        <p>Invitaciones que necesitan recordatorio (${invitations.length}):</p>
+                        <div class="batch-filters">
+                            <button class="btn btn-sm" onclick="selectAllReminders()">Seleccionar Todos</button>
+                            <button class="btn btn-sm" onclick="deselectAllReminders()">Deseleccionar Todo</button>
+                        </div>
+                        <div id="remindersList" class="batch-list">
+                            ${invitations.length === 0 ? '<p>No hay invitaciones pendientes de recordatorio.</p>' : 
+                                invitations.map(inv => `
+                                    <div class="batch-item">
+                                        <label>
+                                            <input type="checkbox" value="${inv.code}" checked>
+                                            <span>${inv.guestNames.join(' y ')}</span>
+                                            <small>${inv.phone} - Enviada hace ${Math.floor((new Date() - new Date(inv.invitationSentAt)) / (1000 * 60 * 60 * 24))} días</small>
+                                        </label>
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                        <div class="batch-actions">
+                            <button class="btn btn-primary" onclick="sendBatchReminders()">
+                                <i class="fas fa-bell"></i> Enviar Recordatorios
+                            </button>
+                            <button class="btn btn-secondary" onclick="closeRemindersModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to body
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHtml;
+        document.body.appendChild(modalContainer.firstElementChild);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al cargar invitaciones para recordatorio', 'error');
+    }
+}
+
+function closeRemindersModal() {
+    const modal = document.getElementById('remindersModal');
+    if (modal) modal.remove();
+}
+
+function selectAllReminders() {
+    const checkboxes = document.querySelectorAll('#remindersList input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = true);
+}
+
+function deselectAllReminders() {
+    const checkboxes = document.querySelectorAll('#remindersList input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+}
+
+async function sendBatchReminders() {
+    const checkboxes = document.querySelectorAll('#remindersList input[type="checkbox"]:checked');
+    const selectedCodes = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (selectedCodes.length === 0) {
+        showNotification('Por favor selecciona al menos una invitación', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/send-reminders-batch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ invitationCodes: selectedCodes })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            showNotification(data.message);
+            closeRemindersModal();
+            
+            // Show queue status
+            setTimeout(() => {
+                showQueueStatus();
+            }, 500);
+            
+            // Reload invitations
+            loadInvitations();
+        } else {
+            const error = await response.json();
+            showNotification(error.error || 'Error al enviar recordatorios', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al enviar recordatorios por lote', 'error');
+    }
+}
+
+// Update modal close handlers
+window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+    }
+});
