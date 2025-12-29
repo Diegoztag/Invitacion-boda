@@ -143,6 +143,39 @@ const WEDDING_CONFIG = {
     whatsapp: {
         invitationMessage: (names, passes, url) => 
             `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
+    },
+    
+    // Mesa de Regalos
+    giftRegistry: {
+        enabled: true,
+        title: "Mesa de Regalos",
+        subtitle: "Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo, aquí están nuestras opciones",
+        stores: [
+            {
+                name: "Amazon",
+                icon: "fab fa-amazon",
+                url: "https://www.amazon.com.mx/wedding/registry/tu-codigo-aqui",
+                description: "Ver mesa de regalos en Amazon"
+            },
+            {
+                name: "Liverpool",
+                icon: "fas fa-gift",
+                url: "https://mesaderegalos.liverpool.com.mx/tu-evento-aqui",
+                description: "Ver mesa de regalos en Liverpool"
+            }
+        ],
+        bankAccount: {
+            enabled: true,
+            title: "Transferencia Bancaria",
+            icon: "fas fa-university",
+            description: "Si prefieres hacer una transferencia",
+            details: {
+                bank: "BBVA",
+                accountHolder: "Diego Zazueta / Fernanda López",
+                accountNumber: "1234567890",
+                clabe: "012345678901234567"
+            }
+        }
     }
 };
 

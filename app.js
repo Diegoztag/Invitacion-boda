@@ -110,6 +110,128 @@ function updateDynamicContent() {
     
     // Update page title
     document.title = `${WEDDING_CONFIG.event.type} - ${WEDDING_CONFIG.couple.displayName}`;
+    
+    // Initialize Gift Registry
+    initGiftRegistry();
+}
+
+// Initialize Gift Registry
+function initGiftRegistry() {
+    if (!WEDDING_CONFIG.giftRegistry || !WEDDING_CONFIG.giftRegistry.enabled) {
+        // Hide gift registry section if not enabled
+        const giftSection = document.getElementById('mesa-regalos');
+        if (giftSection) giftSection.style.display = 'none';
+        return;
+    }
+    
+    // Update gift registry text
+    const giftTitle = document.getElementById('giftRegistryTitle');
+    const giftSubtitle = document.getElementById('giftRegistrySubtitle');
+    
+    if (giftTitle) giftTitle.textContent = WEDDING_CONFIG.giftRegistry.title;
+    if (giftSubtitle) giftSubtitle.textContent = WEDDING_CONFIG.giftRegistry.subtitle;
+    
+    // Render gift stores
+    const giftStoresContainer = document.getElementById('giftStores');
+    if (giftStoresContainer && WEDDING_CONFIG.giftRegistry.stores) {
+        giftStoresContainer.innerHTML = '';
+        
+        WEDDING_CONFIG.giftRegistry.stores.forEach(store => {
+            const storeCard = document.createElement('a');
+            storeCard.href = store.url;
+            storeCard.target = '_blank';
+            storeCard.rel = 'noopener noreferrer';
+            storeCard.className = 'gift-store-card';
+            storeCard.innerHTML = `
+                <i class="${store.icon} gift-store-icon"></i>
+                <h3>${store.name}</h3>
+                <p>${store.description}</p>
+            `;
+            giftStoresContainer.appendChild(storeCard);
+        });
+    }
+    
+    // Render bank account info
+    const bankInfo = document.getElementById('bankInfo');
+    const bankAccount = WEDDING_CONFIG.giftRegistry.bankAccount;
+    
+    if (bankInfo && bankAccount && bankAccount.enabled) {
+        bankInfo.style.display = 'block';
+        
+        const bankTitle = document.getElementById('bankTitle');
+        const bankDescription = document.getElementById('bankDescription');
+        const bankDetails = document.getElementById('bankDetails');
+        
+        if (bankTitle) bankTitle.textContent = bankAccount.title;
+        if (bankDescription) bankDescription.textContent = bankAccount.description;
+        
+        if (bankDetails && bankAccount.details) {
+            bankDetails.innerHTML = `
+                <div class="bank-detail-item">
+                    <span class="bank-detail-label">Banco:</span>
+                    <span class="bank-detail-value">${bankAccount.details.bank}</span>
+                </div>
+                <div class="bank-detail-item">
+                    <span class="bank-detail-label">Titular:</span>
+                    <span class="bank-detail-value">${bankAccount.details.accountHolder}</span>
+                </div>
+                <div class="bank-detail-item">
+                    <span class="bank-detail-label">Número de cuenta:</span>
+                    <div>
+                        <span class="bank-detail-value">${bankAccount.details.accountNumber}</span>
+                        <button class="copy-button" onclick="copyToClipboard('${bankAccount.details.accountNumber}', this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+                <div class="bank-detail-item">
+                    <span class="bank-detail-label">CLABE:</span>
+                    <div>
+                        <span class="bank-detail-value">${bankAccount.details.clabe}</span>
+                        <button class="copy-button" onclick="copyToClipboard('${bankAccount.details.clabe}', this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+// Copy to clipboard function
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Change button text temporarily
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Copiado';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        // Show feedback
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Copiado';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('copied');
+        }, 2000);
+    });
 }
 
 // Load invitation data

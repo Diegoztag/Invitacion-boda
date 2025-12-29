@@ -9,6 +9,7 @@ Sistema web completo para gestionar invitaciones personalizadas de boda con conf
 - **Confirmación Flexible**: Los invitados pueden confirmar cuántos asistirán de sus pases disponibles
 - **Información Completa**: Detalles del evento, ubicación, itinerario y código de vestimenta
 - **Subida de Fotos**: Los invitados pueden compartir fotos del evento
+- **Mesa de Regalos**: Enlaces directos a registros de regalos y datos bancarios
 - **Diseño Responsivo**: Funciona perfectamente en móviles y computadoras
 
 ### Para Administradores
@@ -291,6 +292,37 @@ const WEDDING_CONFIG = {
         accentColor: "#f8f4e6",
         textDark: "#333",
         textLight: "#666"
+    },
+    
+    // Mesa de Regalos
+    giftRegistry: {
+        enabled: true,
+        title: "Mesa de Regalos",
+        subtitle: "Tu presencia es nuestro mejor regalo",
+        stores: [
+            {
+                name: "Amazon",
+                icon: "fab fa-amazon",
+                url: "https://www.amazon.com.mx/wedding/registry/tu-codigo",
+                description: "Ver mesa de regalos en Amazon"
+            },
+            {
+                name: "Liverpool",
+                icon: "fas fa-gift",
+                url: "https://mesaderegalos.liverpool.com.mx/tu-evento",
+                description: "Ver mesa de regalos en Liverpool"
+            }
+        ],
+        bankAccount: {
+            enabled: true,
+            title: "Transferencia Bancaria",
+            details: {
+                bank: "BBVA",
+                accountHolder: "Diego Zazueta / Fernanda López",
+                accountNumber: "1234567890",
+                clabe: "012345678901234567"
+            }
+        }
     }
 };
 ```
@@ -304,6 +336,10 @@ const WEDDING_CONFIG = {
 5. **Mensajes**: Modifica todos los textos en la sección `messages`
 6. **Colores**: Cambia los valores en `theme` para personalizar la paleta de colores
 7. **Hashtag**: Actualiza `couple.hashtag` con el hashtag de tu boda
+8. **Mesa de Regalos**: 
+   - Actualiza los enlaces en `giftRegistry.stores` con tus registros reales
+   - Modifica `giftRegistry.bankAccount.details` con tu información bancaria
+   - Puedes agregar más tiendas o desactivar la sección con `enabled: false`
 
 ### Aplicar Cambios de Colores
 Si cambias los colores en `config.js`, también debes actualizar las variables CSS en `styles.css` para que coincidan:
