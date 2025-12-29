@@ -1,153 +1,76 @@
-// Admin Panel JavaScript
-const API_URL = 'http://localhost:3000/api';
-let isAuthenticated = false;
+// Configuration
+const CONFIG = {
+    backendUrl: 'http://localhost:3000/api'
+};
+
+// Global variables
+let allInvitations = [];
 let confirmationChart = null;
 
-// DOM Elements
-const loginScreen = document.getElementById('loginScreen');
-const adminDashboard = document.getElementById('adminDashboard');
-const loginForm = document.getElementById('loginForm');
-const logoutBtn = document.getElementById('logoutBtn');
-
-// Initialize
+// Initialize Admin Panel
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuthentication();
-    initializeEventListeners();
-});
-
-// Authentication
-function checkAuthentication() {
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-        isAuthenticated = true;
-        showDashboard();
-    }
-}
-
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    // Simple authentication (in production, this should be handled by the backend)
-    if (username === 'admin' && password === 'admin123') {
-        isAuthenticated = true;
-        localStorage.setItem('adminToken', 'dummy-token');
-        showDashboard();
-    } else {
-        alert('Credenciales incorrectas');
-    }
-});
-
-logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('adminToken');
-    isAuthenticated = false;
-    loginScreen.style.display = 'flex';
-    adminDashboard.style.display = 'none';
-});
-
-function showDashboard() {
-    loginScreen.style.display = 'none';
-    adminDashboard.style.display = 'flex';
+    initNavigation();
     loadDashboardData();
-}
+    loadInvitations();
+    initCreateForm();
+    initModal();
+    initSearch();
+});
 
 // Navigation
-function initializeEventListeners() {
-    // Navigation links
-    document.querySelectorAll('.admin-nav-link').forEach(link => {
-        link.addEventListener('click', (e) => {
+function initNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.content-section');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
             e.preventDefault();
-            const section = link.dataset.section;
-            showSection(section);
+            const targetId = item.getAttribute('href').substring(1);
             
-            // Update active state
-            document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            // Update active nav
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Update active section
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            
+            // Load data for specific sections
+            if (targetId === 'dashboard') {
+                loadDashboardData();
+            } else if (targetId === 'invitations') {
+                loadInvitations();
+            } else if (targetId === 'confirmations') {
+                loadConfirmations();
+            }
         });
     });
-
-    // Search functionality
-    document.getElementById('searchConfirmations').addEventListener('input', (e) => {
-        filterTable('confirmationsTable', e.target.value);
-    });
-
-    // Export functionality
-    document.getElementById('exportConfirmations').addEventListener('click', exportToExcel);
-
-    // Add guest
-    document.getElementById('addGuest').addEventListener('click', showAddGuestModal);
-
-    // Send reminders
-    document.getElementById('sendAllReminders').addEventListener('click', sendAllReminders);
-
-    // Modal close buttons
-    document.querySelectorAll('.modal-close').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.target.closest('.modal').classList.remove('show');
-        });
-    });
-
-    // Add guest form
-    document.getElementById('addGuestForm').addEventListener('submit', handleAddGuest);
 }
 
-function showSection(sectionName) {
-    // Hide all sections
-    document.querySelectorAll('.admin-section').forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    // Show selected section
-    document.getElementById(`${sectionName}Section`).classList.add('active');
-    
-    // Load section data
-    switch(sectionName) {
-        case 'dashboard':
-            loadDashboardData();
-            break;
-        case 'confirmations':
-            loadConfirmations();
-            break;
-        case 'guests':
-            loadGuests();
-            break;
-        case 'reminders':
-            loadReminders();
-            break;
-        case 'photos':
-            loadPhotos();
-            break;
-    }
-}
-
-// Dashboard
+// Load Dashboard Data
 async function loadDashboardData() {
     try {
-        // Simulated data for demo
-        const stats = {
-            total: 150,
-            confirmed: 85,
-            declined: 15,
-            pending: 50
-        };
-        
-        // Update stats
-        document.getElementById('totalGuests').textContent = stats.total;
-        document.getElementById('confirmedGuests').textContent = stats.confirmed;
-        document.getElementById('declinedGuests').textContent = stats.declined;
-        document.getElementById('pendingGuests').textContent = stats.pending;
-        
-        // Update chart
-        updateChart(stats);
-        
+        const response = await fetch(`${CONFIG.backendUrl}/stats`);
+        if (response.ok) {
+            const data = await response.json();
+            const stats = data.stats;
+            
+            // Update stats cards
+            document.getElementById('totalInvitations').textContent = stats.totalInvitations;
+            document.getElementById('totalPasses').textContent = stats.totalPasses;
+            document.getElementById('confirmedPasses').textContent = stats.confirmedPasses;
+            document.getElementById('pendingInvitations').textContent = stats.pendingInvitations;
+            
+            // Update chart
+            updateConfirmationChart(stats);
+        }
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
 }
 
-function updateChart(stats) {
+// Update Confirmation Chart
+function updateConfirmationChart(stats) {
     const ctx = document.getElementById('confirmationChart').getContext('2d');
     
     if (confirmationChart) {
@@ -157,14 +80,10 @@ function updateChart(stats) {
     confirmationChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Confirmados', 'No Asistirán', 'Pendientes'],
+            labels: ['Confirmados', 'Pendientes'],
             datasets: [{
-                data: [stats.confirmed, stats.declined, stats.pending],
-                backgroundColor: [
-                    '#4CAF50',
-                    '#f44336',
-                    '#FFC107'
-                ],
+                data: [stats.confirmedPasses, stats.pendingPasses],
+                backgroundColor: ['#4caf50', '#ff9800'],
                 borderWidth: 0
             }]
         },
@@ -174,368 +93,315 @@ function updateChart(stats) {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: {
-                            size: 14
-                        }
-                    }
-                },
-                title: {
-                    display: true,
-                    text: 'Estado de Confirmaciones',
-                    font: {
-                        size: 18
-                    }
                 }
             }
         }
     });
 }
 
-// Confirmations
-async function loadConfirmations() {
+// Load Invitations
+async function loadInvitations() {
     try {
-        const response = await fetch(`${API_URL}/rsvps`);
-        const data = await response.json();
-        
-        if (data.success) {
-            displayConfirmations(data.data);
+        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
+        if (response.ok) {
+            const data = await response.json();
+            allInvitations = data.invitations || [];
+            displayInvitations(allInvitations);
         }
     } catch (error) {
-        console.error('Error loading confirmations:', error);
-        // Display demo data
-        displayConfirmations(getDemoConfirmations());
+        console.error('Error loading invitations:', error);
+        // For demo purposes, show sample data
+        allInvitations = [
+            {
+                code: 'abc123',
+                guestNames: ['Juan Pérez', 'María García'],
+                numberOfPasses: 2,
+                confirmed: false,
+                confirmedPasses: 0
+            }
+        ];
+        displayInvitations(allInvitations);
     }
 }
 
-function displayConfirmations(confirmations) {
-    const tbody = document.querySelector('#confirmationsTable tbody');
+// Display Invitations
+function displayInvitations(invitations) {
+    const tbody = document.getElementById('invitationsTableBody');
     tbody.innerHTML = '';
     
-    if (confirmations.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="empty-state">
-                    <i class="fas fa-inbox"></i>
-                    <h3>No hay confirmaciones aún</h3>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    confirmations.forEach(confirmation => {
+    invitations.forEach(invitation => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${confirmation.Nombre || confirmation.name}</td>
-            <td>${confirmation.Email || confirmation.email}</td>
-            <td>${confirmation.Teléfono || confirmation.phone}</td>
+            <td class="code-cell">${invitation.code}</td>
+            <td>${invitation.guestNames.join(' y ')}</td>
+            <td>${invitation.numberOfPasses}</td>
             <td>
-                <span class="badge ${confirmation.Asistirá === 'Sí' || confirmation.attendance === 'si' ? 'badge-success' : 'badge-danger'}">
-                    ${confirmation.Asistirá || (confirmation.attendance === 'si' ? 'Sí' : 'No')}
+                <span class="status-badge ${invitation.confirmed ? 'confirmed' : 'pending'}">
+                    ${invitation.confirmed ? 'Confirmado' : 'Pendiente'}
                 </span>
             </td>
-            <td>${confirmation.Acompañantes || confirmation.guests || '0'}</td>
-            <td>${confirmation['Restricciones Alimentarias'] || confirmation.dietary || '-'}</td>
-            <td>${confirmation['Fecha de Confirmación'] || confirmation.date || new Date().toLocaleDateString()}</td>
+            <td>${invitation.confirmedPasses || 0}</td>
             <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-whatsapp" onclick="sendWhatsApp('${confirmation.Teléfono || confirmation.phone}')">
-                        <i class="fas fa-comment"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteConfirmation('${confirmation.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+                <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-icon" onclick="copyInvitationLink('${invitation.code}')" title="Copiar enlace">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button class="btn-icon" onclick="sendInvitation('${invitation.code}')" title="Enviar por WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
             </td>
         `;
         tbody.appendChild(row);
     });
 }
 
-// Guests
-async function loadGuests() {
-    try {
-        const response = await fetch(`${API_URL}/pending-confirmations`);
-        const data = await response.json();
-        
-        if (data.success) {
-            displayGuests(data.data);
-        }
-    } catch (error) {
-        console.error('Error loading guests:', error);
-        // Display demo data
-        displayGuests(getDemoGuests());
-    }
-}
-
-function displayGuests(guests) {
-    const tbody = document.querySelector('#guestsTable tbody');
-    tbody.innerHTML = '';
+// View Invitation Details
+function viewInvitation(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
     
-    guests.forEach(guest => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${guest.name}</td>
-            <td>${guest.phone}</td>
-            <td>${guest.email || '-'}</td>
-            <td>
-                <span class="badge ${guest.confirmed ? 'badge-success' : 'badge-warning'}">
-                    ${guest.confirmed ? 'Confirmado' : 'Pendiente'}
-                </span>
-            </td>
-            <td>${guest.lastNotification || 'Nunca'}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-whatsapp" onclick="sendReminder('${guest.phone}', '${guest.name}')">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    <button class="btn-icon btn-edit" onclick="editGuest('${guest.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteGuest('${guest.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-// Reminders
-async function loadReminders() {
-    try {
-        const response = await fetch(`${API_URL}/pending-confirmations`);
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('pendingReminders').textContent = data.data.length;
-            displayReminderHistory();
-        }
-    } catch (error) {
-        console.error('Error loading reminders:', error);
-        document.getElementById('pendingReminders').textContent = '0';
-    }
-}
-
-function displayReminderHistory() {
-    const history = document.getElementById('reminderHistory');
-    history.innerHTML = `
-        <div class="reminder-item">
-            <strong>10 recordatorios enviados</strong>
-            <p>Hace 2 días - 10:00 AM</p>
-        </div>
-        <div class="reminder-item">
-            <strong>15 recordatorios enviados</strong>
-            <p>Hace 5 días - 10:00 AM</p>
-        </div>
-        <div class="reminder-item">
-            <strong>8 recordatorios enviados</strong>
-            <p>Hace 7 días - 10:00 AM</p>
-        </div>
-    `;
-}
-
-async function sendAllReminders() {
-    if (!confirm('¿Enviar recordatorios a todos los invitados pendientes?')) return;
+    const modal = document.getElementById('invitationModal');
+    const details = document.getElementById('invitationDetails');
     
-    try {
-        // Show loading state
-        const btn = document.getElementById('sendAllReminders');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-        
-        // Simulate sending
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Recordatorios a Pendientes';
-            alert('Recordatorios enviados exitosamente');
-            loadReminders();
-        }, 2000);
-        
-    } catch (error) {
-        console.error('Error sending reminders:', error);
-        alert('Error al enviar recordatorios');
-    }
-}
-
-// Photos
-async function loadPhotos() {
-    const photoGrid = document.getElementById('adminPhotoGrid');
+    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
     
-    // Demo photos
-    const photos = [
-        'https://images.unsplash.com/photo-1519741497674-611481863552?w=400',
-        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400',
-        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400'
-    ];
-    
-    document.getElementById('totalPhotos').textContent = photos.length;
-    
-    photoGrid.innerHTML = photos.map((photo, index) => `
-        <div class="admin-photo-item">
-            <img src="${photo}" alt="Foto ${index + 1}">
-            <div class="photo-actions">
-                <button class="btn-icon btn-delete" onclick="deletePhoto('${index}')">
-                    <i class="fas fa-trash"></i>
+    details.innerHTML = `
+        <div class="invitation-detail">
+            <p><strong>Código:</strong> ${invitation.code}</p>
+            <p><strong>Invitados:</strong> ${invitation.guestNames.join(' y ')}</p>
+            <p><strong>Número de pases:</strong> ${invitation.numberOfPasses}</p>
+            <p><strong>Estado:</strong> ${invitation.confirmed ? 'Confirmado' : 'Pendiente'}</p>
+            ${invitation.confirmed ? `
+                <p><strong>Pases confirmados:</strong> ${invitation.confirmedPasses}</p>
+                <p><strong>Asistentes:</strong> ${invitation.confirmationDetails?.attendingNames?.join(', ') || 'N/A'}</p>
+            ` : ''}
+            <p><strong>Email:</strong> ${invitation.email || 'No proporcionado'}</p>
+            <p><strong>Teléfono:</strong> ${invitation.phone || 'No proporcionado'}</p>
+            <div class="invitation-link">
+                <p><strong>Enlace de invitación:</strong></p>
+                <input type="text" value="${invitationUrl}" readonly class="link-input">
+                <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
+                    <i class="fas fa-copy"></i> Copiar
                 </button>
             </div>
         </div>
-    `).join('');
+    `;
+    
+    modal.style.display = 'block';
 }
 
-// Helper Functions
-function filterTable(tableId, searchTerm) {
-    const table = document.getElementById(tableId);
-    const rows = table.getElementsByTagName('tr');
-    
-    for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
-    }
+// Copy Invitation Link
+function copyInvitationLink(code) {
+    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
+    copyToClipboard(invitationUrl);
 }
 
-function exportToExcel() {
-    alert('Función de exportación a Excel - Por implementar');
+// Copy to Clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Enlace copiado al portapapeles');
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+    });
 }
 
-function showAddGuestModal() {
-    document.getElementById('addGuestModal').classList.add('show');
+// Send Invitation via WhatsApp
+function sendInvitation(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
+    
+    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
+    const message = `¡Hola ${invitation.guestNames.join(' y ')}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${invitationUrl}\n\nTienen ${invitation.numberOfPasses} pases disponibles.\n\n¡Los esperamos con mucho cariño!\nDiego & Fernanda`;
+    
+    const whatsappUrl = `https://wa.me/${invitation.phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
 }
 
-async function handleAddGuest(e) {
-    e.preventDefault();
+// Initialize Create Form
+function initCreateForm() {
+    const form = document.getElementById('createInvitationForm');
     
-    const guestData = {
-        name: document.getElementById('guestName').value,
-        phone: document.getElementById('guestPhone').value,
-        email: document.getElementById('guestEmail').value
-    };
-    
-    // Here you would send to backend
-    console.log('Adding guest:', guestData);
-    
-    // Close modal and refresh
-    document.getElementById('addGuestModal').classList.remove('show');
-    e.target.reset();
-    loadGuests();
-}
-
-async function sendReminder(phone, name) {
-    if (!confirm(`¿Enviar recordatorio a ${name}?`)) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/send-reminder`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ phone, name })
-        });
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
+        const formData = new FormData(form);
+        const guestNamesInput = formData.get('guestNames');
+        
+        // Parse guest names
+        const guestNames = guestNamesInput
+            .split(/[,y]/)
+            .map(name => name.trim())
+            .filter(name => name);
+        
+        const invitationData = {
+            guestNames: guestNames,
+            numberOfPasses: parseInt(formData.get('numberOfPasses')),
+            email: formData.get('email'),
+            phone: formData.get('phone')
+        };
+        
+        try {
+            const response = await fetch(`${CONFIG.backendUrl}/invitation`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(invitationData)
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                showNotification('Invitación creada exitosamente');
+                form.reset();
+                
+                // Show invitation details
+                const invitationUrl = data.invitationUrl;
+                alert(`Invitación creada!\n\nCódigo: ${data.invitation.code}\nEnlace: ${invitationUrl}`);
+                
+                // Navigate to invitations list
+                document.querySelector('a[href="#invitations"]').click();
+            } else {
+                throw new Error('Error al crear invitación');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Error al crear la invitación', 'error');
+        }
+    });
+}
+
+// Load Confirmations
+async function loadConfirmations() {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
         if (response.ok) {
-            alert('Recordatorio enviado exitosamente');
+            const data = await response.json();
+            const confirmedInvitations = data.invitations.filter(inv => inv.confirmed);
+            displayConfirmations(confirmedInvitations);
         }
     } catch (error) {
-        console.error('Error sending reminder:', error);
-        alert('Error al enviar recordatorio');
+        console.error('Error loading confirmations:', error);
     }
 }
 
-function sendWhatsApp(phone) {
-    const message = encodeURIComponent('Hola! Gracias por confirmar tu asistencia a nuestra boda.');
-    window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
+// Display Confirmations
+function displayConfirmations(invitations) {
+    const tbody = document.getElementById('confirmationsTableBody');
+    tbody.innerHTML = '';
+    
+    invitations.forEach(invitation => {
+        const details = invitation.confirmationDetails;
+        if (!details) return;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${invitation.guestNames.join(' y ')}</td>
+            <td>${details.willAttend ? 'Sí' : 'No'}</td>
+            <td>${details.attendingGuests} de ${invitation.numberOfPasses}</td>
+            <td>${details.email || '-'}</td>
+            <td>${details.phone || '-'}</td>
+            <td>${details.dietaryRestrictions || '-'}</td>
+            <td>${details.message || '-'}</td>
+            <td>${new Date(details.confirmedAt).toLocaleDateString('es-MX')}</td>
+        `;
+        tbody.appendChild(row);
+    });
 }
 
-function deleteConfirmation(id) {
-    if (confirm('¿Eliminar esta confirmación?')) {
-        console.log('Deleting confirmation:', id);
-        loadConfirmations();
-    }
+// Export to Excel
+function exportToExcel() {
+    // This would typically use a library like SheetJS
+    // For now, we'll create a CSV
+    const headers = ['Invitados', 'Asistirá', 'Confirmados', 'Email', 'Teléfono', 'Restricciones', 'Mensaje', 'Fecha'];
+    const rows = [];
+    
+    const tbody = document.getElementById('confirmationsTableBody');
+    const trs = tbody.querySelectorAll('tr');
+    
+    trs.forEach(tr => {
+        const row = [];
+        tr.querySelectorAll('td').forEach(td => {
+            row.push(td.textContent);
+        });
+        rows.push(row);
+    });
+    
+    let csv = headers.join(',') + '\n';
+    rows.forEach(row => {
+        csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+    });
+    
+    // Download CSV
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `confirmaciones_boda_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
 }
 
-function editGuest(id) {
-    console.log('Editing guest:', id);
-}
-
-function deleteGuest(id) {
-    if (confirm('¿Eliminar este invitado?')) {
-        console.log('Deleting guest:', id);
-        loadGuests();
-    }
-}
-
-function deletePhoto(id) {
-    if (confirm('¿Eliminar esta foto?')) {
-        console.log('Deleting photo:', id);
-        loadPhotos();
-    }
-}
-
-// Demo Data Functions
-function getDemoConfirmations() {
-    return [
-        {
-            name: 'María García',
-            email: 'maria@email.com',
-            phone: '+52 555 123 4567',
-            attendance: 'si',
-            guests: '2',
-            dietary: 'Vegetariana',
-            date: '15/12/2023',
-            id: '1'
-        },
-        {
-            name: 'Juan Pérez',
-            email: 'juan@email.com',
-            phone: '+52 555 234 5678',
-            attendance: 'si',
-            guests: '1',
-            dietary: '',
-            date: '16/12/2023',
-            id: '2'
-        },
-        {
-            name: 'Ana López',
-            email: 'ana@email.com',
-            phone: '+52 555 345 6789',
-            attendance: 'no',
-            guests: '0',
-            dietary: '',
-            date: '17/12/2023',
-            id: '3'
+// Initialize Modal
+function initModal() {
+    const modal = document.getElementById('invitationModal');
+    const closeBtn = modal.querySelector('.modal-close');
+    
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
         }
-    ];
+    });
 }
 
-function getDemoGuests() {
-    return [
-        {
-            name: 'Carlos Rodríguez',
-            phone: '+52 555 456 7890',
-            email: 'carlos@email.com',
-            confirmed: false,
-            lastNotification: 'Hace 3 días',
-            id: '4'
-        },
-        {
-            name: 'Laura Martínez',
-            phone: '+52 555 567 8901',
-            email: 'laura@email.com',
-            confirmed: false,
-            lastNotification: 'Nunca',
-            id: '5'
-        },
-        {
-            name: 'Pedro Sánchez',
-            phone: '+52 555 678 9012',
-            email: '',
-            confirmed: true,
-            lastNotification: 'Hace 1 semana',
-            id: '6'
-        }
-    ];
+// Initialize Search
+function initSearch() {
+    const searchInput = document.getElementById('searchInput');
+    
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        const filteredInvitations = allInvitations.filter(invitation => {
+            return invitation.code.toLowerCase().includes(searchTerm) ||
+                   invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+                   (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
+                   (invitation.phone && invitation.phone.includes(searchTerm));
+        });
+        
+        displayInvitations(filteredInvitations);
+    });
+}
+
+// Show Create Form
+function showCreateForm() {
+    document.querySelector('a[href="#create"]').click();
+}
+
+// Show Notification
+function showNotification(message, type = 'success') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Hide and remove notification
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
 }

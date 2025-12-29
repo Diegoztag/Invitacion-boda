@@ -232,6 +232,36 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 30px;
 }
 
+/* Invitation Info */
+.invitation-info {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.guest-names {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+.guest-names span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.guest-passes {
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+.guest-passes span {
+    font-weight: 600;
+}
+
 .hero-date {
     display: flex;
     justify-content: center;
@@ -561,6 +591,67 @@ h1, h2, h3, h4, h5, h6 {
 .radio-label input[type="radio"] {
     width: auto;
     margin-right: 10px;
+}
+
+/* Already Confirmed Message */
+.already-confirmed {
+    text-align: center;
+    padding: 40px;
+    background: var(--accent-color);
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.already-confirmed i {
+    font-size: 4rem;
+    color: #4caf50;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.already-confirmed h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Attending Names List */
+#attendingNamesList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.attending-name {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.attending-name:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Form Control Select */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+    background-color: var(--white);
+    cursor: pointer;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
 
 /* Buttons */

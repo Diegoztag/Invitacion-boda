@@ -1,228 +1,194 @@
-# Invitación de Boda SPA
+# Sistema de Invitaciones de Boda - Diego & Fernanda
 
-Una aplicación web SPA (Single Page Application) moderna y elegante para invitaciones de boda con funcionalidades avanzadas.
+Sistema web completo para gestionar invitaciones personalizadas de boda con confirmación de asistencia.
 
-## 🌟 Características
+## Características
 
-- **Diseño Mobile-First Responsive**: Optimizado para todos los dispositivos
-- **Confirmación de Asistencia**: Formulario integrado que guarda en Google Sheets
-- **Recordatorios por WhatsApp**: Sistema automatizado usando Twilio
-- **Galería de Fotos**: Los invitados pueden subir fotos que se guardan en Google Drive
-- **Mapa Interactivo**: Integración con Google Maps
-- **Panel de Administración**: Control total sobre invitados y confirmaciones
-- **Cuenta Regresiva**: Timer dinámico hasta el día de la boda
+### Para Invitados
+- **Invitaciones Personalizadas**: Cada invitado recibe un enlace único con su nombre y número de pases
+- **Confirmación Flexible**: Los invitados pueden confirmar cuántos asistirán de sus pases disponibles
+- **Información Completa**: Detalles del evento, ubicación, itinerario y código de vestimenta
+- **Subida de Fotos**: Los invitados pueden compartir fotos del evento
+- **Diseño Responsivo**: Funciona perfectamente en móviles y computadoras
 
-## 📋 Requisitos Previos
+### Para Administradores
+- **Panel de Control**: Dashboard con estadísticas en tiempo real
+- **Gestión de Invitaciones**: Crear y administrar invitaciones personalizadas
+- **Seguimiento de Confirmaciones**: Ver quién ha confirmado y cuántos asistirán
+- **Exportación de Datos**: Descargar lista de confirmaciones en formato CSV
+- **Integración con WhatsApp**: Enviar invitaciones directamente por WhatsApp
 
+## Tecnologías Utilizadas
+
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Node.js, Express.js
+- **Base de Datos**: Google Sheets API
+- **Almacenamiento**: Google Drive API
+- **Notificaciones**: WhatsApp API (Twilio)
+- **Mapas**: Google Maps API
+
+## Instalación
+
+### Requisitos Previos
 - Node.js (v14 o superior)
 - Cuenta de Google Cloud Platform
-- Cuenta de Twilio (para WhatsApp)
-- Editor de código (recomendado: VS Code)
+- Credenciales de servicio de Google
 
-## 🚀 Instalación
+### Pasos de Instalación
 
-### 1. Clonar o descargar el proyecto
-
+1. **Clonar el repositorio**
 ```bash
-cd invitacion-boda
+git clone https://github.com/Diegoztag/Invitacion-boda.git
+cd Invitacion-boda
 ```
 
-### 2. Instalar dependencias del backend
-
+2. **Instalar dependencias del backend**
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Configuración de servicios
-
-#### Google Cloud Platform
-
-1. Crear un proyecto en [Google Cloud Console](https://console.cloud.google.com/)
-2. Habilitar las APIs:
-   - Google Sheets API
-   - Google Drive API
-   - Google Maps JavaScript API
-
-3. Crear una cuenta de servicio:
-   - Ve a "IAM y administración" > "Cuentas de servicio"
-   - Crear nueva cuenta de servicio
-   - Descargar el archivo JSON de credenciales
-   - Guardarlo como `backend/credentials/google-service-account.json`
-
-4. Crear una hoja de cálculo en Google Sheets:
-   - Crear nueva hoja en Google Sheets
-   - Copiar el ID de la URL (está entre `/d/` y `/edit`)
-   - Compartir la hoja con el email de la cuenta de servicio
-
-#### Twilio (WhatsApp)
-
-1. Crear cuenta en [Twilio](https://www.twilio.com)
-2. Configurar WhatsApp Sandbox:
-   - Ir a Messaging > Try it out > Send a WhatsApp message
-   - Seguir las instrucciones para activar el sandbox
-3. Obtener credenciales:
-   - Account SID
-   - Auth Token
-   - WhatsApp number (sandbox: +14155238886)
-
-### 4. Configurar variables de entorno
-
-1. Copiar el archivo de ejemplo:
-```bash
-cp backend/.env.example backend/.env
-```
-
-2. Editar `backend/.env` con tus credenciales:
+3. **Configurar variables de entorno**
+Crear archivo `backend/.env` con:
 ```env
-# Server
 PORT=3000
-
-# Google APIs
-GOOGLE_SHEETS_ID=tu_id_de_hoja_de_calculo
-GOOGLE_DRIVE_FOLDER_ID=tu_id_de_carpeta_opcional
-
-# Twilio
-TWILIO_ACCOUNT_SID=tu_account_sid
-TWILIO_AUTH_TOKEN=tu_auth_token
+GOOGLE_SHEETS_ID=tu_spreadsheet_id
+GOOGLE_DRIVE_FOLDER_ID=tu_folder_id
+TWILIO_ACCOUNT_SID=tu_twilio_sid
+TWILIO_AUTH_TOKEN=tu_twilio_token
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-
-# Google Maps
-GOOGLE_MAPS_API_KEY=tu_api_key_de_maps
-
-# Admin
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=tu_contraseña_segura
 ```
 
-### 5. Personalizar la invitación
+4. **Configurar credenciales de Google**
+- Crear proyecto en Google Cloud Console
+- Habilitar Google Sheets API y Google Drive API
+- Crear cuenta de servicio y descargar JSON
+- Guardar como `backend/credentials/google-service-account.json`
 
-Editar los siguientes archivos para personalizar tu invitación:
+5. **Crear Google Spreadsheet**
+- Crear nuevo spreadsheet en Google Sheets
+- Compartir con el email de la cuenta de servicio
+- Copiar el ID del spreadsheet al archivo .env
 
-#### `index.html`
-- Cambiar "Nombre & Pareja" por los nombres reales
-- Actualizar fecha, hora y ubicaciones
-- Modificar el hashtag de la boda
-
-#### `app.js`
-- Actualizar la configuración en el objeto `CONFIG`:
-```javascript
-const CONFIG = {
-    weddingDate: new Date('2024-06-15T16:00:00'), // Tu fecha
-    googleMapsApiKey: 'YOUR_API_KEY',
-    location: {
-        lat: 19.4326, // Coordenadas del lugar
-        lng: -99.1332,
-        name: 'Salón Crystal',
-        address: 'Calle Elegante #456, Ciudad'
-    }
-};
-```
-
-#### `styles.css`
-- Modificar colores en las variables CSS si lo deseas
-
-## 🏃‍♂️ Ejecutar la aplicación
-
-1. Iniciar el servidor:
+6. **Iniciar el servidor**
 ```bash
 cd backend
 npm start
 ```
 
-2. Abrir en el navegador:
-- Frontend: http://localhost:3000
-- Panel Admin: http://localhost:3000/admin.html
+El servidor estará disponible en `http://localhost:3000`
 
-## 📱 Uso
+## Uso
 
-### Para invitados:
-1. Acceder a la invitación
-2. Navegar por las secciones
-3. Confirmar asistencia
-4. Subir fotos del evento
+### Para Administradores
 
-### Para administradores:
-1. Acceder a `/admin.html`
-2. Iniciar sesión (usuario: admin, contraseña: la configurada)
-3. Gestionar confirmaciones
-4. Enviar recordatorios
-5. Ver estadísticas
+1. **Acceder al panel de administración**
+   - Navegar a `http://localhost:3000/admin.html`
 
-## 🔧 Características técnicas
+2. **Crear nueva invitación**
+   - Ir a "Crear Invitación"
+   - Ingresar nombres de invitados
+   - Especificar número de pases
+   - Opcionalmente agregar email y teléfono
 
-- **Frontend**: HTML5, CSS3, JavaScript vanilla
-- **Backend**: Node.js, Express
-- **Base de datos**: Google Sheets
-- **Almacenamiento**: Google Drive
-- **Mensajería**: Twilio WhatsApp API
-- **Mapas**: Google Maps API
+3. **Enviar invitación**
+   - En la lista de invitaciones, hacer clic en el ícono de WhatsApp
+   - O copiar el enlace único y enviarlo manualmente
 
-## 📝 Estructura del proyecto
+4. **Monitorear confirmaciones**
+   - Ver el dashboard para estadísticas generales
+   - Revisar la sección "Confirmaciones" para detalles
+
+### Para Invitados
+
+1. **Acceder a la invitación**
+   - Usar el enlace personalizado recibido
+   - Ejemplo: `http://localhost:3000/?invitation=abc123`
+
+2. **Ver información personalizada**
+   - La invitación mostrará el nombre del invitado
+   - Se indicará el número de pases disponibles
+
+3. **Confirmar asistencia**
+   - Seleccionar si asistirán o no
+   - Si asisten, indicar cuántos de los pases usarán
+   - Proporcionar nombres de los asistentes
+   - Agregar información de contacto
+
+4. **Compartir fotos**
+   - Después del evento, subir fotos en la sección correspondiente
+
+## Estructura del Proyecto
 
 ```
-invitacion-boda/
-├── index.html          # Página principal
-├── admin.html          # Panel de administración
-├── styles.css          # Estilos principales
-├── admin-styles.css    # Estilos del admin
-├── app.js              # Lógica del frontend
-├── admin.js            # Lógica del admin
-└── backend/
-    ├── server.js       # Servidor Express
-    ├── package.json    # Dependencias
-    ├── .env            # Variables de entorno
-    └── services/       # Servicios de integración
-        ├── googleSheets.js
-        ├── googleDrive.js
-        └── whatsapp.js
+Invitacion-boda/
+├── index.html              # Página principal de invitación
+├── app.js                  # Lógica frontend principal
+├── styles.css              # Estilos de la invitación
+├── admin.html              # Panel de administración
+├── admin.js                # Lógica del panel admin
+├── admin-styles.css        # Estilos del panel admin
+├── backend/
+│   ├── server.js           # Servidor Express principal
+│   ├── package.json        # Dependencias del backend
+│   ├── services/
+│   │   ├── googleSheets.js # Integración con Google Sheets
+│   │   ├── googleDrive.js  # Integración con Google Drive
+│   │   ├── whatsapp.js     # Integración con WhatsApp
+│   │   └── invitationService.js # Lógica de invitaciones
+│   └── credentials/        # Carpeta para credenciales (no incluida en git)
+└── README.md               # Este archivo
 ```
 
-## 🚀 Despliegue en producción
+## API Endpoints
 
-### Opción 1: Heroku
-1. Crear cuenta en Heroku
-2. Instalar Heroku CLI
-3. Crear nueva app
-4. Configurar variables de entorno
-5. Deploy con Git
+### Invitaciones
+- `GET /api/invitation/:code` - Obtener invitación por código
+- `POST /api/invitation` - Crear nueva invitación
+- `POST /api/invitation/:code/confirm` - Confirmar asistencia
+- `GET /api/invitations` - Listar todas las invitaciones
 
-### Opción 2: VPS (DigitalOcean, AWS, etc)
-1. Configurar servidor con Node.js
-2. Usar PM2 para mantener la app activa
-3. Configurar Nginx como proxy reverso
-4. Obtener certificado SSL con Let's Encrypt
+### Estadísticas
+- `GET /api/stats` - Obtener estadísticas generales
 
-### Opción 3: Vercel/Netlify (solo frontend estático)
-- Separar frontend y backend
-- Desplegar backend en Heroku
-- Frontend en Vercel/Netlify
+### Fotos
+- `POST /api/upload-photos` - Subir fotos del evento
 
-## 🐛 Solución de problemas
+## Personalización
 
-### Error de autenticación de Google
-- Verificar que el archivo de credenciales esté en la ubicación correcta
-- Confirmar que las APIs estén habilitadas
-- Verificar que la hoja esté compartida con la cuenta de servicio
+### Cambiar información del evento
+Editar en `app.js`:
+```javascript
+const CONFIG = {
+    weddingDate: new Date('2026-02-28T17:30:00'),
+    location: {
+        name: 'Hacienda los Reyes',
+        address: 'Ejido el 30'
+    }
+};
+```
 
-### WhatsApp no envía mensajes
-- Verificar credenciales de Twilio
-- Confirmar que el número esté en formato internacional
-- Revisar el sandbox de WhatsApp
+### Modificar colores
+Editar variables CSS en `styles.css`:
+```css
+:root {
+    --primary-color: #d4a574;
+    --secondary-color: #8b7355;
+    --accent-color: #f8f4e6;
+}
+```
 
-### Las fotos no se suben
-- Verificar permisos de Google Drive
-- Confirmar que el ID de carpeta sea correcto
-- Revisar límite de tamaño de archivo (10MB)
+## Seguridad
 
-## 📄 Licencia
+- Las invitaciones usan códigos únicos aleatorios
+- Los datos se almacenan en Google Sheets con acceso restringido
+- Las credenciales se manejan mediante variables de entorno
+- Rate limiting implementado en el servidor
 
-Este proyecto está bajo licencia MIT. Puedes usarlo libremente para tu boda.
+## Soporte
 
-## 💝 Créditos
+Para reportar problemas o solicitar nuevas características, crear un issue en el repositorio.
 
-Desarrollado con amor para hacer tu día especial aún más memorable.
+## Licencia
 
----
-
-¡Felicidades por tu boda! 🎉💑
+Este proyecto es privado y de uso exclusivo para la boda de Diego & Fernanda.

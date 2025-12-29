@@ -3,235 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Boda</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Admin - Gestión de Invitaciones</title>
     <link rel="stylesheet" href="admin-styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen">
-        <div class="login-container">
-            <h2>Panel de Administración</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Admin Dashboard -->
-    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
-        <!-- Admin Navigation -->
-        <nav class="admin-nav">
-            <div class="admin-nav-header">
-                <h3>Panel de Control</h3>
-                <button id="logoutBtn" class="btn btn-secondary">
-                    <i class="fas fa-sign-out-alt"></i> Salir
-                </button>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Panel de Control</h2>
+                <p>Boda D&F</p>
             </div>
-            <ul class="admin-nav-menu">
-                <li><a href="#dashboard" class="admin-nav-link active" data-section="dashboard">
-                    <i class="fas fa-chart-line"></i> Dashboard
-                </a></li>
-                <li><a href="#confirmations" class="admin-nav-link" data-section="confirmations">
-                    <i class="fas fa-check-circle"></i> Confirmaciones
-                </a></li>
-                <li><a href="#guests" class="admin-nav-link" data-section="guests">
-                    <i class="fas fa-users"></i> Lista de Invitados
-                </a></li>
-                <li><a href="#reminders" class="admin-nav-link" data-section="reminders">
-                    <i class="fas fa-bell"></i> Recordatorios
-                </a></li>
-                <li><a href="#photos" class="admin-nav-link" data-section="photos">
-                    <i class="fas fa-images"></i> Fotos
-                </a></li>
-            </ul>
-        </nav>
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#invitations" class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Invitaciones</span>
+                </a>
+                <a href="#create" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Crear Invitación</span>
+                </a>
+                <a href="#confirmations" class="nav-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Confirmaciones</span>
+                </a>
+            </nav>
+        </aside>
 
-        <!-- Admin Content -->
-        <main class="admin-content">
+        <!-- Main Content -->
+        <main class="main-content">
             <!-- Dashboard Section -->
-            <section id="dashboardSection" class="admin-section active">
-                <h2>Dashboard</h2>
+            <section id="dashboard" class="content-section active">
+                <h1>Dashboard</h1>
                 <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalInvitations">0</h3>
+                            <p>Invitaciones Totales</p>
+                        </div>
+                    </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="totalGuests">0</h3>
-                            <p>Total de Invitados</p>
+                        <div class="stat-content">
+                            <h3 id="totalPasses">0</h3>
+                            <p>Pases Totales</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-check"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="confirmedGuests">0</h3>
-                            <p>Confirmados</p>
+                        <div class="stat-content">
+                            <h3 id="confirmedPasses">0</h3>
+                            <p>Pases Confirmados</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-times"></i>
+                            <i class="fas fa-clock"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="declinedGuests">0</h3>
-                            <p>No Asistirán</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-question"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="pendingGuests">0</h3>
+                        <div class="stat-content">
+                            <h3 id="pendingInvitations">0</h3>
                             <p>Pendientes</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="chart-container">
+                    <h2>Resumen de Confirmaciones</h2>
                     <canvas id="confirmationChart"></canvas>
                 </div>
             </section>
 
-            <!-- Confirmations Section -->
-            <section id="confirmationsSection" class="admin-section">
-                <h2>Confirmaciones</h2>
-                <div class="table-controls">
-                    <input type="text" id="searchConfirmations" placeholder="Buscar..." class="search-input">
-                    <button id="exportConfirmations" class="btn btn-primary">
-                        <i class="fas fa-download"></i> Exportar Excel
+            <!-- Invitations Section -->
+            <section id="invitations" class="content-section">
+                <h1>Gestión de Invitaciones</h1>
+                <div class="actions-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar invitación..." class="search-input">
+                    <button class="btn btn-primary" onclick="showCreateForm()">
+                        <i class="fas fa-plus"></i> Nueva Invitación
                     </button>
                 </div>
-                <div class="table-responsive">
-                    <table id="confirmationsTable" class="admin-table">
+                <div class="table-container">
+                    <table class="invitations-table">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Asistirá</th>
-                                <th>Acompañantes</th>
-                                <th>Restricciones</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Guests Section -->
-            <section id="guestsSection" class="admin-section">
-                <h2>Lista de Invitados</h2>
-                <div class="table-controls">
-                    <button id="addGuest" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Agregar Invitado
-                    </button>
-                    <button id="importGuests" class="btn btn-secondary">
-                        <i class="fas fa-upload"></i> Importar CSV
-                    </button>
-                </div>
-                <div class="table-responsive">
-                    <table id="guestsTable" class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Teléfono</th>
-                                <th>Email</th>
+                                <th>Código</th>
+                                <th>Invitados</th>
+                                <th>Pases</th>
                                 <th>Estado</th>
-                                <th>Último Recordatorio</th>
+                                <th>Confirmados</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Data will be loaded here -->
+                        <tbody id="invitationsTableBody">
+                            <!-- Las invitaciones se cargarán aquí -->
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- Reminders Section -->
-            <section id="remindersSection" class="admin-section">
-                <h2>Recordatorios</h2>
-                <div class="reminder-controls">
-                    <button id="sendAllReminders" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Enviar Recordatorios a Pendientes
+            <!-- Create Invitation Section -->
+            <section id="create" class="content-section">
+                <h1>Crear Nueva Invitación</h1>
+                <form id="createInvitationForm" class="invitation-form">
+                    <div class="form-group">
+                        <label for="guestNames">Nombres de los Invitados *</label>
+                        <input type="text" id="guestNames" name="guestNames" 
+                               placeholder="Ej: Juan Pérez y María García" required>
+                        <small>Separe múltiples nombres con "y" o comas</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfPasses">Número de Pases *</label>
+                        <input type="number" id="numberOfPasses" name="numberOfPasses" 
+                               min="1" max="10" value="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" 
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Teléfono</label>
+                        <input type="tel" id="phone" name="phone" 
+                               placeholder="+52 1234567890">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Crear Invitación
                     </button>
-                    <button id="scheduleReminders" class="btn btn-secondary">
-                        <i class="fas fa-clock"></i> Programar Recordatorios
-                    </button>
-                </div>
-                <div class="reminder-stats">
-                    <div class="reminder-stat">
-                        <h4>Próximo envío programado:</h4>
-                        <p>Todos los días a las 10:00 AM</p>
-                    </div>
-                    <div class="reminder-stat">
-                        <h4>Invitados pendientes:</h4>
-                        <p id="pendingReminders">0</p>
-                    </div>
-                </div>
-                <div class="reminder-log">
-                    <h3>Historial de Recordatorios</h3>
-                    <div id="reminderHistory">
-                        <!-- Reminder history will be loaded here -->
-                    </div>
-                </div>
+                </form>
             </section>
 
-            <!-- Photos Section -->
-            <section id="photosSection" class="admin-section">
-                <h2>Gestión de Fotos</h2>
-                <div class="photo-stats">
-                    <p>Total de fotos subidas: <span id="totalPhotos">0</span></p>
-                    <a href="#" id="driveLink" target="_blank" class="btn btn-primary">
-                        <i class="fas fa-external-link-alt"></i> Ver en Google Drive
-                    </a>
+            <!-- Confirmations Section -->
+            <section id="confirmations" class="content-section">
+                <h1>Lista de Confirmaciones</h1>
+                <div class="actions-bar">
+                    <button class="btn btn-secondary" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar a Excel
+                    </button>
                 </div>
-                <div class="photo-grid" id="adminPhotoGrid">
-                    <!-- Photos will be loaded here -->
+                <div class="table-container">
+                    <table class="confirmations-table">
+                        <thead>
+                            <tr>
+                                <th>Invitados</th>
+                                <th>Asistirá</th>
+                                <th>Confirmados</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Restricciones</th>
+                                <th>Mensaje</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="confirmationsTableBody">
+                            <!-- Las confirmaciones se cargarán aquí -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Modals -->
-    <!-- Add Guest Modal -->
-    <div id="addGuestModal" class="modal">
+    <!-- Modal for Invitation Details -->
+    <div id="invitationModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-            <h3>Agregar Invitado</h3>
-            <form id="addGuestForm">
-                <div class="form-group">
-                    <label for="guestName">Nombre</label>
-                    <input type="text" id="guestName" required>
-                </div>
-                <div class="form-group">
-                    <label for="guestPhone">Teléfono</label>
-                    <input type="tel" id="guestPhone" required>
-                </div>
-                <div class="form-group">
-                    <label for="guestEmail">Email</label>
-                    <input type="email" id="guestEmail">
-                </div>
-                <button type="submit" class="btn btn-primary">Agregar</button>
-            </form>
+            <h2>Detalles de la Invitación</h2>
+            <div id="invitationDetails"></div>
         </div>
     </div>
 

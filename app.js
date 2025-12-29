@@ -1,15 +1,19 @@
 // Configuration
 const CONFIG = {
-    weddingDate: new Date('2024-06-15T16:00:00'),
+    weddingDate: new Date('2026-02-28T17:30:00'),
     googleMapsApiKey: 'YOUR_API_KEY',
     backendUrl: 'http://localhost:3000/api', // URL del backend
     location: {
         lat: 19.4326, // Coordenadas de ejemplo (Ciudad de México)
         lng: -99.1332,
-        name: 'Salón Crystal',
-        address: 'Calle Elegante #456, Ciudad'
+        name: 'Hacienda los Reyes',
+        address: 'Ejido el 30'
     }
 };
+
+// Global variables
+let currentInvitation = null;
+let invitationCode = null;
 
 // DOM Elements
 const loader = document.getElementById('loader');
@@ -23,6 +27,14 @@ const modalMessage = document.getElementById('modalMessage');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for invitation code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    invitationCode = urlParams.get('invitation');
+    
+    if (invitationCode) {
+        loadInvitation(invitationCode);
+    }
+    
     hideLoader();
     initNavigation();
     initCountdown();
@@ -31,6 +43,61 @@ document.addEventListener('DOMContentLoaded', () => {
     initPhotoUpload();
     initAnimations();
 });
+
+// Load invitation data
+async function loadInvitation(code) {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/invitation/${code}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentInvitation = data.invitation;
+            displayInvitationInfo();
+            
+            // Pre-fill form if available
+            if (currentInvitation.email) {
+                document.getElementById('email').value = currentInvitation.email;
+            }
+            if (currentInvitation.phone) {
+                document.getElementById('phone').value = currentInvitation.phone;
+            }
+            
+            // Check if already confirmed
+            if (currentInvitation.confirmed) {
+                showAlreadyConfirmed();
+            }
+        } else {
+            console.error('Invitación no encontrada');
+            showModal('Error', 'No se encontró la invitación. Por favor verifica el enlace.');
+        }
+    } catch (error) {
+        console.error('Error loading invitation:', error);
+    }
+}
+
+// Display invitation information
+function displayInvitationInfo() {
+    if (!currentInvitation) return;
+    
+    // Show personalized invitation info
+    const invitationInfo = document.getElementById('invitationInfo');
+    const guestNames = document.getElementById('guestNames');
+    const numberOfPasses = document.getElementById('numberOfPasses');
+    
+    guestNames.textContent = currentInvitation.guestNames.join(' y ');
+    numberOfPasses.textContent = currentInvitation.numberOfPasses;
+    invitationInfo.style.display = 'block';
+    
+    // Update nav logo with initials
+    const navLogo = document.querySelector('.nav-logo');
+    navLogo.textContent = 'D & F';
+}
+
+// Show already confirmed message
+function showAlreadyConfirmed() {
+    document.getElementById('alreadyConfirmed').style.display = 'block';
+    document.getElementById('rsvpForm').style.display = 'none';
+}
 
 // Loader
 function hideLoader() {
@@ -117,15 +184,92 @@ function initSmoothScroll() {
 // RSVP Form
 function initRSVPForm() {
     const form = document.getElementById('rsvpForm');
+    const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
+    const attendanceDetails = document.getElementById('attendanceDetails');
+    const attendingGuestsSelect = document.getElementById('attendingGuests');
+    const attendingNamesGroup = document.getElementById('attendingNamesGroup');
+    const attendingNamesList = document.getElementById('attendingNamesList');
+    const dietaryGroup = document.getElementById('dietaryGroup');
     
+    // Handle attendance radio change
+    attendanceRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'si') {
+                attendanceDetails.style.display = 'block';
+                dietaryGroup.style.display = 'block';
+                
+                // Populate guest number options
+                if (currentInvitation) {
+                    attendingGuestsSelect.innerHTML = '';
+                    for (let i = 1; i <= currentInvitation.numberOfPasses; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = i + (i === 1 ? ' persona' : ' personas');
+                        attendingGuestsSelect.appendChild(option);
+                    }
+                    
+                    // Trigger change event to show name fields
+                    attendingGuestsSelect.dispatchEvent(new Event('change'));
+                }
+            } else {
+                attendanceDetails.style.display = 'none';
+                dietaryGroup.style.display = 'none';
+                attendingNamesGroup.style.display = 'none';
+            }
+        });
+    });
+    
+    // Handle guest number change
+    attendingGuestsSelect.addEventListener('change', (e) => {
+        const numGuests = parseInt(e.target.value);
+        
+        if (numGuests > 0) {
+            attendingNamesGroup.style.display = 'block';
+            attendingNamesList.innerHTML = '';
+            
+            // Create name input fields
+            for (let i = 0; i < numGuests; i++) {
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'form-control attending-name';
+                nameInput.placeholder = `Nombre del invitado ${i + 1}`;
+                nameInput.required = true;
+                
+                // Pre-fill with guest names if available
+                if (currentInvitation && currentInvitation.guestNames[i]) {
+                    nameInput.value = currentInvitation.guestNames[i];
+                }
+                
+                attendingNamesList.appendChild(nameInput);
+            }
+        } else {
+            attendingNamesGroup.style.display = 'none';
+        }
+    });
+    
+    // Handle form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
         
-        // Add timestamp
-        data.timestamp = new Date().toISOString();
+        // Collect attending names
+        if (data.attendance === 'si') {
+            const nameInputs = document.querySelectorAll('.attending-name');
+            data.attendingNames = Array.from(nameInputs).map(input => input.value.trim()).filter(name => name);
+        }
+        
+        // Prepare confirmation data
+        const confirmationData = {
+            willAttend: data.attendance === 'si',
+            attendingGuests: data.attendance === 'si' ? parseInt(data.attendingGuests) : 0,
+            attendingNames: data.attendingNames || [],
+            email: data.email,
+            phone: data.phone,
+            dietaryRestrictions: data.dietaryRestrictions || '',
+            message: data.message || ''
+        };
         
         try {
             // Show loading state
@@ -134,20 +278,50 @@ function initRSVPForm() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             submitBtn.disabled = true;
             
-            // Send to backend
-            const response = await fetch(`${CONFIG.backendUrl}/rsvp`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
+            let response;
+            
+            if (invitationCode && currentInvitation) {
+                // Use personalized invitation endpoint
+                response = await fetch(`${CONFIG.backendUrl}/invitation/${invitationCode}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(confirmationData)
+                });
+            } else {
+                // Use legacy endpoint
+                response = await fetch(`${CONFIG.backendUrl}/rsvp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: data.attendingNames ? data.attendingNames.join(' y ') : 'Invitado',
+                        email: data.email,
+                        phone: data.phone,
+                        attendance: data.attendance,
+                        guests: data.attendingGuests || '0',
+                        dietary: data.dietaryRestrictions || '',
+                        message: data.message || ''
+                    })
+                });
+            }
             
             if (response.ok) {
-                showModal('¡Confirmación Recibida!', 'Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.');
-                form.reset();
+                const message = data.attendance === 'si' 
+                    ? 'Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.'
+                    : 'Gracias por avisarnos. Te echaremos de menos en nuestro día especial.';
+                showModal('¡Confirmación Recibida!', message);
+                
+                if (currentInvitation) {
+                    showAlreadyConfirmed();
+                } else {
+                    form.reset();
+                }
             } else {
-                throw new Error('Error al enviar confirmación');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al enviar confirmación');
             }
             
             // Restore button
@@ -156,13 +330,12 @@ function initRSVPForm() {
             
         } catch (error) {
             console.error('Error:', error);
-            showModal('Error', 'Hubo un problema al enviar tu confirmación. Por favor intenta nuevamente.');
+            showModal('Error', error.message || 'Hubo un problema al enviar tu confirmación. Por favor intenta nuevamente.');
             
-            // For demo purposes, show success anyway
-            setTimeout(() => {
-                showModal('¡Confirmación Recibida!', 'Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.');
-                form.reset();
-            }, 2000);
+            // Restore button
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Confirmación';
+            submitBtn.disabled = false;
         }
     });
 }
