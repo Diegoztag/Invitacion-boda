@@ -125,6 +125,7 @@ Invitacion-boda/
 ├── index.html              # Página principal de invitación
 ├── app.js                  # Lógica frontend principal
 ├── styles.css              # Estilos de la invitación
+├── config.js               # Configuración centralizada
 ├── admin.html              # Panel de administración
 ├── admin.js                # Lógica del panel admin
 ├── admin-styles.css        # Estilos del panel admin
@@ -156,25 +157,109 @@ Invitacion-boda/
 
 ## Personalización
 
-### Cambiar información del evento
-Editar en `app.js`:
+### Archivo de Configuración Central
+Toda la personalización se realiza en el archivo `config.js`:
+
 ```javascript
-const CONFIG = {
-    weddingDate: new Date('2026-02-28T17:30:00'),
+const WEDDING_CONFIG = {
+    // Información de los novios
+    couple: {
+        groom: {
+            name: "Diego",
+            fullName: "Diego Zazueta"
+        },
+        bride: {
+            name: "Fernanda",
+            fullName: "Fernanda López"
+        },
+        displayName: "Diego & Fernanda",
+        hashtag: "#DiegoYFerSeCasan"
+    },
+    
+    // Detalles del evento
+    event: {
+        date: new Date('2026-02-28T17:30:00'),
+        dateDisplay: {
+            day: "28",
+            month: "Febrero",
+            year: "2026"
+        },
+        confirmationDeadline: "1 de Febrero",
+        type: "Nuestra Boda"
+    },
+    
+    // Ubicación
     location: {
-        name: 'Hacienda los Reyes',
-        address: 'Ejido el 30'
+        venue: {
+            name: "Hacienda los Reyes",
+            address: "Ejido el 30",
+            city: "Ciudad",
+            state: "Estado"
+        },
+        ceremony: {
+            name: "Ceremonia Civil",
+            time: "5:30 PM",
+            description: "Firma de documentos"
+        },
+        reception: {
+            name: "Recepción",
+            time: "7:00 PM",
+            description: "Celebración y fiesta"
+        },
+        coordinates: {
+            lat: 19.4326,
+            lng: -99.1332
+        }
+    },
+    
+    // Itinerario del día
+    schedule: [
+        // Array con todos los eventos del día
+    ],
+    
+    // Código de vestimenta
+    dressCode: {
+        title: "Código de Vestimenta",
+        description: "Formal - Evitar colores pasteles",
+        note: "Recuerden que será al aire libre, asistan bien abrigados"
+    },
+    
+    // Mensajes personalizables
+    messages: {
+        welcome: "Nos casamos",
+        rsvpTitle: "Confirma tu Asistencia",
+        // ... más mensajes
+    },
+    
+    // Colores del tema
+    theme: {
+        primaryColor: "#d4a574",
+        secondaryColor: "#8b7355",
+        accentColor: "#f8f4e6",
+        textDark: "#333",
+        textLight: "#666"
     }
 };
 ```
 
-### Modificar colores
-Editar variables CSS en `styles.css`:
+### Elementos Personalizables
+
+1. **Nombres de los Novios**: Actualiza `couple.groom.name` y `couple.bride.name`
+2. **Fecha del Evento**: Modifica `event.date` con la fecha correcta
+3. **Ubicación**: Actualiza toda la sección `location` con los datos del lugar
+4. **Itinerario**: Personaliza el array `schedule` con los eventos del día
+5. **Mensajes**: Modifica todos los textos en la sección `messages`
+6. **Colores**: Cambia los valores en `theme` para personalizar la paleta de colores
+7. **Hashtag**: Actualiza `couple.hashtag` con el hashtag de tu boda
+
+### Aplicar Cambios de Colores
+Si cambias los colores en `config.js`, también debes actualizar las variables CSS en `styles.css` para que coincidan:
+
 ```css
 :root {
-    --primary-color: #d4a574;
-    --secondary-color: #8b7355;
-    --accent-color: #f8f4e6;
+    --primary-color: #d4a574;  /* Debe coincidir con theme.primaryColor */
+    --secondary-color: #8b7355; /* Debe coincidir con theme.secondaryColor */
+    --accent-color: #f8f4e6;    /* Debe coincidir con theme.accentColor */
 }
 ```
 

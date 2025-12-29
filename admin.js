@@ -1,6 +1,6 @@
-// Configuration
+// Load configuration from config.js
 const CONFIG = {
-    backendUrl: 'http://localhost:3000/api'
+    backendUrl: WEDDING_CONFIG.api.backendUrl
 };
 
 // Global variables
@@ -9,6 +9,9 @@ let confirmationChart = null;
 
 // Initialize Admin Panel
 document.addEventListener('DOMContentLoaded', () => {
+    // Update wedding title
+    document.getElementById('weddingTitle').textContent = `Boda ${WEDDING_CONFIG.couple.displayName}`;
+    
     initNavigation();
     loadDashboardData();
     loadInvitations();
@@ -213,7 +216,11 @@ function sendInvitation(code) {
     if (!invitation) return;
     
     const invitationUrl = `${window.location.origin}/?invitation=${code}`;
-    const message = `¡Hola ${invitation.guestNames.join(' y ')}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${invitationUrl}\n\nTienen ${invitation.numberOfPasses} pases disponibles.\n\n¡Los esperamos con mucho cariño!\nDiego & Fernanda`;
+    const message = WEDDING_CONFIG.whatsapp.invitationMessage(
+        invitation.guestNames.join(' y '),
+        invitation.numberOfPasses,
+        invitationUrl
+    );
     
     const whatsappUrl = `https://wa.me/${invitation.phone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');

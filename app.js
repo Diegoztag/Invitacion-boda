@@ -1,13 +1,13 @@
-// Configuration
+// Use configuration from config.js
 const CONFIG = {
-    weddingDate: new Date('2026-02-28T17:30:00'),
-    googleMapsApiKey: 'YOUR_API_KEY',
-    backendUrl: 'http://localhost:3000/api', // URL del backend
+    weddingDate: WEDDING_CONFIG.event.date,
+    googleMapsApiKey: WEDDING_CONFIG.api.googleMapsApiKey,
+    backendUrl: WEDDING_CONFIG.api.backendUrl,
     location: {
-        lat: 19.4326, // Coordenadas de ejemplo (Ciudad de México)
-        lng: -99.1332,
-        name: 'Hacienda los Reyes',
-        address: 'Ejido el 30'
+        lat: WEDDING_CONFIG.location.coordinates.lat,
+        lng: WEDDING_CONFIG.location.coordinates.lng,
+        name: WEDDING_CONFIG.location.venue.name,
+        address: WEDDING_CONFIG.location.venue.address
     }
 };
 
@@ -90,7 +90,7 @@ function displayInvitationInfo() {
     
     // Update nav logo with initials
     const navLogo = document.querySelector('.nav-logo');
-    navLogo.textContent = 'D & F';
+    navLogo.textContent = `${WEDDING_CONFIG.couple.groom.name.charAt(0)} & ${WEDDING_CONFIG.couple.bride.name.charAt(0)}`;
 }
 
 // Show already confirmed message
@@ -310,9 +310,9 @@ function initRSVPForm() {
             
             if (response.ok) {
                 const message = data.attendance === 'si' 
-                    ? 'Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.'
-                    : 'Gracias por avisarnos. Te echaremos de menos en nuestro día especial.';
-                showModal('¡Confirmación Recibida!', message);
+                    ? WEDDING_CONFIG.messages.confirmationThanks
+                    : WEDDING_CONFIG.messages.cannotAttend;
+                showModal(WEDDING_CONFIG.messages.confirmationReceived, message);
                 
                 if (currentInvitation) {
                     showAlreadyConfirmed();
