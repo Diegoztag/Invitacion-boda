@@ -180,7 +180,7 @@ const WEDDING_CONFIG = {
     
     // Navigation Logo Configuration
     navLogo: {
-        custom: false, // Set to true to use custom text
+        custom: true, // Set to true to use custom text
         text: "F & D" // Custom text for the logo (only used if custom is true)
     }
 };
