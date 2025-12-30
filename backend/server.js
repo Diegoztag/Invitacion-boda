@@ -14,7 +14,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../')));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -23,7 +22,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Serve admin panel at root
+// Serve admin panel at root - MUST BE BEFORE static files
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'admin.html'));
 });
@@ -32,6 +31,9 @@ app.get('/', (req, res) => {
 app.get('/invitacion', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
+
+// Serve static files AFTER specific routes
+app.use(express.static(path.join(__dirname, '../')));
 
 
 // Routes

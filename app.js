@@ -398,6 +398,11 @@ function initRSVPForm() {
             phoneInput.required = false;
             phoneRequired.style.display = 'none';
         }
+    } else {
+        // If phone field is not shown, make sure it's not required
+        phoneGroup.style.display = 'none';
+        phoneInput.required = false;
+        phoneInput.value = ''; // Clear any value
     }
     
     // Handle attendance radio change
@@ -477,7 +482,7 @@ function initRSVPForm() {
             willAttend: data.attendance === 'si',
             attendingGuests: data.attendance === 'si' ? parseInt(data.attendingGuests) : 0,
             attendingNames: data.attendingNames || [],
-            phone: data.phone,
+            phone: data.phone || '', // Ensure phone is at least empty string
             dietaryRestrictions: data.dietaryRestrictions || '',
             message: data.message || ''
         };
