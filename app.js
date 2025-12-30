@@ -397,12 +397,16 @@ function initRSVPForm() {
         } else {
             phoneInput.required = false;
             phoneRequired.style.display = 'none';
+            // Remove pattern validation when not required
+            phoneInput.removeAttribute('pattern');
         }
     } else {
         // If phone field is not shown, make sure it's not required
         phoneGroup.style.display = 'none';
         phoneInput.required = false;
         phoneInput.value = ''; // Clear any value
+        // Remove pattern validation when hidden
+        phoneInput.removeAttribute('pattern');
     }
     
     // Handle attendance radio change
@@ -470,6 +474,27 @@ function initRSVPForm() {
         
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
+        
+        // Custom phone validation only if field is visible and required
+        if (WEDDING_CONFIG.rsvpForm && WEDDING_CONFIG.rsvpForm.showPhoneField && WEDDING_CONFIG.rsvpForm.requirePhone) {
+            if (!data.phone || data.phone.trim() === '') {
+                phoneInput.focus();
+                phoneInput.setCustomValidity('Por favor ingrese su número de teléfono');
+                phoneInput.reportValidity();
+                return;
+            }
+            // Validate phone format only if provided and required
+            const phonePattern = /^[+]?[0-9]{10,15}$/;
+            if (!phonePattern.test(data.phone)) {
+                phoneInput.focus();
+                phoneInput.setCustomValidity('Por favor ingrese un número válido (10-15 dígitos)');
+                phoneInput.reportValidity();
+                return;
+            }
+        }
+        
+        // Clear any custom validity
+        phoneInput.setCustomValidity('');
         
         // Collect attending names
         if (data.attendance === 'si') {
