@@ -12,20 +12,43 @@ class GoogleSheetsService {
 
     async initialize() {
         try {
-            // Initialize auth using service account
+            // Try different authentication methods
+            const fs = require('fs');
             const keyFile = path.join(__dirname, '../credentials/google-service-account.json');
-            this.auth = new google.auth.GoogleAuth({
-                keyFile: keyFile,
-                scopes: ['https://www.googleapis.com/auth/spreadsheets']
-            });
+            
+            // First, check if service account file exists
+            if (fs.existsSync(keyFile)) {
+                // Use service account if available
+                this.auth = new google.auth.GoogleAuth({
+                    keyFile: keyFile,
+                    scopes: ['https://www.googleapis.com/auth/spreadsheets']
+                });
+                console.log('✅ Using Google Sheets with Service Account');
+            } else if (process.env.GOOGLE_API_KEY) {
+                // Use API Key if available (for public sheets or sheets shared with "anyone with link")
+                this.auth = process.env.GOOGLE_API_KEY;
+                console.log('✅ Using Google Sheets with API Key');
+            } else {
+                // Try without authentication (for public sheets)
+                console.log('⚠️  Attempting to connect without authentication...');
+                console.log('   Make sure your Google Sheet is set to "Anyone with the link can edit"');
+                this.auth = null;
+            }
 
             this.sheets = google.sheets({ version: 'v4', auth: this.auth });
             
-            // Create sheet if it doesn't exist
+            // Test connection
             await this.createSheetIfNotExists();
             this.connected = true;
+            console.log('✅ Google Sheets connected successfully!');
         } catch (error) {
-            console.error('Error initializing Google Sheets:', error);
+            console.error('❌ Error initializing Google Sheets:', error.message);
+            console.log('\n📝 Para que funcione Google Sheets:');
+            console.log('   1. Abre tu hoja de Google Sheets');
+            console.log('   2. Click en "Compartir" (arriba a la derecha)');
+            console.log('   3. En "Acceso general", selecciona "Cualquier persona con el enlace"');
+            console.log('   4. Cambia de "Lector" a "Editor"');
+            console.log('   5. Copia el ID de la URL y ponlo en el archivo .env\n');
             this.connected = false;
         }
     }
