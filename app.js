@@ -48,6 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Update all dynamic content from configuration
 function updateDynamicContent() {
+    // Update nav logo
+    const navLogo = document.querySelector('.nav-logo');
+    if (WEDDING_CONFIG.navLogo && WEDDING_CONFIG.navLogo.custom) {
+        navLogo.textContent = WEDDING_CONFIG.navLogo.text;
+    } else {
+        // Generate initials automatically from couple names
+        navLogo.textContent = `${WEDDING_CONFIG.couple.bride.name.charAt(0)} & ${WEDDING_CONFIG.couple.groom.name.charAt(0)}`;
+    }
+    
     // Hero section
     document.getElementById('heroTitle').textContent = WEDDING_CONFIG.couple.displayName;
     document.getElementById('heroSubtitle').textContent = WEDDING_CONFIG.messages.welcome;
@@ -278,14 +287,6 @@ function displayInvitationInfo() {
     guestNames.textContent = currentInvitation.guestNames.join(' y ');
     numberOfPasses.textContent = currentInvitation.numberOfPasses;
     invitationInfo.style.display = 'block';
-    
-    // Update nav logo with initials or custom logo
-    const navLogo = document.querySelector('.nav-logo');
-    if (WEDDING_CONFIG.navLogo && WEDDING_CONFIG.navLogo.custom) {
-        navLogo.textContent = WEDDING_CONFIG.navLogo.text;
-    } else {
-        navLogo.textContent = `${WEDDING_CONFIG.couple.groom.name.charAt(0)} & ${WEDDING_CONFIG.couple.bride.name.charAt(0)}`;
-    }
 }
 
 // Show already confirmed message

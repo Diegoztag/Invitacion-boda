@@ -178,10 +178,15 @@ const WEDDING_CONFIG = {
         }
     },
     
-    // Navigation Logo Configuration
+    // Configuración del Logo de Navegación
     navLogo: {
-        custom: true, // Set to true to use custom text
-        text: "F & D" // Custom text for the logo (only used if custom is true)
+        // Opciones para el logo:
+        // 1. Si usas iniciales personalizadas, pon custom: true y define el texto
+        // 2. Si quieres usar las iniciales automáticas de los novios, pon custom: false
+        custom: true, // true = usar texto personalizado, false = usar iniciales automáticas
+        text: "F & D", // Texto personalizado para el logo (solo se usa si custom es true)
+        // Si custom es false, se generarán automáticamente las iniciales de:
+        // bride.name[0] & groom.name[0] = "F & D"
     }
 };
 
