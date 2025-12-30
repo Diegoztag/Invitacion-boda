@@ -19,7 +19,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,email,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
+                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
             
@@ -27,7 +27,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.confirmationsFile);
             } catch {
-                const headers = 'code,willAttend,attendingGuests,attendingNames,email,phone,dietaryRestrictions,message,confirmedAt\n';
+                const headers = 'code,willAttend,attendingGuests,attendingNames,phone,dietaryRestrictions,message,confirmedAt\n';
                 await fs.writeFile(this.confirmationsFile, headers);
             }
             
@@ -87,7 +87,6 @@ class CSVStorageService {
                 code,
                 this.formatCSVValue(guestNamesStr),
                 invitation.numberOfPasses,
-                this.formatCSVValue(invitation.email || ''),
                 this.formatCSVValue(invitation.phone || ''),
                 new Date().toISOString(),
                 'false',
@@ -101,7 +100,6 @@ class CSVStorageService {
                 code,
                 guestNames: invitation.guestNames,
                 numberOfPasses: invitation.numberOfPasses,
-                email: invitation.email || '',
                 phone: invitation.phone || '',
                 createdAt: new Date().toISOString(),
                 confirmed: false,
@@ -126,17 +124,16 @@ class CSVStorageService {
                 if (!line) continue;
                 
                 const parts = this.parseCSVLine(line);
-                if (parts.length >= 9) {
+                if (parts.length >= 8) {
                     invitations.push({
                         code: parts[0],
                         guestNames: parts[1].split(' y ').map(n => n.trim()),
                         numberOfPasses: parseInt(parts[2]),
-                        email: parts[3],
-                        phone: parts[4],
-                        createdAt: parts[5],
-                        confirmed: parts[6] === 'true',
-                        confirmedPasses: parseInt(parts[7]) || 0,
-                        confirmationDate: parts[8] || null
+                        phone: parts[3],
+                        createdAt: parts[4],
+                        confirmed: parts[5] === 'true',
+                        confirmedPasses: parseInt(parts[6]) || 0,
+                        confirmationDate: parts[7] || null
                     });
                 }
             }
@@ -175,7 +172,6 @@ class CSVStorageService {
                 confirmationData.willAttend ? 'true' : 'false',
                 confirmationData.attendingGuests,
                 this.formatCSVValue(confirmationData.attendingNames?.join(', ') || ''),
-                this.formatCSVValue(confirmationData.email || ''),
                 this.formatCSVValue(confirmationData.phone || ''),
                 this.formatCSVValue(confirmationData.dietaryRestrictions || ''),
                 this.formatCSVValue(confirmationData.message || ''),
@@ -185,14 +181,13 @@ class CSVStorageService {
             await fs.appendFile(this.confirmationsFile, confirmationRow);
             
             // Rewrite invitations file
-            let csvContent = 'code,guestNames,numberOfPasses,email,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
+            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
             
             for (const inv of invitations) {
                 const row = [
                     inv.code,
                     this.formatCSVValue(inv.guestNames.join(' y ')),
                     inv.numberOfPasses,
-                    this.formatCSVValue(inv.email),
                     this.formatCSVValue(inv.phone),
                     inv.createdAt,
                     inv.confirmed,
@@ -229,17 +224,16 @@ class CSVStorageService {
                 if (!line) continue;
                 
                 const parts = this.parseCSVLine(line);
-                if (parts.length >= 9) {
+                if (parts.length >= 8) {
                     confirmations.push({
                         code: parts[0],
                         willAttend: parts[1] === 'true',
                         attendingGuests: parseInt(parts[2]),
                         attendingNames: parts[3] ? parts[3].split(',').map(n => n.trim()) : [],
-                        email: parts[4],
-                        phone: parts[5],
-                        dietaryRestrictions: parts[6],
-                        message: parts[7],
-                        confirmedAt: parts[8]
+                        phone: parts[4],
+                        dietaryRestrictions: parts[5],
+                        message: parts[6],
+                        confirmedAt: parts[7]
                     });
                 }
             }
@@ -301,8 +295,7 @@ class CSVStorageService {
                         const invitation = {
                             guestNames: parts[0].split(/\s+y\s+/i).map(n => n.trim()),
                             numberOfPasses: parseInt(parts[1]),
-                            email: parts[2] || '',
-                            phone: parts[3] || ''
+                            phone: parts[2] || ''
                         };
                         
                         if (invitation.guestNames.length > 0 && !isNaN(invitation.numberOfPasses)) {

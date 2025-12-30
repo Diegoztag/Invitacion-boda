@@ -145,6 +145,11 @@ const WEDDING_CONFIG = {
     //         `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
     // },
     
+    // Configuración del formulario RSVP
+    rsvpForm: {
+        showDietaryRestrictions: true // true = mostrar campo de restricciones alimentarias, false = ocultar
+    },
+    
     // Mesa de Regalos
     giftRegistry: {
         enabled: true,

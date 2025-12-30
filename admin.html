@@ -136,14 +136,14 @@
                 
                 <div class="csv-format">
                     <h4>Formato del CSV:</h4>
-                    <pre>Nombres,Pases,Email,Telefono
-Juan Pérez y María García,2,juan@email.com,+521234567890
-Pedro López,1,pedro@email.com,+521234567891
-Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892</pre>
+                    <pre>Nombres,Pases,Telefono
+Juan Pérez y María García,2,+521234567890
+Pedro López,1,+521234567891
+Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
                     <small>
                         <strong>Importante:</strong> 
                         • Usa "y" para separar múltiples nombres
-                        • Email y teléfono son opcionales
+                        • El teléfono es opcional
                         • Guarda el archivo con codificación UTF-8
                     </small>
                 </div>
@@ -180,11 +180,6 @@ Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892</pre>
                            min="1" max="10" required placeholder="2">
                 </div>
                 <div class="form-group">
-                    <label for="email">Email (opcional)</label>
-                    <input type="email" id="email" name="email" 
-                           placeholder="correo@ejemplo.com">
-                </div>
-                <div class="form-group">
                     <label for="phone">Teléfono (opcional)</label>
                     <input type="tel" id="phone" name="phone" 
                            placeholder="+521234567890">
@@ -210,7 +205,6 @@ Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892</pre>
                                 <th>Invitados</th>
                                 <th>Asistirá</th>
                                 <th>Confirmados</th>
-                                <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>Restricciones</th>
                                 <th>Mensaje</th>

@@ -255,11 +255,9 @@ async function loadInvitation(code) {
             displayInvitationInfo();
             
             // Pre-fill form if available
-            if (currentInvitation.email) {
-                document.getElementById('email').value = currentInvitation.email;
-            }
             if (currentInvitation.phone) {
-                document.getElementById('phone').value = currentInvitation.phone;
+                const phoneInput = document.getElementById('phone');
+                if (phoneInput) phoneInput.value = currentInvitation.phone;
             }
             
             // Check if already confirmed
@@ -392,7 +390,10 @@ function initRSVPForm() {
         radio.addEventListener('change', (e) => {
             if (e.target.value === 'si') {
                 attendanceDetails.style.display = 'block';
-                dietaryGroup.style.display = 'block';
+                // Show dietary restrictions if enabled in config
+                if (WEDDING_CONFIG.rsvpForm && WEDDING_CONFIG.rsvpForm.showDietaryRestrictions) {
+                    dietaryGroup.style.display = 'block';
+                }
                 
                 // Populate guest number options
                 if (currentInvitation) {
@@ -461,7 +462,6 @@ function initRSVPForm() {
             willAttend: data.attendance === 'si',
             attendingGuests: data.attendance === 'si' ? parseInt(data.attendingGuests) : 0,
             attendingNames: data.attendingNames || [],
-            email: data.email,
             phone: data.phone,
             dietaryRestrictions: data.dietaryRestrictions || '',
             message: data.message || ''
@@ -494,7 +494,6 @@ function initRSVPForm() {
                     },
                     body: JSON.stringify({
                         name: data.attendingNames ? data.attendingNames.join(' y ') : 'Invitado',
-                        email: data.email,
                         phone: data.phone,
                         attendance: data.attendance,
                         guests: data.attendingGuests || '0',

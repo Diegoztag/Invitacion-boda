@@ -182,7 +182,6 @@ function viewInvitation(code) {
                 <p><strong>Pases confirmados:</strong> ${invitation.confirmedPasses}</p>
                 <p><strong>Asistentes:</strong> ${invitation.confirmationDetails?.attendingNames?.join(', ') || 'N/A'}</p>
             ` : ''}
-            <p><strong>Email:</strong> ${invitation.email || 'No proporcionado'}</p>
             <p><strong>Teléfono:</strong> ${invitation.phone || 'No proporcionado'}</p>
             <div class="invitation-link">
                 <p><strong>Enlace de invitación:</strong></p>
@@ -236,7 +235,6 @@ function initCreateForm() {
         const invitationData = {
             guestNames: guestNames,
             numberOfPasses: parseInt(formData.get('numberOfPasses')),
-            email: formData.get('email'),
             phone: formData.get('phone')
         };
         
@@ -298,7 +296,6 @@ function displayConfirmations(invitations) {
             <td>${invitation.guestNames.join(' y ')}</td>
             <td>${details.willAttend ? 'Sí' : 'No'}</td>
             <td>${details.attendingGuests} de ${invitation.numberOfPasses}</td>
-            <td>${details.email || '-'}</td>
             <td>${details.phone || '-'}</td>
             <td>${details.dietaryRestrictions || '-'}</td>
             <td>${details.message || '-'}</td>
@@ -365,7 +362,6 @@ function initSearch() {
         const filteredInvitations = allInvitations.filter(invitation => {
             return invitation.code.toLowerCase().includes(searchTerm) ||
                    invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
-                   (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
                    (invitation.phone && invitation.phone.includes(searchTerm));
         });
         
@@ -562,8 +558,7 @@ function parseCSV(text) {
                 invitations.push({
                     guestNames: names,
                     numberOfPasses: passes,
-                    email: parts[2] || '',
-                    phone: parts[3] || ''
+                    phone: parts[2] || ''
                 });
             }
         }

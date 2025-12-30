@@ -1,11 +1,11 @@
-Nombres,Pases,Email,Telefono
-Juan Pérez y María García,2,juan@email.com,+521234567890
-Pedro López,1,pedro@email.com,+521234567891
-Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892
-Familia González,4,gonzalez@email.com,+521234567893
-Roberto Sánchez,1,roberto@email.com,+521234567894
-Laura Hernández y Miguel Torres,2,laura@email.com,+521234567895
-Familia Rodríguez,3,rodriguez@email.com,+521234567896
-Carmen Flores,1,carmen@email.com,+521234567897
-José Ramírez y Patricia Díaz,2,jose@email.com,+521234567898
-Familia Morales,5,morales@email.com,+521234567899
+Nombres,Pases,Telefono
+Juan Pérez y María García,2,+521234567890
+Pedro López,1,+521234567891
+Ana Martínez y Carlos Ruiz,2,+521234567892
+Familia González,4,+521234567893
+Roberto Sánchez,1,+521234567894
+Laura Hernández y Miguel Torres,2,+521234567895
+Familia Rodríguez,3,+521234567896
+Carmen Flores,1,+521234567897
+José Ramírez y Patricia Díaz,2,+521234567898
+Familia Morales,5,+521234567899
