@@ -184,7 +184,32 @@ function viewInvitation(code) {
     
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
-    // Calculate cancelled passes for display
+    // Determine invitation status
+    let status = 'pending';
+    let statusText = 'Pendiente';
+    let statusColor = '#ff9800';
+    let statusIcon = 'clock';
+    
+    if (invitation.confirmed && invitation.confirmationDetails) {
+        if (!invitation.confirmationDetails.willAttend) {
+            status = 'rejected';
+            statusText = 'Rechazado';
+            statusColor = '#f44336';
+            statusIcon = 'times-circle';
+        } else if (invitation.confirmedPasses < invitation.numberOfPasses) {
+            status = 'partial';
+            statusText = 'Parcial';
+            statusColor = '#ff6b6b';
+            statusIcon = 'exclamation-circle';
+        } else {
+            status = 'accepted';
+            statusText = 'Aceptado';
+            statusColor = '#4caf50';
+            statusIcon = 'check-circle';
+        }
+    }
+    
+    // Calculate cancelled passes
     let cancelledPasses = 0;
     if (invitation.confirmed && invitation.confirmationDetails) {
         if (!invitation.confirmationDetails.willAttend) {
@@ -195,59 +220,90 @@ function viewInvitation(code) {
     }
     
     details.innerHTML = `
-        <div class="invitation-detail">
-            <h3 style="margin-top: 0; color: #333;">Información de la Invitación</h3>
+        <div class="invitation-detail" style="font-size: 14px;">
+            <!-- Status Header -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="display: inline-block; background: ${statusColor}; color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500;">
+                    <i class="fas fa-${statusIcon}" style="font-size: 12px;"></i> ${statusText}
+                </div>
+            </div>
             
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                <p><strong>Código:</strong> ${invitation.code}</p>
-                <p><strong>Invitados:</strong> ${invitation.guestNames.join(' y ')}</p>
-                <p><strong>Número de pases:</strong> ${invitation.numberOfPasses}</p>
-                <p><strong>Teléfono:</strong> ${invitation.phone || 'No proporcionado'}</p>
+            <!-- Minimalist Guest Info -->
+            <div style="border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 16px; color: #333; font-weight: 500;">
+                    ${invitation.guestNames.join(' y ')}
+                </h4>
+                <div style="display: flex; gap: 20px; font-size: 13px; color: #666;">
+                    <span><strong>Código:</strong> ${invitation.code}</span>
+                    <span><strong>Pases:</strong> ${invitation.numberOfPasses}</span>
+                    ${invitation.phone || invitation.confirmationDetails?.phone ? `
+                        <span><strong>Tel:</strong> ${invitation.phone || invitation.confirmationDetails?.phone}</span>
+                    ` : ''}
+                </div>
             </div>
             
             ${invitation.confirmed ? `
-                <h4 style="color: #4caf50; margin-bottom: 10px;">✓ Confirmación Recibida</h4>
-                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <p><strong>¿Asistirá?:</strong> ${invitation.confirmationDetails?.willAttend ? 'Sí' : 'No'}</p>
+                <!-- Minimalist Confirmation Status -->
+                <div style="margin-bottom: 15px;">
                     ${invitation.confirmationDetails?.willAttend ? `
-                        <p><strong>Pases confirmados:</strong> ${invitation.confirmedPasses} de ${invitation.numberOfPasses}</p>
-                        ${cancelledPasses > 0 ? `<p><strong>Pases cancelados:</strong> <span style="color: #f44336;">${cancelledPasses}</span></p>` : ''}
-                        <p><strong>Asistentes:</strong> ${invitation.confirmationDetails?.attendingNames?.join(', ') || 'N/A'}</p>
+                        <div style="display: flex; gap: 15px; margin-bottom: 12px;">
+                            <div style="flex: 1; text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                                <div style="font-size: 20px; font-weight: 600; color: #4caf50;">${invitation.confirmedPasses}</div>
+                                <div style="font-size: 11px; color: #666; margin-top: 2px;">Confirmados</div>
+                            </div>
+                            ${cancelledPasses > 0 ? `
+                                <div style="flex: 1; text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                                    <div style="font-size: 20px; font-weight: 600; color: #f44336;">${cancelledPasses}</div>
+                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Cancelados</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${invitation.confirmationDetails?.attendingNames?.length > 0 ? `
+                            <p style="margin: 8px 0; font-size: 13px; color: #555;">
+                                <strong>Asistentes:</strong> ${invitation.confirmationDetails.attendingNames.join(', ')}
+                            </p>
+                        ` : ''}
+                        
                         ${invitation.confirmationDetails?.dietaryRestrictions ? `
-                            <p><strong>Restricciones alimentarias:</strong> <span style="color: #ff6b6b;">${invitation.confirmationDetails.dietaryRestrictions}</span></p>
+                            <p style="margin: 8px 0; padding: 8px; background: #fff3cd; border-radius: 5px; font-size: 12px;">
+                                <i class="fas fa-utensils" style="color: #856404;"></i> ${invitation.confirmationDetails.dietaryRestrictions}
+                            </p>
                         ` : ''}
                     ` : `
-                        <p><strong>Pases cancelados:</strong> <span style="color: #f44336;">${invitation.numberOfPasses}</span></p>
+                        <div style="text-align: center; padding: 15px; background: #ffebee; border-radius: 8px;">
+                            <p style="margin: 0; font-size: 14px; color: #c62828;">Invitación declinada</p>
+                        </div>
                     `}
-                    ${invitation.confirmationDetails?.phone ? `
-                        <p><strong>Teléfono de contacto:</strong> ${invitation.confirmationDetails.phone}</p>
-                    ` : ''}
+                    
                     ${invitation.confirmationDetails?.message ? `
-                        <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 5px;">
-                            <p style="margin: 0;"><strong>Mensaje de los invitados:</strong></p>
-                            <p style="margin: 5px 0; font-style: italic; color: #555;">"${invitation.confirmationDetails.message}"</p>
+                        <div style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 6px;">
+                            <p style="margin: 0; font-size: 12px; font-style: italic; color: #555;">
+                                "${invitation.confirmationDetails.message}"
+                            </p>
                         </div>
                     ` : ''}
-                    <p style="margin-bottom: 0;"><small><strong>Fecha de confirmación:</strong> ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</small></p>
+                    
+                    <p style="margin: 10px 0 0 0; text-align: right; color: #999; font-size: 11px;">
+                        ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </p>
                 </div>
-            ` : `
-                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <p style="margin: 0; color: #856404;"><i class="fas fa-clock"></i> Confirmación pendiente</p>
-                </div>
-            `}
+            ` : ''}
             
-            <div class="invitation-link" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                <p style="margin-top: 0;"><strong>Enlace de invitación:</strong></p>
-                <input type="text" value="${invitationUrl}" readonly class="link-input" style="margin-bottom: 10px;">
-                <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
-                    <i class="fas fa-copy"></i> Copiar enlace
-                </button>
+            <!-- Minimalist Link Section -->
+            <div style="border-top: 1px solid #e0e0e0; padding-top: 15px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" value="${invitationUrl}" readonly style="flex: 1; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; background: #f9f9f9;">
+                    <button class="btn btn-sm" onclick="copyToClipboard('${invitationUrl}')" style="padding: 8px 16px; font-size: 12px;">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
             </div>
         </div>
     `;
