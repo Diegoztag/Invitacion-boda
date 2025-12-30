@@ -1,298 +1,180 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const path = require('path');
-const messageQueue = require('./messageQueue');
+const WEDDING_CONFIG = require('../../config');
 
 class WhatsAppService {
     constructor() {
-        this.client = null;
         this.isReady = false;
+        this.messageQueue = [];
+        this.isProcessingQueue = false;
+        this.queueConfig = {
+            messagesPerBatch: 5,
+            delayBetweenMessages: 3000, // 3 seconds
+            delayBetweenBatches: 30000  // 30 seconds
+        };
         this.initialize();
     }
 
     async initialize() {
-        try {
-            // Create WhatsApp client with persistent session
-            this.client = new Client({
-                authStrategy: new LocalAuth({
-                    dataPath: path.join(__dirname, '../.wwebjs_auth')
-                }),
-                puppeteer: {
-                    headless: true,
-                    args: [
-                        '--no-sandbox',
-                        '--disable-setuid-sandbox',
-                        '--disable-dev-shm-usage',
-                        '--disable-accelerated-2d-canvas',
-                        '--no-first-run',
-                        '--no-zygote',
-                        '--disable-gpu'
-                    ]
-                }
-            });
-
-            // QR Code generation for first time authentication
-            this.client.on('qr', (qr) => {
-                console.log('\n📱 Escanea este código QR con WhatsApp:');
-                qrcode.generate(qr, { small: true });
-            });
-
-            // Client ready
-            this.client.on('ready', () => {
-                console.log('✅ WhatsApp Web está listo!');
-                this.isReady = true;
-            });
-
-            // Authentication successful
-            this.client.on('authenticated', () => {
-                console.log('✅ WhatsApp autenticado correctamente');
-            });
-
-            // Authentication failure
-            this.client.on('auth_failure', (msg) => {
-                console.error('❌ Error de autenticación:', msg);
-            });
-
-            // Disconnection
-            this.client.on('disconnected', (reason) => {
-                console.log('📵 WhatsApp desconectado:', reason);
-                this.isReady = false;
-                // Try to reconnect
-                setTimeout(() => {
-                    this.initialize();
-                }, 5000);
-            });
-
-            // Initialize the client
-            await this.client.initialize();
-        } catch (error) {
-            console.error('Error initializing WhatsApp:', error);
-            this.isReady = false;
-        }
+        console.log('\n📱 WhatsApp Service (Modo Simulación)');
+        console.log('⚠️  NOTA: Este es un servicio simulado para desarrollo.');
+        console.log('💡 Para producción, considera usar la API oficial de WhatsApp Business.\n');
+        
+        // Simular la generación de QR
+        setTimeout(() => {
+            console.log('📲 Simulando código QR para WhatsApp...\n');
+            qrcode.generate('https://wa.me/qr/DEMO123456', { small: true });
+            console.log('\n✅ WhatsApp simulado conectado exitosamente!');
+            this.isReady = true;
+        }, 2000);
     }
 
-    // Format phone number for WhatsApp
-    formatPhoneNumber(phone) {
-        // Remove all non-numeric characters
-        let cleaned = phone.replace(/\D/g, '');
-        
-        // If it starts with 52 (Mexico), ensure it's properly formatted
-        if (cleaned.startsWith('52')) {
-            return cleaned + '@c.us';
-        }
-        
-        // If it's a 10-digit Mexican number, add country code
-        if (cleaned.length === 10) {
-            return '52' + cleaned + '@c.us';
-        }
-        
-        // Otherwise, assume it's already properly formatted
-        return cleaned + '@c.us';
-    }
-
-    // Send a message directly (internal use)
-    async sendMessageDirect(phone, message) {
+    async sendMessage(phone, message) {
         if (!this.isReady) {
-            throw new Error('WhatsApp no está listo. Por favor espera a que se conecte.');
+            throw new Error('WhatsApp no está listo. Por favor espera...');
         }
 
-        try {
-            const chatId = this.formatPhoneNumber(phone);
-            await this.client.sendMessage(chatId, message);
-            return true;
-        } catch (error) {
-            console.error(`Error enviando mensaje a ${phone}:`, error);
-            throw error;
-        }
+        // Simular envío de mensaje
+        console.log(`📤 Simulando envío a ${phone}: ${message.substring(0, 50)}...`);
+        
+        // Simular delay de red
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log(`✅ Mensaje simulado enviado a ${phone}`);
+        return { success: true, simulated: true };
     }
 
-    // Send a message (adds to queue)
-    async sendMessage(phone, message, priority = false) {
-        return new Promise((resolve, reject) => {
-            const messageData = {
-                phone,
-                message,
-                type: 'generic',
-                sendFunction: async () => {
-                    await this.sendMessageDirect(phone, message);
-                }
-            };
-
-            // Listen for this specific message completion
-            const handleSent = (sentMessage) => {
-                if (sentMessage.phone === phone && sentMessage.message === message) {
-                    messageQueue.removeListener('messageSent', handleSent);
-                    messageQueue.removeListener('messageFailed', handleFailed);
-                    resolve(true);
-                }
-            };
-
-            const handleFailed = (failedMessage, error) => {
-                if (failedMessage.phone === phone && failedMessage.message === message) {
-                    messageQueue.removeListener('messageSent', handleSent);
-                    messageQueue.removeListener('messageFailed', handleFailed);
-                    reject(error);
-                }
-            };
-
-            messageQueue.on('messageSent', handleSent);
-            messageQueue.on('messageFailed', handleFailed);
-
-            // Add to queue
-            messageQueue.addToQueue(messageData);
-        });
+    async sendInvitation(phone, names, url) {
+        const message = WEDDING_CONFIG.whatsapp.invitationMessage(names, 
+            currentInvitation?.numberOfPasses || '2', url);
+        return await this.sendMessage(phone, message);
     }
 
-    // Send confirmation message
     async sendConfirmation(phone, name) {
-        const message = `¡Hola ${name}! 🎉
-
-Hemos recibido tu confirmación de asistencia a nuestra boda. ¡Estamos muy felices de que nos acompañes en este día tan especial!
-
-Si necesitas hacer algún cambio en tu confirmación, puedes hacerlo desde el mismo enlace de tu invitación.
-
-¡Nos vemos pronto!
-Con cariño,
-${process.env.COUPLE_NAMES || 'Los novios'} 💑`;
-
-        return this.sendMessage(phone, message);
+        const message = `¡Hola ${name}! 🎉\n\nHemos recibido tu confirmación de asistencia.\n\n¡Te esperamos con mucho cariño!\n\n${WEDDING_CONFIG.couple.displayName}`;
+        return await this.sendMessage(phone, message);
     }
 
-    // Send reminder message
-    async sendReminder(phone, name, invitationUrl) {
-        const message = `Hola ${name} 👋
-
-Te recordamos que aún no hemos recibido tu confirmación de asistencia a nuestra boda.
-
-Por favor, confirma tu asistencia lo antes posible usando el siguiente enlace:
-${invitationUrl}
-
-La fecha límite es el ${process.env.CONFIRMATION_DEADLINE || '1 de Febrero'}.
-
-¡Esperamos contar con tu presencia!
-${process.env.COUPLE_NAMES || 'Los novios'} 💕`;
-
-        return this.sendMessage(phone, message);
+    async sendReminder(phone, name, url) {
+        const message = `¡Hola ${name}! 👋\n\nTe recordamos que aún no has confirmado tu asistencia a nuestra boda.\n\nPor favor, confírmanos lo antes posible en:\n${url}\n\nFecha límite: ${WEDDING_CONFIG.event.confirmationDeadline}\n\n¡Esperamos contar contigo! 💕\n${WEDDING_CONFIG.couple.displayName}`;
+        return await this.sendMessage(phone, message);
     }
 
-    // Send invitation with personalized link
-    async sendInvitation(phone, name, invitationUrl) {
-        const message = `¡Hola ${name}! 💌
-
-Con mucha alegría queremos invitarte a nuestra boda. 
-
-Hemos preparado una invitación digital especial para ti. Puedes verla y confirmar tu asistencia en el siguiente enlace:
-
-${invitationUrl}
-
-¡Esperamos celebrar este día tan especial contigo!
-
-Con cariño,
-${process.env.COUPLE_NAMES || 'Los novios'} 💑`;
-
-        return this.sendMessage(phone, message);
-    }
-
-    // Send custom message
-    async sendCustomMessage(phone, customMessage) {
-        return this.sendMessage(phone, customMessage);
-    }
-
-    // Send multiple invitations (batch)
+    // Batch sending methods
     async sendInvitationsBatch(invitations) {
-        const messages = invitations.map(inv => ({
-            phone: inv.phone,
-            message: `¡Hola ${inv.name}! 💌
-
-Con mucha alegría queremos invitarte a nuestra boda. 
-
-Hemos preparado una invitación digital especial para ti. Puedes verla y confirmar tu asistencia en el siguiente enlace:
-
-${inv.url}
-
-¡Esperamos celebrar este día tan especial contigo!
-
-Con cariño,
-${process.env.COUPLE_NAMES || 'Los novios'} 💑`,
+        const queued = this.addToQueue(invitations.map(inv => ({
             type: 'invitation',
-            name: inv.name,
-            sendFunction: async () => {
-                await this.sendMessageDirect(inv.phone, this.message);
-            }
-        }));
-
-        messageQueue.addBatchToQueue(messages);
+            phone: inv.phone,
+            data: inv
+        })));
         
-        return {
-            queued: messages.length,
-            status: messageQueue.getStatus()
-        };
+        if (!this.isProcessingQueue) {
+            this.processQueue();
+        }
+        
+        return { queued, total: this.messageQueue.length };
     }
 
-    // Get queue status
-    getQueueStatus() {
-        return messageQueue.getStatus();
-    }
-
-    // Update queue configuration
-    updateQueueConfig(config) {
-        messageQueue.updateConfig(config);
-        return messageQueue.getConfig();
-    }
-
-    // Send multiple reminders (batch)
     async sendRemindersBatch(reminders) {
-        const messages = reminders.map(rem => ({
-            phone: rem.phone,
-            message: `Hola ${rem.name} 👋
-
-Te recordamos que aún no hemos recibido tu confirmación de asistencia a nuestra boda.
-
-Por favor, confirma tu asistencia lo antes posible usando el siguiente enlace:
-${rem.url}
-
-La fecha límite es el ${process.env.CONFIRMATION_DEADLINE || '1 de Febrero'}.
-
-¡Esperamos contar con tu presencia!
-${process.env.COUPLE_NAMES || 'Los novios'} 💕`,
+        const queued = this.addToQueue(reminders.map(rem => ({
             type: 'reminder',
-            name: rem.name,
-            code: rem.code,
-            sendFunction: async function() {
-                await this.sendMessageDirect(this.phone, this.message);
-            }.bind(this)
-        }));
-
-        messageQueue.addBatchToQueue(messages);
+            phone: rem.phone,
+            data: rem
+        })));
         
+        if (!this.isProcessingQueue) {
+            this.processQueue();
+        }
+        
+        return { queued, total: this.messageQueue.length };
+    }
+
+    addToQueue(messages) {
+        const added = messages.length;
+        this.messageQueue.push(...messages);
+        return added;
+    }
+
+    async processQueue() {
+        if (this.isProcessingQueue || this.messageQueue.length === 0) {
+            return;
+        }
+        
+        this.isProcessingQueue = true;
+        console.log(`\n🔄 Procesando cola de mensajes (${this.messageQueue.length} mensajes)...`);
+        
+        while (this.messageQueue.length > 0) {
+            const batch = this.messageQueue.splice(0, this.queueConfig.messagesPerBatch);
+            console.log(`\n📦 Procesando lote de ${batch.length} mensajes...`);
+            
+            for (const msg of batch) {
+                try {
+                    if (msg.type === 'invitation') {
+                        await this.sendInvitation(msg.data.phone, msg.data.name, msg.data.url);
+                    } else if (msg.type === 'reminder') {
+                        await this.sendReminder(msg.data.phone, msg.data.name, msg.data.url);
+                    }
+                    
+                    // Delay between messages
+                    if (batch.indexOf(msg) < batch.length - 1) {
+                        console.log(`⏳ Esperando ${this.queueConfig.delayBetweenMessages/1000}s antes del siguiente mensaje...`);
+                        await new Promise(resolve => setTimeout(resolve, this.queueConfig.delayBetweenMessages));
+                    }
+                } catch (error) {
+                    console.error(`❌ Error enviando mensaje a ${msg.phone}:`, error.message);
+                }
+            }
+            
+            // Delay between batches
+            if (this.messageQueue.length > 0) {
+                console.log(`\n⏳ Esperando ${this.queueConfig.delayBetweenBatches/1000}s antes del siguiente lote...`);
+                await new Promise(resolve => setTimeout(resolve, this.queueConfig.delayBetweenBatches));
+            }
+        }
+        
+        console.log('\n✅ Cola de mensajes procesada completamente');
+        this.isProcessingQueue = false;
+    }
+
+    updateQueueConfig(config) {
+        if (config.messagesPerBatch && config.messagesPerBatch >= 1 && config.messagesPerBatch <= 10) {
+            this.queueConfig.messagesPerBatch = config.messagesPerBatch;
+        }
+        if (config.delayBetweenMessages && config.delayBetweenMessages >= 1000 && config.delayBetweenMessages <= 10000) {
+            this.queueConfig.delayBetweenMessages = config.delayBetweenMessages;
+        }
+        if (config.delayBetweenBatches && config.delayBetweenBatches >= 10000 && config.delayBetweenBatches <= 60000) {
+            this.queueConfig.delayBetweenBatches = config.delayBetweenBatches;
+        }
+        return this.queueConfig;
+    }
+
+    getQueueStatus() {
         return {
-            queued: messages.length,
-            status: messageQueue.getStatus()
+            pending: this.messageQueue.length,
+            isProcessing: this.isProcessingQueue,
+            config: this.queueConfig
         };
     }
 
-    // Check if service is connected
+    getStatus() {
+        return {
+            connected: this.isReady,
+            mode: 'simulation',
+            info: 'Servicio de WhatsApp en modo simulación'
+        };
+    }
+
     isConnected() {
         return this.isReady;
     }
 
-    // Get connection status
-    getStatus() {
-        return {
-            connected: this.isReady,
-            service: 'WhatsApp Web'
-        };
-    }
-
-    // Disconnect client (for cleanup)
     async disconnect() {
-        if (this.client) {
-            await this.client.destroy();
-            this.isReady = false;
-            console.log('WhatsApp client disconnected');
-        }
+        console.log('👋 Desconectando servicio de WhatsApp simulado...');
+        this.isReady = false;
     }
 }
 
-// Export singleton instance
-module.exports = new WhatsAppService();
+// Singleton instance
+const whatsappService = new WhatsAppService();
+
+module.exports = whatsappService;

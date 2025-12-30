@@ -139,11 +139,11 @@ const WEDDING_CONFIG = {
         directionsUrl: "https://maps.app.goo.gl/Ss1WbQUuMR9o7VF38"
     },
     
-    // Configuración de WhatsApp
-    whatsapp: {
-        invitationMessage: (names, passes, url) => 
-            `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
-    },
+    // TODO: Futura mejora - Configuración de WhatsApp
+    // whatsapp: {
+    //     invitationMessage: (names, passes, url) => 
+    //         `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
+    // },
     
     // Mesa de Regalos
     giftRegistry: {
