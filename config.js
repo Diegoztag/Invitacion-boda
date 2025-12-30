@@ -31,8 +31,8 @@ const WEDDING_CONFIG = {
         venue: {
             name: "Campestre los Reyes",
             address: "Ejido el 30",
-            city: "Ciudad",
-            state: "Estado"
+            city: "Costa Rica",
+            state: "Sinaloa"
         },
         ceremony: {
             name: "Ceremonia Civil",
@@ -147,8 +147,8 @@ const WEDDING_CONFIG = {
     
     // Configuración del formulario RSVP
     rsvpForm: {
-        showDietaryRestrictions: true, // true = mostrar campo de restricciones alimentarias, false = ocultar
-        showPhoneField: true, // true = mostrar campo de teléfono/WhatsApp, false = ocultar
+        showDietaryRestrictions: false, // true = mostrar campo de restricciones alimentarias, false = ocultar
+        showPhoneField: false, // true = mostrar campo de teléfono/WhatsApp, false = ocultar
         requirePhone: false // true = campo obligatorio, false = opcional
     },
     
@@ -161,13 +161,13 @@ const WEDDING_CONFIG = {
             {
                 name: "Amazon",
                 icon: "fab fa-amazon",
-                url: "https://www.amazon.com.mx/wedding/registry/tu-codigo-aqui",
+                url: "https://www.amazon.com.mx/wedding/share/Diegoyfer",
                 description: "Ver mesa de regalos en Amazon"
             },
             {
                 name: "Liverpool",
                 icon: "fas fa-gift",
-                url: "https://mesaderegalos.liverpool.com.mx/tu-evento-aqui",
+                url: "https://mesaderegalos.liverpool.com.mx/milistaderegalos/51861860",
                 description: "Ver mesa de regalos en Liverpool"
             }
         ],
