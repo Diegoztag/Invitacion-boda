@@ -276,8 +276,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .timer-display {
     display: flex;
-    gap: 8px;
-    justify-content: space-between;
+    gap: 12px;
+    justify-content: center;
 }
 
 .timer-unit {
@@ -1031,7 +1031,7 @@ tbody tr:hover {
     }
     
     .timer-display {
-        gap: 6px;
+        gap: 10px;
     }
     
     .timer-value {
@@ -1041,7 +1041,7 @@ tbody tr:hover {
     }
     
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 14px;
     }
     
@@ -1049,8 +1049,16 @@ tbody tr:hover {
         padding: 20px;
     }
     
+    .stat-content h3 {
+        font-size: 1.75rem;
+    }
+    
     .chart-container {
         padding: 20px;
+    }
+    
+    .chart-header h3 {
+        font-size: 1rem;
     }
     
     .table-header {
@@ -1065,7 +1073,7 @@ tbody tr:hover {
 /* Specific for tablets in portrait mode */
 @media (min-width: 768px) and (max-width: 900px) {
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
     }
     
     .welcome-content {
@@ -1143,17 +1151,21 @@ tbody tr:hover {
     }
     
     .content-section h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
     
     /* Stats Grid Mobile */
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 12px;
     }
     
     .stat-card {
         padding: 20px;
+    }
+    
+    .stat-content h3 {
+        font-size: 1.5rem;
     }
     
     /* Hero Section Mobile */
@@ -1185,7 +1197,7 @@ tbody tr:hover {
     }
     
     .timer-display {
-        gap: 4px;
+        gap: 12px;
         justify-content: center;
     }
     
@@ -1227,7 +1239,7 @@ tbody tr:hover {
     }
     
     .table-header h3 {
-        font-size: 1rem;
+        font-size: 0.938rem;
     }
     
     /* Guest Cell Mobile */
@@ -1268,6 +1280,10 @@ tbody tr:hover {
     .chart-header {
         flex-direction: column;
         gap: 8px;
+    }
+    
+    .chart-header h3 {
+        font-size: 0.938rem;
     }
     
     /* Progress Items Mobile */
@@ -1356,7 +1372,7 @@ tbody tr:hover {
     }
     
     .timer-header h3 {
-        font-size: 0.813rem;
+        font-size: 0.875rem;
     }
     
     .timer-header i {
@@ -1364,7 +1380,7 @@ tbody tr:hover {
     }
     
     .timer-display {
-        gap: 2px;
+        gap: 10px;
     }
     
     .timer-value {
@@ -1394,7 +1410,7 @@ tbody tr:hover {
     }
     
     .stat-content h3 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
     
     .stat-content p {
@@ -1485,7 +1501,7 @@ tbody tr:hover {
     }
     
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
 
@@ -1545,7 +1561,7 @@ tbody tr:hover {
     }
     
     .timer-display {
-        gap: 1px;
+        gap: 6px;
     }
     
     .timer-value {
@@ -1563,7 +1579,7 @@ tbody tr:hover {
     }
     
     .stat-content h3 {
-        font-size: 1.125rem;
+        font-size: 1rem;
     }
     
     .btn {
