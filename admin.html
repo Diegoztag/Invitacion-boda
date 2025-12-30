@@ -4,15 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestión de Invitaciones</title>
-    <link rel="stylesheet" href="admin-styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles-dark.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="config.js"></script>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <header class="mobile-header" id="mobileHeader">
+        <div class="mobile-header-content">
+            <div class="mobile-header-left">
+                <div class="mobile-profile-pic"></div>
+                <span class="mobile-couple-name">Sofia & Mateo</span>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2>Panel de Control</h2>
                 <p id="weddingTitle">Boda D&F</p>
@@ -20,7 +36,7 @@
             <nav class="sidebar-nav">
                 <a href="#dashboard" class="nav-item active">
                     <i class="fas fa-chart-line"></i>
-                    <span>Dashboard</span>
+                    <span>Resumen</span>
                 </a>
                 <a href="#create" class="nav-item">
                     <i class="fas fa-plus-circle"></i>
@@ -37,58 +53,180 @@
         <main class="main-content">
             <!-- Dashboard Section -->
             <section id="dashboard" class="content-section active">
-                <h1>Dashboard</h1>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="totalInvitations">0</h3>
-                            <p>Invitaciones Totales</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="totalPasses">0</h3>
-                            <p>Pases Totales</p>
+                <!-- Hero Section with Welcome and Timer -->
+                <div class="hero-section">
+                    <!-- Welcome Card -->
+                    <div class="welcome-card" style="background-image: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800');">
+                        <div class="welcome-overlay"></div>
+                        <div class="welcome-content">
+                            <p class="subtitle">PANEL DE CONTROL</p>
+                            <h2 id="welcomeMessage">Bienvenida</h2>
+                            <p id="welcomeSubtext">Aquí tienes el resumen de tu boda.</p>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check"></i>
+                    
+                    <!-- Timer Card -->
+                    <div class="timer-card">
+                        <div class="timer-header">
+                            <h3>Cuenta regresiva</h3>
+                            <i class="fas fa-heart"></i>
                         </div>
-                        <div class="stat-content">
-                            <h3 id="confirmedPasses">0</h3>
-                            <p>Pases Confirmados</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="pendingInvitations">0</h3>
-                            <p>Pendientes</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="cancelledPasses">0</h3>
-                            <p>Pases Cancelados</p>
+                        <div class="timer-display">
+                            <div class="timer-unit">
+                                <div class="timer-value" id="days">00</div>
+                                <span class="timer-label">Días</span>
+                            </div>
+                            <div class="timer-unit">
+                                <div class="timer-value" id="hours">00</div>
+                                <span class="timer-label">Hrs</span>
+                            </div>
+                            <div class="timer-unit">
+                                <div class="timer-value" id="minutes">00</div>
+                                <span class="timer-label">Min</span>
+                            </div>
+                            <div class="timer-unit">
+                                <div class="timer-value" id="seconds">00</div>
+                                <span class="timer-label">Seg</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <h2>Resumen de Confirmaciones</h2>
-                    <canvas id="confirmationChart"></canvas>
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="stat-badge primary">100%</span>
+                        </div>
+                        <div class="stat-content">
+                            <p>Invitaciones</p>
+                            <h3 id="totalInvitations">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <span class="stat-badge success" id="confirmedChange">+0</span>
+                        </div>
+                        <div class="stat-content">
+                            <p>Confirmados</p>
+                            <h3 id="confirmedPasses">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Pendientes</p>
+                            <h3 id="pendingInvitations">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Rechazados</p>
+                            <h3 id="cancelledPasses">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+                    <!-- Chart 1: Confirmation Chart -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div>
+                                <h3>Resumen de Confirmaciones</h3>
+                                <p>Distribución actual</p>
+                            </div>
+                        </div>
+                        <canvas id="confirmationChart" style="max-height: 250px;"></canvas>
+                    </div>
+                    
+                    <!-- Chart 2: Pass Distribution -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div>
+                                <h3>Desglose de Pases</h3>
+                                <p>Distribución por tipo</p>
+                            </div>
+                            <span class="chart-value"><span id="totalPassesChart">0</span> <small style="font-size: 0.875rem; font-weight: 400; color: var(--text-muted);">Pases</small></span>
+                        </div>
+                        <div style="padding: 20px 0;">
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span class="progress-label">Adultos</span>
+                                    <span class="progress-value text-primary" id="adultPasses">0 (0%)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill primary" id="adultProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span class="progress-label">Niños</span>
+                                    <span class="progress-value text-warning" id="childPasses">0 (0%)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" id="childProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-item" style="margin-bottom: 0;">
+                                <div class="progress-header">
+                                    <span class="progress-label">Staff/Proveedores</span>
+                                    <span class="progress-value text-muted" id="staffPasses">0 (0%)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill muted" id="staffProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Últimas Confirmaciones</h3>
+                        <button class="btn btn-primary" onclick="showCreateForm()">
+                            <i class="fas fa-plus"></i> Añadir Invitado
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Invitado</th>
+                                <th>Estado</th>
+                                <th>Pases</th>
+                                <th>Mesa</th>
+                                <th>Mensaje</th>
+                                <th style="text-align: right;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentConfirmations">
+                            <!-- Recent confirmations will be loaded here -->
+                        </tbody>
+                    </table>
+                    <div style="padding: 16px; text-align: center; border-top: 1px solid var(--border-color);">
+                        <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Ver todos los invitados</a>
+                    </div>
                 </div>
             </section>
 
@@ -103,16 +241,6 @@
                     <button class="btn btn-secondary" onclick="exportAllInvitations()">
                         <i class="fas fa-file-excel"></i> Exportar Todo
                     </button>
-                    <!-- TODO: Futura mejora - Botones de WhatsApp -->
-                    <!-- <button class="btn btn-secondary" onclick="showBatchSendModal()">
-                        <i class="fab fa-whatsapp"></i> Enviar por Lotes
-                    </button>
-                    <button class="btn btn-info" onclick="showQueueStatus()">
-                        <i class="fas fa-list"></i> Ver Cola
-                    </button>
-                    <button class="btn btn-warning" onclick="showRemindersModal()">
-                        <i class="fas fa-bell"></i> Enviar Recordatorios
-                    </button> -->
                 </div>
                 <div class="table-container">
                     <table class="invitations-table">
@@ -210,9 +338,6 @@ Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
             <div id="invitationDetails"></div>
         </div>
     </div>
-
-    <!-- TODO: Futura mejora - Modales de WhatsApp -->
-    <!-- Modal for Batch Send, Queue Status, etc. -->
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
