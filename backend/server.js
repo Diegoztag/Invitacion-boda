@@ -23,6 +23,16 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// Serve admin panel at root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'admin.html'));
+});
+
+// Serve invitation page at /invitacion
+app.get('/invitacion', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
 
 // Routes
 

@@ -178,7 +178,7 @@ function viewInvitation(code) {
     const modal = document.getElementById('invitationModal');
     const details = document.getElementById('invitationDetails');
     
-    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
+    const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
     details.innerHTML = `
         <div class="invitation-detail">
@@ -206,7 +206,7 @@ function viewInvitation(code) {
 
 // Copy Invitation Link
 function copyInvitationLink(code) {
-    const invitationUrl = `${window.location.origin}/?invitation=${code}`;
+    const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     copyToClipboard(invitationUrl);
 }
 

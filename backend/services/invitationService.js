@@ -62,7 +62,7 @@ class InvitationService {
 
     // Generar URL de invitación
     generateInvitationUrl(code, baseUrl = '') {
-        return `${baseUrl}/?invitation=${code}`;
+        return `${baseUrl}/invitacion?invitation=${code}`;
     }
 
 }

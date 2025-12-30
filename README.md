@@ -128,7 +128,9 @@ cd backend
 npm start
 ```
 
-El servidor estará disponible en `http://localhost:3000`
+El servidor estará disponible en:
+- Panel de administración: `http://localhost:3000`
+- Página de invitación: `http://localhost:3000/invitacion`
 
 ## 📋 Cómo Crear Invitaciones (Método Simplificado con CSV)
 
@@ -154,7 +156,7 @@ Familia González,4,gonzalez@email.com,+521234567893
 - Guarda el archivo con codificación UTF-8 para acentos
 
 #### 2. Cargar el archivo en el panel de administración
-1. Ve a `http://localhost:3000/admin.html`
+1. Ve a `http://localhost:3000`
 2. En la sección "Cargar Invitaciones", selecciona tu archivo CSV
 3. Click en "Cargar Invitaciones"
 4. El sistema generará automáticamente:
@@ -172,6 +174,9 @@ Una vez cargadas/creadas las invitaciones:
 1. En el panel verás la lista completa con los enlaces únicos
 2. Puedes copiar cada enlace y enviarlo por WhatsApp/email
 3. También puedes exportar la lista completa con los enlaces
+
+Los enlaces de invitación tendrán el formato:
+`http://localhost:3000/invitacion?invitation=CODIGO_UNICO`
 
 ## 📊 Panel de Administración
 
