@@ -229,9 +229,13 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="phone">Teléfono (WhatsApp) *</label>
-                    <input type="tel" id="phone" name="phone" required>
+                <div class="form-group" id="phoneGroup" style="display: none;">
+                    <label for="phone">Teléfono (WhatsApp) <span id="phoneRequired">*</span></label>
+                    <input type="tel" id="phone" name="phone" 
+                           pattern="[+]?[0-9]{10,15}" 
+                           placeholder="+521234567890"
+                           title="Ingrese un número telefónico válido (10-15 dígitos, puede incluir +)">
+                    <small>Formato: +521234567890 o 1234567890</small>
                 </div>
                 
                 <div class="form-group" id="dietaryGroup" style="display: none;">

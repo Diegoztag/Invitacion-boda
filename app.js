@@ -384,6 +384,21 @@ function initRSVPForm() {
     const attendingNamesGroup = document.getElementById('attendingNamesGroup');
     const attendingNamesList = document.getElementById('attendingNamesList');
     const dietaryGroup = document.getElementById('dietaryGroup');
+    const phoneGroup = document.getElementById('phoneGroup');
+    const phoneInput = document.getElementById('phone');
+    const phoneRequired = document.getElementById('phoneRequired');
+    
+    // Configure phone field based on settings
+    if (WEDDING_CONFIG.rsvpForm && WEDDING_CONFIG.rsvpForm.showPhoneField) {
+        phoneGroup.style.display = 'block';
+        if (WEDDING_CONFIG.rsvpForm.requirePhone) {
+            phoneInput.required = true;
+            phoneRequired.style.display = 'inline';
+        } else {
+            phoneInput.required = false;
+            phoneRequired.style.display = 'none';
+        }
+    }
     
     // Handle attendance radio change
     attendanceRadios.forEach(radio => {

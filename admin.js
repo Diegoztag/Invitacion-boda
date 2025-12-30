@@ -64,6 +64,7 @@ async function loadDashboardData() {
             document.getElementById('totalPasses').textContent = stats.totalPasses;
             document.getElementById('confirmedPasses').textContent = stats.confirmedPasses;
             document.getElementById('pendingInvitations').textContent = stats.pendingInvitations;
+            document.getElementById('cancelledPasses').textContent = stats.cancelledPasses || 0;
             
             // Update chart
             updateConfirmationChart(stats);
@@ -84,10 +85,10 @@ function updateConfirmationChart(stats) {
     confirmationChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Confirmados', 'Pendientes'],
+            labels: ['Confirmados', 'Pendientes', 'Cancelados'],
             datasets: [{
-                data: [stats.confirmedPasses, stats.pendingPasses],
-                backgroundColor: ['#4caf50', '#ff9800'],
+                data: [stats.confirmedPasses, stats.pendingPasses, stats.cancelledPasses || 0],
+                backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
                 borderWidth: 0
             }]
         },

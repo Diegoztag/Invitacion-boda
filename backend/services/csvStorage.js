@@ -248,6 +248,18 @@ class CSVStorageService {
     // Get statistics
     async getStats() {
         const invitations = await this.getAllInvitations();
+        const confirmations = await this.getAllConfirmations();
+        
+        // Calculate cancelled passes (invitations confirmed but guests not attending)
+        let cancelledPasses = 0;
+        confirmations.forEach(conf => {
+            if (!conf.willAttend) {
+                const invitation = invitations.find(inv => inv.code === conf.code);
+                if (invitation) {
+                    cancelledPasses += invitation.numberOfPasses;
+                }
+            }
+        });
         
         const stats = {
             totalInvitations: invitations.length,
@@ -256,7 +268,8 @@ class CSVStorageService {
             confirmedPasses: invitations.reduce((sum, inv) => sum + (inv.confirmedPasses || 0), 0),
             pendingInvitations: invitations.filter(inv => !inv.confirmed).length,
             pendingPasses: invitations.filter(inv => !inv.confirmed)
-                .reduce((sum, inv) => sum + inv.numberOfPasses, 0)
+                .reduce((sum, inv) => sum + inv.numberOfPasses, 0),
+            cancelledPasses: cancelledPasses
         };
         
         return stats;

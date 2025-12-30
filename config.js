@@ -147,7 +147,9 @@ const WEDDING_CONFIG = {
     
     // Configuración del formulario RSVP
     rsvpForm: {
-        showDietaryRestrictions: true // true = mostrar campo de restricciones alimentarias, false = ocultar
+        showDietaryRestrictions: true, // true = mostrar campo de restricciones alimentarias, false = ocultar
+        showPhoneField: true, // true = mostrar campo de teléfono/WhatsApp, false = ocultar
+        requirePhone: false // true = campo obligatorio, false = opcional
     },
     
     // Mesa de Regalos
