@@ -1,218 +1,79 @@
-# Sistema de Invitaciones de Boda - Diego & Fernanda
+# 💒 Sistema de Invitaciones de Boda Digital
 
-Sistema web completo para gestionar invitaciones personalizadas de boda con confirmación de asistencia.
+Sistema web completo para gestionar invitaciones digitales personalizadas de boda con confirmación de asistencia.
 
-## Características
+## 🌟 Características
 
-### Para Invitados
-- **Invitaciones Personalizadas**: Cada invitado recibe un enlace único con su nombre y número de pases
-- **Confirmación Flexible**: Los invitados pueden confirmar cuántos asistirán de sus pases disponibles
-- **Información Completa**: Detalles del evento, ubicación, itinerario y código de vestimenta
-- **Subida de Fotos**: Los invitados pueden compartir fotos del evento
-- **Mesa de Regalos**: Enlaces directos a registros de regalos y datos bancarios
+- **Invitaciones Personalizadas**: Cada invitado recibe un enlace único con su código de invitación
+- **Sistema de Confirmación**: Los invitados pueden confirmar asistencia indicando cuántos pases usarán
+- **Panel de Administración**: Dashboard completo para gestionar invitaciones y ver estadísticas
+- **Base de Datos**: Google Sheets como backend para almacenar toda la información
+- **Mesa de Regalos**: Sección con enlaces a tiendas y datos bancarios
+- **Hashtag de Instagram**: Para que los invitados compartan fotos del evento
 - **Diseño Responsivo**: Funciona perfectamente en móviles y computadoras
 
-### Para Administradores
-- **Panel de Control**: Dashboard con estadísticas en tiempo real
-- **Gestión de Invitaciones**: Crear y administrar invitaciones personalizadas
-- **Seguimiento de Confirmaciones**: Ver quién ha confirmado y cuántos asistirán
-- **Exportación de Datos**: Descargar lista de confirmaciones en formato CSV
-- **Integración con WhatsApp**: Enviar invitaciones directamente por WhatsApp
-- **Sistema de Cola**: Envío por lotes con protección anti-spam
-- **Recordatorios Automáticos**: Sistema de recordatorios programados para invitados sin confirmar
+## 🚀 Instalación Rápida
 
-## Tecnologías Utilizadas
+### 1. Requisitos Previos
+- Node.js v14 o superior
+- Una cuenta de Google
+- Un navegador web moderno
 
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Backend**: Node.js, Express.js
-- **Base de Datos**: Google Sheets API
-- **Almacenamiento**: Google Drive API
-- **Notificaciones**: WhatsApp Web (whatsapp-web.js)
-- **Mapas**: Google Maps (iframe embebido)
-
-## Instalación
-
-### Requisitos Previos
-- Node.js (v14 o superior)
-- Cuenta de Google Cloud Platform
-- Credenciales de servicio de Google
-
-### Pasos de Instalación
-
-1. **Clonar el repositorio**
+### 2. Clonar el Proyecto
 ```bash
-git clone https://github.com/Diegoztag/Invitacion-boda.git
-cd Invitacion-boda
+git clone https://github.com/tu-usuario/invitacion-boda.git
+cd invitacion-boda
 ```
 
-2. **Instalar dependencias del backend**
+### 3. Instalar Dependencias
 ```bash
 cd backend
 npm install
 ```
 
-3. **Configurar variables de entorno**
-Crear archivo `backend/.env` con:
-```env
-PORT=3000
+### 4. Configurar Google Sheets (MUY IMPORTANTE)
 
-# Google APIs Configuration
-GOOGLE_SHEETS_ID="tu_spreadsheet_id"
-GOOGLE_DRIVE_FOLDER_ID="tu_folder_id"
+#### Paso 1: Crear una Hoja de Google Sheets
+1. Ve a [Google Sheets](https://sheets.google.com)
+2. Crea una nueva hoja en blanco
+3. Copia el ID de la URL (está entre `/d/` y `/edit`)
+   - Ejemplo: Si tu URL es `https://docs.google.com/spreadsheets/d/1ABC123XYZ789/edit`
+   - Tu ID es: `1ABC123XYZ789`
 
-# WhatsApp Web Configuration
-COUPLE_NAMES="Diego & Fernanda"
-CONFIRMATION_DEADLINE="1 de Febrero"
+#### Paso 2: Configurar Permisos
+1. Click en el botón "Compartir" (arriba a la derecha)
+2. En "Acceso general", selecciona "Cualquier persona con el enlace"
+3. **IMPORTANTE**: Cambia de "Lector" a "Editor"
+4. Click en "Listo"
 
-# Reminder Configuration
-DAYS_BEFORE_REMINDER=7  # Days after invitation sent before sending reminder
-ENABLE_AUTO_REMINDERS=true  # Enable automatic reminders
-REMINDER_HOUR=10  # Hour of day to send reminders (24-hour format)
+#### Paso 3: Estructura de la Hoja
+El sistema creará automáticamente 3 hojas cuando se ejecute por primera vez:
+- **Invitaciones**: Almacena todos los datos de invitaciones
+- **Confirmaciones**: Registro histórico de confirmaciones
+- **Invitados**: Lista de invitados (legacy)
 
-# Admin credentials
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=tu_contraseña_segura
-```
-
-4. **Configurar credenciales de Google**
-- Crear proyecto en Google Cloud Console
-- Habilitar Google Sheets API y Google Drive API
-- Crear cuenta de servicio y descargar JSON
-- Guardar como `backend/credentials/google-service-account.json`
-
-5. **Crear Google Spreadsheet**
-- Crear nuevo spreadsheet en Google Sheets
-- Compartir con el email de la cuenta de servicio
-- Copiar el ID del spreadsheet al archivo .env
-
-6. **Iniciar el servidor**
+### 5. Configurar Variables de Entorno
+1. Copia el archivo de ejemplo:
 ```bash
 cd backend
-npm start
+cp .env.example .env
 ```
 
-**IMPORTANTE para WhatsApp Web:**
-- La primera vez que inicies el servidor, aparecerá un código QR en la consola
-- Escanea el código QR con WhatsApp en tu teléfono (WhatsApp > Configuración > Dispositivos vinculados)
-- La sesión se guardará automáticamente para futuros usos
-- El servidor estará disponible en `http://localhost:3000`
+2. Edita el archivo `.env` con tus datos:
+```env
+# Puerto del servidor
+PORT=3000
 
-## Uso
+# ID de tu Google Sheets (el que copiaste en el paso 4)
+GOOGLE_SHEETS_ID="1ABC123XYZ789"
 
-### Para Administradores
-
-1. **Acceder al panel de administración**
-   - Navegar a `http://localhost:3000/admin.html`
-
-2. **Crear nueva invitación**
-   - Ir a "Crear Invitación"
-   - Ingresar nombres de invitados
-   - Especificar número de pases
-   - Opcionalmente agregar email y teléfono
-
-3. **Enviar invitación**
-   - En la lista de invitaciones, hacer clic en el ícono de WhatsApp
-   - O copiar el enlace único y enviarlo manualmente
-
-4. **Monitorear confirmaciones**
-   - Ver el dashboard para estadísticas generales
-   - Revisar la sección "Confirmaciones" para detalles
-
-### Para Invitados
-
-1. **Acceder a la invitación**
-   - Usar el enlace personalizado recibido
-   - Ejemplo: `http://localhost:3000/?invitation=abc123`
-
-2. **Ver información personalizada**
-   - La invitación mostrará el nombre del invitado
-   - Se indicará el número de pases disponibles
-
-3. **Confirmar asistencia**
-   - Seleccionar si asistirán o no
-   - Si asisten, indicar cuántos de los pases usarán
-   - Proporcionar nombres de los asistentes
-   - Agregar información de contacto
-
-4. **Compartir fotos**
-   - Después del evento, subir fotos en la sección correspondiente
-
-## Sistema de Envío por Lotes y Recordatorios
-
-### Envío por Lotes
-El sistema incluye protección anti-spam para WhatsApp:
-
-1. **Configuración de Cola**:
-   - Mensajes por lote: 1-10 (recomendado: 5)
-   - Delay entre mensajes: 1-10 segundos (recomendado: 3)
-   - Delay entre lotes: 10-60 segundos (recomendado: 30)
-
-2. **Cómo usar**:
-   - En el panel de admin, click en "Enviar por Lotes"
-   - Seleccionar invitaciones a enviar
-   - Ajustar configuración si es necesario
-   - El sistema enviará automáticamente respetando los límites
-
-### Sistema de Recordatorios
-
-1. **Recordatorios Automáticos**:
-   - Se activan después de X días sin confirmación (configurable)
-   - Se envían a la hora programada (por defecto 10 AM)
-   - Solo a invitaciones con teléfono y sin confirmar
-
-2. **Recordatorios Manuales**:
-   - Botón individual en cada invitación pendiente
-   - Opción de "Enviar Recordatorios" para envío masivo
-   - Respeta la misma cola anti-spam
-
-3. **Configuración**:
-   ```env
-   DAYS_BEFORE_REMINDER=7      # Días después del envío inicial
-   ENABLE_AUTO_REMINDERS=true  # Activar/desactivar automáticos
-   REMINDER_HOUR=10           # Hora del día (formato 24h)
-   ```
-
-## Estructura del Proyecto
-
-```
-Invitacion-boda/
-├── index.html              # Página principal de invitación
-├── app.js                  # Lógica frontend principal
-├── styles.css              # Estilos de la invitación
-├── config.js               # Configuración centralizada
-├── admin.html              # Panel de administración
-├── admin.js                # Lógica del panel admin
-├── admin-styles.css        # Estilos del panel admin
-├── backend/
-│   ├── server.js           # Servidor Express principal
-│   ├── package.json        # Dependencias del backend
-│   ├── services/
-│   │   ├── googleSheets.js # Integración con Google Sheets
-│   │   ├── googleDrive.js  # Integración con Google Drive
-│   │   ├── whatsapp.js     # Integración con WhatsApp
-│   │   └── invitationService.js # Lógica de invitaciones
-│   └── credentials/        # Carpeta para credenciales (no incluida en git)
-└── README.md               # Este archivo
+# Credenciales del panel de administración
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=tu_contraseña_segura_aqui
 ```
 
-## API Endpoints
-
-### Invitaciones
-- `GET /api/invitation/:code` - Obtener invitación por código
-- `POST /api/invitation` - Crear nueva invitación
-- `POST /api/invitation/:code/confirm` - Confirmar asistencia
-- `GET /api/invitations` - Listar todas las invitaciones
-
-### Estadísticas
-- `GET /api/stats` - Obtener estadísticas generales
-
-### Fotos
-- `POST /api/upload-photos` - Subir fotos del evento
-
-## Personalización
-
-### Archivo de Configuración Central
-Toda la personalización se realiza en el archivo `config.js`:
+### 6. Personalizar la Invitación
+Edita el archivo `config.js` en la raíz del proyecto:
 
 ```javascript
 const WEDDING_CONFIG = {
@@ -226,11 +87,11 @@ const WEDDING_CONFIG = {
             name: "Fernanda",
             fullName: "Fernanda López"
         },
-        displayName: "Diego & Fernanda",
-        hashtag: "#DiegoYFerSeCasan"
+        displayName: "Fernanda & Diego",
+        hashtag: "#FerYDiegoSeCasan"
     },
     
-    // Detalles del evento
+    // Fecha del evento
     event: {
         date: new Date('2026-02-28T17:30:00'),
         dateDisplay: {
@@ -238,27 +99,16 @@ const WEDDING_CONFIG = {
             month: "Febrero",
             year: "2026"
         },
-        confirmationDeadline: "1 de Febrero",
-        type: "Nuestra Boda"
+        confirmationDeadline: "15 de Enero"
     },
     
     // Ubicación
     location: {
         venue: {
             name: "Hacienda los Reyes",
-            address: "Ejido el 30",
+            address: "Calle Principal #123",
             city: "Ciudad",
             state: "Estado"
-        },
-        ceremony: {
-            name: "Ceremonia Civil",
-            time: "5:30 PM",
-            description: "Firma de documentos"
-        },
-        reception: {
-            name: "Recepción",
-            time: "7:00 PM",
-            description: "Celebración y fiesta"
         },
         coordinates: {
             lat: 19.4326,
@@ -266,56 +116,25 @@ const WEDDING_CONFIG = {
         }
     },
     
-    // Itinerario del día
-    schedule: [
-        // Array con todos los eventos del día
-    ],
-    
-    // Código de vestimenta
-    dressCode: {
-        title: "Código de Vestimenta",
-        description: "Formal - Evitar colores pasteles",
-        note: "Recuerden que será al aire libre, asistan bien abrigados"
+    // Logo personalizado
+    navLogo: {
+        custom: true,      // true = texto personalizado
+        text: "F & D"      // Cambia esto por tus iniciales
     },
     
-    // Mensajes personalizables
-    messages: {
-        welcome: "Nos casamos",
-        rsvpTitle: "Confirma tu Asistencia",
-        // ... más mensajes
-    },
-    
-    // Colores del tema
-    theme: {
-        primaryColor: "#d4a574",
-        secondaryColor: "#8b7355",
-        accentColor: "#f8f4e6",
-        textDark: "#333",
-        textLight: "#666"
-    },
-    
-    // Mesa de Regalos
+    // Mesa de regalos
     giftRegistry: {
         enabled: true,
-        title: "Mesa de Regalos",
-        subtitle: "Tu presencia es nuestro mejor regalo",
         stores: [
             {
                 name: "Amazon",
                 icon: "fab fa-amazon",
-                url: "https://www.amazon.com.mx/wedding/registry/tu-codigo",
+                url: "https://www.amazon.com.mx/tu-mesa-de-regalos",
                 description: "Ver mesa de regalos en Amazon"
-            },
-            {
-                name: "Liverpool",
-                icon: "fas fa-gift",
-                url: "https://mesaderegalos.liverpool.com.mx/tu-evento",
-                description: "Ver mesa de regalos en Liverpool"
             }
         ],
         bankAccount: {
             enabled: true,
-            title: "Transferencia Bancaria",
             details: {
                 bank: "BBVA",
                 accountHolder: "Diego Zazueta / Fernanda López",
@@ -327,50 +146,135 @@ const WEDDING_CONFIG = {
 };
 ```
 
-### Elementos Personalizables
+### 7. Iniciar el Servidor
+```bash
+cd backend
+npm start
+```
 
-1. **Nombres de los Novios**: Actualiza `couple.groom.name` y `couple.bride.name`
-2. **Fecha del Evento**: Modifica `event.date` con la fecha correcta
-3. **Ubicación**: Actualiza toda la sección `location` con los datos del lugar
-4. **Itinerario**: Personaliza el array `schedule` con los eventos del día
-5. **Mensajes**: Modifica todos los textos en la sección `messages`
-6. **Colores**: Cambia los valores en `theme` para personalizar la paleta de colores
-7. **Hashtag**: Actualiza `couple.hashtag` con el hashtag de tu boda
-8. **Mesa de Regalos**: 
-   - Actualiza los enlaces en `giftRegistry.stores` con tus registros reales
-   - Modifica `giftRegistry.bankAccount.details` con tu información bancaria
-   - Puedes agregar más tiendas o desactivar la sección con `enabled: false`
-9. **Logo del Header**: 
-   - Por defecto muestra las iniciales de los novios (ej: "D & F")
-   - Para usar texto personalizado, cambia `navLogo.custom` a `true`
-   - Actualiza `navLogo.text` con el texto que desees mostrar
-10. **Hashtag de Instagram**:
-   - La sección de fotos ahora muestra el hashtag de Instagram
-   - Los invitados pueden compartir fotos usando el hashtag configurado
-   - Actualiza `couple.hashtag` con tu hashtag personalizado
+El servidor estará disponible en `http://localhost:3000`
 
-### Aplicar Cambios de Colores
-Si cambias los colores en `config.js`, también debes actualizar las variables CSS en `styles.css` para que coincidan:
+## 📋 Cómo Crear Invitaciones (Paso a Paso)
 
+### 1. Acceder al Panel de Administración
+1. Abre tu navegador y ve a `http://localhost:3000/admin.html`
+2. Ingresa las credenciales que configuraste en el archivo `.env`
+
+### 2. Crear una Nueva Invitación
+1. En el panel de administración, busca la sección "Crear Nueva Invitación"
+2. Llena los campos:
+   - **Nombres de Invitados**: Escribe los nombres separados por comas
+     - Ejemplo: `Juan Pérez, María García`
+   - **Número de Pases**: Cuántos lugares tienen disponibles (ej: 2)
+   - **Email**: Correo del invitado principal (opcional)
+   - **Teléfono**: Número de WhatsApp del invitado (opcional)
+3. Click en "Crear Invitación"
+
+### 3. Compartir la Invitación
+1. Una vez creada, aparecerá en la lista de invitaciones
+2. Cada invitación tiene:
+   - **Código único**: Generado automáticamente (ej: `abc123`)
+   - **Enlace personalizado**: `http://localhost:3000/?invitation=abc123`
+3. Copia el enlace y envíalo al invitado por WhatsApp, email, etc.
+
+### 4. Proceso del Invitado
+1. El invitado abre su enlace personalizado
+2. Ve su nombre y número de pases disponibles
+3. Confirma su asistencia llenando el formulario
+4. La confirmación se guarda automáticamente en Google Sheets
+
+## 📊 Panel de Administración
+
+El panel incluye:
+- **Estadísticas en tiempo real**: Total de invitaciones, confirmaciones, etc.
+- **Lista de invitaciones**: Con estado de confirmación
+- **Detalles de confirmación**: Quién asistirá, restricciones alimentarias, mensajes
+- **Búsqueda y filtros**: Para encontrar invitaciones específicas
+
+## 🔧 Solución de Problemas
+
+### Google Sheets no se conecta
+1. Verifica que el ID en `.env` sea correcto
+2. Asegúrate de que la hoja esté compartida como "Editor"
+3. Revisa la consola del servidor para ver mensajes de error
+
+### Las invitaciones no se guardan
+1. Verifica que Google Sheets tenga permisos de edición
+2. Asegúrate de que el servidor esté ejecutándose
+3. Revisa la consola del navegador (F12) para ver errores
+
+### El logo no aparece
+1. Verifica la configuración en `config.js`
+2. Si usas `custom: false`, asegúrate de que los nombres de los novios estén configurados
+
+## 🎨 Personalización Adicional
+
+### Cambiar Colores
+Edita el archivo `styles.css` y busca las variables CSS al inicio:
 ```css
 :root {
-    --primary-color: #d4a574;  /* Debe coincidir con theme.primaryColor */
-    --secondary-color: #8b7355; /* Debe coincidir con theme.secondaryColor */
-    --accent-color: #f8f4e6;    /* Debe coincidir con theme.accentColor */
+    --primary-color: #d4a574;  /* Color dorado */
+    --secondary-color: #8b7355; /* Color café */
+    --accent-color: #f8f4e6;    /* Color crema */
 }
 ```
 
-## Seguridad
+### Cambiar Fuentes
+Las fuentes se cargan desde Google Fonts en `index.html`. Puedes cambiarlas editando:
+```html
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+```
 
-- Las invitaciones usan códigos únicos aleatorios
-- Los datos se almacenan en Google Sheets con acceso restringido
-- Las credenciales se manejan mediante variables de entorno
-- Rate limiting implementado en el servidor
+### Modificar el Itinerario
+En `config.js`, edita la sección `schedule`:
+```javascript
+schedule: [
+    {
+        time: "5:00 PM",
+        title: "Ceremonia Civil",
+        description: "Firma de documentos"
+    },
+    // Agrega más eventos aquí
+]
+```
 
-## Soporte
+## 🚀 Despliegue en Producción
 
-Para reportar problemas o solicitar nuevas características, crear un issue en el repositorio.
+### Opción 1: Heroku
+1. Instala [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+2. Crea una app en Heroku
+3. Configura las variables de entorno
+4. Despliega con Git
 
-## Licencia
+### Opción 2: VPS (DigitalOcean, AWS, etc.)
+1. Clona el repositorio en tu servidor
+2. Instala Node.js y PM2
+3. Configura Nginx como proxy reverso
+4. Usa PM2 para mantener la app ejecutándose
 
-Este proyecto es privado y de uso exclusivo para la boda de Diego & Fernanda.
+### Opción 3: Vercel/Netlify (Solo Frontend)
+1. Despliega el backend en un servicio como Heroku
+2. Actualiza `config.js` con la URL del backend
+3. Despliega el frontend en Vercel o Netlify
+
+## 📝 Notas Importantes
+
+- **Límite de Google Sheets**: Máximo 10,000 filas
+- **Seguridad**: Cambia las credenciales por defecto del admin
+- **Respaldos**: Descarga periódicamente tu Google Sheets
+- **Personalización**: Todos los textos están en `config.js` para fácil edición
+
+## 🤝 Soporte
+
+Si tienes problemas o preguntas:
+1. Revisa la sección de solución de problemas
+2. Verifica que seguiste todos los pasos de configuración
+3. Revisa los logs del servidor para mensajes de error
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+
+---
+
+¡Felicidades por tu boda! 🎉💒
