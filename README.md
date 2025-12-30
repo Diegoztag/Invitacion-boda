@@ -154,34 +154,48 @@ npm start
 
 El servidor estará disponible en `http://localhost:3000`
 
-## 📋 Cómo Crear Invitaciones (Paso a Paso)
+## 📋 Cómo Crear Invitaciones (Método Simplificado con CSV)
 
-### 1. Acceder al Panel de Administración
-1. Abre tu navegador y ve a `http://localhost:3000/admin.html`
-2. Ingresa las credenciales que configuraste en el archivo `.env`
+### Opción 1: Cargar desde archivo CSV
 
-### 2. Crear una Nueva Invitación
-1. En el panel de administración, busca la sección "Crear Nueva Invitación"
-2. Llena los campos:
-   - **Nombres de Invitados**: Escribe los nombres separados por comas
-     - Ejemplo: `Juan Pérez, María García`
-   - **Número de Pases**: Cuántos lugares tienen disponibles (ej: 2)
-   - **Email**: Correo del invitado principal (opcional)
-   - **Teléfono**: Número de WhatsApp del invitado (opcional)
-3. Click en "Crear Invitación"
+#### 1. Crear archivo CSV con tus invitaciones
+Crea un archivo llamado `invitaciones.csv` con el siguiente formato:
 
-### 3. Compartir la Invitación
-1. Una vez creada, aparecerá en la lista de invitaciones
-2. Cada invitación tiene:
-   - **Código único**: Generado automáticamente (ej: `abc123`)
-   - **Enlace personalizado**: `http://localhost:3000/?invitation=abc123`
-3. Copia el enlace y envíalo al invitado por WhatsApp, email, etc.
+```csv
+Nombres,Pases,Email,Telefono
+Juan Pérez y María García,2,juan@email.com,+521234567890
+Pedro López,1,pedro@email.com,+521234567891
+Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892
+Familia González,4,gonzalez@email.com,+521234567893
+```
 
-### 4. Proceso del Invitado
-1. El invitado abre su enlace personalizado
-2. Ve su nombre y número de pases disponibles
-3. Confirma su asistencia llenando el formulario
-4. La confirmación se guarda automáticamente en Google Sheets
+**Importante sobre el formato:**
+- **Nombres**: Los nombres de los invitados. Si son varios, sepáralos con "y"
+- **Pases**: Número de lugares disponibles (número entero)
+- **Email**: Correo electrónico (opcional, puedes dejar vacío)
+- **Telefono**: Número de WhatsApp con código de país (opcional)
+- **NO incluyas** comillas en los campos
+- Guarda el archivo con codificación UTF-8 para acentos
+
+#### 2. Cargar el archivo en el panel de administración
+1. Ve a `http://localhost:3000/admin.html`
+2. En la sección "Cargar Invitaciones", selecciona tu archivo CSV
+3. Click en "Cargar Invitaciones"
+4. El sistema generará automáticamente:
+   - Un código único para cada invitación
+   - El enlace personalizado para cada invitado
+
+### Opción 2: Crear invitaciones individuales
+
+Si prefieres crear invitaciones una por una:
+1. En el panel de administración, usa el formulario "Crear Nueva Invitación"
+2. Llena los campos y click en "Crear"
+
+### Compartir las invitaciones
+Una vez cargadas/creadas las invitaciones:
+1. En el panel verás la lista completa con los enlaces únicos
+2. Puedes copiar cada enlace y enviarlo por WhatsApp/email
+3. También puedes exportar la lista completa con los enlaces
 
 ## 📊 Panel de Administración
 

@@ -125,36 +125,75 @@
                 </div>
             </section>
 
-            <!-- Create Invitation Section -->
-            <section id="create" class="content-section">
-                <h1>Crear Nueva Invitación</h1>
-                <form id="createInvitationForm" class="invitation-form">
-                    <div class="form-group">
-                        <label for="guestNames">Nombres de los Invitados *</label>
-                        <input type="text" id="guestNames" name="guestNames" 
-                               placeholder="Ej: Juan Pérez y María García" required>
-                        <small>Separe múltiples nombres con "y" o comas</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="numberOfPasses">Número de Pases *</label>
-                        <input type="number" id="numberOfPasses" name="numberOfPasses" 
-                               min="1" max="10" value="2" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" 
-                               placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Teléfono</label>
-                        <input type="tel" id="phone" name="phone" 
-                               placeholder="+52 1234567890">
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Crear Invitación
+        <!-- Create Invitation Section -->
+        <section id="create" class="content-section">
+            <h2>Crear Nueva Invitación</h2>
+            
+            <!-- CSV Upload Section -->
+            <div class="csv-upload-section">
+                <h3><i class="fas fa-file-csv"></i> Cargar desde CSV</h3>
+                <p>Carga múltiples invitaciones desde un archivo CSV</p>
+                
+                <div class="csv-format">
+                    <h4>Formato del CSV:</h4>
+                    <pre>Nombres,Pases,Email,Telefono
+Juan Pérez y María García,2,juan@email.com,+521234567890
+Pedro López,1,pedro@email.com,+521234567891
+Ana Martínez y Carlos Ruiz,2,ana@email.com,+521234567892</pre>
+                    <small>
+                        <strong>Importante:</strong> 
+                        • Usa "y" para separar múltiples nombres
+                        • Email y teléfono son opcionales
+                        • Guarda el archivo con codificación UTF-8
+                    </small>
+                </div>
+                
+                <div class="file-upload">
+                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
+                        <i class="fas fa-upload"></i> Seleccionar archivo CSV
                     </button>
-                </form>
-            </section>
+                    <span id="fileName" style="margin-left: 10px;"></span>
+                </div>
+                
+                <button id="uploadCsvBtn" class="btn btn-primary" style="display: none; margin-top: 10px;">
+                    <i class="fas fa-file-import"></i> Cargar Invitaciones
+                </button>
+                
+                <div id="csvResults" style="margin-top: 20px;"></div>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
+            <!-- Individual Creation Form -->
+            <h3><i class="fas fa-user-plus"></i> Crear Invitación Individual</h3>
+            <form id="createInvitationForm" class="create-form">
+                <div class="form-group">
+                    <label for="guestNames">Nombres de Invitados</label>
+                    <input type="text" id="guestNames" name="guestNames" required 
+                           placeholder="Ej: Juan Pérez, María García">
+                    <small>Separa los nombres con comas si son varios invitados</small>
+                </div>
+                <div class="form-group">
+                    <label for="numberOfPasses">Número de Pases</label>
+                    <input type="number" id="numberOfPasses" name="numberOfPasses" 
+                           min="1" max="10" required placeholder="2">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (opcional)</label>
+                    <input type="email" id="email" name="email" 
+                           placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Teléfono (opcional)</label>
+                    <input type="tel" id="phone" name="phone" 
+                           placeholder="+521234567890">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Crear Invitación
+                </button>
+            </form>
+        </section>
 
             <!-- Confirmations Section -->
             <section id="confirmations" class="content-section">

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCreateForm();
     initModal();
     initSearch();
+    initCsvUpload();
 });
 
 // Navigation
@@ -413,6 +414,179 @@ function showNotification(message, type = 'success') {
 // - sendBatchReminders() - Enviar recordatorios en lote
 
 // Por ahora, estas funciones están deshabilitadas para mantener el MVP simple
+
+// Initialize CSV Upload
+function initCsvUpload() {
+    const csvFile = document.getElementById('csvFile');
+    const fileName = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadCsvBtn');
+    const csvResults = document.getElementById('csvResults');
+    
+    let selectedFile = null;
+    
+    csvFile.addEventListener('change', (e) => {
+        selectedFile = e.target.files[0];
+        if (selectedFile) {
+            fileName.textContent = selectedFile.name;
+            uploadBtn.style.display = 'inline-block';
+        } else {
+            fileName.textContent = '';
+            uploadBtn.style.display = 'none';
+        }
+    });
+    
+    uploadBtn.addEventListener('click', async () => {
+        if (!selectedFile) return;
+        
+        csvResults.innerHTML = '<p>Procesando archivo...</p>';
+        
+        try {
+            const text = await selectedFile.text();
+            const invitations = parseCSV(text);
+            
+            if (invitations.length === 0) {
+                csvResults.innerHTML = '<p class="error">No se encontraron invitaciones válidas en el archivo</p>';
+                return;
+            }
+            
+            csvResults.innerHTML = `<p>Creando ${invitations.length} invitaciones...</p>`;
+            
+            let created = 0;
+            let errors = [];
+            const createdInvitations = [];
+            
+            for (const invitation of invitations) {
+                try {
+                    const response = await fetch(`${CONFIG.backendUrl}/invitation`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(invitation)
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        created++;
+                        createdInvitations.push({
+                            ...data.invitation,
+                            url: data.invitationUrl
+                        });
+                    } else {
+                        const error = await response.json();
+                        errors.push(`${invitation.guestNames.join(' y ')}: ${error.error}`);
+                    }
+                } catch (error) {
+                    errors.push(`${invitation.guestNames.join(' y ')}: Error de conexión`);
+                }
+            }
+            
+            // Show results
+            let resultsHTML = `<h4>Resultados de la carga:</h4>`;
+            resultsHTML += `<p class="success">✅ ${created} invitaciones creadas exitosamente</p>`;
+            
+            if (errors.length > 0) {
+                resultsHTML += `<p class="error">❌ ${errors.length} errores:</p>`;
+                resultsHTML += '<ul>';
+                errors.forEach(error => {
+                    resultsHTML += `<li>${error}</li>`;
+                });
+                resultsHTML += '</ul>';
+            }
+            
+            if (createdInvitations.length > 0) {
+                resultsHTML += '<h4>Enlaces generados:</h4>';
+                resultsHTML += '<div class="csv-links">';
+                createdInvitations.forEach(inv => {
+                    resultsHTML += `
+                        <div class="csv-link-item">
+                            <strong>${inv.guestNames.join(' y ')}</strong><br>
+                            <input type="text" value="${inv.url}" readonly style="width: 100%; margin: 5px 0;">
+                            <button class="btn btn-sm" onclick="copyToClipboard('${inv.url}')">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    `;
+                });
+                resultsHTML += '</div>';
+                
+                // Add export button
+                resultsHTML += `
+                    <button class="btn btn-secondary" onclick="exportInvitationLinks()" style="margin-top: 20px;">
+                        <i class="fas fa-download"></i> Descargar todos los enlaces
+                    </button>
+                `;
+                
+                // Store for export
+                window.createdInvitations = createdInvitations;
+            }
+            
+            csvResults.innerHTML = resultsHTML;
+            
+            // Reset form
+            csvFile.value = '';
+            fileName.textContent = '';
+            uploadBtn.style.display = 'none';
+            selectedFile = null;
+            
+            // Reload invitations list
+            loadInvitations();
+            loadDashboardData();
+            
+        } catch (error) {
+            csvResults.innerHTML = `<p class="error">Error al procesar el archivo: ${error.message}</p>`;
+        }
+    });
+}
+
+// Parse CSV content
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    
+    const invitations = [];
+    
+    // Skip header row
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Simple CSV parsing (handles basic cases)
+        const parts = line.split(',').map(part => part.trim());
+        
+        if (parts.length >= 2) {
+            const names = parts[0].split(/\s+y\s+/i).map(n => n.trim());
+            const passes = parseInt(parts[1]);
+            
+            if (names.length > 0 && !isNaN(passes) && passes > 0) {
+                invitations.push({
+                    guestNames: names,
+                    numberOfPasses: passes,
+                    email: parts[2] || '',
+                    phone: parts[3] || ''
+                });
+            }
+        }
+    }
+    
+    return invitations;
+}
+
+// Export invitation links
+function exportInvitationLinks() {
+    if (!window.createdInvitations || window.createdInvitations.length === 0) return;
+    
+    let content = 'Nombres,Código,Enlace\n';
+    window.createdInvitations.forEach(inv => {
+        content += `"${inv.guestNames.join(' y ')}",${inv.code},${inv.url}\n`;
+    });
+    
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `invitaciones_enlaces_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+}
 
 // Update modal close handlers
 window.addEventListener('click', (e) => {
