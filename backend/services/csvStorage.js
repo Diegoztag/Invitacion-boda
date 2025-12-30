@@ -117,6 +117,7 @@ class CSVStorageService {
             const content = await fs.readFile(this.invitationsFile, 'utf-8');
             const lines = content.trim().split('\n');
             const invitations = [];
+            const confirmations = await this.getAllConfirmations();
             
             // Skip header
             for (let i = 1; i < lines.length; i++) {
@@ -125,7 +126,7 @@ class CSVStorageService {
                 
                 const parts = this.parseCSVLine(line);
                 if (parts.length >= 8) {
-                    invitations.push({
+                    const invitation = {
                         code: parts[0],
                         guestNames: parts[1].split(' y ').map(n => n.trim()),
                         numberOfPasses: parseInt(parts[2]),
@@ -134,7 +135,15 @@ class CSVStorageService {
                         confirmed: parts[5] === 'true',
                         confirmedPasses: parseInt(parts[6]) || 0,
                         confirmationDate: parts[7] || null
-                    });
+                    };
+                    
+                    // Add confirmation details if available
+                    const confirmation = confirmations.find(conf => conf.code === invitation.code);
+                    if (confirmation) {
+                        invitation.confirmationDetails = confirmation;
+                    }
+                    
+                    invitations.push(invitation);
                 }
             }
             

@@ -987,6 +987,90 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Responsive Design */
+
+/* Mobile First - Base styles for mobile */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-date {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .date-day {
+        font-size: 2.5rem;
+    }
+    
+    .countdown {
+        gap: 10px;
+    }
+    
+    .countdown-item {
+        min-width: 70px;
+        padding: 10px;
+    }
+    
+    .countdown-value {
+        font-size: 1.5rem;
+    }
+    
+    .section {
+        padding: 40px 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .rsvp-form {
+        padding: 20px;
+    }
+    
+    .modal-content {
+        padding: 30px 20px;
+    }
+    
+    .hashtag-text {
+        font-size: 1.5rem;
+    }
+    
+    .itinerary-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .itinerary-time {
+        text-align: left;
+        margin-bottom: 10px;
+    }
+    
+    .itinerary-item::before {
+        display: none;
+    }
+}
+
+/* Small tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .countdown-item {
+        min-width: 90px;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+    }
+}
+
+/* Tablets and up */
 @media (min-width: 768px) {
     .nav-toggle {
         display: none;
@@ -1072,6 +1156,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+/* Desktop */
 @media (min-width: 1024px) {
     .hero-title {
         font-size: 5rem;
@@ -1088,6 +1173,56 @@ h1, h2, h3, h4, h5, h6 {
 
     .rsvp-form {
         padding: 40px;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .hero-title {
+        font-size: 6rem;
+    }
+    
+    .section {
+        padding: 100px 0;
+    }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1600px;
+    }
+}
+
+/* Height-based media queries for better hero section */
+@media (max-height: 600px) {
+    .hero {
+        min-height: 600px;
+        height: auto;
+    }
+    
+    .hero-content {
+        padding: 80px 20px 40px;
+    }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: 100vh;
+    }
+    
+    .countdown {
+        margin-top: 20px;
+    }
+    
+    .countdown-item {
+        padding: 10px;
+        min-width: 80px;
     }
 }
 

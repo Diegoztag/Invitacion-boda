@@ -135,6 +135,12 @@ function displayInvitations(invitations) {
     tbody.innerHTML = '';
     
     invitations.forEach(invitation => {
+        // Calculate cancelled passes for this invitation
+        let cancelledPasses = 0;
+        if (invitation.confirmed && invitation.confirmationDetails && !invitation.confirmationDetails.willAttend) {
+            cancelledPasses = invitation.numberOfPasses;
+        }
+        
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="code-cell">${invitation.code}</td>
@@ -146,6 +152,7 @@ function displayInvitations(invitations) {
                 </span>
             </td>
             <td>${invitation.confirmedPasses || 0}</td>
+            <td>${cancelledPasses > 0 ? `<span style="color: #f44336; font-weight: 600;">${cancelledPasses}</span>` : '0'}</td>
             <td>
                 <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
                     <i class="fas fa-eye"></i>
