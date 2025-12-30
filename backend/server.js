@@ -1,14 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
 const cron = require('node-cron');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const googleSheetsService = require('./services/googleSheets');
-const googleDriveService = require('./services/googleDrive');
 const whatsappService = require('./services/whatsapp');
 const invitationService = require('./services/invitationService');
 
@@ -27,36 +24,6 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Multer configuration for photo uploads
-const storage = multer.diskStorage({
-    destination: async (req, file, cb) => {
-        const uploadDir = path.join(__dirname, 'uploads');
-        await fs.mkdir(uploadDir, { recursive: true });
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'wedding-photo-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ 
-    storage: storage,
-    limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB limit
-    },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif|webp/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Solo se permiten imágenes'));
-        }
-    }
-});
 
 // Routes
 
@@ -186,42 +153,6 @@ app.post('/api/rsvp', async (req, res) => {
     }
 });
 
-// Photo upload endpoint
-app.post('/api/upload-photos', upload.array('photos', 10), async (req, res) => {
-    try {
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ error: 'No se recibieron fotos' });
-        }
-        
-        const uploadedFiles = [];
-        
-        // Upload each file to Google Drive
-        for (const file of req.files) {
-            const driveFileId = await googleDriveService.uploadPhoto(file.path, file.filename);
-            uploadedFiles.push({
-                filename: file.filename,
-                driveFileId: driveFileId,
-                uploadedAt: new Date().toISOString()
-            });
-            
-            // Delete local file after upload
-            await fs.unlink(file.path);
-        }
-        
-        res.json({ 
-            success: true, 
-            message: 'Fotos subidas exitosamente',
-            files: uploadedFiles 
-        });
-        
-    } catch (error) {
-        console.error('Error uploading photos:', error);
-        res.status(500).json({ 
-            error: 'Error al subir las fotos',
-            details: error.message 
-        });
-    }
-});
 
 // Get all RSVPs (for admin)
 app.get('/api/rsvps', async (req, res) => {
@@ -586,7 +517,6 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         services: {
             googleSheets: googleSheetsService.isConnected(),
-            googleDrive: googleDriveService.isConnected(),
             whatsapp: whatsappService.isConnected()
         }
     });
@@ -594,11 +524,6 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((error, req, res, next) => {
-    if (error instanceof multer.MulterError) {
-        if (error.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({ error: 'El archivo es demasiado grande. Máximo 10MB.' });
-        }
-    }
     res.status(500).json({ error: error.message });
 });
 

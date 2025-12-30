@@ -340,6 +340,14 @@ const WEDDING_CONFIG = {
    - Actualiza los enlaces en `giftRegistry.stores` con tus registros reales
    - Modifica `giftRegistry.bankAccount.details` con tu información bancaria
    - Puedes agregar más tiendas o desactivar la sección con `enabled: false`
+9. **Logo del Header**: 
+   - Por defecto muestra las iniciales de los novios (ej: "D & F")
+   - Para usar texto personalizado, cambia `navLogo.custom` a `true`
+   - Actualiza `navLogo.text` con el texto que desees mostrar
+10. **Hashtag de Instagram**:
+   - La sección de fotos ahora muestra el hashtag de Instagram
+   - Los invitados pueden compartir fotos usando el hashtag configurado
+   - Actualiza `couple.hashtag` con tu hashtag personalizado
 
 ### Aplicar Cambios de Colores
 Si cambias los colores en `config.js`, también debes actualizar las variables CSS en `styles.css` para que coincidan:

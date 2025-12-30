@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initSmoothScroll();
     initRSVPForm();
-    initPhotoUpload();
     initAnimations();
 });
 
@@ -101,7 +100,9 @@ function updateDynamicContent() {
     
     // Photo section
     document.getElementById('photoSectionTitle').textContent = WEDDING_CONFIG.messages.photoSectionTitle;
-    document.getElementById('photoSectionSubtitle').textContent = WEDDING_CONFIG.messages.photoSectionSubtitle;
+    
+    // Instagram hashtag
+    document.getElementById('instagramHashtag').textContent = WEDDING_CONFIG.couple.hashtag;
     
     // Footer
     document.getElementById('footerNames').textContent = WEDDING_CONFIG.couple.displayName;
@@ -278,9 +279,13 @@ function displayInvitationInfo() {
     numberOfPasses.textContent = currentInvitation.numberOfPasses;
     invitationInfo.style.display = 'block';
     
-    // Update nav logo with initials
+    // Update nav logo with initials or custom logo
     const navLogo = document.querySelector('.nav-logo');
-    navLogo.textContent = `${WEDDING_CONFIG.couple.groom.name.charAt(0)} & ${WEDDING_CONFIG.couple.bride.name.charAt(0)}`;
+    if (WEDDING_CONFIG.navLogo && WEDDING_CONFIG.navLogo.custom) {
+        navLogo.textContent = WEDDING_CONFIG.navLogo.text;
+    } else {
+        navLogo.textContent = `${WEDDING_CONFIG.couple.groom.name.charAt(0)} & ${WEDDING_CONFIG.couple.bride.name.charAt(0)}`;
+    }
 }
 
 // Show already confirmed message
@@ -530,151 +535,6 @@ function initRSVPForm() {
     });
 }
 
-// Photo Upload
-function initPhotoUpload() {
-    const uploadZone = document.getElementById('uploadZone');
-    const photoInput = document.getElementById('photoInput');
-    const photoPreview = document.getElementById('photoPreview');
-    const uploadButton = document.getElementById('uploadPhotos');
-    let selectedFiles = [];
-
-    // Click to upload
-    uploadZone.addEventListener('click', () => {
-        photoInput.click();
-    });
-
-    // Drag and drop
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.style.background = '#e8e0d0';
-    });
-
-    uploadZone.addEventListener('dragleave', () => {
-        uploadZone.style.background = 'var(--accent-color)';
-    });
-
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.style.background = 'var(--accent-color)';
-        handleFiles(e.dataTransfer.files);
-    });
-
-    // File input change
-    photoInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
-
-    // Handle files
-    function handleFiles(files) {
-        selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-        displayPreview();
-    }
-
-    // Display preview
-    function displayPreview() {
-        photoPreview.innerHTML = '';
-        
-        if (selectedFiles.length === 0) {
-            uploadButton.style.display = 'none';
-            return;
-        }
-
-        uploadButton.style.display = 'block';
-
-        selectedFiles.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const previewItem = document.createElement('div');
-                previewItem.className = 'preview-item';
-                previewItem.innerHTML = `
-                    <img src="${e.target.result}" alt="Preview ${index + 1}">
-                    <button class="remove-photo" data-index="${index}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                photoPreview.appendChild(previewItem);
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Remove photo from preview
-    photoPreview.addEventListener('click', (e) => {
-        if (e.target.closest('.remove-photo')) {
-            const index = parseInt(e.target.closest('.remove-photo').dataset.index);
-            selectedFiles.splice(index, 1);
-            displayPreview();
-        }
-    });
-
-    // Upload photos
-    uploadButton.addEventListener('click', async () => {
-        if (selectedFiles.length === 0) return;
-
-        const formData = new FormData();
-        selectedFiles.forEach(file => {
-            formData.append('photos', file);
-        });
-
-        try {
-            uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
-            uploadButton.disabled = true;
-
-            // Send to backend
-            const response = await fetch(`${CONFIG.backendUrl}/upload-photos`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                showModal('¡Fotos Subidas!', 'Gracias por compartir estos momentos especiales con nosotros.');
-                selectedFiles = [];
-                displayPreview();
-                loadUploadedPhotos();
-            } else {
-                throw new Error('Error al subir fotos');
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            showModal('Error', 'Hubo un problema al subir las fotos. Por favor intenta nuevamente.');
-            
-            // For demo purposes, show success anyway
-            setTimeout(() => {
-                showModal('¡Fotos Subidas!', 'Gracias por compartir estos momentos especiales con nosotros.');
-                selectedFiles = [];
-                displayPreview();
-                addDemoPhotos();
-            }, 2000);
-        } finally {
-            uploadButton.innerHTML = '<i class="fas fa-upload"></i> Subir Fotos';
-            uploadButton.disabled = false;
-        }
-    });
-
-    // Load uploaded photos (demo)
-    function loadUploadedPhotos() {
-        // This would fetch from backend
-        addDemoPhotos();
-    }
-
-    // Add demo photos
-    function addDemoPhotos() {
-        const photoGrid = document.getElementById('photoGrid');
-        const demoPhotos = [
-            'https://images.unsplash.com/photo-1519741497674-611481863552?w=400',
-            'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400',
-            'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400'
-        ];
-
-        demoPhotos.forEach(url => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'Foto de la boda';
-            photoGrid.appendChild(img);
-        });
-    }
-}
 
 // Google Maps
 function initMap() {

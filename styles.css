@@ -684,91 +684,48 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-/* Photo Upload */
-.photo-upload-area {
-    margin-bottom: 40px;
-}
-
-.upload-zone {
-    border: 2px dashed var(--primary-color);
-    border-radius: 15px;
-    padding: 40px;
+/* Instagram Hashtag Section */
+.instagram-section {
+    background: var(--white);
     text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
+}
+
+.hashtag-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
     background: var(--accent-color);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
 }
 
-.upload-zone:hover {
-    background: #f0ebe0;
-}
-
-.upload-zone i {
-    font-size: 3rem;
+.hashtag-icon {
+    font-size: 4rem;
     color: var(--primary-color);
     margin-bottom: 20px;
-    display: block;
 }
 
-.photo-preview {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
+.hashtag-text {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-family: 'Playfair Display', serif;
 }
 
-.preview-item {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
+.hashtag-description {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    line-height: 1.6;
 }
 
-.preview-item img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.preview-item .remove-photo {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-.preview-item .remove-photo:hover {
-    background: var(--white);
-    transform: scale(1.1);
-}
-
-.photo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.photo-grid img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-}
-
-.photo-grid img:hover {
-    transform: scale(1.05);
+@media (max-width: 768px) {
+    .hashtag-text {
+        font-size: 2rem;
+    }
+    
+    .hashtag-description {
+        font-size: 1rem;
+    }
 }
 
 /* Gift Registry Section */

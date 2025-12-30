@@ -29,8 +29,8 @@
                 <li><a href="#evento" class="nav-link">El Evento</a></li>
                 <li><a href="#itinerario" class="nav-link">Itinerario</a></li>
                 <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
-                <li><a href="#mesa-regalos" class="nav-link">Mesa de Regalos</a></li>
                 <li><a href="#confirmacion" class="nav-link">Confirmar Asistencia</a></li>
+                <li><a href="#mesa-regalos" class="nav-link">Mesa de Regalos</a></li>
                 <li><a href="#fotos" class="nav-link">Fotos</a></li>
             </ul>
         </div>
@@ -102,7 +102,7 @@
             <div class="dress-code">
                 <h3 id="dressCodeTitle">Código de Vestimenta</h3>
                 <p id="dressCodeDescription">Formal - Evitar colores pasteles</p>
-                <p id="dressCodeNote">Recuerden que sera al aire libre asistan bien abrigados</p>
+                <p id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
             </div>
         </div>
     </section>
@@ -116,7 +116,7 @@
                     <div class="itinerary-time">5:00 PM</div>
                     <div class="itinerary-content">
                         <h4>Ceremonia Civil</h4>
-                        <p>Frima de documentos</p>
+                        <p>Firma de documentos</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
@@ -179,35 +179,6 @@
                 </div>
                 <div class="map-container">
                     <iframe id="mapIframe" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen></iframe>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Gift Registry Section -->
-    <section id="mesa-regalos" class="gift-registry section">
-        <div class="container">
-            <h2 class="section-title" id="giftRegistryTitle">Mesa de Regalos</h2>
-            <p class="section-subtitle" id="giftRegistrySubtitle">Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo, aquí están nuestras opciones</p>
-            
-            <div class="gift-options">
-                <!-- Enlaces a tiendas -->
-                <div class="gift-stores" id="giftStores">
-                    <!-- Se llenará dinámicamente desde config.js -->
-                </div>
-                
-                <!-- Información bancaria -->
-                <div class="bank-info" id="bankInfo" style="display: none;">
-                    <div class="bank-card">
-                        <div class="bank-icon">
-                            <i class="fas fa-university"></i>
-                        </div>
-                        <h3 id="bankTitle">Transferencia Bancaria</h3>
-                        <p id="bankDescription">Si prefieres hacer una transferencia</p>
-                        <div class="bank-details" id="bankDetails">
-                            <!-- Se llenará dinámicamente desde config.js -->
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -281,27 +252,45 @@
         </div>
     </section>
 
-    <!-- Photo Upload Section -->
-    <section id="fotos" class="photos section">
+    <!-- Gift Registry Section -->
+    <section id="mesa-regalos" class="gift-registry section">
+        <div class="container">
+            <h2 class="section-title" id="giftRegistryTitle">Mesa de Regalos</h2>
+            <p class="section-subtitle" id="giftRegistrySubtitle">Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo, aquí están nuestras opciones</p>
+            
+            <div class="gift-options">
+                <!-- Enlaces a tiendas -->
+                <div class="gift-stores" id="giftStores">
+                    <!-- Se llenará dinámicamente desde config.js -->
+                </div>
+                
+                <!-- Información bancaria -->
+                <div class="bank-info" id="bankInfo" style="display: none;">
+                    <div class="bank-card">
+                        <div class="bank-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h3 id="bankTitle">Transferencia Bancaria</h3>
+                        <p id="bankDescription">Si prefieres hacer una transferencia</p>
+                        <div class="bank-details" id="bankDetails">
+                            <!-- Se llenará dinámicamente desde config.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Hashtag Section -->
+    <section id="fotos" class="instagram-section section">
         <div class="container">
             <h2 class="section-title" id="photoSectionTitle">Comparte tus Fotos</h2>
-            <p class="section-subtitle" id="photoSectionSubtitle">Ayúdanos a capturar todos los momentos especiales de nuestro día</p>
-            <div class="photo-upload-area">
-                <div class="upload-zone" id="uploadZone">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>Arrastra tus fotos aquí o haz clic para seleccionar</p>
-                    <input type="file" id="photoInput" multiple accept="image/*" hidden>
+            <div class="hashtag-container">
+                <div class="hashtag-icon">
+                    <i class="fab fa-instagram"></i>
                 </div>
-                <div class="photo-preview" id="photoPreview"></div>
-                <button class="btn btn-primary" id="uploadPhotos" style="display: none;">
-                    <i class="fas fa-upload"></i> Subir Fotos
-                </button>
-            </div>
-            <div class="uploaded-photos" id="uploadedPhotos">
-                <h3>Fotos Compartidas</h3>
-                <div class="photo-grid" id="photoGrid">
-                    <!-- Las fotos subidas aparecerán aquí -->
-                </div>
+                <h3 class="hashtag-text" id="instagramHashtag">#FerYDiegoSeCasan</h3>
+                <p class="hashtag-description">¡Usa este hashtag en Instagram para compartir tus fotos, videos y stories!</p>
             </div>
         </div>
     </section>

@@ -176,6 +176,12 @@ const WEDDING_CONFIG = {
                 clabe: "012345678901234567"
             }
         }
+    },
+    
+    // Navigation Logo Configuration
+    navLogo: {
+        custom: false, // Set to true to use custom text
+        text: "F & D" // Custom text for the logo (only used if custom is true)
     }
 };
 
