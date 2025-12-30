@@ -22,17 +22,13 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#invitations" class="nav-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>Invitaciones</span>
-                </a>
                 <a href="#create" class="nav-item">
                     <i class="fas fa-plus-circle"></i>
                     <span>Crear Invitación</span>
                 </a>
-                <a href="#confirmations" class="nav-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Confirmaciones</span>
+                <a href="#invitations" class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Invitaciones</span>
                 </a>
             </nav>
         </aside>
@@ -103,6 +99,9 @@
                     <input type="text" id="searchInput" placeholder="Buscar invitación..." class="search-input">
                     <button class="btn btn-primary" onclick="showCreateForm()">
                         <i class="fas fa-plus"></i> Nueva Invitación
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportAllInvitations()">
+                        <i class="fas fa-file-excel"></i> Exportar Todo
                     </button>
                     <!-- TODO: Futura mejora - Botones de WhatsApp -->
                     <!-- <button class="btn btn-secondary" onclick="showBatchSendModal()">
@@ -200,33 +199,6 @@ Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
             </form>
         </section>
 
-            <!-- Confirmations Section -->
-            <section id="confirmations" class="content-section">
-                <h1>Lista de Confirmaciones</h1>
-                <div class="actions-bar">
-                    <button class="btn btn-secondary" onclick="exportToExcel()">
-                        <i class="fas fa-file-excel"></i> Exportar a Excel
-                    </button>
-                </div>
-                <div class="table-container">
-                    <table class="confirmations-table">
-                        <thead>
-                            <tr>
-                                <th>Invitados</th>
-                                <th>Asistirá</th>
-                                <th>Confirmados</th>
-                                <th>Teléfono</th>
-                                <th>Restricciones</th>
-                                <th>Mensaje</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody id="confirmationsTableBody">
-                            <!-- Las confirmaciones se cargarán aquí -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
         </main>
     </div>
 

@@ -44,8 +44,6 @@ function initNavigation() {
                 loadDashboardData();
             } else if (targetId === 'invitations') {
                 loadInvitations();
-            } else if (targetId === 'confirmations') {
-                loadConfirmations();
             }
         });
     });
@@ -186,22 +184,69 @@ function viewInvitation(code) {
     
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
+    // Calculate cancelled passes for display
+    let cancelledPasses = 0;
+    if (invitation.confirmed && invitation.confirmationDetails) {
+        if (!invitation.confirmationDetails.willAttend) {
+            cancelledPasses = invitation.numberOfPasses;
+        } else if (invitation.confirmationDetails.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
+            cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
+        }
+    }
+    
     details.innerHTML = `
         <div class="invitation-detail">
-            <p><strong>Código:</strong> ${invitation.code}</p>
-            <p><strong>Invitados:</strong> ${invitation.guestNames.join(' y ')}</p>
-            <p><strong>Número de pases:</strong> ${invitation.numberOfPasses}</p>
-            <p><strong>Estado:</strong> ${invitation.confirmed ? 'Confirmado' : 'Pendiente'}</p>
+            <h3 style="margin-top: 0; color: #333;">Información de la Invitación</h3>
+            
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p><strong>Código:</strong> ${invitation.code}</p>
+                <p><strong>Invitados:</strong> ${invitation.guestNames.join(' y ')}</p>
+                <p><strong>Número de pases:</strong> ${invitation.numberOfPasses}</p>
+                <p><strong>Teléfono:</strong> ${invitation.phone || 'No proporcionado'}</p>
+            </div>
+            
             ${invitation.confirmed ? `
-                <p><strong>Pases confirmados:</strong> ${invitation.confirmedPasses}</p>
-                <p><strong>Asistentes:</strong> ${invitation.confirmationDetails?.attendingNames?.join(', ') || 'N/A'}</p>
-            ` : ''}
-            <p><strong>Teléfono:</strong> ${invitation.phone || 'No proporcionado'}</p>
-            <div class="invitation-link">
-                <p><strong>Enlace de invitación:</strong></p>
-                <input type="text" value="${invitationUrl}" readonly class="link-input">
+                <h4 style="color: #4caf50; margin-bottom: 10px;">✓ Confirmación Recibida</h4>
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p><strong>¿Asistirá?:</strong> ${invitation.confirmationDetails?.willAttend ? 'Sí' : 'No'}</p>
+                    ${invitation.confirmationDetails?.willAttend ? `
+                        <p><strong>Pases confirmados:</strong> ${invitation.confirmedPasses} de ${invitation.numberOfPasses}</p>
+                        ${cancelledPasses > 0 ? `<p><strong>Pases cancelados:</strong> <span style="color: #f44336;">${cancelledPasses}</span></p>` : ''}
+                        <p><strong>Asistentes:</strong> ${invitation.confirmationDetails?.attendingNames?.join(', ') || 'N/A'}</p>
+                        ${invitation.confirmationDetails?.dietaryRestrictions ? `
+                            <p><strong>Restricciones alimentarias:</strong> <span style="color: #ff6b6b;">${invitation.confirmationDetails.dietaryRestrictions}</span></p>
+                        ` : ''}
+                    ` : `
+                        <p><strong>Pases cancelados:</strong> <span style="color: #f44336;">${invitation.numberOfPasses}</span></p>
+                    `}
+                    ${invitation.confirmationDetails?.phone ? `
+                        <p><strong>Teléfono de contacto:</strong> ${invitation.confirmationDetails.phone}</p>
+                    ` : ''}
+                    ${invitation.confirmationDetails?.message ? `
+                        <div style="margin-top: 10px; padding: 10px; background: white; border-radius: 5px;">
+                            <p style="margin: 0;"><strong>Mensaje de los invitados:</strong></p>
+                            <p style="margin: 5px 0; font-style: italic; color: #555;">"${invitation.confirmationDetails.message}"</p>
+                        </div>
+                    ` : ''}
+                    <p style="margin-bottom: 0;"><small><strong>Fecha de confirmación:</strong> ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}</small></p>
+                </div>
+            ` : `
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="margin: 0; color: #856404;"><i class="fas fa-clock"></i> Confirmación pendiente</p>
+                </div>
+            `}
+            
+            <div class="invitation-link" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <p style="margin-top: 0;"><strong>Enlace de invitación:</strong></p>
+                <input type="text" value="${invitationUrl}" readonly class="link-input" style="margin-bottom: 10px;">
                 <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
-                    <i class="fas fa-copy"></i> Copiar
+                    <i class="fas fa-copy"></i> Copiar enlace
                 </button>
             </div>
         </div>
@@ -282,72 +327,55 @@ function initCreateForm() {
     });
 }
 
-// Load Confirmations
-async function loadConfirmations() {
-    try {
-        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
-        if (response.ok) {
-            const data = await response.json();
-            const confirmedInvitations = data.invitations.filter(inv => inv.confirmed);
-            displayConfirmations(confirmedInvitations);
-        }
-    } catch (error) {
-        console.error('Error loading confirmations:', error);
-    }
-}
 
-// Display Confirmations
-function displayConfirmations(invitations) {
-    const tbody = document.getElementById('confirmationsTableBody');
-    tbody.innerHTML = '';
-    
-    invitations.forEach(invitation => {
-        const details = invitation.confirmationDetails;
-        if (!details) return;
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${invitation.guestNames.join(' y ')}</td>
-            <td>${details.willAttend ? 'Sí' : 'No'}</td>
-            <td>${details.attendingGuests} de ${invitation.numberOfPasses}</td>
-            <td>${details.phone || '-'}</td>
-            <td>${details.dietaryRestrictions || '-'}</td>
-            <td>${details.message || '-'}</td>
-            <td>${new Date(details.confirmedAt).toLocaleDateString('es-MX')}</td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-// Export to Excel
-function exportToExcel() {
-    // This would typically use a library like SheetJS
-    // For now, we'll create a CSV
-    const headers = ['Invitados', 'Asistirá', 'Confirmados', 'Email', 'Teléfono', 'Restricciones', 'Mensaje', 'Fecha'];
+// Export all invitations to CSV
+function exportAllInvitations() {
+    // Create CSV with all invitation data including confirmations
+    const headers = ['Código', 'Invitados', 'Pases', 'Estado', 'Confirmados', 'Cancelados', 'Asistirá', 'Teléfono', 'Restricciones', 'Mensaje', 'Fecha Confirmación'];
     const rows = [];
     
-    const tbody = document.getElementById('confirmationsTableBody');
-    const trs = tbody.querySelectorAll('tr');
-    
-    trs.forEach(tr => {
-        const row = [];
-        tr.querySelectorAll('td').forEach(td => {
-            row.push(td.textContent);
-        });
+    allInvitations.forEach(invitation => {
+        const details = invitation.confirmationDetails || {};
+        let cancelledPasses = 0;
+        
+        if (invitation.confirmed && details) {
+            if (!details.willAttend) {
+                cancelledPasses = invitation.numberOfPasses;
+            } else if (details.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
+                cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
+            }
+        }
+        
+        const row = [
+            invitation.code,
+            invitation.guestNames.join(' y '),
+            invitation.numberOfPasses,
+            invitation.confirmed ? 'Confirmado' : 'Pendiente',
+            invitation.confirmedPasses || 0,
+            cancelledPasses,
+            details.willAttend !== undefined ? (details.willAttend ? 'Sí' : 'No') : '-',
+            details.phone || invitation.phone || '-',
+            details.dietaryRestrictions || '-',
+            details.message || '-',
+            invitation.confirmationDate ? new Date(invitation.confirmationDate).toLocaleDateString('es-MX') : '-'
+        ];
+        
         rows.push(row);
     });
     
     let csv = headers.join(',') + '\n';
     rows.forEach(row => {
-        csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+        csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
     });
     
     // Download CSV
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `confirmaciones_boda_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `invitaciones_completas_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
+    
+    showNotification('Archivo CSV exportado exitosamente');
 }
 
 // Initialize Modal
