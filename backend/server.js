@@ -4,6 +4,10 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+// Live reload setup
+const livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
+
 // Use CSV storage instead of Google Sheets
 const csvStorage = require('./services/csvStorage');
 const invitationService = require('./services/invitationService');
@@ -11,7 +15,17 @@ const invitationService = require('./services/invitationService');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Create a livereload server
+const liveReloadServer = livereload.createServer({
+    exts: ['html', 'css', 'js', 'png', 'gif', 'jpg', 'jpeg'],
+    delay: 100
+});
+
+// Watch the parent directory (where frontend files are)
+liveReloadServer.watch(path.join(__dirname, '..'));
+
 // Middleware
+app.use(connectLivereload()); // Add livereload script to all HTML responses
 app.use(cors());
 app.use(express.json());
 
@@ -203,14 +217,14 @@ app.use((error, req, res, next) => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
     console.log('\n🛑 Shutting down gracefully...');
-    // TODO: Futura mejora - Desconectar WhatsApp
-    // await whatsappService.disconnect();
+    liveReloadServer.close();
     process.exit(0);
 });
 
 // Start server
 app.listen(PORT, () => {
     console.log(`\n🚀 Server running on port ${PORT}`);
-    console.log(`📱 Frontend available at http://localhost:${PORT}`);
+    console.log(`📱 Frontend with live reload at http://localhost:${PORT}`);
     console.log(`🔌 API available at http://localhost:${PORT}/api`);
+    console.log(`🔄 Live reload enabled - changes will auto-refresh the browser`);
 });

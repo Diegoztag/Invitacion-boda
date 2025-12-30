@@ -1,0 +1,17 @@
+{
+  "name": "invitacion-boda",
+  "version": "1.0.0",
+  "description": "Wedding invitation SPA with integrated live reload",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && npm run dev",
+    "dev": "cd backend && npm run dev"
+  },
+  "keywords": [
+    "wedding",
+    "invitation",
+    "spa"
+  ],
+  "author": "",
+  "license": "ISC"
+}
