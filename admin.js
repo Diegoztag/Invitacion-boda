@@ -137,8 +137,14 @@ function displayInvitations(invitations) {
     invitations.forEach(invitation => {
         // Calculate cancelled passes for this invitation
         let cancelledPasses = 0;
-        if (invitation.confirmed && invitation.confirmationDetails && !invitation.confirmationDetails.willAttend) {
-            cancelledPasses = invitation.numberOfPasses;
+        if (invitation.confirmed && invitation.confirmationDetails) {
+            if (!invitation.confirmationDetails.willAttend) {
+                // If they're not attending, all passes are cancelled
+                cancelledPasses = invitation.numberOfPasses;
+            } else if (invitation.confirmationDetails.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
+                // If they're attending but not using all passes, calculate the difference
+                cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
+            }
         }
         
         const row = document.createElement('tr');

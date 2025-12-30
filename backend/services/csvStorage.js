@@ -259,13 +259,20 @@ class CSVStorageService {
         const invitations = await this.getAllInvitations();
         const confirmations = await this.getAllConfirmations();
         
-        // Calculate cancelled passes (invitations confirmed but guests not attending)
+        // Calculate cancelled passes (both not attending and partial confirmations)
         let cancelledPasses = 0;
-        confirmations.forEach(conf => {
-            if (!conf.willAttend) {
-                const invitation = invitations.find(inv => inv.code === conf.code);
-                if (invitation) {
-                    cancelledPasses += invitation.numberOfPasses;
+        
+        invitations.forEach(invitation => {
+            if (invitation.confirmed) {
+                const confirmation = confirmations.find(conf => conf.code === invitation.code);
+                if (confirmation) {
+                    if (!confirmation.willAttend) {
+                        // If not attending, all passes are cancelled
+                        cancelledPasses += invitation.numberOfPasses;
+                    } else if (confirmation.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
+                        // If attending but not using all passes, count the difference as cancelled
+                        cancelledPasses += (invitation.numberOfPasses - invitation.confirmedPasses);
+                    }
                 }
             }
         });
