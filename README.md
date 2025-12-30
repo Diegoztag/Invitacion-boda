@@ -7,7 +7,8 @@ Sistema web completo para gestionar invitaciones digitales personalizadas de bod
 - **Invitaciones Personalizadas**: Cada invitado recibe un enlace único con su código de invitación
 - **Sistema de Confirmación**: Los invitados pueden confirmar asistencia indicando cuántos pases usarán
 - **Panel de Administración**: Dashboard completo para gestionar invitaciones y ver estadísticas
-- **Base de Datos**: Google Sheets como backend para almacenar toda la información
+- **Base de Datos Local**: Archivos CSV como base de datos (no requiere servicios externos)
+- **Carga Masiva**: Importa múltiples invitaciones desde un archivo CSV
 - **Mesa de Regalos**: Sección con enlaces a tiendas y datos bancarios
 - **Hashtag de Instagram**: Para que los invitados compartan fotos del evento
 - **Diseño Responsivo**: Funciona perfectamente en móviles y computadoras
@@ -16,7 +17,6 @@ Sistema web completo para gestionar invitaciones digitales personalizadas de bod
 
 ### 1. Requisitos Previos
 - Node.js v14 o superior
-- Una cuenta de Google
 - Un navegador web moderno
 
 ### 2. Clonar el Proyecto
@@ -31,28 +31,7 @@ cd backend
 npm install
 ```
 
-### 4. Configurar Google Sheets (MUY IMPORTANTE)
-
-#### Paso 1: Crear una Hoja de Google Sheets
-1. Ve a [Google Sheets](https://sheets.google.com)
-2. Crea una nueva hoja en blanco
-3. Copia el ID de la URL (está entre `/d/` y `/edit`)
-   - Ejemplo: Si tu URL es `https://docs.google.com/spreadsheets/d/1ABC123XYZ789/edit`
-   - Tu ID es: `1ABC123XYZ789`
-
-#### Paso 2: Configurar Permisos
-1. Click en el botón "Compartir" (arriba a la derecha)
-2. En "Acceso general", selecciona "Cualquier persona con el enlace"
-3. **IMPORTANTE**: Cambia de "Lector" a "Editor"
-4. Click en "Listo"
-
-#### Paso 3: Estructura de la Hoja
-El sistema creará automáticamente 3 hojas cuando se ejecute por primera vez:
-- **Invitaciones**: Almacena todos los datos de invitaciones
-- **Confirmaciones**: Registro histórico de confirmaciones
-- **Invitados**: Lista de invitados (legacy)
-
-### 5. Configurar Variables de Entorno
+### 4. Configurar Variables de Entorno
 1. Copia el archivo de ejemplo:
 ```bash
 cd backend
@@ -63,9 +42,6 @@ cp .env.example .env
 ```env
 # Puerto del servidor
 PORT=3000
-
-# ID de tu Google Sheets (el que copiaste en el paso 4)
-GOOGLE_SHEETS_ID="1ABC123XYZ789"
 
 # Credenciales del panel de administración
 ADMIN_USERNAME=admin
@@ -205,17 +181,38 @@ El panel incluye:
 - **Detalles de confirmación**: Quién asistirá, restricciones alimentarias, mensajes
 - **Búsqueda y filtros**: Para encontrar invitaciones específicas
 
+## 📂 Estructura de Datos
+
+El sistema almacena toda la información en archivos CSV locales:
+
+- **`data/invitations.csv`**: Lista de todas las invitaciones
+- **`data/confirmations.csv`**: Registro de confirmaciones
+
+Los archivos se crean automáticamente al iniciar el servidor por primera vez.
+
+### Formato de invitations.csv:
+```csv
+code,guestNames,numberOfPasses,email,phone,createdAt,confirmed,confirmedPasses,confirmationDate
+abc123,"Juan Pérez y María García",2,juan@email.com,+521234567890,2024-01-01T10:00:00Z,false,0,
+```
+
+### Formato de confirmations.csv:
+```csv
+code,willAttend,attendingGuests,attendingNames,email,phone,dietaryRestrictions,message,confirmedAt
+abc123,true,2,"Juan Pérez, María García",juan@email.com,+521234567890,Sin gluten,¡Felicidades!,2024-01-02T15:30:00Z
+```
+
 ## 🔧 Solución de Problemas
 
-### Google Sheets no se conecta
-1. Verifica que el ID en `.env` sea correcto
-2. Asegúrate de que la hoja esté compartida como "Editor"
+### Las invitaciones no se guardan
+1. Verifica que la carpeta `data` tenga permisos de escritura
+2. Asegúrate de que el servidor esté ejecutándose
 3. Revisa la consola del servidor para ver mensajes de error
 
-### Las invitaciones no se guardan
-1. Verifica que Google Sheets tenga permisos de edición
-2. Asegúrate de que el servidor esté ejecutándose
-3. Revisa la consola del navegador (F12) para ver errores
+### Error al cargar CSV
+1. Verifica que el archivo esté en formato UTF-8
+2. Asegúrate de seguir el formato exacto (separado por comas)
+3. No uses comillas a menos que el campo contenga comas
 
 ### El logo no aparece
 1. Verifica la configuración en `config.js`
@@ -271,12 +268,24 @@ schedule: [
 2. Actualiza `config.js` con la URL del backend
 3. Despliega el frontend en Vercel o Netlify
 
+## 💾 Respaldo de Datos
+
+### Hacer respaldo manual:
+1. Copia la carpeta `data` completa
+2. O descarga los archivos CSV desde el panel de administración
+
+### Restaurar respaldo:
+1. Detén el servidor
+2. Reemplaza los archivos en la carpeta `data`
+3. Reinicia el servidor
+
 ## 📝 Notas Importantes
 
-- **Límite de Google Sheets**: Máximo 10,000 filas
+- **Almacenamiento Local**: Los datos se guardan en archivos CSV en la carpeta `data`
 - **Seguridad**: Cambia las credenciales por defecto del admin
-- **Respaldos**: Descarga periódicamente tu Google Sheets
+- **Respaldos**: Haz copias periódicas de la carpeta `data`
 - **Personalización**: Todos los textos están en `config.js` para fácil edición
+- **Sin límites**: No hay restricciones de filas como en servicios externos
 
 ## 🤝 Soporte
 

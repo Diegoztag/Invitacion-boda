@@ -4,9 +4,8 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
-const googleSheetsService = require('./services/googleSheets');
-// TODO: Futura mejora - Integración con WhatsApp
-// const whatsappService = require('./services/whatsapp');
+// Use CSV storage instead of Google Sheets
+const csvStorage = require('./services/csvStorage');
 const invitationService = require('./services/invitationService');
 
 const app = express();
@@ -118,65 +117,41 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-// Legacy RSVP endpoint (for backward compatibility)
-app.post('/api/rsvp', async (req, res) => {
+// Import invitations from CSV
+app.post('/api/import-csv', async (req, res) => {
     try {
-        const rsvpData = req.body;
+        const { csvContent } = req.body;
         
-        // Validate required fields
-        if (!rsvpData.name || !rsvpData.email || !rsvpData.phone || !rsvpData.attendance) {
-            return res.status(400).json({ error: 'Faltan campos requeridos' });
+        if (!csvContent) {
+            return res.status(400).json({ error: 'No se proporcionó contenido CSV' });
         }
         
-        // Add submission date
-        rsvpData.submittedAt = new Date().toISOString();
-        
-        // Save to Google Sheets
-        await googleSheetsService.saveRSVP(rsvpData);
-        
-        // TODO: Futura mejora - Enviar confirmación por WhatsApp
-        // if (rsvpData.attendance === 'si') {
-        //     await whatsappService.sendConfirmation(rsvpData.phone, rsvpData.name);
-        // }
+        const result = await csvStorage.importInvitations(csvContent);
         
         res.json({ 
             success: true, 
-            message: 'Confirmación recibida exitosamente' 
+            imported: result.imported.length,
+            errors: result.errors,
+            invitations: result.imported
         });
-        
     } catch (error) {
-        console.error('Error processing RSVP:', error);
+        console.error('Error importing CSV:', error);
         res.status(500).json({ 
-            error: 'Error al procesar la confirmación',
+            error: 'Error al importar invitaciones',
             details: error.message 
         });
     }
 });
 
-
-// Get all RSVPs (for admin)
-app.get('/api/rsvps', async (req, res) => {
+// Export all data
+app.get('/api/export', async (req, res) => {
     try {
-        const rsvps = await googleSheetsService.getAllRSVPs();
-        res.json({ success: true, data: rsvps });
+        const data = await csvStorage.exportAllData();
+        res.json({ success: true, data });
     } catch (error) {
-        console.error('Error fetching RSVPs:', error);
+        console.error('Error exporting data:', error);
         res.status(500).json({ 
-            error: 'Error al obtener las confirmaciones',
-            details: error.message 
-        });
-    }
-});
-
-// Get pending confirmations (for reminders)
-app.get('/api/pending-confirmations', async (req, res) => {
-    try {
-        const pending = await googleSheetsService.getPendingConfirmations();
-        res.json({ success: true, data: pending });
-    } catch (error) {
-        console.error('Error fetching pending confirmations:', error);
-        res.status(500).json({ 
-            error: 'Error al obtener confirmaciones pendientes',
+            error: 'Error al exportar datos',
             details: error.message 
         });
     }
@@ -203,9 +178,7 @@ app.get('/api/health', (req, res) => {
         status: 'OK', 
         timestamp: new Date().toISOString(),
         services: {
-            googleSheets: googleSheetsService.isConnected()
-            // TODO: Futura mejora - Agregar estado de WhatsApp
-            // whatsapp: whatsappService.isConnected()
+            csvStorage: true // CSV storage is always available
         }
     });
 });

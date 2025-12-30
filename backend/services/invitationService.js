@@ -1,37 +1,9 @@
-const crypto = require('crypto');
-const googleSheetsService = require('./googleSheets');
+const csvStorage = require('./csvStorage');
 
 class InvitationService {
-    constructor() {
-        this.initialized = false;
-    }
-
-    // Generar código único para cada invitación
-    generateInvitationCode() {
-        return crypto.randomBytes(8).toString('hex');
-    }
-
     // Crear una nueva invitación
     async createInvitation(guestData) {
-        const invitationCode = this.generateInvitationCode();
-        const invitation = {
-            code: invitationCode,
-            guestNames: guestData.guestNames, // Array de nombres
-            numberOfPasses: guestData.numberOfPasses,
-            email: guestData.email || '',
-            phone: guestData.phone || '',
-            createdAt: new Date().toISOString(),
-            confirmed: false,
-            confirmedPasses: 0,
-            confirmationDetails: null,
-            invitationSentAt: null, // Track when invitation was sent
-            reminderSentAt: null    // Track when reminder was sent
-        };
-
-        // Guardar en Google Sheets
-        await googleSheetsService.saveInvitation(invitation);
-        
-        return invitation;
+        return await csvStorage.saveInvitation(guestData);
     }
 
     // Obtener invitación por código
@@ -40,8 +12,7 @@ class InvitationService {
             throw new Error('Código de invitación requerido');
         }
 
-        const invitations = await googleSheetsService.getAllInvitations();
-        const invitation = invitations.find(inv => inv.code === code);
+        const invitation = await csvStorage.getInvitationByCode(code);
         
         if (!invitation) {
             throw new Error('Invitación no encontrada');
@@ -63,48 +34,30 @@ class InvitationService {
             throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);
         }
 
-        const updatedInvitation = {
-            ...invitation,
-            confirmed: true,
-            confirmedPasses: confirmationData.attendingGuests,
-            confirmationDetails: {
-                willAttend: confirmationData.willAttend,
-                attendingGuests: confirmationData.attendingGuests,
-                attendingNames: confirmationData.attendingNames || [],
-                email: confirmationData.email || invitation.email,
-                phone: confirmationData.phone || invitation.phone,
-                dietaryRestrictions: confirmationData.dietaryRestrictions || '',
-                message: confirmationData.message || '',
-                confirmedAt: new Date().toISOString()
-            }
-        };
-
-        // Actualizar en Google Sheets
-        await googleSheetsService.updateInvitationConfirmation(code, updatedInvitation);
-        
-        return updatedInvitation;
+        return await csvStorage.updateInvitationConfirmation(code, confirmationData);
     }
 
     // Obtener estadísticas de confirmaciones
     async getConfirmationStats() {
-        const invitations = await googleSheetsService.getAllInvitations();
-        
-        const stats = {
-            totalInvitations: invitations.length,
-            totalPasses: invitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0),
-            confirmedInvitations: invitations.filter(inv => inv.confirmed).length,
-            confirmedPasses: invitations.reduce((sum, inv) => sum + (inv.confirmedPasses || 0), 0),
-            pendingInvitations: invitations.filter(inv => !inv.confirmed).length,
-            pendingPasses: invitations.filter(inv => !inv.confirmed)
-                .reduce((sum, inv) => sum + inv.numberOfPasses, 0)
-        };
-
-        return stats;
+        return await csvStorage.getStats();
     }
 
     // Obtener todas las invitaciones
     async getAllInvitations() {
-        return await googleSheetsService.getAllInvitations();
+        const invitations = await csvStorage.getAllInvitations();
+        
+        // Add confirmation details for confirmed invitations
+        const confirmations = await csvStorage.getAllConfirmations();
+        
+        return invitations.map(inv => {
+            if (inv.confirmed) {
+                const confirmation = confirmations.find(c => c.code === inv.code);
+                if (confirmation) {
+                    inv.confirmationDetails = confirmation;
+                }
+            }
+            return inv;
+        });
     }
 
     // Generar URL de invitación
@@ -112,45 +65,6 @@ class InvitationService {
         return `${baseUrl}/?invitation=${code}`;
     }
 
-    // Marcar invitación como enviada
-    async markInvitationAsSent(code) {
-        const invitation = await this.getInvitationByCode(code);
-        invitation.invitationSentAt = new Date().toISOString();
-        await googleSheetsService.updateInvitation(code, invitation);
-        return invitation;
-    }
-
-    // Marcar recordatorio como enviado
-    async markReminderAsSent(code) {
-        const invitation = await this.getInvitationByCode(code);
-        invitation.reminderSentAt = new Date().toISOString();
-        await googleSheetsService.updateInvitation(code, invitation);
-        return invitation;
-    }
-
-    // Obtener invitaciones pendientes de recordatorio
-    async getInvitationsNeedingReminder() {
-        const invitations = await this.getAllInvitations();
-        const daysBeforeReminder = parseInt(process.env.DAYS_BEFORE_REMINDER || '7');
-        const now = new Date();
-        
-        return invitations.filter(invitation => {
-            // Skip if already confirmed or no phone number
-            if (invitation.confirmed || !invitation.phone) return false;
-            
-            // Skip if reminder already sent
-            if (invitation.reminderSentAt) return false;
-            
-            // Skip if invitation not sent yet
-            if (!invitation.invitationSentAt) return false;
-            
-            // Check if enough days have passed since invitation was sent
-            const invitationSentDate = new Date(invitation.invitationSentAt);
-            const daysSinceSent = Math.floor((now - invitationSentDate) / (1000 * 60 * 60 * 24));
-            
-            return daysSinceSent >= daysBeforeReminder;
-        });
-    }
 }
 
 module.exports = new InvitationService();
