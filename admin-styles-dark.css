@@ -414,6 +414,11 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--success);
 }
 
+.stat-badge.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
 .stat-badge .trend-icon {
     font-size: 14px;
 }

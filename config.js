@@ -130,6 +130,12 @@ const WEDDING_CONFIG = {
         googleMapsApiKey: "YOUR_API_KEY"
     },
     
+    // Configuración de invitados
+    guests: {
+        targetTotal: 250, // Número total de invitados esperados (personas)
+        targetInvitations: 150 // Número estimado de invitaciones a enviar
+    },
+    
     // Configuración del mapa
     map: {
         // URL del iframe de Google Maps o cualquier otro servicio de mapas

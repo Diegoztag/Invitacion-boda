@@ -149,10 +149,38 @@ async function loadDashboardData() {
             
             // Update stats cards
             document.getElementById('totalInvitations').textContent = stats.totalInvitations;
-            document.getElementById('totalPasses').textContent = stats.totalPasses;
             document.getElementById('confirmedPasses').textContent = stats.confirmedPasses;
             document.getElementById('pendingInvitations').textContent = stats.pendingInvitations;
             document.getElementById('cancelledPasses').textContent = stats.cancelledPasses || 0;
+            
+            // Calculate and update invitation percentage
+            const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
+            const invitationPercentage = Math.round((stats.totalInvitations / targetInvitations) * 100);
+            const invitationBadge = document.querySelector('.stat-card:first-child .stat-badge');
+            if (invitationBadge) {
+                invitationBadge.textContent = `${invitationPercentage}%`;
+                invitationBadge.title = `${stats.totalInvitations} de ${targetInvitations} invitaciones enviadas`;
+                invitationBadge.classList.remove('primary', 'success', 'warning');
+                if (invitationPercentage >= 100) {
+                    invitationBadge.classList.add('success');
+                } else if (invitationPercentage >= 75) {
+                    invitationBadge.classList.add('primary');
+                } else {
+                    invitationBadge.classList.add('warning');
+                }
+            }
+            
+            // Update target invitations display
+            const targetElement = document.getElementById('targetInvitations');
+            if (targetElement) {
+                targetElement.textContent = targetInvitations;
+            }
+            
+            // Update target guests display
+            const targetGuestsElement = document.getElementById('targetGuests');
+            if (targetGuestsElement) {
+                targetGuestsElement.textContent = WEDDING_CONFIG.guests?.targetTotal || 250;
+            }
             
             // Update confirmed change indicator
             const confirmedChange = document.getElementById('confirmedChange');
@@ -190,30 +218,64 @@ async function loadDashboardData() {
         };
         
         document.getElementById('totalInvitations').textContent = demoStats.totalInvitations;
-        document.getElementById('totalPasses').textContent = demoStats.totalPasses;
         document.getElementById('confirmedPasses').textContent = demoStats.confirmedPasses;
         document.getElementById('pendingInvitations').textContent = demoStats.pendingInvitations;
         document.getElementById('cancelledPasses').textContent = demoStats.cancelledPasses;
         
+        // Calculate and update invitation percentage for demo
+        const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
+        const invitationPercentage = Math.round((demoStats.totalInvitations / targetInvitations) * 100);
+        const invitationBadge = document.querySelector('.stat-card:first-child .stat-badge');
+        if (invitationBadge) {
+            invitationBadge.textContent = `${invitationPercentage}%`;
+            invitationBadge.title = `${demoStats.totalInvitations} de ${targetInvitations} invitaciones enviadas`;
+            invitationBadge.classList.remove('primary', 'success', 'warning');
+            if (invitationPercentage >= 100) {
+                invitationBadge.classList.add('success');
+            } else if (invitationPercentage >= 75) {
+                invitationBadge.classList.add('primary');
+            } else {
+                invitationBadge.classList.add('warning');
+            }
+        }
+        
+        // Update target invitations display
+        const targetElement = document.getElementById('targetInvitations');
+        if (targetElement) {
+            targetElement.textContent = targetInvitations;
+        }
+        
+        // Update target guests display for demo
+        const targetGuestsElement = document.getElementById('targetGuests');
+        if (targetGuestsElement) {
+            targetGuestsElement.textContent = WEDDING_CONFIG.guests?.targetTotal || 250;
+        }
+        
+        // Update pass distribution with demo data
         updatePassDistribution(demoStats);
+        
+        // Update chart with demo data
         updateConfirmationChart(demoStats);
+        
+        // Load recent confirmations
+        loadRecentConfirmations();
     }
 }
 
 // Update Pass Distribution
 function updatePassDistribution(stats) {
+    // Calculate pass distribution (demo values for now)
     const totalPasses = stats.totalPasses || 220;
+    const adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
+    const childPasses = Math.floor(totalPasses * 0.15); // 15% children
+    const staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
     
-    // For demo purposes, calculate distribution
-    const adultPasses = Math.floor(totalPasses * 0.82);
-    const childPasses = Math.floor(totalPasses * 0.14);
-    const staffPasses = totalPasses - adultPasses - childPasses;
-    
+    // Calculate percentages
     const adultPercent = Math.round((adultPasses / totalPasses) * 100);
     const childPercent = Math.round((childPasses / totalPasses) * 100);
     const staffPercent = Math.round((staffPasses / totalPasses) * 100);
     
-    // Update total
+    // Update total passes
     document.getElementById('totalPassesChart').textContent = totalPasses;
     
     // Update adult passes
