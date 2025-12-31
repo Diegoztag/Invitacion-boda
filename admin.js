@@ -450,13 +450,21 @@ function displayRecentConfirmations(confirmations) {
         const gradientClasses = ['gradient-purple', 'gradient-blue', 'gradient-primary'];
         const gradientClass = gradientClasses[index % gradientClasses.length];
         
+        // Format guest names - display each name on a separate line
+        const guestNamesFormatted = invitation.guestNames
+            .map(name => `<div>${name}</div>`)
+            .map(name => name.trim())
+            .filter(name => name)
+            .map(name => `<div>${name}</div>`)
+            .join('');
+        
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
                 <div class="guest-cell">
                     <div class="guest-avatar ${gradientClass}">${initials}</div>
                     <div class="guest-info">
-                        <span class="guest-name">${invitation.guestNames.join(' y ')}</span>
+                        <div class="guest-name" style="line-height: 1.4;">${guestNamesFormatted}</div>
                         <span class="guest-time">${timeAgo}</span>
                     </div>
                 </div>
@@ -472,11 +480,10 @@ function displayRecentConfirmations(confirmations) {
             </td>
             <td>
                 <div style="text-align: center;">
-                    <div style="font-weight: 500; font-size: 0.688rem; color: var(--text-muted);">Mesa</div>
                     <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary);">${Math.floor(Math.random() * 10) + 1}</div>
                 </div>
             </td>
-            <td style="max-width: 200px;">
+            <td class="message-column" style="max-width: 200px;">
                 <span style="font-style: italic; color: var(--text-muted); font-size: 0.875rem;">
                     ${invitation.confirmationDetails?.message ? `"${invitation.confirmationDetails.message}"` : '-'}
                 </span>
@@ -1033,17 +1040,19 @@ function initModal() {
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        
-        const filteredInvitations = allInvitations.filter(invitation => {
-            return invitation.code.toLowerCase().includes(searchTerm) ||
-                   invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
-                   (invitation.phone && invitation.phone.includes(searchTerm));
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            const filteredInvitations = allInvitations.filter(invitation => {
+                return invitation.code.toLowerCase().includes(searchTerm) ||
+                       invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+                       (invitation.phone && invitation.phone.includes(searchTerm));
+            });
+            
+            displayInvitations(filteredInvitations);
         });
-        
-        displayInvitations(filteredInvitations);
-    });
+    }
 }
 
 // Show Create Form
@@ -1407,18 +1416,14 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
         
         // Determine status
         let statusBadge = '';
-        let statusDot = '';
         if (invitation.confirmed) {
             if (invitation.confirmationDetails?.willAttend === false) {
-                statusBadge = '<span class="status-badge rejected">Rechazado</span>';
-                statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #ef4444; border-radius: 50%;"></span>';
+                statusBadge = '<span class="status-badge rejected"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px;"></span>Rechazado</span>';
             } else {
-                statusBadge = '<span class="status-badge confirmed">Confirmado</span>';
-                statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>';
+                statusBadge = '<span class="status-badge confirmed"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px;"></span>Confirmado</span>';
             }
         } else {
-            statusBadge = '<span class="status-badge pending">Pendiente</span>';
-            statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #f59e0b; border-radius: 50%; animation: pulse 2s infinite;"></span>';
+            statusBadge = '<span class="status-badge pending"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></span>Pendiente</span>';
         }
         
         // Determine pass type text
@@ -1450,10 +1455,7 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
                 </div>
             </td>
             <td>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    ${statusDot}
-                    ${statusBadge}
-                </div>
+                ${statusBadge}
             </td>
             <td class="text-center">
                 <span style="font-weight: 700;">${invitation.numberOfPasses}</span>
@@ -1538,18 +1540,20 @@ function updateCreateSectionPagination(currentPage, totalPages) {
 function initCreateSectionSearch() {
     const searchInput = document.getElementById('searchInputCreate');
     
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        
-        const filteredInvitations = allInvitations.filter(invitation => {
-            return invitation.code.toLowerCase().includes(searchTerm) ||
-                   invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
-                   (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
-                   (invitation.phone && invitation.phone.includes(searchTerm));
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            const filteredInvitations = allInvitations.filter(invitation => {
+                return invitation.code.toLowerCase().includes(searchTerm) ||
+                       invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+                       (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
+                       (invitation.phone && invitation.phone.includes(searchTerm));
+            });
+            
+            displayCreateSectionInvitations(filteredInvitations);
         });
-        
-        displayCreateSectionInvitations(filteredInvitations);
-    });
+    }
 }
 
 // Edit invitation (placeholder)
@@ -1572,6 +1576,195 @@ window.addEventListener('click', (e) => {
         e.target.style.display = 'none';
     }
 });
+
+// Toggle filters function
+function toggleFilters() {
+    // Create filter dropdown if it doesn't exist
+    let filterDropdown = document.getElementById('filterDropdown');
+    
+    if (!filterDropdown) {
+        // Create filter dropdown
+        filterDropdown = document.createElement('div');
+        filterDropdown.id = 'filterDropdown';
+        filterDropdown.className = 'filter-dropdown';
+        filterDropdown.innerHTML = `
+            <div class="filter-dropdown-content">
+                <h4>Filtrar por estado</h4>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterConfirmed" checked> 
+                    <span>Confirmados</span>
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterPending" checked> 
+                    <span>Pendientes</span>
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterRejected" checked> 
+                    <span>Rechazados</span>
+                </label>
+                <hr style="margin: 12px 0; border-color: var(--border-color);">
+                <h4>Filtrar por tipo</h4>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterAdults" checked> 
+                    <span>Adultos/Parejas</span>
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterFamily" checked> 
+                    <span>Familias</span>
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterStaff" checked> 
+                    <span>Staff/Proveedores</span>
+                </label>
+                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Restablecer</button>
+                    <button class="btn btn-sm btn-primary" onclick="applyFilters()">Aplicar</button>
+                </div>
+            </div>
+        `;
+        
+        // Position it relative to the filter button
+        const filterBtn = document.querySelector('.btn-icon[title="Filtros"]');
+        const actionsBar = filterBtn.closest('.actions-bar');
+        actionsBar.style.position = 'relative';
+        actionsBar.appendChild(filterDropdown);
+        
+        // Add styles for the dropdown
+        const dropdownStyles = `
+            .filter-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                margin-top: 8px;
+                background: var(--surface-dark);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 16px;
+                box-shadow: var(--shadow-lg);
+                z-index: 100;
+                min-width: 250px;
+                display: none;
+            }
+            
+            .filter-dropdown.show {
+                display: block;
+            }
+            
+            .filter-dropdown-content h4 {
+                font-size: 0.875rem;
+                font-weight: 600;
+                margin-bottom: 12px;
+                color: var(--text-primary);
+            }
+            
+            .filter-option {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                cursor: pointer;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+            }
+            
+            .filter-option:hover {
+                color: var(--text-primary);
+            }
+            
+            .filter-option input[type="checkbox"] {
+                cursor: pointer;
+            }
+            
+            .btn-sm {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        `;
+        
+        // Add styles if not already added
+        if (!document.getElementById('filterStyles')) {
+            const styleElement = document.createElement('style');
+            styleElement.id = 'filterStyles';
+            styleElement.textContent = dropdownStyles;
+            document.head.appendChild(styleElement);
+        }
+    }
+    
+    // Toggle dropdown visibility
+    filterDropdown.classList.toggle('show');
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function closeDropdown(e) {
+        if (!e.target.closest('.filter-dropdown') && !e.target.closest('.btn-icon[title="Filtros"]')) {
+            filterDropdown.classList.remove('show');
+            document.removeEventListener('click', closeDropdown);
+        }
+    });
+}
+
+// Reset filters
+function resetFilters() {
+    document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    applyFilters();
+}
+
+// Apply filters
+function applyFilters() {
+    const filterConfirmed = document.getElementById('filterConfirmed').checked;
+    const filterPending = document.getElementById('filterPending').checked;
+    const filterRejected = document.getElementById('filterRejected').checked;
+    const filterAdults = document.getElementById('filterAdults').checked;
+    const filterFamily = document.getElementById('filterFamily').checked;
+    const filterStaff = document.getElementById('filterStaff').checked;
+    
+    // Filter invitations based on selected filters
+    const filteredInvitations = allInvitations.filter(invitation => {
+        // Check status filters
+        let statusMatch = false;
+        if (invitation.confirmed) {
+            if (invitation.confirmationDetails?.willAttend === false) {
+                statusMatch = filterRejected;
+            } else {
+                statusMatch = filterConfirmed;
+            }
+        } else {
+            statusMatch = filterPending;
+        }
+        
+        // Check type filters
+        let typeMatch = true;
+        if (invitation.invitationType) {
+            if (invitation.invitationType === 'adults') {
+                typeMatch = filterAdults;
+            } else if (invitation.invitationType === 'family') {
+                typeMatch = filterFamily;
+            } else if (invitation.invitationType === 'staff') {
+                typeMatch = filterStaff;
+            }
+        }
+        
+        return statusMatch && typeMatch;
+    });
+    
+    // Apply search term if any
+    const searchInput = document.getElementById('searchInputCreate');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+    
+    const finalFiltered = searchTerm ? filteredInvitations.filter(invitation => {
+        return invitation.code.toLowerCase().includes(searchTerm) ||
+               invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+               (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
+               (invitation.phone && invitation.phone.includes(searchTerm));
+    }) : filteredInvitations;
+    
+    // Display filtered results
+    displayCreateSectionInvitations(finalFiltered);
+    
+    // Close dropdown
+    document.getElementById('filterDropdown').classList.remove('show');
+}
 
 // Add pulse animation style
 const style = document.createElement('style');

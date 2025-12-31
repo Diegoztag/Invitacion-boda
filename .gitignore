@@ -46,3 +46,5 @@ test-sheets.html
 # Temporary files
 *.tmp
 *.temp
+
+CODE_REVIEW_REPORT.md
