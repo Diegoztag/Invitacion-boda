@@ -537,8 +537,6 @@ function displayRecentConfirmations(confirmations) {
     });
 }
 
-// getTimeAgo function removed - now using imported utility
-
 // Calculate recent confirmations (last 7 days)
 async function calculateRecentConfirmations() {
     try {
@@ -1562,20 +1560,6 @@ function initCreateSectionSearch() {
     }
 }
 
-// Edit invitation (placeholder)
-function editInvitation(code) {
-    // TODO: Implement edit functionality
-    showNotification('Función de edición en desarrollo');
-}
-
-// Delete invitation (placeholder)
-function deleteInvitation(code) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta invitación?')) {
-        // TODO: Implement delete functionality
-        showNotification('Función de eliminación en desarrollo');
-    }
-}
-
 // Update modal close handlers
 window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
@@ -1803,5 +1787,3 @@ window.toggleFilters = toggleFilters;
 window.resetFilters = resetFilters;
 window.applyFilters = applyFilters;
 window.exportInvitationLinks = exportInvitationLinks;
-window.editInvitation = editInvitation;
-window.deleteInvitation = deleteInvitation;
