@@ -80,6 +80,12 @@ function updateDynamicContent() {
     document.getElementById('dressCodeDescription').textContent = WEDDING_CONFIG.dressCode.description;
     document.getElementById('dressCodeNote').textContent = WEDDING_CONFIG.dressCode.note;
     
+    // Show no children note if configured
+    const noChildrenNote = document.getElementById('noChildrenNote');
+    if (noChildrenNote && WEDDING_CONFIG.guests && WEDDING_CONFIG.guests.allowChildren === false) {
+        noChildrenNote.style.display = 'block';
+    }
+    
     // Itinerary
     const itineraryTimeline = document.getElementById('itineraryTimeline');
     itineraryTimeline.innerHTML = '';

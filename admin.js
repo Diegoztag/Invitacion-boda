@@ -264,16 +264,28 @@ async function loadDashboardData() {
 
 // Update Pass Distribution
 function updatePassDistribution(stats) {
-    // Calculate pass distribution (demo values for now)
     const totalPasses = stats.totalPasses || 220;
-    const adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
-    const childPasses = Math.floor(totalPasses * 0.15); // 15% children
-    const staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
+    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false; // Default to true if not specified
+    
+    let adultPasses, childPasses, staffPasses;
+    let adultPercent, childPercent, staffPercent;
+    
+    if (allowChildren) {
+        // Normal distribution with children
+        adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
+        childPasses = Math.floor(totalPasses * 0.15); // 15% children
+        staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
+    } else {
+        // No children allowed - redistribute percentages
+        adultPasses = Math.floor(totalPasses * 0.95); // 95% adults
+        childPasses = 0; // 0% children
+        staffPasses = totalPasses - adultPasses; // 5% staff
+    }
     
     // Calculate percentages
-    const adultPercent = Math.round((adultPasses / totalPasses) * 100);
-    const childPercent = Math.round((childPasses / totalPasses) * 100);
-    const staffPercent = Math.round((staffPasses / totalPasses) * 100);
+    adultPercent = Math.round((adultPasses / totalPasses) * 100);
+    childPercent = allowChildren ? Math.round((childPasses / totalPasses) * 100) : 0;
+    staffPercent = Math.round((staffPasses / totalPasses) * 100);
     
     // Update total passes
     document.getElementById('totalPassesChart').textContent = totalPasses;
@@ -283,8 +295,25 @@ function updatePassDistribution(stats) {
     document.getElementById('adultProgress').style.width = `${adultPercent}%`;
     
     // Update child passes
-    document.getElementById('childPasses').textContent = `${childPasses} (${childPercent}%)`;
-    document.getElementById('childProgress').style.width = `${childPercent}%`;
+    const childPassesElement = document.getElementById('childPasses');
+    const childProgressElement = document.getElementById('childProgress');
+    const childProgressItem = childPassesElement.closest('.progress-item');
+    
+    if (!allowChildren) {
+        // Disable children section
+        childPassesElement.textContent = 'No permitidos';
+        childProgressElement.style.width = '0%';
+        childProgressItem.style.opacity = '0.5';
+        childProgressItem.style.filter = 'grayscale(100%)';
+        childProgressItem.querySelector('.progress-label').textContent = 'Niños (No permitidos)';
+    } else {
+        // Enable children section
+        childPassesElement.textContent = `${childPasses} (${childPercent}%)`;
+        childProgressElement.style.width = `${childPercent}%`;
+        childProgressItem.style.opacity = '1';
+        childProgressItem.style.filter = 'none';
+        childProgressItem.querySelector('.progress-label').textContent = 'Niños';
+    }
     
     // Update staff passes
     document.getElementById('staffPasses').textContent = `${staffPasses} (${staffPercent}%)`;
