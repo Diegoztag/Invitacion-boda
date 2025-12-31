@@ -20,7 +20,7 @@ import {
     CSV_CONFIG,
     ICONS,
     DEMO_INVITATIONS
-} from './admin-constants.js';
+} from './admin/js/admin-constants.js';
 
 // Import utilities
 import {
@@ -47,13 +47,13 @@ import {
     renderTableRow,
     updateTablePagination,
     calculatePaginationInfo
-} from './admin-utils.js';
+} from './admin/js/admin-utils.js';
 
 // Import modal system
-import { Modal, ModalFactory, showToast } from './admin-modal.js';
+import { Modal, ModalFactory, showToast } from './admin/js/components/admin-modal.js';
 
 // Import API system
-import { createAdminAPI, APIHelpers } from './admin-api.js';
+import { createAdminAPI, APIHelpers } from './admin/js/admin-api.js';
 
 // Load configuration from config.js
 const CONFIG = {
