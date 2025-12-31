@@ -134,6 +134,8 @@ function initNavigation() {
                 loadDashboardData();
             } else if (targetId === 'invitations') {
                 loadInvitations();
+            } else if (targetId === 'create') {
+                loadCreateSectionData();
             }
         });
     });
@@ -740,6 +742,18 @@ function initCreateForm() {
     const childPassesGroup = document.getElementById('childPassesGroup');
     const totalPassesValue = document.getElementById('totalPassesValue');
     
+    // Check if children are allowed
+    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+    
+    // If children are not allowed, show informative message
+    if (!allowChildren) {
+        // Add informative message
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = 'background: #f8f9fa; color: #495057; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; border-left: 4px solid #e9ecef;';
+        messageDiv.innerHTML = '<i class="fas fa-heart" style="color: #e619a1;"></i> <strong>Celebración íntima:</strong> Hemos decidido que nuestra boda sea una celebración entre adultos para poder compartir este momento especial de una manera más íntima con ustedes.';
+        form.insertBefore(messageDiv, form.querySelector('.form-group'));
+    }
+    
     // Update total passes display
     function updateTotalPasses() {
         const adultPasses = parseInt(adultPassesInput.value) || 0;
@@ -756,7 +770,21 @@ function initCreateForm() {
             if (type === 'family') {
                 // Show child passes input
                 childPassesGroup.style.display = 'block';
-                childPassesInput.value = '0';
+                
+                if (!allowChildren) {
+                    // If children not allowed, disable the input
+                    childPassesInput.value = '0';
+                    childPassesInput.disabled = true;
+                    childPassesInput.style.opacity = '0.5';
+                    childPassesInput.style.cursor = 'not-allowed';
+                    childPassesGroup.querySelector('label').innerHTML = 'Niños <small style="color: var(--text-muted);">(no permitidos)</small>';
+                } else {
+                    // Enable if children are allowed
+                    childPassesInput.disabled = false;
+                    childPassesInput.style.opacity = '1';
+                    childPassesInput.style.cursor = 'auto';
+                    childPassesGroup.querySelector('label').textContent = 'Niños';
+                }
             } else {
                 // Hide child passes input
                 childPassesGroup.style.display = 'none';
@@ -932,6 +960,38 @@ function initSearch() {
 // Show Create Form
 function showCreateForm() {
     document.querySelector('a[href="#create"]').click();
+}
+
+// Modal Functions
+function showCreateModal() {
+    const modal = document.getElementById('createInvitationModal');
+    modal.style.display = 'block';
+}
+
+function closeCreateModal() {
+    const modal = document.getElementById('createInvitationModal');
+    modal.style.display = 'none';
+    // Reset form
+    document.getElementById('createInvitationForm').reset();
+    document.getElementById('adultPassesInput').value = '2';
+    document.getElementById('childPassesInput').value = '0';
+    document.getElementById('childPassesGroup').style.display = 'none';
+    document.getElementById('totalPassesValue').textContent = '2';
+}
+
+function showImportModal() {
+    const modal = document.getElementById('importCsvModal');
+    modal.style.display = 'block';
+}
+
+function closeImportModal() {
+    const modal = document.getElementById('importCsvModal');
+    modal.style.display = 'none';
+    // Reset file input
+    document.getElementById('csvFile').value = '';
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('uploadCsvBtn').style.display = 'none';
+    document.getElementById('csvResults').innerHTML = '';
 }
 
 // Show Notification
@@ -1132,9 +1192,317 @@ function exportInvitationLinks() {
     link.click();
 }
 
+// Load Create Section Data
+async function loadCreateSectionData() {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/stats`);
+        if (response.ok) {
+            const data = await response.json();
+            const stats = data.stats;
+            
+            // Update stats cards in create section
+            document.getElementById('totalInvitationsCreate').textContent = stats.totalInvitations;
+            document.getElementById('confirmedPassesCreate').textContent = stats.confirmedPasses;
+            document.getElementById('pendingInvitationsCreate').textContent = stats.pendingInvitations;
+            document.getElementById('cancelledPassesCreate').textContent = stats.cancelledPasses || 0;
+        }
+    } catch (error) {
+        console.error('Error loading create section data:', error);
+        // Show demo data
+        document.getElementById('totalInvitationsCreate').textContent = '150';
+        document.getElementById('confirmedPassesCreate').textContent = '85';
+        document.getElementById('pendingInvitationsCreate').textContent = '45';
+        document.getElementById('cancelledPassesCreate').textContent = '20';
+    }
+    
+    // Load invitations for the modern table
+    loadCreateSectionInvitations();
+    
+    // Initialize search for create section
+    initCreateSectionSearch();
+}
+
+// Load invitations for create section
+async function loadCreateSectionInvitations() {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
+        if (response.ok) {
+            const data = await response.json();
+            allInvitations = data.invitations || [];
+            displayCreateSectionInvitations(allInvitations);
+        }
+    } catch (error) {
+        console.error('Error loading invitations:', error);
+        // Show demo data
+        const demoInvitations = [
+            {
+                code: 'abc123',
+                guestNames: ['Familia Pérez'],
+                email: 'familia.perez@email.com',
+                numberOfPasses: 4,
+                confirmed: true,
+                confirmedPasses: 4,
+                invitationType: 'family'
+            },
+            {
+                code: 'def456',
+                guestNames: ['Juan García'],
+                email: 'juan.g@email.com',
+                numberOfPasses: 1,
+                confirmed: false,
+                confirmedPasses: 0,
+                invitationType: 'adults'
+            },
+            {
+                code: 'ghi789',
+                guestNames: ['María Rodriguez'],
+                email: 'mrodriguez@email.com',
+                numberOfPasses: 2,
+                confirmed: true,
+                confirmedPasses: 2,
+                invitationType: 'adults'
+            },
+            {
+                code: 'jkl012',
+                guestNames: ['Tíos López'],
+                email: 'lopez.fam@email.com',
+                numberOfPasses: 0,
+                confirmed: true,
+                confirmedPasses: 0,
+                confirmationDetails: { willAttend: false }
+            },
+            {
+                code: 'mno345',
+                guestNames: ['Carlos Mendez'],
+                email: 'cmendez@work.com',
+                numberOfPasses: 1,
+                confirmed: false,
+                confirmedPasses: 0,
+                invitationType: 'staff'
+            }
+        ];
+        allInvitations = demoInvitations;
+        displayCreateSectionInvitations(demoInvitations);
+    }
+}
+
+// Display invitations in create section modern table
+function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5) {
+    const tbody = document.getElementById('invitationsTableBodyCreate');
+    tbody.innerHTML = '';
+    
+    // Calculate pagination
+    const totalItems = invitations.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const paginatedInvitations = invitations.slice(startIndex, endIndex);
+    
+    // Update pagination info
+    document.getElementById('showingFromCreate').textContent = totalItems > 0 ? startIndex + 1 : 0;
+    document.getElementById('showingToCreate').textContent = endIndex;
+    document.getElementById('totalCountCreate').textContent = totalItems;
+    
+    // Generate avatar gradients
+    const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+    ];
+    
+    paginatedInvitations.forEach((invitation, index) => {
+        const initials = invitation.guestNames[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const gradient = gradients[index % gradients.length];
+        const email = invitation.email || `${invitation.guestNames[0].toLowerCase().replace(/\s+/g, '.')}@email.com`;
+        
+        // Determine status
+        let statusBadge = '';
+        let statusDot = '';
+        if (invitation.confirmed) {
+            if (invitation.confirmationDetails?.willAttend === false) {
+                statusBadge = '<span class="status-badge rejected">Rechazado</span>';
+                statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #ef4444; border-radius: 50%;"></span>';
+            } else {
+                statusBadge = '<span class="status-badge confirmed">Confirmado</span>';
+                statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>';
+            }
+        } else {
+            statusBadge = '<span class="status-badge pending">Pendiente</span>';
+            statusDot = '<span style="display: inline-block; width: 6px; height: 6px; background: #f59e0b; border-radius: 50%; animation: pulse 2s infinite;"></span>';
+        }
+        
+        // Determine pass type text
+        let passTypeText = 'adultos';
+        if (invitation.invitationType === 'family') {
+            passTypeText = 'familia';
+        } else if (invitation.invitationType === 'staff') {
+            passTypeText = 'staff';
+        } else if (invitation.numberOfPasses === 1) {
+            passTypeText = 'adulto';
+        }
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <div class="guest-cell">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: ${gradient}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                        ${initials}
+                    </div>
+                    <div class="guest-info">
+                        <span class="guest-name">${invitation.guestNames.join(' y ')}</span>
+                        <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">${email}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ${statusDot}
+                    ${statusBadge}
+                </div>
+            </td>
+            <td class="text-center">
+                <span style="font-weight: 700;">${invitation.numberOfPasses}</span>
+                <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${passTypeText}</span>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <code style="font-family: monospace; font-size: 0.75rem; background: var(--background-dark); padding: 4px 8px; border-radius: 4px; color: var(--text-muted);">
+                        boda.com/inv/${invitation.code.slice(0, 4)}...
+                    </code>
+                    <button class="btn-icon" onclick="copyInvitationLink('${invitation.code}')" style="padding: 4px;">
+                        <i class="fas fa-copy" style="font-size: 14px;"></i>
+                    </button>
+                </div>
+            </td>
+            <td class="text-right">
+                <div style="display: flex; justify-content: flex-end; gap: 4px;">
+                    <button class="btn-icon" onclick="editInvitation('${invitation.code}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon" onclick="deleteInvitation('${invitation.code}')" title="Eliminar" style="color: var(--text-muted);">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Update pagination controls
+    updateCreateSectionPagination(page, totalPages);
+}
+
+// Update pagination controls for create section
+function updateCreateSectionPagination(currentPage, totalPages) {
+    const prevBtn = document.getElementById('prevPageCreate');
+    const nextBtn = document.getElementById('nextPageCreate');
+    const numbersContainer = document.getElementById('paginationNumbersCreate');
+    
+    // Update prev/next buttons
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+    
+    // Update page numbers
+    numbersContainer.innerHTML = '';
+    
+    // Show max 5 page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'pagination-number';
+        btn.textContent = i;
+        if (i === currentPage) {
+            btn.classList.add('active');
+        }
+        btn.onclick = () => {
+            displayCreateSectionInvitations(allInvitations, i);
+        };
+        numbersContainer.appendChild(btn);
+    }
+    
+    // Add ellipsis if needed
+    if (endPage < totalPages) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.style.padding = '8px';
+        ellipsis.style.color = 'var(--text-muted)';
+        numbersContainer.appendChild(ellipsis);
+    }
+    
+    // Set up prev/next button handlers
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            displayCreateSectionInvitations(allInvitations, currentPage - 1);
+        }
+    };
+    
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            displayCreateSectionInvitations(allInvitations, currentPage + 1);
+        }
+    };
+}
+
+// Initialize search for create section
+function initCreateSectionSearch() {
+    const searchInput = document.getElementById('searchInputCreate');
+    
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        const filteredInvitations = allInvitations.filter(invitation => {
+            return invitation.code.toLowerCase().includes(searchTerm) ||
+                   invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+                   (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
+                   (invitation.phone && invitation.phone.includes(searchTerm));
+        });
+        
+        displayCreateSectionInvitations(filteredInvitations);
+    });
+}
+
+// Edit invitation (placeholder)
+function editInvitation(code) {
+    // TODO: Implement edit functionality
+    showNotification('Función de edición en desarrollo');
+}
+
+// Delete invitation (placeholder)
+function deleteInvitation(code) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta invitación?')) {
+        // TODO: Implement delete functionality
+        showNotification('Función de eliminación en desarrollo');
+    }
+}
+
 // Update modal close handlers
 window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         e.target.style.display = 'none';
     }
 });
+
+// Add pulse animation style
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
