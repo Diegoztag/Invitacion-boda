@@ -35,7 +35,12 @@ import {
     formatPhone,
     calculatePercentageStats,
     debounce,
-    parseSimpleCSV
+    parseSimpleCSV,
+    updateStatsUI,
+    updateInvitationPercentageBadge,
+    updateTargetElements,
+    updateConfirmedChangeIndicator,
+    generateDemoStats
 } from './admin-utils.js';
 
 // Load configuration from config.js
@@ -220,56 +225,22 @@ async function loadDashboardData() {
             const data = await response.json();
             const stats = data.stats;
             
-            // Update stats cards
-            document.getElementById('totalInvitations').textContent = stats.totalInvitations;
-            document.getElementById('confirmedPasses').textContent = stats.confirmedPasses;
-            document.getElementById('pendingInvitations').textContent = stats.pendingInvitations;
-            document.getElementById('cancelledPasses').textContent = stats.cancelledPasses || 0;
+            // Update stats cards using utility function
+            updateStatsUI(stats);
             
-            // Calculate and update invitation percentage
+            // Update invitation percentage badge
             const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
-            const invitationPercentage = Math.round((stats.totalInvitations / targetInvitations) * 100);
-            const invitationBadge = document.querySelector('.stat-card:first-child .stat-badge');
-            if (invitationBadge) {
-                invitationBadge.textContent = `${invitationPercentage}%`;
-                invitationBadge.title = `${stats.totalInvitations} de ${targetInvitations} invitaciones enviadas`;
-                invitationBadge.classList.remove('primary', 'success', 'warning');
-                if (invitationPercentage >= 100) {
-                    invitationBadge.classList.add('success');
-                } else if (invitationPercentage >= 75) {
-                    invitationBadge.classList.add('primary');
-                } else {
-                    invitationBadge.classList.add('warning');
-                }
-            }
+            updateInvitationPercentageBadge(stats.totalInvitations, targetInvitations);
             
-            // Update target invitations display
-            const targetElement = document.getElementById('targetInvitations');
-            if (targetElement) {
-                targetElement.textContent = targetInvitations;
-            }
-            
-            // Update target guests display
-            const targetGuestsElement = document.getElementById('targetGuests');
-            if (targetGuestsElement) {
-                targetGuestsElement.textContent = WEDDING_CONFIG.guests?.targetTotal || 250;
-            }
+            // Update target elements
+            updateTargetElements({
+                targetInvitations: targetInvitations,
+                targetTotal: WEDDING_CONFIG.guests?.targetTotal || 250
+            });
             
             // Update confirmed change indicator
-            const confirmedChange = document.getElementById('confirmedChange');
-            if (confirmedChange) {
-                // Calculate recent confirmations (last 7 days)
-                const recentConfirmations = await calculateRecentConfirmations();
-                if (recentConfirmations > 0) {
-                    confirmedChange.innerHTML = `<i class="fas fa-arrow-up trend-icon"></i> +${recentConfirmations}`;
-                    confirmedChange.classList.remove('warning', 'danger');
-                    confirmedChange.classList.add('success');
-                } else {
-                    confirmedChange.innerHTML = `<i class="fas fa-minus trend-icon"></i> 0`;
-                    confirmedChange.classList.remove('success', 'danger');
-                    confirmedChange.classList.add('warning');
-                }
-            }
+            const recentConfirmations = await calculateRecentConfirmations();
+            updateConfirmedChangeIndicator(recentConfirmations);
             
             // Update welcome subtext
             const welcomeSubtext = document.getElementById('welcomeSubtext');
@@ -290,48 +261,20 @@ async function loadDashboardData() {
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         // Show demo data
-        const demoStats = {
-            totalInvitations: 150,
-            totalPasses: 220,
-            confirmedPasses: 85,
-            pendingInvitations: 45,
-            cancelledPasses: 20,
-            pendingPasses: 115
-        };
+        const demoStats = generateDemoStats();
         
-        document.getElementById('totalInvitations').textContent = demoStats.totalInvitations;
-        document.getElementById('confirmedPasses').textContent = demoStats.confirmedPasses;
-        document.getElementById('pendingInvitations').textContent = demoStats.pendingInvitations;
-        document.getElementById('cancelledPasses').textContent = demoStats.cancelledPasses;
+        // Update stats using utility functions
+        updateStatsUI(demoStats);
         
-        // Calculate and update invitation percentage for demo
+        // Update invitation percentage badge
         const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
-        const invitationPercentage = Math.round((demoStats.totalInvitations / targetInvitations) * 100);
-        const invitationBadge = document.querySelector('.stat-card:first-child .stat-badge');
-        if (invitationBadge) {
-            invitationBadge.textContent = `${invitationPercentage}%`;
-            invitationBadge.title = `${demoStats.totalInvitations} de ${targetInvitations} invitaciones enviadas`;
-            invitationBadge.classList.remove('primary', 'success', 'warning');
-            if (invitationPercentage >= 100) {
-                invitationBadge.classList.add('success');
-            } else if (invitationPercentage >= 75) {
-                invitationBadge.classList.add('primary');
-            } else {
-                invitationBadge.classList.add('warning');
-            }
-        }
+        updateInvitationPercentageBadge(demoStats.totalInvitations, targetInvitations);
         
-        // Update target invitations display
-        const targetElement = document.getElementById('targetInvitations');
-        if (targetElement) {
-            targetElement.textContent = targetInvitations;
-        }
-        
-        // Update target guests display for demo
-        const targetGuestsElement = document.getElementById('targetGuests');
-        if (targetGuestsElement) {
-            targetGuestsElement.textContent = WEDDING_CONFIG.guests?.targetTotal || 250;
-        }
+        // Update target elements
+        updateTargetElements({
+            targetInvitations: targetInvitations,
+            targetTotal: WEDDING_CONFIG.guests?.targetTotal || 250
+        });
         
         // Update pass distribution with demo data
         updatePassDistribution(demoStats);
@@ -1302,19 +1245,14 @@ async function loadCreateSectionData() {
             const data = await response.json();
             const stats = data.stats;
             
-            // Update stats cards in create section
-            document.getElementById('totalInvitationsCreate').textContent = stats.totalInvitations;
-            document.getElementById('confirmedPassesCreate').textContent = stats.confirmedPasses;
-            document.getElementById('pendingInvitationsCreate').textContent = stats.pendingInvitations;
-            document.getElementById('cancelledPassesCreate').textContent = stats.cancelledPasses || 0;
+            // Update stats cards in create section using utility function
+            updateStatsUI(stats, 'Create');
         }
     } catch (error) {
         console.error('Error loading create section data:', error);
         // Show demo data
-        document.getElementById('totalInvitationsCreate').textContent = '150';
-        document.getElementById('confirmedPassesCreate').textContent = '85';
-        document.getElementById('pendingInvitationsCreate').textContent = '45';
-        document.getElementById('cancelledPassesCreate').textContent = '20';
+        const demoStats = generateDemoStats();
+        updateStatsUI(demoStats, 'Create');
     }
     
     // Load invitations for the modern table

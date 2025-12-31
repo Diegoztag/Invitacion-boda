@@ -317,3 +317,106 @@ export function parseSimpleCSV(text) {
     
     return invitations;
 }
+
+/**
+ * Actualiza los elementos de estadísticas en el UI
+ * @param {Object} stats - Objeto con las estadísticas
+ * @param {string} suffix - Sufijo para los IDs de elementos (ej: 'Create' para la sección de crear)
+ */
+export function updateStatsUI(stats, suffix = '') {
+    // Actualizar contadores principales
+    const totalInvitationsEl = document.getElementById(`totalInvitations${suffix}`);
+    const confirmedPassesEl = document.getElementById(`confirmedPasses${suffix}`);
+    const pendingInvitationsEl = document.getElementById(`pendingInvitations${suffix}`);
+    const cancelledPassesEl = document.getElementById(`cancelledPasses${suffix}`);
+    
+    if (totalInvitationsEl) {
+        totalInvitationsEl.textContent = stats.totalInvitations;
+    }
+    
+    if (confirmedPassesEl) {
+        confirmedPassesEl.textContent = stats.confirmedPasses;
+    }
+    
+    if (pendingInvitationsEl) {
+        pendingInvitationsEl.textContent = stats.pendingInvitations;
+    }
+    
+    if (cancelledPassesEl) {
+        cancelledPassesEl.textContent = stats.cancelledPasses || 0;
+    }
+}
+
+/**
+ * Actualiza el badge de porcentaje de invitaciones
+ * @param {number} totalInvitations - Total de invitaciones actuales
+ * @param {number} targetInvitations - Meta de invitaciones
+ * @param {string} selector - Selector CSS para el badge
+ */
+export function updateInvitationPercentageBadge(totalInvitations, targetInvitations, selector = '.stat-card:first-child .stat-badge') {
+    const invitationBadge = document.querySelector(selector);
+    if (!invitationBadge) return;
+    
+    const { percentage, badgeClass } = calculatePercentageStats(totalInvitations, targetInvitations);
+    
+    invitationBadge.textContent = `${percentage}%`;
+    invitationBadge.title = `${totalInvitations} de ${targetInvitations} invitaciones enviadas`;
+    
+    // Actualizar clases
+    invitationBadge.classList.remove('primary', 'success', 'warning');
+    invitationBadge.classList.add(badgeClass);
+}
+
+/**
+ * Actualiza los elementos de metas (targets)
+ * @param {Object} config - Configuración con targetInvitations y targetTotal
+ */
+export function updateTargetElements(config) {
+    const targetInvitationsEl = document.getElementById('targetInvitations');
+    const targetGuestsEl = document.getElementById('targetGuests');
+    
+    if (targetInvitationsEl && config.targetInvitations) {
+        targetInvitationsEl.textContent = config.targetInvitations;
+    }
+    
+    if (targetGuestsEl && config.targetTotal) {
+        targetGuestsEl.textContent = config.targetTotal;
+    }
+}
+
+/**
+ * Actualiza el indicador de cambio de confirmaciones
+ * @param {number} recentConfirmations - Número de confirmaciones recientes
+ */
+export function updateConfirmedChangeIndicator(recentConfirmations) {
+    const confirmedChange = document.getElementById('confirmedChange');
+    if (!confirmedChange) return;
+    
+    if (recentConfirmations > 0) {
+        confirmedChange.innerHTML = `<i class="fas fa-arrow-up trend-icon"></i> +${recentConfirmations}`;
+        confirmedChange.classList.remove('warning', 'danger');
+        confirmedChange.classList.add('success');
+    } else {
+        confirmedChange.innerHTML = `<i class="fas fa-minus trend-icon"></i> 0`;
+        confirmedChange.classList.remove('success', 'danger');
+        confirmedChange.classList.add('warning');
+    }
+}
+
+/**
+ * Genera estadísticas de demostración
+ * @returns {Object} Objeto con estadísticas demo
+ */
+export function generateDemoStats() {
+    return {
+        totalInvitations: 150,
+        totalPasses: 220,
+        confirmedPasses: 85,
+        pendingInvitations: 45,
+        cancelledPasses: 20,
+        pendingPasses: 115,
+        adultPasses: 176,
+        childPasses: 33,
+        staffPasses: 11
+    };
+}
