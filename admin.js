@@ -43,7 +43,10 @@ import {
     generateDemoStats,
     getStatusBadge,
     renderStatBadge,
-    getBadgeType
+    getBadgeType,
+    renderTableRow,
+    updateTablePagination,
+    calculatePaginationInfo
 } from './admin-utils.js';
 
 // Load configuration from config.js
@@ -408,6 +411,7 @@ function displayRecentConfirmations(confirmations) {
         // Show demo data if no confirmations
         const demoData = [
             {
+                code: 'demo1',
                 guestNames: ['Carlos Méndez'],
                 confirmationDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
                 confirmedPasses: 2,
@@ -417,6 +421,7 @@ function displayRecentConfirmations(confirmations) {
                 }
             },
             {
+                code: 'demo2',
                 guestNames: ['Lucía Ramos'],
                 confirmationDate: new Date(Date.now() - 5 * 60 * 60 * 1000),
                 confirmedPasses: 1,
@@ -429,54 +434,8 @@ function displayRecentConfirmations(confirmations) {
     }
     
     confirmations.forEach((invitation, index) => {
-        const initials = getInitials(invitation.guestNames[0]);
-        const timeAgo = getTimeAgo(new Date(invitation.confirmationDate));
-        
-        // Use utility function for gradient
-        const { className: gradientClass } = getRandomGradient(index);
-        
-        // Format guest names - display each name on a separate line
-        const guestNamesFormatted = invitation.guestNames
-            .map(name => `<div>${name}</div>`)
-            .map(name => name.trim())
-            .filter(name => name)
-            .map(name => `<div>${name}</div>`)
-            .join('');
-        
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <div class="guest-cell">
-                    <div class="guest-avatar ${gradientClass}">${initials}</div>
-                    <div class="guest-info">
-                        <div class="guest-name" style="line-height: 1.4;">${guestNamesFormatted}</div>
-                        <span class="guest-time">${timeAgo}</span>
-                    </div>
-                </div>
-            </td>
-            <td>
-                ${getStatusBadge(invitation).html}
-            </td>
-            <td>
-                <span class="passes-count">${invitation.confirmedPasses || 0}</span>
-                <span class="passes-type">${invitation.confirmedPasses === 1 ? 'Adulto' : 'Adultos'}</span>
-            </td>
-            <td>
-                <div style="text-align: center;">
-                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary);">${Math.floor(Math.random() * 10) + 1}</div>
-                </div>
-            </td>
-            <td class="message-column" style="max-width: 200px;">
-                <span style="font-style: italic; color: var(--text-muted); font-size: 0.875rem;">
-                    ${invitation.confirmationDetails?.message ? `"${invitation.confirmationDetails.message}"` : '-'}
-                </span>
-            </td>
-            <td style="text-align: right;">
-                <button class="btn-icon" onclick="viewInvitation('${invitation.code}')">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </td>
-        `;
+        row.innerHTML = renderTableRow(invitation, 'recent', index);
         tbody.appendChild(row);
     });
 }
@@ -605,28 +564,8 @@ function displayInvitations(invitations) {
     tbody.innerHTML = '';
     
     invitations.forEach(invitation => {
-        // Use utility function to calculate cancelled passes
-        const cancelledPasses = calculateCancelledPasses(invitation);
-        
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="code-cell">${invitation.code}</td>
-            <td>${formatGuestNames(invitation.guestNames)}</td>
-            <td>${invitation.numberOfPasses}</td>
-            <td>
-                ${getStatusBadge(invitation).html}
-            </td>
-            <td>${invitation.confirmedPasses || 0}</td>
-            <td>${cancelledPasses > 0 ? `<span style="color: #f44336; font-weight: 600;">${cancelledPasses}</span>` : '0'}</td>
-            <td>
-                <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn-icon" onclick="copyInvitationLink('${invitation.code}')" title="Copiar enlace">
-                    <i class="fas fa-link"></i>
-                </button>
-            </td>
-        `;
+        row.innerHTML = renderTableRow(invitation, 'invitations');
         tbody.appendChild(row);
     });
 }
@@ -1306,143 +1245,33 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
     const tbody = document.getElementById('invitationsTableBodyCreate');
     tbody.innerHTML = '';
     
-    // Calculate pagination
-    const totalItems = invitations.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    const paginatedInvitations = invitations.slice(startIndex, endIndex);
+    // Calculate pagination info
+    const paginationInfo = calculatePaginationInfo(invitations.length, page, itemsPerPage);
+    const paginatedInvitations = invitations.slice(paginationInfo.startIndex, paginationInfo.endIndex);
     
-    // Update pagination info
-    document.getElementById('showingFromCreate').textContent = totalItems > 0 ? startIndex + 1 : 0;
-    document.getElementById('showingToCreate').textContent = endIndex;
-    document.getElementById('totalCountCreate').textContent = totalItems;
+    // Update pagination info display
+    document.getElementById('showingFromCreate').textContent = paginationInfo.showingFrom;
+    document.getElementById('showingToCreate').textContent = paginationInfo.showingTo;
+    document.getElementById('totalCountCreate').textContent = paginationInfo.totalCount;
     
-    // Generate avatar gradients
-    const gradients = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
-    ];
-    
+    // Render table rows
     paginatedInvitations.forEach((invitation, index) => {
-        const initials = invitation.guestNames[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        const gradient = gradients[index % gradients.length];
-        
-        // Get status badge with dot and animation
-        const statusBadge = getStatusBadge(invitation, { showDot: true, animate: true }).html;
-        
-        // Determine pass type text
-        let passTypeText = 'adultos';
-        if (invitation.invitationType === 'family') {
-            passTypeText = 'familia';
-        } else if (invitation.invitationType === 'staff') {
-            passTypeText = 'staff';
-        } else if (invitation.numberOfPasses === 1) {
-            passTypeText = 'adulto';
-        }
-        
-        // Assign table number (could be stored in invitation data or calculated)
-        const tableNumber = invitation.tableNumber || Math.floor(Math.random() * 10) + 1;
-        
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <div class="guest-cell">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: ${gradient}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
-                        ${initials}
-                    </div>
-                    <div class="guest-info">
-                        <span class="guest-name">${invitation.guestNames.join(' y ')}</span>
-                        <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">
-                            ${invitation.confirmed && invitation.confirmationDate ? getTimeAgo(new Date(invitation.confirmationDate)) : 'Sin confirmar'}
-                        </span>
-                    </div>
-                </div>
-            </td>
-            <td>
-                ${statusBadge}
-            </td>
-            <td class="text-center">
-                <span style="font-weight: 700;">${invitation.numberOfPasses}</span>
-                <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${passTypeText}</span>
-            </td>
-            <td>
-                <span style="font-weight: 600; color: var(--text-primary);">Mesa ${tableNumber}</span>
-            </td>
-            <td class="text-right">
-                <div style="display: flex; justify-content: flex-end; gap: 4px;">
-                    <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                </div>
-            </td>
-        `;
+        row.innerHTML = renderTableRow(invitation, 'create', paginationInfo.startIndex + index);
         tbody.appendChild(row);
     });
     
     // Update pagination controls
-    updateCreateSectionPagination(page, totalPages);
+    updateTablePagination({
+        currentPage: page,
+        totalPages: paginationInfo.totalPages,
+        prevBtnId: 'prevPageCreate',
+        nextBtnId: 'nextPageCreate',
+        numbersContainerId: 'paginationNumbersCreate',
+        onPageChange: (newPage) => displayCreateSectionInvitations(invitations, newPage, itemsPerPage)
+    });
 }
 
-// Update pagination controls for create section
-function updateCreateSectionPagination(currentPage, totalPages) {
-    const prevBtn = document.getElementById('prevPageCreate');
-    const nextBtn = document.getElementById('nextPageCreate');
-    const numbersContainer = document.getElementById('paginationNumbersCreate');
-    
-    // Update prev/next buttons
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
-    
-    // Update page numbers
-    numbersContainer.innerHTML = '';
-    
-    // Show max 5 page numbers
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
-    
-    if (endPage - startPage < 4) {
-        startPage = Math.max(1, endPage - 4);
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'pagination-number';
-        btn.textContent = i;
-        if (i === currentPage) {
-            btn.classList.add('active');
-        }
-        btn.onclick = () => {
-            displayCreateSectionInvitations(allInvitations, i);
-        };
-        numbersContainer.appendChild(btn);
-    }
-    
-    // Add ellipsis if needed
-    if (endPage < totalPages) {
-        const ellipsis = document.createElement('span');
-        ellipsis.textContent = '...';
-        ellipsis.style.padding = '8px';
-        ellipsis.style.color = 'var(--text-muted)';
-        numbersContainer.appendChild(ellipsis);
-    }
-    
-    // Set up prev/next button handlers
-    prevBtn.onclick = () => {
-        if (currentPage > 1) {
-            displayCreateSectionInvitations(allInvitations, currentPage - 1);
-        }
-    };
-    
-    nextBtn.onclick = () => {
-        if (currentPage < totalPages) {
-            displayCreateSectionInvitations(allInvitations, currentPage + 1);
-        }
-    };
-}
 
 // Initialize search for create section
 function initCreateSectionSearch() {

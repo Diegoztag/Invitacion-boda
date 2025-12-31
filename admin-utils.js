@@ -557,3 +557,284 @@ export function getBadgeType(current, target, thresholds = { high: 75, medium: 5
     if (percentage >= thresholds.medium) return 'warning';
     return 'danger';
 }
+
+/**
+ * Renderiza una fila de tabla para invitaciones
+ * @param {Object} invitation - Objeto de invitación
+ * @param {string} tableType - Tipo de tabla ('invitations', 'recent', 'create')
+ * @param {number} index - Índice para gradientes consistentes
+ * @returns {string} HTML de la fila
+ */
+export function renderTableRow(invitation, tableType = 'invitations', index = 0) {
+    switch (tableType) {
+        case 'recent':
+            return renderRecentConfirmationRow(invitation, index);
+        case 'create':
+            return renderCreateSectionRow(invitation, index);
+        case 'invitations':
+        default:
+            return renderInvitationRow(invitation);
+    }
+}
+
+/**
+ * Renderiza una fila para la tabla de invitaciones principal
+ * @param {Object} invitation - Objeto de invitación
+ * @returns {string} HTML de la fila
+ */
+function renderInvitationRow(invitation) {
+    const cancelledPasses = calculateCancelledPasses(invitation);
+    const statusBadge = getStatusBadge(invitation).html;
+    
+    return `
+        <td class="code-cell">${invitation.code}</td>
+        <td>${formatGuestNames(invitation.guestNames)}</td>
+        <td>${invitation.numberOfPasses}</td>
+        <td>${statusBadge}</td>
+        <td>${invitation.confirmedPasses || 0}</td>
+        <td>${cancelledPasses > 0 ? `<span style="color: #f44336; font-weight: 600;">${cancelledPasses}</span>` : '0'}</td>
+        <td>
+            <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
+                <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" onclick="copyInvitationLink('${invitation.code}')" title="Copiar enlace">
+                <i class="fas fa-link"></i>
+            </button>
+        </td>
+    `;
+}
+
+/**
+ * Renderiza una fila para la tabla de confirmaciones recientes
+ * @param {Object} invitation - Objeto de invitación
+ * @param {number} index - Índice para gradiente
+ * @returns {string} HTML de la fila
+ */
+function renderRecentConfirmationRow(invitation, index) {
+    const initials = getInitials(invitation.guestNames[0]);
+    const timeAgo = getTimeAgo(new Date(invitation.confirmationDate));
+    const { className: gradientClass } = getRandomGradient(index);
+    const statusBadge = getStatusBadge(invitation).html;
+    
+    // Format guest names - display each name on a separate line
+    const guestNamesFormatted = invitation.guestNames
+        .map(name => name.trim())
+        .filter(name => name)
+        .map(name => `<div>${name}</div>`)
+        .join('');
+    
+    const tableNumber = getTableNumber(invitation.code);
+    const passTypeText = invitation.confirmedPasses === 1 ? 'Adulto' : 'Adultos';
+    const message = invitation.confirmationDetails?.message;
+    
+    return `
+        <td>
+            <div class="guest-cell">
+                <div class="guest-avatar ${gradientClass}">${initials}</div>
+                <div class="guest-info">
+                    <div class="guest-name" style="line-height: 1.4;">${guestNamesFormatted}</div>
+                    <span class="guest-time">${timeAgo}</span>
+                </div>
+            </div>
+        </td>
+        <td>${statusBadge}</td>
+        <td>
+            <span class="passes-count">${invitation.confirmedPasses || 0}</span>
+            <span class="passes-type">${passTypeText}</span>
+        </td>
+        <td>
+            <div style="text-align: center;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary);">${tableNumber}</div>
+            </div>
+        </td>
+        <td class="message-column" style="max-width: 200px;">
+            <span style="font-style: italic; color: var(--text-muted); font-size: 0.875rem;">
+                ${message ? `"${message}"` : '-'}
+            </span>
+        </td>
+        <td style="text-align: right;">
+            <button class="btn-icon" onclick="viewInvitation('${invitation.code}')">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+        </td>
+    `;
+}
+
+/**
+ * Renderiza una fila para la tabla de la sección crear
+ * @param {Object} invitation - Objeto de invitación
+ * @param {number} index - Índice para gradiente
+ * @returns {string} HTML de la fila
+ */
+function renderCreateSectionRow(invitation, index) {
+    const initials = getInitials(invitation.guestNames[0]);
+    const { style: gradientStyle } = getRandomGradient(index);
+    const statusBadge = getStatusBadge(invitation, { showDot: true, animate: true }).html;
+    const passTypeText = getPassTypeText(invitation);
+    const tableNumber = getTableNumber(invitation.code);
+    const timeText = invitation.confirmed && invitation.confirmationDate 
+        ? getTimeAgo(new Date(invitation.confirmationDate)) 
+        : 'Sin confirmar';
+    
+    return `
+        <td>
+            <div class="guest-cell">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: ${gradientStyle}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                    ${initials}
+                </div>
+                <div class="guest-info">
+                    <span class="guest-name">${formatGuestNames(invitation.guestNames)}</span>
+                    <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">
+                        ${timeText}
+                    </span>
+                </div>
+            </div>
+        </td>
+        <td>${statusBadge}</td>
+        <td class="text-center">
+            <span style="font-weight: 700;">${invitation.numberOfPasses}</span>
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${passTypeText}</span>
+        </td>
+        <td>
+            <span style="font-weight: 600; color: var(--text-primary);">Mesa ${tableNumber}</span>
+        </td>
+        <td class="text-right">
+            <div style="display: flex; justify-content: flex-end; gap: 4px;">
+                <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </td>
+    `;
+}
+
+/**
+ * Actualiza los controles de paginación
+ * @param {Object} config - Configuración de paginación
+ * @param {number} config.currentPage - Página actual
+ * @param {number} config.totalPages - Total de páginas
+ * @param {string} config.prevBtnId - ID del botón anterior
+ * @param {string} config.nextBtnId - ID del botón siguiente
+ * @param {string} config.numbersContainerId - ID del contenedor de números
+ * @param {Function} config.onPageChange - Callback al cambiar de página
+ */
+export function updateTablePagination(config) {
+    const {
+        currentPage,
+        totalPages,
+        prevBtnId,
+        nextBtnId,
+        numbersContainerId,
+        onPageChange
+    } = config;
+    
+    const prevBtn = document.getElementById(prevBtnId);
+    const nextBtn = document.getElementById(nextBtnId);
+    const numbersContainer = document.getElementById(numbersContainerId);
+    
+    if (!prevBtn || !nextBtn || !numbersContainer) return;
+    
+    // Update prev/next buttons
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+    
+    // Update page numbers
+    numbersContainer.innerHTML = '';
+    
+    if (totalPages === 0) return;
+    
+    // Show max 5 page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    // Add first page if not visible
+    if (startPage > 1) {
+        const firstBtn = createPageButton(1, currentPage === 1, () => onPageChange(1));
+        numbersContainer.appendChild(firstBtn);
+        
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '8px';
+            ellipsis.style.color = 'var(--text-muted)';
+            numbersContainer.appendChild(ellipsis);
+        }
+    }
+    
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        const btn = createPageButton(i, i === currentPage, () => onPageChange(i));
+        numbersContainer.appendChild(btn);
+    }
+    
+    // Add last page if not visible
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '8px';
+            ellipsis.style.color = 'var(--text-muted)';
+            numbersContainer.appendChild(ellipsis);
+        }
+        
+        const lastBtn = createPageButton(totalPages, currentPage === totalPages, () => onPageChange(totalPages));
+        numbersContainer.appendChild(lastBtn);
+    }
+    
+    // Set up prev/next button handlers
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            onPageChange(currentPage - 1);
+        }
+    };
+    
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            onPageChange(currentPage + 1);
+        }
+    };
+}
+
+/**
+ * Crea un botón de página
+ * @param {number} pageNumber - Número de página
+ * @param {boolean} isActive - Si es la página activa
+ * @param {Function} onClick - Handler de click
+ * @returns {HTMLElement} Elemento botón
+ */
+function createPageButton(pageNumber, isActive, onClick) {
+    const btn = document.createElement('button');
+    btn.className = 'pagination-number';
+    btn.textContent = pageNumber;
+    if (isActive) {
+        btn.classList.add('active');
+    }
+    btn.onclick = onClick;
+    return btn;
+}
+
+/**
+ * Calcula información de paginación
+ * @param {number} totalItems - Total de elementos
+ * @param {number} currentPage - Página actual
+ * @param {number} itemsPerPage - Elementos por página
+ * @returns {Object} Información de paginación
+ */
+export function calculatePaginationInfo(totalItems, currentPage, itemsPerPage) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    
+    return {
+        totalPages,
+        startIndex,
+        endIndex,
+        showingFrom: totalItems > 0 ? startIndex + 1 : 0,
+        showingTo: endIndex,
+        totalCount: totalItems
+    };
+}
