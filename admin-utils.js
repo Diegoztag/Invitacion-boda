@@ -473,8 +473,8 @@ export function getStatusBadge(invitation, options = {}) {
         // Badge normal
         let dotHtml = '';
         if (showDot) {
-            const animationStyle = animate && status === 'pending' ? 'animation: pulse 2s infinite;' : '';
-            dotHtml = `<span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; ${animationStyle}"></span>`;
+            const animationClass = animate && status === 'pending' ? 'status-dot-animated' : '';
+            dotHtml = `<span class="status-dot ${animationClass}"></span>`;
         }
         html = `<span class="status-badge ${statusClass}">${dotHtml}${statusText}</span>`;
     }
@@ -592,7 +592,7 @@ function renderInvitationRow(invitation) {
         <td>${invitation.numberOfPasses}</td>
         <td>${statusBadge}</td>
         <td>${invitation.confirmedPasses || 0}</td>
-        <td>${cancelledPasses > 0 ? `<span style="color: #f44336; font-weight: 600;">${cancelledPasses}</span>` : '0'}</td>
+        <td>${cancelledPasses > 0 ? `<span class="cancelled-count">${cancelledPasses}</span>` : '0'}</td>
         <td>
             <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
                 <i class="fas fa-eye"></i>
@@ -632,7 +632,7 @@ function renderRecentConfirmationRow(invitation, index) {
             <div class="guest-cell">
                 <div class="guest-avatar ${gradientClass}">${initials}</div>
                 <div class="guest-info">
-                    <div class="guest-name" style="line-height: 1.4;">${guestNamesFormatted}</div>
+                    <div class="guest-name guest-name-cell">${guestNamesFormatted}</div>
                     <span class="guest-time">${timeAgo}</span>
                 </div>
             </div>
@@ -643,16 +643,16 @@ function renderRecentConfirmationRow(invitation, index) {
             <span class="passes-type">${passTypeText}</span>
         </td>
         <td>
-            <div style="text-align: center;">
-                <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary);">${tableNumber}</div>
+            <div class="table-cell-center">
+                <div class="table-number-display">${tableNumber}</div>
             </div>
         </td>
-        <td class="message-column" style="max-width: 200px;">
-            <span style="font-style: italic; color: var(--text-muted); font-size: 0.875rem;">
+        <td class="message-column message-cell">
+            <span class="message-text">
                 ${message ? `"${message}"` : '-'}
             </span>
         </td>
-        <td style="text-align: right;">
+        <td class="table-cell-right">
             <button class="btn-icon" onclick="viewInvitation('${invitation.code}')">
                 <i class="fas fa-ellipsis-v"></i>
             </button>
@@ -679,12 +679,12 @@ function renderCreateSectionRow(invitation, index) {
     return `
         <td>
             <div class="guest-cell">
-                <div style="width: 40px; height: 40px; border-radius: 50%; background: ${gradientStyle}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                <div class="guest-avatar ${gradientStyle}">
                     ${initials}
                 </div>
                 <div class="guest-info">
                     <span class="guest-name">${formatGuestNames(invitation.guestNames)}</span>
-                    <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">
+                    <span class="guest-time guest-time-muted">
                         ${timeText}
                     </span>
                 </div>
@@ -692,14 +692,14 @@ function renderCreateSectionRow(invitation, index) {
         </td>
         <td>${statusBadge}</td>
         <td class="text-center">
-            <span style="font-weight: 700;">${invitation.numberOfPasses}</span>
-            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${passTypeText}</span>
+            <span class="pass-count">${invitation.numberOfPasses}</span>
+            <span class="pass-type-label">${passTypeText}</span>
         </td>
         <td>
-            <span style="font-weight: 600; color: var(--text-primary);">Mesa ${tableNumber}</span>
+            <span class="table-number">Mesa ${tableNumber}</span>
         </td>
         <td class="text-right">
-            <div style="display: flex; justify-content: flex-end; gap: 4px;">
+            <div class="action-buttons">
                 <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
@@ -759,8 +759,7 @@ export function updateTablePagination(config) {
         if (startPage > 2) {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
-            ellipsis.style.padding = '8px';
-            ellipsis.style.color = 'var(--text-muted)';
+            ellipsis.className = 'pagination-ellipsis';
             numbersContainer.appendChild(ellipsis);
         }
     }
@@ -776,8 +775,7 @@ export function updateTablePagination(config) {
         if (endPage < totalPages - 1) {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
-            ellipsis.style.padding = '8px';
-            ellipsis.style.color = 'var(--text-muted)';
+            ellipsis.className = 'pagination-ellipsis';
             numbersContainer.appendChild(ellipsis);
         }
         

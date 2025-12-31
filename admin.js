@@ -149,14 +149,18 @@ function initMobileMenu() {
     mobileMenuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
         sidebarOverlay.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        if (sidebar.classList.contains('active')) {
+            document.body.classList.add('body-no-scroll');
+        } else {
+            document.body.classList.remove('body-no-scroll');
+        }
     });
     
     // Close menu when clicking overlay
     sidebarOverlay.addEventListener('click', () => {
         sidebar.classList.remove('active');
         sidebarOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+        document.body.classList.remove('body-no-scroll');
     });
     
     // Close menu when clicking a nav item on mobile
@@ -166,7 +170,7 @@ function initMobileMenu() {
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
+                document.body.classList.remove('body-no-scroll');
             }
         });
     });
@@ -179,7 +183,7 @@ function initMobileMenu() {
             if (window.innerWidth > 768) {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
+                document.body.classList.remove('body-no-scroll');
             }
         }, 250);
     });
@@ -362,7 +366,7 @@ function updatePassDistribution(stats) {
     
     // Update adult passes
     document.getElementById('adultPasses').textContent = `${adultPasses} (${adultPercent}%)`;
-    document.getElementById('adultProgress').style.width = `${adultPercent}%`;
+    document.getElementById('adultProgress').className = `progress-fill primary progress-fill-${Math.round(adultPercent / 10) * 10}`;
     
     // Update child passes
     const childPassesElement = document.getElementById('childPasses');
@@ -372,22 +376,20 @@ function updatePassDistribution(stats) {
     if (!allowChildren) {
         // Disable children section
         childPassesElement.textContent = 'No permitidos';
-        childProgressElement.style.width = '0%';
-        childProgressItem.style.opacity = '0.5';
-        childProgressItem.style.filter = 'grayscale(100%)';
+        childProgressElement.className = 'progress-fill warning progress-fill-0';
+        childProgressItem.classList.add('disabled-section');
         childProgressItem.querySelector('.progress-label').textContent = 'Niños (No permitidos)';
     } else {
         // Enable children section
         childPassesElement.textContent = `${childPasses} (${childPercent}%)`;
-        childProgressElement.style.width = `${childPercent}%`;
-        childProgressItem.style.opacity = '1';
-        childProgressItem.style.filter = 'none';
+        childProgressElement.className = `progress-fill warning progress-fill-${Math.round(childPercent / 10) * 10}`;
+        childProgressItem.classList.remove('disabled-section');
         childProgressItem.querySelector('.progress-label').textContent = 'Niños';
     }
     
     // Update staff passes
     document.getElementById('staffPasses').textContent = `${staffPasses} (${staffPercent}%)`;
-    document.getElementById('staffProgress').style.width = `${staffPercent}%`;
+    document.getElementById('staffProgress').className = `progress-fill muted progress-fill-${Math.round(staffPercent / 10) * 10}`;
     
     // Update label text based on screen size
     const staffLabel = document.querySelector('.progress-item:nth-child(3) .progress-label');
@@ -605,12 +607,12 @@ function viewInvitation(code) {
                     ${invitation.confirmationDetails?.willAttend ? `
                         <div class="stats-grid-mini">
                             <div class="stat-mini">
-                                <div class="stat-mini-value" style="color: var(--success);">${invitation.confirmedPasses}</div>
+                                <div class="stat-mini-value stat-value-success">${invitation.confirmedPasses}</div>
                                 <div class="stat-mini-label">Confirmados</div>
                             </div>
                             ${cancelledPasses > 0 ? `
                                 <div class="stat-mini">
-                                    <div class="stat-mini-value" style="color: var(--danger);">${cancelledPasses}</div>
+                                    <div class="stat-mini-value stat-value-danger">${cancelledPasses}</div>
                                     <div class="stat-mini-label">Cancelados</div>
                                 </div>
                             ` : ''}
@@ -701,8 +703,8 @@ function initCreateForm() {
     if (!allowChildren) {
         // Add informative message
         const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = 'background: #f8f9fa; color: #495057; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; border-left: 4px solid #e9ecef;';
-        messageDiv.innerHTML = '<i class="fas fa-heart" style="color: #e619a1;"></i> <strong>Celebración íntima:</strong> Hemos decidido que nuestra boda sea una celebración entre adultos para poder compartir este momento especial de una manera más íntima con ustedes.';
+        messageDiv.className = 'children-not-allowed-message';
+        messageDiv.innerHTML = '<i class="fas fa-heart icon-primary"></i> <strong>Celebración íntima:</strong> Hemos decidido que nuestra boda sea una celebración entre adultos para poder compartir este momento especial de una manera más íntima con ustedes.';
         form.insertBefore(messageDiv, form.querySelector('.form-group'));
     }
     
@@ -721,25 +723,23 @@ function initCreateForm() {
             
             if (type === 'family') {
                 // Show child passes input
-                childPassesGroup.style.display = 'block';
+                childPassesGroup.classList.remove('hidden');
                 
                 if (!allowChildren) {
                     // If children not allowed, disable the input
                     childPassesInput.value = '0';
                     childPassesInput.disabled = true;
-                    childPassesInput.style.opacity = '0.5';
-                    childPassesInput.style.cursor = 'not-allowed';
-                    childPassesGroup.querySelector('label').innerHTML = 'Niños <small style="color: var(--text-muted);">(no permitidos)</small>';
+                    childPassesInput.classList.add('disabled-input');
+                    childPassesGroup.querySelector('label').innerHTML = 'Niños <small class="children-not-allowed-label">(no permitidos)</small>';
                 } else {
                     // Enable if children are allowed
                     childPassesInput.disabled = false;
-                    childPassesInput.style.opacity = '1';
-                    childPassesInput.style.cursor = 'auto';
+                    childPassesInput.classList.remove('disabled-input');
                     childPassesGroup.querySelector('label').textContent = 'Niños';
                 }
             } else {
                 // Hide child passes input
-                childPassesGroup.style.display = 'none';
+                childPassesGroup.classList.add('hidden');
                 childPassesInput.value = '0';
             }
             
@@ -799,7 +799,7 @@ function initCreateForm() {
                 // Reset to default values
                 adultPassesInput.value = '2';
                 childPassesInput.value = '0';
-                childPassesGroup.style.display = 'none';
+                childPassesGroup.classList.add('hidden');
                 updateTotalPasses();
                 
                 // Show invitation details
@@ -864,7 +864,7 @@ function closeCreateModal() {
     document.getElementById('createInvitationForm').reset();
     document.getElementById('adultPassesInput').value = '2';
     document.getElementById('childPassesInput').value = '0';
-    document.getElementById('childPassesGroup').style.display = 'none';
+    document.getElementById('childPassesGroup').classList.add('hidden');
     document.getElementById('totalPassesValue').textContent = '2';
 }
 
@@ -916,10 +916,12 @@ function initCsvUpload() {
         selectedFile = e.target.files[0];
         if (selectedFile) {
             fileName.textContent = selectedFile.name;
-            uploadBtn.style.display = 'inline-block';
+            uploadBtn.classList.remove('upload-button-hidden');
+            uploadBtn.classList.add('upload-button-visible');
         } else {
             fileName.textContent = '';
-            uploadBtn.style.display = 'none';
+            uploadBtn.classList.add('upload-button-hidden');
+            uploadBtn.classList.remove('upload-button-visible');
         }
     });
     
@@ -970,7 +972,7 @@ function initCsvUpload() {
                     resultsHTML += `
                         <div class="csv-link-item">
                             <strong>${inv.guestNames.join(' y ')}</strong><br>
-                            <input type="text" value="${inv.url}" readonly style="width: 100%; margin: 5px 0;">
+                            <input type="text" value="${inv.url}" readonly class="csv-link-input">
                             <button class="btn btn-sm" onclick="copyToClipboard('${inv.url}')">
                                 <i class="fas fa-copy"></i> Copiar
                             </button>
@@ -981,7 +983,7 @@ function initCsvUpload() {
                 
                 // Add export button
                 resultsHTML += `
-                    <button class="btn btn-secondary" onclick="exportInvitationLinks()" style="margin-top: 20px;">
+                    <button class="btn btn-secondary csv-export-button" onclick="exportInvitationLinks()">
                         <i class="fas fa-download"></i> Descargar todos los enlaces
                     </button>
                 `;
@@ -995,7 +997,8 @@ function initCsvUpload() {
             // Reset form
             csvFile.value = '';
             fileName.textContent = '';
-            uploadBtn.style.display = 'none';
+            uploadBtn.classList.add('upload-button-hidden');
+            uploadBtn.classList.remove('upload-button-visible');
             selectedFile = null;
             
             // Reload invitations list
@@ -1226,7 +1229,7 @@ function toggleFilters() {
                     <input type="checkbox" id="filterRejected" checked> 
                     <span>Rechazados</span>
                 </label>
-                <hr style="margin: 12px 0; border-color: var(--border-color);">
+                <hr class="filter-divider">
                 <h4>Filtrar por tipo</h4>
                 <label class="filter-option">
                     <input type="checkbox" id="filterAdults" checked> 
@@ -1240,7 +1243,7 @@ function toggleFilters() {
                     <input type="checkbox" id="filterStaff" checked> 
                     <span>Staff/Proveedores</span>
                 </label>
-                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                <div class="filter-actions">
                     <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Restablecer</button>
                     <button class="btn btn-sm btn-primary" onclick="applyFilters()">Aplicar</button>
                 </div>
@@ -1250,7 +1253,7 @@ function toggleFilters() {
         // Position it relative to the filter button
         const filterBtn = document.querySelector('.btn-icon[title="Filtros"]');
         const actionsBar = filterBtn.closest('.actions-bar');
-        actionsBar.style.position = 'relative';
+        actionsBar.classList.add('position-relative');
         actionsBar.appendChild(filterDropdown);
         
         // Add styles for the dropdown

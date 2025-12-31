@@ -89,7 +89,8 @@ export class Modal {
     open() {
         if (this.isOpen) return;
         
-        this.modalElement.style.display = 'block';
+        this.modalElement.classList.remove('modal-hidden');
+        this.modalElement.classList.add('modal-visible');
         this.isOpen = true;
         
         // Agregar listener de ESC
@@ -103,7 +104,7 @@ export class Modal {
         }
         
         // Prevenir scroll del body
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('body-no-scroll');
     }
     
     /**
@@ -112,7 +113,8 @@ export class Modal {
     close() {
         if (!this.isOpen) return;
         
-        this.modalElement.style.display = 'none';
+        this.modalElement.classList.remove('modal-visible');
+        this.modalElement.classList.add('modal-hidden');
         this.isOpen = false;
         
         // Remover listener de ESC
@@ -126,7 +128,7 @@ export class Modal {
         }
         
         // Restaurar scroll del body
-        document.body.style.overflow = '';
+        document.body.classList.remove('body-no-scroll');
     }
     
     /**
@@ -217,7 +219,7 @@ export class ModalFactory {
                                min="1" max="10" value="2" required>
                     </div>
                     
-                    <div class="form-group" id="childPassesGroup" style="display: none;">
+                    <div class="form-group hidden" id="childPassesGroup">
                         <label for="childPassesInput">Niños</label>
                         <input type="number" id="childPassesInput" name="childPasses" 
                                min="0" max="10" value="0">
@@ -268,7 +270,7 @@ export class ModalFactory {
                 </div>
                 
                 <div class="file-upload-area">
-                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                    <input type="file" id="csvFile" accept=".csv" class="file-input-hidden">
                     <label for="csvFile" class="file-upload-label">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span>Seleccionar archivo CSV</span>
@@ -276,7 +278,7 @@ export class ModalFactory {
                     <div id="fileName" class="file-name"></div>
                 </div>
                 
-                <button id="uploadCsvBtn" class="btn btn-primary" style="display: none;">
+                <button id="uploadCsvBtn" class="btn btn-primary upload-button-hidden">
                     <i class="fas fa-upload"></i> Cargar Invitaciones
                 </button>
                 
@@ -293,7 +295,11 @@ export class ModalFactory {
                 // Reset form when closing
                 document.getElementById('csvFile').value = '';
                 document.getElementById('fileName').textContent = '';
-                document.getElementById('uploadCsvBtn').style.display = 'none';
+                const uploadBtn = document.getElementById('uploadCsvBtn');
+                if (uploadBtn) {
+                    uploadBtn.classList.add('upload-button-hidden');
+                    uploadBtn.classList.remove('upload-button-visible');
+                }
                 document.getElementById('csvResults').innerHTML = '';
             }
         });
