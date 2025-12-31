@@ -12,6 +12,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update wedding title
     document.getElementById('weddingTitle').textContent = `Boda ${WEDDING_CONFIG.couple.displayName}`;
     
+    // Handle responsive label updates
+    function updateResponsiveLabels() {
+        const staffLabel = document.querySelector('.progress-item:nth-child(3) .progress-label');
+        if (staffLabel) {
+            if (window.innerWidth <= 768) {
+                staffLabel.textContent = 'Staff';
+            } else {
+                staffLabel.textContent = 'Staff/Proveedores';
+            }
+        }
+    }
+    
+    // Update labels on resize
+    window.addEventListener('resize', updateResponsiveLabels);
+    
+    // Initial update
+    updateResponsiveLabels();
+    
     // Update mobile header couple name
     const mobileCoupleName = document.querySelector('.mobile-couple-name');
     if (mobileCoupleName) {
@@ -34,6 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initModal();
     initSearch();
     initCsvUpload();
+    
+    // Handle "Ver todos los invitados" link - use event delegation
+    document.addEventListener('click', (e) => {
+        // Check if the clicked element is the "Ver todos los invitados" link
+        if (e.target && e.target.matches('a[href="#invitations"]')) {
+            e.preventDefault();
+            // Navigate to "Invitados" section (create section)
+            const invitadosNavItem = document.querySelector('.nav-item[href="#create"]');
+            if (invitadosNavItem) {
+                invitadosNavItem.click();
+            }
+        }
+    });
 });
 
 // Initialize Mobile Menu
@@ -187,8 +218,17 @@ async function loadDashboardData() {
             // Update confirmed change indicator
             const confirmedChange = document.getElementById('confirmedChange');
             if (confirmedChange) {
-                // This would track daily changes - for now just show a static value
-                confirmedChange.innerHTML = '<i class="fas fa-arrow-up trend-icon"></i> +12';
+                // Calculate recent confirmations (last 7 days)
+                const recentConfirmations = await calculateRecentConfirmations();
+                if (recentConfirmations > 0) {
+                    confirmedChange.innerHTML = `<i class="fas fa-arrow-up trend-icon"></i> +${recentConfirmations}`;
+                    confirmedChange.classList.remove('warning', 'danger');
+                    confirmedChange.classList.add('success');
+                } else {
+                    confirmedChange.innerHTML = `<i class="fas fa-minus trend-icon"></i> 0`;
+                    confirmedChange.classList.remove('success', 'danger');
+                    confirmedChange.classList.add('warning');
+                }
             }
             
             // Update welcome subtext
@@ -336,6 +376,16 @@ function updatePassDistribution(stats) {
     // Update staff passes
     document.getElementById('staffPasses').textContent = `${staffPasses} (${staffPercent}%)`;
     document.getElementById('staffProgress').style.width = `${staffPercent}%`;
+    
+    // Update label text based on screen size
+    const staffLabel = document.querySelector('.progress-item:nth-child(3) .progress-label');
+    if (staffLabel) {
+        if (window.innerWidth <= 768) {
+            staffLabel.textContent = 'Staff';
+        } else {
+            staffLabel.textContent = 'Staff/Proveedores';
+        }
+    }
 }
 
 // Load Recent Confirmations
@@ -416,8 +466,16 @@ function displayRecentConfirmations(confirmations) {
                     ${invitation.confirmationDetails?.willAttend ? 'Confirmado' : 'Rechazado'}
                 </span>
             </td>
-            <td>${invitation.confirmedPasses || 0} ${invitation.confirmedPasses === 1 ? 'Adulto' : 'Adultos'}</td>
-            <td>Mesa ${Math.floor(Math.random() * 10) + 1}</td>
+            <td>
+                <span class="passes-count">${invitation.confirmedPasses || 0}</span>
+                <span class="passes-type">${invitation.confirmedPasses === 1 ? 'Adulto' : 'Adultos'}</span>
+            </td>
+            <td>
+                <div style="text-align: center;">
+                    <div style="font-weight: 500; font-size: 0.688rem; color: var(--text-muted);">Mesa</div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary);">${Math.floor(Math.random() * 10) + 1}</div>
+                </div>
+            </td>
             <td style="max-width: 200px;">
                 <span style="font-style: italic; color: var(--text-muted); font-size: 0.875rem;">
                     ${invitation.confirmationDetails?.message ? `"${invitation.confirmationDetails.message}"` : '-'}
@@ -450,6 +508,40 @@ function getTimeAgo(date) {
     } else {
         return `hace ${days} días`;
     }
+}
+
+// Calculate recent confirmations (last 7 days)
+async function calculateRecentConfirmations() {
+    try {
+        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
+        if (response.ok) {
+            const data = await response.json();
+            const invitations = data.invitations || [];
+            
+            // Get date 7 days ago
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            
+            // Count confirmations in the last 7 days
+            const recentConfirmations = invitations.filter(inv => {
+                if (inv.confirmed && inv.confirmationDate) {
+                    const confirmDate = new Date(inv.confirmationDate);
+                    return confirmDate >= sevenDaysAgo;
+                }
+                return false;
+            });
+            
+            // Sum up the confirmed passes from recent confirmations
+            const totalRecentPasses = recentConfirmations.reduce((sum, inv) => {
+                return sum + (inv.confirmedPasses || 0);
+            }, 0);
+            
+            return totalRecentPasses;
+        }
+    } catch (error) {
+        console.error('Error calculating recent confirmations:', error);
+    }
+    return 0;
 }
 
 // Update Confirmation Chart
@@ -625,20 +717,18 @@ function viewInvitation(code) {
     }
     
     details.innerHTML = `
-        <div class="invitation-detail" style="font-size: 14px;">
+        <div class="invitation-detail">
             <!-- Status Header -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="display: inline-block; background: ${statusColor}; color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500;">
-                    <i class="fas fa-${statusIcon}" style="font-size: 12px;"></i> ${statusText}
+            <div class="status-header">
+                <div class="status-badge-large" style="background: ${statusColor};">
+                    <i class="fas fa-${statusIcon}"></i> ${statusText}
                 </div>
             </div>
             
-            <!-- Minimalist Guest Info -->
-            <div style="border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 10px 0; font-size: 16px; color: #333; font-weight: 500;">
-                    ${invitation.guestNames.join(' y ')}
-                </h4>
-                <div style="display: flex; gap: 20px; font-size: 13px; color: #666;">
+            <!-- Guest Info Section -->
+            <div class="guest-section">
+                <h4>${invitation.guestNames.join(' y ')}</h4>
+                <div class="info-row">
                     <span><strong>Código:</strong> ${invitation.code}</span>
                     <span><strong>Pases:</strong> ${invitation.numberOfPasses}</span>
                     ${invitation.phone || invitation.confirmationDetails?.phone ? `
@@ -648,48 +738,47 @@ function viewInvitation(code) {
             </div>
             
             ${invitation.confirmed ? `
-                <!-- Minimalist Confirmation Status -->
-                <div style="margin-bottom: 15px;">
+                <!-- Confirmation Details -->
+                <div>
                     ${invitation.confirmationDetails?.willAttend ? `
-                        <div style="display: flex; gap: 15px; margin-bottom: 12px;">
-                            <div style="flex: 1; text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
-                                <div style="font-size: 20px; font-weight: 600; color: #4caf50;">${invitation.confirmedPasses}</div>
-                                <div style="font-size: 11px; color: #666; margin-top: 2px;">Confirmados</div>
+                        <div class="stats-grid-mini">
+                            <div class="stat-mini">
+                                <div class="stat-mini-value" style="color: var(--success);">${invitation.confirmedPasses}</div>
+                                <div class="stat-mini-label">Confirmados</div>
                             </div>
                             ${cancelledPasses > 0 ? `
-                                <div style="flex: 1; text-align: center; padding: 12px; background: #f5f5f5; border-radius: 8px;">
-                                    <div style="font-size: 20px; font-weight: 600; color: #f44336;">${cancelledPasses}</div>
-                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Cancelados</div>
+                                <div class="stat-mini">
+                                    <div class="stat-mini-value" style="color: var(--danger);">${cancelledPasses}</div>
+                                    <div class="stat-mini-label">Cancelados</div>
                                 </div>
                             ` : ''}
                         </div>
                         
                         ${invitation.confirmationDetails?.attendingNames?.length > 0 ? `
-                            <p style="margin: 8px 0; font-size: 13px; color: #555;">
+                            <div class="attendees-list">
                                 <strong>Asistentes:</strong> ${invitation.confirmationDetails.attendingNames.join(', ')}
-                            </p>
+                            </div>
                         ` : ''}
                         
                         ${invitation.confirmationDetails?.dietaryRestrictions ? `
-                            <p style="margin: 8px 0; padding: 8px; background: #fff3cd; border-radius: 5px; font-size: 12px;">
-                                <i class="fas fa-utensils" style="color: #856404;"></i> ${invitation.confirmationDetails.dietaryRestrictions}
-                            </p>
+                            <div class="dietary-note">
+                                <i class="fas fa-utensils"></i>
+                                ${invitation.confirmationDetails.dietaryRestrictions}
+                            </div>
                         ` : ''}
                     ` : `
-                        <div style="text-align: center; padding: 15px; background: #ffebee; border-radius: 8px;">
-                            <p style="margin: 0; font-size: 14px; color: #c62828;">Invitación declinada</p>
+                        <div class="declined-message">
+                            <p>Invitación declinada</p>
                         </div>
                     `}
                     
                     ${invitation.confirmationDetails?.message ? `
-                        <div style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 6px;">
-                            <p style="margin: 0; font-size: 12px; font-style: italic; color: #555;">
-                                "${invitation.confirmationDetails.message}"
-                            </p>
+                        <div class="message-box">
+                            <p>"${invitation.confirmationDetails.message}"</p>
                         </div>
                     ` : ''}
                     
-                    <p style="margin: 10px 0 0 0; text-align: right; color: #999; font-size: 11px;">
+                    <p class="timestamp">
                         ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
                             day: 'numeric',
                             month: 'short',
@@ -701,11 +790,11 @@ function viewInvitation(code) {
                 </div>
             ` : ''}
             
-            <!-- Minimalist Link Section -->
-            <div style="border-top: 1px solid #e0e0e0; padding-top: 15px;">
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" value="${invitationUrl}" readonly style="flex: 1; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; background: #f9f9f9;">
-                    <button class="btn btn-sm" onclick="copyToClipboard('${invitationUrl}')" style="padding: 8px 16px; font-size: 12px;">
+            <!-- Link Section -->
+            <div class="link-section">
+                <div class="link-input-group">
+                    <input type="text" value="${invitationUrl}" readonly>
+                    <button class="btn btn-primary" onclick="copyToClipboard('${invitationUrl}')">
                         <i class="fas fa-copy"></i> Copiar
                     </button>
                 </div>
@@ -1315,7 +1404,6 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
     paginatedInvitations.forEach((invitation, index) => {
         const initials = invitation.guestNames[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         const gradient = gradients[index % gradients.length];
-        const email = invitation.email || `${invitation.guestNames[0].toLowerCase().replace(/\s+/g, '.')}@email.com`;
         
         // Determine status
         let statusBadge = '';
@@ -1343,6 +1431,9 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
             passTypeText = 'adulto';
         }
         
+        // Assign table number (could be stored in invitation data or calculated)
+        const tableNumber = invitation.tableNumber || Math.floor(Math.random() * 10) + 1;
+        
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
@@ -1352,7 +1443,9 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
                     </div>
                     <div class="guest-info">
                         <span class="guest-name">${invitation.guestNames.join(' y ')}</span>
-                        <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">${email}</span>
+                        <span class="guest-time" style="color: var(--text-muted); font-size: 0.75rem;">
+                            ${invitation.confirmed && invitation.confirmationDate ? getTimeAgo(new Date(invitation.confirmationDate)) : 'Sin confirmar'}
+                        </span>
                     </div>
                 </div>
             </td>
@@ -1367,22 +1460,12 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
                 <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${passTypeText}</span>
             </td>
             <td>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <code style="font-family: monospace; font-size: 0.75rem; background: var(--background-dark); padding: 4px 8px; border-radius: 4px; color: var(--text-muted);">
-                        boda.com/inv/${invitation.code.slice(0, 4)}...
-                    </code>
-                    <button class="btn-icon" onclick="copyInvitationLink('${invitation.code}')" style="padding: 4px;">
-                        <i class="fas fa-copy" style="font-size: 14px;"></i>
-                    </button>
-                </div>
+                <span style="font-weight: 600; color: var(--text-primary);">Mesa ${tableNumber}</span>
             </td>
             <td class="text-right">
                 <div style="display: flex; justify-content: flex-end; gap: 4px;">
-                    <button class="btn-icon" onclick="editInvitation('${invitation.code}')" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon" onclick="deleteInvitation('${invitation.code}')" title="Eliminar" style="color: var(--text-muted);">
-                        <i class="fas fa-trash"></i>
+                    <button class="btn-icon" onclick="viewInvitation('${invitation.code}')" title="Ver detalles">
+                        <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
             </td>

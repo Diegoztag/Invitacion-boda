@@ -39,8 +39,8 @@
                     <span>Resumen</span>
                 </a>
                 <a href="#create" class="nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Crear Invitación</span>
+                    <i class="fas fa-user-friends"></i>
+                    <span>Invitados</span>
                 </a>
                 <a href="#invitations" class="nav-item">
                     <i class="fas fa-envelope"></i>
@@ -208,28 +208,30 @@
                 </div>
 
                 <!-- Recent Activity Table -->
-                <div class="table-container">
+                <div class="table-container" id="recentConfirmationsTable">
                     <div class="table-header">
                         <h3>Últimas Confirmaciones</h3>
                         <button class="btn btn-primary" onclick="showCreateForm()">
-                            <i class="fas fa-plus"></i> Añadir Invitado
+                            <i class="fas fa-plus"></i> <span class="btn-text">Añadir Invitado</span>
                         </button>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Invitado</th>
-                                <th>Estado</th>
-                                <th>Pases</th>
-                                <th>Mesa</th>
-                                <th>Mensaje</th>
-                                <th style="text-align: right;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentConfirmations">
-                            <!-- Recent confirmations will be loaded here -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Invitado</th>
+                                    <th>Estado</th>
+                                    <th>Pases</th>
+                                    <th>Mesa</th>
+                                    <th class="message-column">Mensaje</th>
+                                    <th style="text-align: right;">Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentConfirmations">
+                                <!-- Recent confirmations will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                     <div style="padding: 16px; text-align: center; border-top: 1px solid var(--border-color);">
                         <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Ver todos los invitados</a>
                     </div>
@@ -272,7 +274,7 @@
         <section id="create" class="content-section">
             <div class="section-header">
                 <div>
-                    <h1>Lista de Invitados</h1>
+                    <h1>Invitados</h1>
                     <p class="section-subtitle">Gestiona las invitaciones, confirma asistencias y organiza las mesas para el gran día.</p>
                 </div>
             </div>
@@ -366,7 +368,7 @@
                             <th>Invitado</th>
                             <th>Estado</th>
                             <th class="text-center">Pases</th>
-                            <th>Enlace Único</th>
+                            <th>Mesa</th>
                             <th class="text-right">Acciones</th>
                         </tr>
                     </thead>
