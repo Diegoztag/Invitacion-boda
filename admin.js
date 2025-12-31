@@ -22,6 +22,22 @@ import {
     DEMO_INVITATIONS
 } from './admin-constants.js';
 
+// Import utilities
+import {
+    calculateCancelledPasses,
+    getInitials,
+    formatGuestNames,
+    getRandomGradient,
+    getTimeAgo,
+    getPassTypeText,
+    getTableNumber,
+    formatDate,
+    formatPhone,
+    calculatePercentageStats,
+    debounce,
+    parseSimpleCSV
+} from './admin-utils.js';
+
 // Load configuration from config.js
 const CONFIG = {
     backendUrl: WEDDING_CONFIG.api.backendUrl
@@ -467,12 +483,11 @@ function displayRecentConfirmations(confirmations) {
     }
     
     confirmations.forEach((invitation, index) => {
-        const initials = invitation.guestNames[0].split(' ').map(n => n[0]).join('').toUpperCase();
+        const initials = getInitials(invitation.guestNames[0]);
         const timeAgo = getTimeAgo(new Date(invitation.confirmationDate));
         
-        // Alternate between different gradient styles
-        const gradientClasses = ['gradient-purple', 'gradient-blue', 'gradient-primary'];
-        const gradientClass = gradientClasses[index % gradientClasses.length];
+        // Use utility function for gradient
+        const { className: gradientClass } = getRandomGradient(index);
         
         // Format guest names - display each name on a separate line
         const guestNamesFormatted = invitation.guestNames
@@ -522,24 +537,7 @@ function displayRecentConfirmations(confirmations) {
     });
 }
 
-// Get time ago string
-function getTimeAgo(date) {
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 60) {
-        return `hace ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
-    } else if (hours < 24) {
-        return `hace ${hours} ${hours === 1 ? 'hora' : 'horas'}`;
-    } else if (days === 1) {
-        return 'ayer';
-    } else {
-        return `hace ${days} días`;
-    }
-}
+// getTimeAgo function removed - now using imported utility
 
 // Calculate recent confirmations (last 7 days)
 async function calculateRecentConfirmations() {
@@ -665,22 +663,13 @@ function displayInvitations(invitations) {
     tbody.innerHTML = '';
     
     invitations.forEach(invitation => {
-        // Calculate cancelled passes for this invitation
-        let cancelledPasses = 0;
-        if (invitation.confirmed && invitation.confirmationDetails) {
-            if (!invitation.confirmationDetails.willAttend) {
-                // If they're not attending, all passes are cancelled
-                cancelledPasses = invitation.numberOfPasses;
-            } else if (invitation.confirmationDetails.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
-                // If they're attending but not using all passes, calculate the difference
-                cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
-            }
-        }
+        // Use utility function to calculate cancelled passes
+        const cancelledPasses = calculateCancelledPasses(invitation);
         
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="code-cell">${invitation.code}</td>
-            <td>${invitation.guestNames.join(' y ')}</td>
+            <td>${formatGuestNames(invitation.guestNames)}</td>
             <td>${invitation.numberOfPasses}</td>
             <td>
                 <span class="status-badge ${invitation.confirmed ? 'confirmed' : 'pending'}">
@@ -737,15 +726,8 @@ function viewInvitation(code) {
         }
     }
     
-    // Calculate cancelled passes
-    let cancelledPasses = 0;
-    if (invitation.confirmed && invitation.confirmationDetails) {
-        if (!invitation.confirmationDetails.willAttend) {
-            cancelledPasses = invitation.numberOfPasses;
-        } else if (invitation.confirmationDetails.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
-            cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
-        }
-    }
+    // Use utility function to calculate cancelled passes
+    const cancelledPasses = calculateCancelledPasses(invitation);
     
     details.innerHTML = `
         <div class="invitation-detail">
