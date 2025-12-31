@@ -66,6 +66,9 @@ const adminAPI = createAdminAPI(CONFIG.backendUrl);
 // Global variables
 let allInvitations = [];
 let confirmationChart = null;
+let lastKnownConfirmations = null;
+let notificationCheckInterval = null;
+let notificationSound = null;
 
 // Modal instances
 let invitationDetailModal = null;
@@ -81,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set active modal reference for form buttons
     window.activeModal = null;
+    
+    // Initialize notification sound
+    initNotificationSound();
     
     // Update wedding title
     document.getElementById('weddingTitle').textContent = `Boda ${WEDDING_CONFIG.couple.displayName}`;
@@ -124,6 +130,28 @@ document.addEventListener('DOMContentLoaded', () => {
     initCreateForm();
     initSearch();
     initCsvUpload();
+    
+    // Initialize period selector
+    const periodSelector = document.getElementById('confirmationPeriod');
+    if (periodSelector) {
+        // Load saved preference
+        const savedPeriod = localStorage.getItem('confirmationPeriod') || 'today';
+        periodSelector.value = savedPeriod;
+        
+        // Add change event listener
+        periodSelector.addEventListener('change', async (e) => {
+            const selectedPeriod = e.target.value;
+            
+            // Save preference
+            localStorage.setItem('confirmationPeriod', selectedPeriod);
+            
+            // Calculate confirmations for new period
+            const periodConfirmations = await calculateConfirmationsByPeriod(selectedPeriod);
+            
+            // Update welcome text
+            updateWelcomeText(selectedPeriod, periodConfirmations);
+        });
+    }
     
     // Handle "Ver todos los invitados" link - use event delegation
     document.addEventListener('click', (e) => {
@@ -272,12 +300,15 @@ async function loadDashboardData() {
             const recentConfirmations = await calculateRecentConfirmations();
             updateConfirmedChangeIndicator(recentConfirmations);
             
-            // Update welcome subtext
-            const welcomeSubtext = document.getElementById('welcomeSubtext');
-            if (welcomeSubtext) {
-                const recentConfirmations = 12; // This would come from actual data
-                welcomeSubtext.textContent = `Aquí tienes el resumen de tu boda. Hoy recibiste ${recentConfirmations} confirmaciones nuevas.`;
-            }
+            // Get selected period from dropdown
+            const periodSelector = document.getElementById('confirmationPeriod');
+            const selectedPeriod = periodSelector ? periodSelector.value : 'today';
+            
+            // Calculate confirmations for selected period
+            const periodConfirmations = await calculateConfirmationsByPeriod(selectedPeriod);
+            
+            // Update welcome subtext based on period
+            updateWelcomeText(selectedPeriod, periodConfirmations);
             
             // Update pass distribution
             updatePassDistribution(stats);
@@ -469,6 +500,88 @@ async function calculateRecentConfirmations() {
         console.error('Error calculating recent confirmations:', error);
     }
     return 0;
+}
+
+// Calculate confirmations for a specific period
+async function calculateConfirmationsByPeriod(period = 'today') {
+    try {
+        // Fetch all invitations
+        const result = await adminAPI.fetchInvitations();
+        if (APIHelpers.isSuccess(result)) {
+            const invitations = result.invitations || [];
+            
+            // Get the date range based on period
+            const now = new Date();
+            let startDate = new Date();
+            
+            switch(period) {
+                case 'today':
+                    // Today at midnight
+                    startDate.setHours(0, 0, 0, 0);
+                    break;
+                case 'last24hours':
+                    // 24 hours ago from now
+                    startDate = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+                    break;
+                case 'lastWeek':
+                    // 7 days ago at midnight
+                    startDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+                    startDate.setHours(0, 0, 0, 0);
+                    break;
+                default:
+                    startDate.setHours(0, 0, 0, 0);
+            }
+            
+            // Count confirmations in the period
+            let count = 0;
+            invitations.forEach(invitation => {
+                if (invitation.confirmed && invitation.confirmationDate) {
+                    const confirmDate = new Date(invitation.confirmationDate);
+                    
+                    if (confirmDate >= startDate && confirmDate <= now) {
+                        count++;
+                    }
+                }
+            });
+            
+            return count;
+        }
+    } catch (error) {
+        console.error('Error calculating confirmations by period:', error);
+    }
+    return 0;
+}
+
+// Calculate today's confirmations (backward compatibility)
+async function calculateTodayConfirmations() {
+    return calculateConfirmationsByPeriod('today');
+}
+
+// Update welcome text based on period and confirmations
+function updateWelcomeText(period, confirmations) {
+    const welcomeSubtext = document.getElementById('welcomeSubtext');
+    if (!welcomeSubtext) return;
+    
+    let periodText = '';
+    switch(period) {
+        case 'today':
+            periodText = 'hoy';
+            break;
+        case 'last24hours':
+            periodText = 'en las últimas 24 horas';
+            break;
+        case 'lastWeek':
+            periodText = 'en la última semana';
+            break;
+        default:
+            periodText = 'hoy';
+    }
+    
+    if (confirmations > 0) {
+        welcomeSubtext.textContent = `Aquí tienes el resumen de tu boda. Recibiste ${confirmations} confirmación${confirmations === 1 ? '' : 'es'} nueva${confirmations === 1 ? '' : 's'} ${periodText}.`;
+    } else {
+        welcomeSubtext.textContent = `Aquí tienes el resumen de tu boda. No has recibido confirmaciones nuevas ${periodText}.`;
+    }
 }
 
 // Update Confirmation Chart
@@ -1409,6 +1522,163 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Notification System Functions
+function initNotificationSound() {
+    // Create audio element for notification sound
+    notificationSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+    notificationSound.volume = 0.3;
+}
+
+// Check for new confirmations
+async function checkForNewConfirmations() {
+    try {
+        const result = await adminAPI.fetchInvitations();
+        if (APIHelpers.isSuccess(result)) {
+            const invitations = result.invitations || [];
+            
+            // Get confirmed invitations
+            const confirmedInvitations = invitations.filter(inv => inv.confirmed);
+            
+            // Check if this is the first check
+            if (lastKnownConfirmations === null) {
+                lastKnownConfirmations = confirmedInvitations.length;
+                return;
+            }
+            
+            // Check for new confirmations
+            const newConfirmationsCount = confirmedInvitations.length - lastKnownConfirmations;
+            
+            if (newConfirmationsCount > 0) {
+                // Find the new confirmations
+                const sortedConfirmations = confirmedInvitations
+                    .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
+                    .slice(0, newConfirmationsCount);
+                
+                // Show notification for each new confirmation
+                sortedConfirmations.forEach((invitation, index) => {
+                    setTimeout(() => {
+                        showNewConfirmationNotification(invitation);
+                    }, index * 500); // Stagger notifications
+                });
+                
+                // Update badge
+                updateNotificationBadge(newConfirmationsCount);
+                
+                // Play sound
+                if (notificationSound && localStorage.getItem('notificationSoundEnabled') !== 'false') {
+                    notificationSound.play().catch(e => console.log('Could not play sound:', e));
+                }
+                
+                // Reload dashboard data
+                loadDashboardData();
+                loadRecentConfirmations();
+            }
+            
+            lastKnownConfirmations = confirmedInvitations.length;
+        }
+    } catch (error) {
+        console.error('Error checking for new confirmations:', error);
+    }
+}
+
+// Show notification for new confirmation
+function showNewConfirmationNotification(invitation) {
+    const guestName = invitation.guestNames.join(' y ');
+    const confirmedPasses = invitation.confirmedPasses || 0;
+    const willAttend = invitation.confirmationDetails?.willAttend !== false;
+    
+    // Create notification toast
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.innerHTML = `
+        <i class="toast-icon fas fa-${willAttend ? 'check-circle' : 'times-circle'}"></i>
+        <div class="toast-content">
+            <div class="toast-title">Nueva confirmación</div>
+            <div class="toast-message">
+                ${guestName} ${willAttend ? `confirmó asistencia (${confirmedPasses} ${confirmedPasses === 1 ? 'pase' : 'pases'})` : 'no podrá asistir'}
+            </div>
+        </div>
+        <button class="toast-action" onclick="viewInvitation('${invitation.code}')">Ver</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 5000);
+}
+
+// Update notification badge
+function updateNotificationBadge(count) {
+    const badge = document.getElementById('dashboardNotificationBadge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : count;
+            badge.style.display = 'block';
+            
+            // Add pulse animation
+            badge.style.animation = 'pulse-notification 2s infinite';
+            
+            // Store in localStorage
+            localStorage.setItem('unreadNotifications', count);
+        } else {
+            badge.style.display = 'none';
+            localStorage.removeItem('unreadNotifications');
+        }
+    }
+}
+
+// Clear notification badge when viewing dashboard
+function clearNotificationBadge() {
+    updateNotificationBadge(0);
+}
+
+// Start notification checking
+function startNotificationChecking() {
+    // Check every 30 seconds
+    notificationCheckInterval = setInterval(checkForNewConfirmations, 30000);
+    
+    // Initial check
+    checkForNewConfirmations();
+}
+
+// Stop notification checking
+function stopNotificationChecking() {
+    if (notificationCheckInterval) {
+        clearInterval(notificationCheckInterval);
+        notificationCheckInterval = null;
+    }
+}
+
+// Initialize notifications on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Check for stored unread notifications
+    const unreadCount = parseInt(localStorage.getItem('unreadNotifications') || '0');
+    if (unreadCount > 0) {
+        updateNotificationBadge(unreadCount);
+    }
+    
+    // Clear badge when dashboard is viewed
+    const dashboardNav = document.querySelector('.nav-item[href="#dashboard"]');
+    if (dashboardNav) {
+        dashboardNav.addEventListener('click', () => {
+            clearNotificationBadge();
+        });
+    }
+    
+    // Start checking for new confirmations
+    startNotificationChecking();
+});
 
 // Export functions to window for onclick handlers
 window.showCreateForm = showCreateForm;

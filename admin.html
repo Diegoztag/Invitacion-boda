@@ -38,6 +38,7 @@
                 <a href="#dashboard" class="nav-item active">
                     <i class="fas fa-chart-line"></i>
                     <span>Resumen</span>
+                    <span class="notification-badge" id="dashboardNotificationBadge" style="display: none;">0</span>
                 </a>
                 <a href="#create" class="nav-item">
                     <i class="fas fa-user-friends"></i>
@@ -63,6 +64,13 @@
                             <p class="subtitle">PANEL DE CONTROL</p>
                             <h2 id="welcomeMessage">Bienvenida</h2>
                             <p id="welcomeSubtext">Aquí tienes el resumen de tu boda.</p>
+                            <div class="period-selector">
+                                <select id="confirmationPeriod" class="period-select">
+                                    <option value="today">Hoy</option>
+                                    <option value="last24hours">Últimas 24 horas</option>
+                                    <option value="lastWeek">Última semana</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     

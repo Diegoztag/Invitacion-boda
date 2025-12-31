@@ -3158,3 +3158,179 @@ th:contains("Mesa") {
         padding: 6px;
     }
 }
+
+/* Notification Badge Styles */
+.notification-badge {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    background: var(--danger);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    animation: pulse-notification 2s infinite;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+}
+
+.nav-item {
+    position: relative;
+}
+
+@keyframes pulse-notification {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+    }
+}
+
+/* New confirmation indicator */
+.new-confirmation-indicator {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--danger);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+    z-index: 10;
+}
+
+@keyframes pulse-dot {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Notification toast styles */
+.notification-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--surface-dark);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+    max-width: 400px;
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+.notification-toast .toast-icon {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+.notification-toast .toast-content {
+    flex: 1;
+}
+
+.notification-toast .toast-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 2px;
+}
+
+.notification-toast .toast-message {
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+}
+
+.notification-toast .toast-action {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-size: 0.813rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.notification-toast .toast-action:hover {
+    background: rgba(230, 25, 161, 0.1);
+}
+
+/* Period Selector Styles */
+.period-selector {
+    margin-top: 12px;
+}
+
+.period-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    outline: none;
+}
+
+.period-select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.period-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(230, 25, 161, 0.2);
+}
+
+.period-select option {
+    background: var(--surface-dark);
+    color: var(--text-primary);
+}
+
+/* Responsive adjustments for period selector */
+@media (max-width: 768px) {
+    .period-selector {
+        margin-top: 10px;
+    }
+    
+    .period-select {
+        font-size: 0.688rem;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .period-select {
+        font-size: 0.625rem;
+        padding: 4px 8px;
+    }
+}
