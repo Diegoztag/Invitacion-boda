@@ -40,7 +40,10 @@ import {
     updateInvitationPercentageBadge,
     updateTargetElements,
     updateConfirmedChangeIndicator,
-    generateDemoStats
+    generateDemoStats,
+    getStatusBadge,
+    renderStatBadge,
+    getBadgeType
 } from './admin-utils.js';
 
 // Load configuration from config.js
@@ -452,9 +455,7 @@ function displayRecentConfirmations(confirmations) {
                 </div>
             </td>
             <td>
-                <span class="status-badge ${invitation.confirmationDetails?.willAttend ? 'confirmed' : 'rejected'}">
-                    ${invitation.confirmationDetails?.willAttend ? 'Confirmado' : 'Rechazado'}
-                </span>
+                ${getStatusBadge(invitation).html}
             </td>
             <td>
                 <span class="passes-count">${invitation.confirmedPasses || 0}</span>
@@ -613,9 +614,7 @@ function displayInvitations(invitations) {
             <td>${formatGuestNames(invitation.guestNames)}</td>
             <td>${invitation.numberOfPasses}</td>
             <td>
-                <span class="status-badge ${invitation.confirmed ? 'confirmed' : 'pending'}">
-                    ${invitation.confirmed ? 'Confirmado' : 'Pendiente'}
-                </span>
+                ${getStatusBadge(invitation).html}
             </td>
             <td>${invitation.confirmedPasses || 0}</td>
             <td>${cancelledPasses > 0 ? `<span style="color: #f44336; font-weight: 600;">${cancelledPasses}</span>` : '0'}</td>
@@ -642,30 +641,8 @@ function viewInvitation(code) {
     
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
-    // Determine invitation status
-    let status = 'pending';
-    let statusText = 'Pendiente';
-    let statusColor = '#ff9800';
-    let statusIcon = 'clock';
-    
-    if (invitation.confirmed && invitation.confirmationDetails) {
-        if (!invitation.confirmationDetails.willAttend) {
-            status = 'rejected';
-            statusText = 'Rechazado';
-            statusColor = '#f44336';
-            statusIcon = 'times-circle';
-        } else if (invitation.confirmedPasses < invitation.numberOfPasses) {
-            status = 'partial';
-            statusText = 'Parcial';
-            statusColor = '#ff6b6b';
-            statusIcon = 'exclamation-circle';
-        } else {
-            status = 'accepted';
-            statusText = 'Aceptado';
-            statusColor = '#4caf50';
-            statusIcon = 'check-circle';
-        }
-    }
+    // Get status badge with icon for modal
+    const statusBadgeInfo = getStatusBadge(invitation, { showIcon: true });
     
     // Use utility function to calculate cancelled passes
     const cancelledPasses = calculateCancelledPasses(invitation);
@@ -674,9 +651,7 @@ function viewInvitation(code) {
         <div class="invitation-detail">
             <!-- Status Header -->
             <div class="status-header">
-                <div class="status-badge-large" style="background: ${statusColor};">
-                    <i class="fas fa-${statusIcon}"></i> ${statusText}
-                </div>
+                ${statusBadgeInfo.html}
             </div>
             
             <!-- Guest Info Section -->
@@ -1356,17 +1331,8 @@ function displayCreateSectionInvitations(invitations, page = 1, itemsPerPage = 5
         const initials = invitation.guestNames[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         const gradient = gradients[index % gradients.length];
         
-        // Determine status
-        let statusBadge = '';
-        if (invitation.confirmed) {
-            if (invitation.confirmationDetails?.willAttend === false) {
-                statusBadge = '<span class="status-badge rejected"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px;"></span>Rechazado</span>';
-            } else {
-                statusBadge = '<span class="status-badge confirmed"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px;"></span>Confirmado</span>';
-            }
-        } else {
-            statusBadge = '<span class="status-badge pending"><span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></span>Pendiente</span>';
-        }
+        // Get status badge with dot and animation
+        const statusBadge = getStatusBadge(invitation, { showDot: true, animate: true }).html;
         
         // Determine pass type text
         let passTypeText = 'adultos';

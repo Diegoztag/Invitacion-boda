@@ -420,3 +420,140 @@ export function generateDemoStats() {
         staffPasses: 11
     };
 }
+
+/**
+ * Genera un badge de estado para una invitación
+ * @param {Object} invitation - Objeto de invitación
+ * @param {Object} options - Opciones adicionales
+ * @param {boolean} options.showIcon - Si mostrar icono (para badges grandes)
+ * @param {boolean} options.showDot - Si mostrar punto indicador
+ * @param {boolean} options.animate - Si animar el punto (para pendientes)
+ * @returns {Object} Objeto con HTML, clase, texto, color e icono
+ */
+export function getStatusBadge(invitation, options = {}) {
+    const { showIcon = false, showDot = false, animate = false } = options;
+    
+    let status = 'pending';
+    let statusText = 'Pendiente';
+    let statusClass = 'pending';
+    let statusColor = '#ff9800';
+    let statusIcon = 'clock';
+    
+    if (invitation.confirmed && invitation.confirmationDetails) {
+        if (!invitation.confirmationDetails.willAttend) {
+            status = 'rejected';
+            statusText = 'Rechazado';
+            statusClass = 'rejected';
+            statusColor = '#f44336';
+            statusIcon = 'times-circle';
+        } else if (invitation.confirmedPasses < invitation.numberOfPasses) {
+            status = 'partial';
+            statusText = 'Parcial';
+            statusClass = 'partial';
+            statusColor = '#ff6b6b';
+            statusIcon = 'exclamation-circle';
+        } else {
+            status = 'accepted';
+            statusText = 'Aceptado';
+            statusClass = 'confirmed';
+            statusColor = '#4caf50';
+            statusIcon = 'check-circle';
+        }
+    }
+    
+    // Construir HTML del badge
+    let html = '';
+    
+    if (showIcon) {
+        // Badge grande con icono (para modales)
+        html = `<div class="status-badge-large" style="background: ${statusColor};">
+            <i class="fas fa-${statusIcon}"></i> ${statusText}
+        </div>`;
+    } else {
+        // Badge normal
+        let dotHtml = '';
+        if (showDot) {
+            const animationStyle = animate && status === 'pending' ? 'animation: pulse 2s infinite;' : '';
+            dotHtml = `<span style="display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; ${animationStyle}"></span>`;
+        }
+        html = `<span class="status-badge ${statusClass}">${dotHtml}${statusText}</span>`;
+    }
+    
+    return {
+        html,
+        status,
+        statusText,
+        statusClass,
+        statusColor,
+        statusIcon
+    };
+}
+
+/**
+ * Genera un badge para estadísticas
+ * @param {number} value - Valor a mostrar
+ * @param {string} type - Tipo de badge (percentage, count, trend)
+ * @param {Object} options - Opciones adicionales
+ * @returns {string} HTML del badge
+ */
+export function renderStatBadge(value, type = 'count', options = {}) {
+    const {
+        title = '',
+        threshold = null,
+        showTrend = false,
+        trendDirection = 'up',
+        badgeClass = ''
+    } = options;
+    
+    let html = '';
+    let finalBadgeClass = badgeClass;
+    
+    switch (type) {
+        case 'percentage':
+            // Determinar clase basada en umbral
+            if (!badgeClass && threshold !== null) {
+                if (value >= 100) {
+                    finalBadgeClass = 'success';
+                } else if (value >= threshold) {
+                    finalBadgeClass = 'primary';
+                } else {
+                    finalBadgeClass = 'warning';
+                }
+            }
+            html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}%</span>`;
+            break;
+            
+        case 'trend':
+            // Badge con tendencia
+            const trendIcon = trendDirection === 'up' ? 'arrow-up' : trendDirection === 'down' ? 'arrow-down' : 'minus';
+            const trendClass = value > 0 ? 'success' : value < 0 ? 'danger' : 'warning';
+            html = `<span class="stat-badge ${trendClass}">
+                <i class="fas fa-${trendIcon} trend-icon"></i> ${value > 0 ? '+' : ''}${value}
+            </span>`;
+            break;
+            
+        case 'count':
+        default:
+            // Badge simple de conteo
+            html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}</span>`;
+            break;
+    }
+    
+    return html;
+}
+
+/**
+ * Determina el tipo de badge basado en el valor y configuración
+ * @param {number} current - Valor actual
+ * @param {number} target - Valor objetivo
+ * @param {Object} thresholds - Umbrales para determinar el tipo
+ * @returns {string} Clase CSS del badge
+ */
+export function getBadgeType(current, target, thresholds = { high: 75, medium: 50 }) {
+    const percentage = target > 0 ? (current / target) * 100 : 0;
+    
+    if (percentage >= 100) return 'success';
+    if (percentage >= thresholds.high) return 'primary';
+    if (percentage >= thresholds.medium) return 'warning';
+    return 'danger';
+}
