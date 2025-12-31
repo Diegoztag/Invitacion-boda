@@ -19,7 +19,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
+                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
             
@@ -83,6 +83,11 @@ class CSVStorageService {
                 ? invitation.guestNames.join(' y ') 
                 : invitation.guestNames;
             
+            // Default values for new fields
+            const adultPasses = invitation.adultPasses || invitation.numberOfPasses;
+            const childPasses = invitation.childPasses || 0;
+            const invitationType = invitation.invitationType || 'adults';
+            
             const row = [
                 code,
                 this.formatCSVValue(guestNamesStr),
@@ -91,7 +96,10 @@ class CSVStorageService {
                 new Date().toISOString(),
                 'false',
                 '0',
-                ''
+                '',
+                adultPasses,
+                childPasses,
+                invitationType
             ].join(',') + '\n';
             
             await fs.appendFile(this.invitationsFile, row);
@@ -103,7 +111,10 @@ class CSVStorageService {
                 phone: invitation.phone || '',
                 createdAt: new Date().toISOString(),
                 confirmed: false,
-                confirmedPasses: 0
+                confirmedPasses: 0,
+                adultPasses: adultPasses,
+                childPasses: childPasses,
+                invitationType: invitationType
             };
         } catch (error) {
             console.error('Error saving invitation:', error);
@@ -134,7 +145,11 @@ class CSVStorageService {
                         createdAt: parts[4],
                         confirmed: parts[5] === 'true',
                         confirmedPasses: parseInt(parts[6]) || 0,
-                        confirmationDate: parts[7] || null
+                        confirmationDate: parts[7] || null,
+                        // Add new fields with defaults for backward compatibility
+                        adultPasses: parts[8] ? parseInt(parts[8]) : parseInt(parts[2]),
+                        childPasses: parts[9] ? parseInt(parts[9]) : 0,
+                        invitationType: parts[10] || 'adults'
                     };
                     
                     // Add confirmation details if available
@@ -190,7 +205,7 @@ class CSVStorageService {
             await fs.appendFile(this.confirmationsFile, confirmationRow);
             
             // Rewrite invitations file
-            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate\n';
+            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType\n';
             
             for (const inv of invitations) {
                 const row = [
@@ -201,7 +216,10 @@ class CSVStorageService {
                     inv.createdAt,
                     inv.confirmed,
                     inv.confirmedPasses,
-                    inv.confirmationDate || ''
+                    inv.confirmationDate || '',
+                    inv.adultPasses || inv.numberOfPasses,
+                    inv.childPasses || 0,
+                    inv.invitationType || 'adults'
                 ].join(',') + '\n';
                 csvContent += row;
             }
@@ -261,6 +279,9 @@ class CSVStorageService {
         
         // Calculate cancelled passes (both not attending and partial confirmations)
         let cancelledPasses = 0;
+        let adultPasses = 0;
+        let childPasses = 0;
+        let staffPasses = 0;
         
         invitations.forEach(invitation => {
             if (invitation.confirmed) {
@@ -275,17 +296,35 @@ class CSVStorageService {
                     }
                 }
             }
+            
+            // Use actual data from invitation if available
+            if (invitation.invitationType === 'staff') {
+                staffPasses += invitation.numberOfPasses;
+            } else if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+                // Use specific adult/child breakdown
+                adultPasses += invitation.adultPasses;
+                childPasses += invitation.childPasses;
+            } else {
+                // Fallback for old data without specific breakdown
+                adultPasses += invitation.numberOfPasses;
+            }
         });
+        
+        const totalPasses = invitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
         
         const stats = {
             totalInvitations: invitations.length,
-            totalPasses: invitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0),
+            totalPasses: totalPasses,
             confirmedInvitations: invitations.filter(inv => inv.confirmed).length,
             confirmedPasses: invitations.reduce((sum, inv) => sum + (inv.confirmedPasses || 0), 0),
             pendingInvitations: invitations.filter(inv => !inv.confirmed).length,
             pendingPasses: invitations.filter(inv => !inv.confirmed)
                 .reduce((sum, inv) => sum + inv.numberOfPasses, 0),
-            cancelledPasses: cancelledPasses
+            cancelledPasses: cancelledPasses,
+            // Add breakdown of pass types
+            adultPasses: adultPasses,
+            childPasses: childPasses,
+            staffPasses: staffPasses
         };
         
         return stats;
@@ -324,8 +363,21 @@ class CSVStorageService {
                         const invitation = {
                             guestNames: parts[0].split(/\s+y\s+/i).map(n => n.trim()),
                             numberOfPasses: parseInt(parts[1]),
-                            phone: parts[2] || ''
+                            phone: parts[2] || '',
+                            // Add new fields if present in CSV
+                            adultPasses: parts[3] ? parseInt(parts[3]) : undefined,
+                            childPasses: parts[4] ? parseInt(parts[4]) : undefined,
+                            invitationType: parts[5] || undefined
                         };
+                        
+                        // Validate pass breakdown if provided
+                        if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+                            const totalFromBreakdown = invitation.adultPasses + invitation.childPasses;
+                            if (totalFromBreakdown !== invitation.numberOfPasses) {
+                                errors.push(`Línea ${i + 1}: La suma de adultos y niños (${totalFromBreakdown}) no coincide con el total de pases (${invitation.numberOfPasses})`);
+                                continue;
+                            }
+                        }
                         
                         if (invitation.guestNames.length > 0 && !isNaN(invitation.numberOfPasses)) {
                             const saved = await this.saveInvitation(invitation);

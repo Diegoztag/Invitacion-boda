@@ -264,28 +264,44 @@ async function loadDashboardData() {
 
 // Update Pass Distribution
 function updatePassDistribution(stats) {
-    const totalPasses = stats.totalPasses || 220;
+    const totalPasses = stats.totalPasses || 0;
     const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false; // Default to true if not specified
     
+    // Use real data from stats if available, otherwise use estimated distribution
     let adultPasses, childPasses, staffPasses;
     let adultPercent, childPercent, staffPercent;
     
-    if (allowChildren) {
-        // Normal distribution with children
-        adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
-        childPasses = Math.floor(totalPasses * 0.15); // 15% children
-        staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
+    // Check if we have detailed pass breakdown in stats
+    if (stats.adultPasses !== undefined && stats.childPasses !== undefined && stats.staffPasses !== undefined) {
+        // Use actual data from backend
+        adultPasses = stats.adultPasses;
+        childPasses = allowChildren ? stats.childPasses : 0;
+        staffPasses = stats.staffPasses;
     } else {
-        // No children allowed - redistribute percentages
-        adultPasses = Math.floor(totalPasses * 0.95); // 95% adults
-        childPasses = 0; // 0% children
-        staffPasses = totalPasses - adultPasses; // 5% staff
+        // Fallback to estimated distribution if detailed data not available
+        if (allowChildren) {
+            // Normal distribution with children
+            adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
+            childPasses = Math.floor(totalPasses * 0.15); // 15% children
+            staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
+        } else {
+            // No children allowed - redistribute percentages
+            adultPasses = Math.floor(totalPasses * 0.95); // 95% adults
+            childPasses = 0; // 0% children
+            staffPasses = totalPasses - adultPasses; // 5% staff
+        }
     }
     
-    // Calculate percentages
-    adultPercent = Math.round((adultPasses / totalPasses) * 100);
-    childPercent = allowChildren ? Math.round((childPasses / totalPasses) * 100) : 0;
-    staffPercent = Math.round((staffPasses / totalPasses) * 100);
+    // Calculate percentages (handle division by zero)
+    if (totalPasses > 0) {
+        adultPercent = Math.round((adultPasses / totalPasses) * 100);
+        childPercent = allowChildren ? Math.round((childPasses / totalPasses) * 100) : 0;
+        staffPercent = Math.round((staffPasses / totalPasses) * 100);
+    } else {
+        adultPercent = 0;
+        childPercent = 0;
+        staffPercent = 0;
+    }
     
     // Update total passes
     document.getElementById('totalPassesChart').textContent = totalPasses;
@@ -717,11 +733,61 @@ function copyToClipboard(text) {
 function initCreateForm() {
     const form = document.getElementById('createInvitationForm');
     
+    // Handle invitation type changes
+    const invitationTypeRadios = document.querySelectorAll('input[name="invitationType"]');
+    const adultPassesInput = document.getElementById('adultPassesInput');
+    const childPassesInput = document.getElementById('childPassesInput');
+    const childPassesGroup = document.getElementById('childPassesGroup');
+    const totalPassesValue = document.getElementById('totalPassesValue');
+    
+    // Update total passes display
+    function updateTotalPasses() {
+        const adultPasses = parseInt(adultPassesInput.value) || 0;
+        const childPasses = parseInt(childPassesInput.value) || 0;
+        const total = adultPasses + childPasses;
+        totalPassesValue.textContent = total;
+    }
+    
+    // Handle invitation type changes
+    invitationTypeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const type = e.target.value;
+            
+            if (type === 'family') {
+                // Show child passes input
+                childPassesGroup.style.display = 'block';
+                childPassesInput.value = '0';
+            } else {
+                // Hide child passes input
+                childPassesGroup.style.display = 'none';
+                childPassesInput.value = '0';
+            }
+            
+            // Set default values based on type
+            if (type === 'adults') {
+                adultPassesInput.value = '2';
+            } else if (type === 'family') {
+                adultPassesInput.value = '2';
+                childPassesInput.value = '0';
+            } else if (type === 'staff') {
+                adultPassesInput.value = '1';
+            }
+            
+            updateTotalPasses();
+        });
+    });
+    
+    // Update total when inputs change
+    adultPassesInput.addEventListener('input', updateTotalPasses);
+    childPassesInput.addEventListener('input', updateTotalPasses);
+    
+    // Form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = new FormData(form);
         const guestNamesInput = formData.get('guestNames');
+        const invitationType = formData.get('invitationType');
         
         // Parse guest names
         const guestNames = guestNamesInput
@@ -729,10 +795,19 @@ function initCreateForm() {
             .map(name => name.trim())
             .filter(name => name);
         
+        // Get pass counts
+        const adultPasses = parseInt(formData.get('adultPasses')) || 0;
+        const childPasses = parseInt(formData.get('childPasses')) || 0;
+        const totalPasses = adultPasses + childPasses;
+        
         const invitationData = {
             guestNames: guestNames,
-            numberOfPasses: parseInt(formData.get('numberOfPasses')),
-            phone: formData.get('phone')
+            numberOfPasses: totalPasses,
+            phone: formData.get('phone'),
+            // Add new fields for pass breakdown
+            adultPasses: adultPasses,
+            childPasses: childPasses,
+            invitationType: invitationType
         };
         
         try {
@@ -748,6 +823,11 @@ function initCreateForm() {
                 const data = await response.json();
                 showNotification('Invitación creada exitosamente');
                 form.reset();
+                // Reset to default values
+                adultPassesInput.value = '2';
+                childPassesInput.value = '0';
+                childPassesGroup.style.display = 'none';
+                updateTotalPasses();
                 
                 // Show invitation details
                 const invitationUrl = data.invitationUrl;

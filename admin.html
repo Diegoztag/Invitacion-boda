@@ -317,11 +317,44 @@ Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
                            placeholder="Ej: Juan Pérez, María García">
                     <small>Separa los nombres con comas si son varios invitados</small>
                 </div>
+                
+                <!-- Pass Type Selection -->
                 <div class="form-group">
-                    <label for="numberOfPasses">Número de Pases</label>
-                    <input type="number" id="numberOfPasses" name="numberOfPasses" 
-                           min="1" max="10" required placeholder="2">
+                    <label>Tipo de Invitación</label>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="invitationType" value="adults" checked style="margin-right: 8px;">
+                            <span>Solo Adultos</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="invitationType" value="family" style="margin-right: 8px;">
+                            <span>Familia (con niños)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="invitationType" value="staff" style="margin-right: 8px;">
+                            <span>Staff/Proveedor</span>
+                        </label>
+                    </div>
                 </div>
+                
+                <!-- Pass Breakdown -->
+                <div id="passBreakdown" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                    <div class="form-group" id="adultPassesGroup">
+                        <label for="adultPasses">Adultos</label>
+                        <input type="number" id="adultPassesInput" name="adultPasses" 
+                               min="0" max="10" value="2" placeholder="0">
+                    </div>
+                    <div class="form-group" id="childPassesGroup" style="display: none;">
+                        <label for="childPasses">Niños</label>
+                        <input type="number" id="childPassesInput" name="childPasses" 
+                               min="0" max="10" value="0" placeholder="0">
+                    </div>
+                    <div class="form-group" id="totalPassesDisplay" style="background: var(--bg-secondary); padding: 10px; border-radius: 8px;">
+                        <label style="font-size: 0.875rem; color: var(--text-muted);">Total Pases</label>
+                        <div id="totalPassesValue" style="font-size: 1.5rem; font-weight: 600; color: var(--primary);">2</div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="phone">Teléfono (opcional)</label>
                     <input type="tel" id="phone" name="phone" 
