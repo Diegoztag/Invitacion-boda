@@ -52,10 +52,16 @@ import {
 // Import modal system
 import { Modal, ModalFactory, showToast } from './admin-modal.js';
 
+// Import API system
+import { createAdminAPI, APIHelpers } from './admin-api.js';
+
 // Load configuration from config.js
 const CONFIG = {
     backendUrl: WEDDING_CONFIG.api.backendUrl
 };
+
+// Initialize API
+const adminAPI = createAdminAPI(CONFIG.backendUrl);
 
 // Global variables
 let allInvitations = [];
@@ -241,10 +247,9 @@ function initNavigation() {
 // Load Dashboard Data
 async function loadDashboardData() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/stats`);
-        if (response.ok) {
-            const data = await response.json();
-            const stats = data.stats;
+        const result = await adminAPI.fetchStats();
+        if (APIHelpers.isSuccess(result)) {
+            const stats = result.stats;
             
             // Update stats cards using utility function
             updateStatsUI(stats);
@@ -278,9 +283,12 @@ async function loadDashboardData() {
             
             // Load recent confirmations
             loadRecentConfirmations();
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading dashboard data:', error);
+        showToast(APIHelpers.getErrorMessage({ error: error.message }), 'error');
         // Show demo data
         const demoStats = generateDemoStats();
         
@@ -395,18 +403,11 @@ function updatePassDistribution(stats) {
 // Load Recent Confirmations
 async function loadRecentConfirmations() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
-        if (response.ok) {
-            const data = await response.json();
-            const invitations = data.invitations || [];
-            
-            // Filter confirmed invitations and sort by confirmation date
-            const confirmedInvitations = invitations
-                .filter(inv => inv.confirmed)
-                .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
-                .slice(0, 5); // Show only the 5 most recent
-            
-            displayRecentConfirmations(confirmedInvitations);
+        const result = await adminAPI.fetchRecentConfirmations(7, 5);
+        if (APIHelpers.isSuccess(result)) {
+            displayRecentConfirmations(result.confirmations);
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading recent confirmations:', error);
@@ -458,30 +459,9 @@ function displayRecentConfirmations(confirmations) {
 // Calculate recent confirmations (last 7 days)
 async function calculateRecentConfirmations() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
-        if (response.ok) {
-            const data = await response.json();
-            const invitations = data.invitations || [];
-            
-            // Get date 7 days ago
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            
-            // Count confirmations in the last 7 days
-            const recentConfirmations = invitations.filter(inv => {
-                if (inv.confirmed && inv.confirmationDate) {
-                    const confirmDate = new Date(inv.confirmationDate);
-                    return confirmDate >= sevenDaysAgo;
-                }
-                return false;
-            });
-            
-            // Sum up the confirmed passes from recent confirmations
-            const totalRecentPasses = recentConfirmations.reduce((sum, inv) => {
-                return sum + (inv.confirmedPasses || 0);
-            }, 0);
-            
-            return totalRecentPasses;
+        const result = await adminAPI.calculateRecentConfirmedPasses(7);
+        if (APIHelpers.isSuccess(result)) {
+            return result.totalPasses;
         }
     } catch (error) {
         console.error('Error calculating recent confirmations:', error);
@@ -551,14 +531,16 @@ function updateConfirmationChart(stats) {
 // Load Invitations
 async function loadInvitations() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
-        if (response.ok) {
-            const data = await response.json();
-            allInvitations = data.invitations || [];
+        const result = await adminAPI.fetchInvitations();
+        if (APIHelpers.isSuccess(result)) {
+            allInvitations = result.invitations || [];
             displayInvitations(allInvitations);
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading invitations:', error);
+        showToast('Error al cargar invitaciones', 'error');
         // For demo purposes, show sample data
         allInvitations = [
             {
@@ -809,17 +791,10 @@ function initCreateForm() {
         };
         
         try {
-            const response = await fetch(`${CONFIG.backendUrl}/invitation`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(invitationData)
-            });
+            const result = await adminAPI.createInvitation(invitationData);
             
-            if (response.ok) {
-                const data = await response.json();
-                showNotification('Invitación creada exitosamente');
+            if (APIHelpers.isSuccess(result)) {
+                showToast('Invitación creada exitosamente', 'success');
                 form.reset();
                 // Reset to default values
                 adultPassesInput.value = '2';
@@ -828,17 +803,19 @@ function initCreateForm() {
                 updateTotalPasses();
                 
                 // Show invitation details
-                const invitationUrl = data.invitationUrl;
-                alert(`Invitación creada!\n\nCódigo: ${data.invitation.code}\nEnlace: ${invitationUrl}`);
+                const invitationUrl = result.invitationUrl;
+                showToast(`Código: ${result.invitation.code}`, 'success');
                 
-                // Navigate to invitations list
-                document.querySelector('a[href="#invitations"]').click();
+                // Close modal and reload invitations
+                closeCreateModal();
+                loadInvitations();
+                loadDashboardData();
             } else {
-                throw new Error('Error al crear invitación');
+                throw new Error(APIHelpers.getErrorMessage(result));
             }
         } catch (error) {
             console.error('Error:', error);
-            showNotification('Error al crear la invitación', 'error');
+            showToast(error.message || 'Error al crear la invitación', 'error');
         }
     });
 }
@@ -846,52 +823,8 @@ function initCreateForm() {
 
 // Export all invitations to CSV
 function exportAllInvitations() {
-    // Create CSV with all invitation data including confirmations
-    const headers = ['Código', 'Invitados', 'Pases', 'Estado', 'Confirmados', 'Cancelados', 'Asistirá', 'Teléfono', 'Restricciones', 'Mensaje', 'Fecha Confirmación'];
-    const rows = [];
-    
-    allInvitations.forEach(invitation => {
-        const details = invitation.confirmationDetails || {};
-        let cancelledPasses = 0;
-        
-        if (invitation.confirmed && details) {
-            if (!details.willAttend) {
-                cancelledPasses = invitation.numberOfPasses;
-            } else if (details.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
-                cancelledPasses = invitation.numberOfPasses - invitation.confirmedPasses;
-            }
-        }
-        
-        const row = [
-            invitation.code,
-            invitation.guestNames.join(' y '),
-            invitation.numberOfPasses,
-            invitation.confirmed ? 'Confirmado' : 'Pendiente',
-            invitation.confirmedPasses || 0,
-            cancelledPasses,
-            details.willAttend !== undefined ? (details.willAttend ? 'Sí' : 'No') : '-',
-            details.phone || invitation.phone || '-',
-            details.dietaryRestrictions || '-',
-            details.message || '-',
-            invitation.confirmationDate ? new Date(invitation.confirmationDate).toLocaleDateString('es-MX') : '-'
-        ];
-        
-        rows.push(row);
-    });
-    
-    let csv = headers.join(',') + '\n';
-    rows.forEach(row => {
-        csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
-    });
-    
-    // Download CSV
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `invitaciones_completas_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    
-    showNotification('Archivo CSV exportado exitosamente');
+    adminAPI.exportToCSV(allInvitations, 'invitaciones_completas');
+    showToast('Archivo CSV exportado exitosamente', 'success');
 }
 
 
@@ -1010,31 +943,12 @@ function initCsvUpload() {
             let errors = [];
             const createdInvitations = [];
             
-            for (const invitation of invitations) {
-                try {
-                    const response = await fetch(`${CONFIG.backendUrl}/invitation`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(invitation)
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        created++;
-                        createdInvitations.push({
-                            ...data.invitation,
-                            url: data.invitationUrl
-                        });
-                    } else {
-                        const error = await response.json();
-                        errors.push(`${invitation.guestNames.join(' y ')}: ${error.error}`);
-                    }
-                } catch (error) {
-                    errors.push(`${invitation.guestNames.join(' y ')}: Error de conexión`);
-                }
-            }
+            // Use API to import invitations
+            const importResult = await adminAPI.importInvitations(invitations);
+            
+            created = importResult.created;
+            errors = importResult.errors.map(err => `${err.guestNames}: ${err.error}`);
+            createdInvitations = importResult.createdInvitations;
             
             // Show results
             let resultsHTML = `<h4>Resultados de la carga:</h4>`;
@@ -1145,13 +1059,14 @@ function exportInvitationLinks() {
 // Load Create Section Data
 async function loadCreateSectionData() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/stats`);
-        if (response.ok) {
-            const data = await response.json();
-            const stats = data.stats;
+        const result = await adminAPI.fetchStats();
+        if (APIHelpers.isSuccess(result)) {
+            const stats = result.stats;
             
             // Update stats cards in create section using utility function
             updateStatsUI(stats, 'Create');
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading create section data:', error);
@@ -1170,11 +1085,12 @@ async function loadCreateSectionData() {
 // Load invitations for create section
 async function loadCreateSectionInvitations() {
     try {
-        const response = await fetch(`${CONFIG.backendUrl}/invitations`);
-        if (response.ok) {
-            const data = await response.json();
-            allInvitations = data.invitations || [];
+        const result = await adminAPI.fetchInvitations();
+        if (APIHelpers.isSuccess(result)) {
+            allInvitations = result.invitations || [];
             displayCreateSectionInvitations(allInvitations);
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading invitations:', error);
