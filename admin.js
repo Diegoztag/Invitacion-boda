@@ -1,3 +1,27 @@
+// Import constants
+import { 
+    UI_CONFIG, 
+    DEFAULT_VALUES, 
+    PASS_DISTRIBUTION,
+    AVATAR_GRADIENTS,
+    GRADIENT_STYLES,
+    INVITATION_STATUS,
+    STATUS_LABELS,
+    BADGE_CLASSES,
+    PERCENTAGE_THRESHOLDS,
+    INVITATION_TYPES,
+    PASS_TYPE_LABELS,
+    TIME_CONFIG,
+    TIME_LABELS,
+    API_ENDPOINTS,
+    NOTIFICATION_MESSAGES,
+    MODAL_CONFIG,
+    BREAKPOINTS,
+    CSV_CONFIG,
+    ICONS,
+    DEMO_INVITATIONS
+} from './admin-constants.js';
+
 // Load configuration from config.js
 const CONFIG = {
     backendUrl: WEDDING_CONFIG.api.backendUrl
@@ -1782,3 +1806,20 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Export functions to window for onclick handlers
+window.showCreateForm = showCreateForm;
+window.showCreateModal = showCreateModal;
+window.closeCreateModal = closeCreateModal;
+window.showImportModal = showImportModal;
+window.closeImportModal = closeImportModal;
+window.exportAllInvitations = exportAllInvitations;
+window.copyInvitationLink = copyInvitationLink;
+window.copyToClipboard = copyToClipboard;
+window.viewInvitation = viewInvitation;
+window.toggleFilters = toggleFilters;
+window.resetFilters = resetFilters;
+window.applyFilters = applyFilters;
+window.exportInvitationLinks = exportInvitationLinks;
+window.editInvitation = editInvitation;
+window.deleteInvitation = deleteInvitation;
