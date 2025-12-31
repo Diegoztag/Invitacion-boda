@@ -49,6 +49,9 @@ import {
     calculatePaginationInfo
 } from './admin-utils.js';
 
+// Import modal system
+import { Modal, ModalFactory, showToast } from './admin-modal.js';
+
 // Load configuration from config.js
 const CONFIG = {
     backendUrl: WEDDING_CONFIG.api.backendUrl
@@ -58,8 +61,21 @@ const CONFIG = {
 let allInvitations = [];
 let confirmationChart = null;
 
+// Modal instances
+let invitationDetailModal = null;
+let createInvitationModal = null;
+let importCsvModal = null;
+
 // Initialize Admin Panel
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize modals
+    invitationDetailModal = ModalFactory.createInvitationDetailModal();
+    createInvitationModal = ModalFactory.createInvitationFormModal();
+    importCsvModal = ModalFactory.createImportCSVModal();
+    
+    // Set active modal reference for form buttons
+    window.activeModal = null;
+    
     // Update wedding title
     document.getElementById('weddingTitle').textContent = `Boda ${WEDDING_CONFIG.couple.displayName}`;
     
@@ -100,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboardData();
     loadInvitations();
     initCreateForm();
-    initModal();
     initSearch();
     initCsvUpload();
     
@@ -575,9 +590,6 @@ function viewInvitation(code) {
     const invitation = allInvitations.find(inv => inv.code === code);
     if (!invitation) return;
     
-    const modal = document.getElementById('invitationModal');
-    const details = document.getElementById('invitationDetails');
-    
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
     // Get status badge with icon for modal
@@ -586,7 +598,7 @@ function viewInvitation(code) {
     // Use utility function to calculate cancelled passes
     const cancelledPasses = calculateCancelledPasses(invitation);
     
-    details.innerHTML = `
+    const detailsContent = `
         <div class="invitation-detail">
             <!-- Status Header -->
             <div class="status-header">
@@ -670,7 +682,8 @@ function viewInvitation(code) {
         </div>
     `;
     
-    modal.style.display = 'block';
+    invitationDetailModal.setContent(detailsContent);
+    invitationDetailModal.open();
 }
 
 // Copy Invitation Link
@@ -881,21 +894,6 @@ function exportAllInvitations() {
     showNotification('Archivo CSV exportado exitosamente');
 }
 
-// Initialize Modal
-function initModal() {
-    const modal = document.getElementById('invitationModal');
-    const closeBtn = modal.querySelector('.modal-close');
-    
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-    
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-}
 
 // Initialize Search
 function initSearch() {
@@ -923,13 +921,12 @@ function showCreateForm() {
 
 // Modal Functions
 function showCreateModal() {
-    const modal = document.getElementById('createInvitationModal');
-    modal.style.display = 'block';
+    window.activeModal = createInvitationModal;
+    createInvitationModal.open();
 }
 
 function closeCreateModal() {
-    const modal = document.getElementById('createInvitationModal');
-    modal.style.display = 'none';
+    createInvitationModal.close();
     // Reset form
     document.getElementById('createInvitationForm').reset();
     document.getElementById('adultPassesInput').value = '2';
@@ -939,18 +936,12 @@ function closeCreateModal() {
 }
 
 function showImportModal() {
-    const modal = document.getElementById('importCsvModal');
-    modal.style.display = 'block';
+    window.activeModal = importCsvModal;
+    importCsvModal.open();
 }
 
 function closeImportModal() {
-    const modal = document.getElementById('importCsvModal');
-    modal.style.display = 'none';
-    // Reset file input
-    document.getElementById('csvFile').value = '';
-    document.getElementById('fileName').textContent = '';
-    document.getElementById('uploadCsvBtn').style.display = 'none';
-    document.getElementById('csvResults').innerHTML = '';
+    importCsvModal.close();
 }
 
 // Show Notification
@@ -1293,12 +1284,6 @@ function initCreateSectionSearch() {
     }
 }
 
-// Update modal close handlers
-window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-        e.target.style.display = 'none';
-    }
-});
 
 // Toggle filters function
 function toggleFilters() {
