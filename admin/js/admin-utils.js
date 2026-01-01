@@ -465,10 +465,10 @@ export function getStatusBadge(invitation, options = {}) {
     let html = '';
     
     if (showIcon) {
-        // Badge grande con icono (para modales)
-        html = `<div class="status-badge-large" style="background: ${statusColor};">
+        // Badge grande con icono (para modales) - usar las mismas clases que los badges normales
+        html = `<span class="status-badge status-badge-large ${statusClass}">
             <i class="fas fa-${statusIcon}"></i> ${statusText}
-        </div>`;
+        </span>`;
     } else {
         // Badge normal
         let dotHtml = '';

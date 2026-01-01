@@ -91,6 +91,7 @@ export class Modal {
         
         this.modalElement.classList.remove('modal-hidden');
         this.modalElement.classList.add('modal-visible');
+        this.modalElement.style.display = 'block';
         this.isOpen = true;
         
         // Agregar listener de ESC
@@ -104,7 +105,7 @@ export class Modal {
         }
         
         // Prevenir scroll del body
-        document.body.classList.add('body-no-scroll');
+        document.body.classList.add('modal-open');
     }
     
     /**
@@ -115,6 +116,7 @@ export class Modal {
         
         this.modalElement.classList.remove('modal-visible');
         this.modalElement.classList.add('modal-hidden');
+        this.modalElement.style.display = 'none';
         this.isOpen = false;
         
         // Remover listener de ESC
@@ -128,7 +130,7 @@ export class Modal {
         }
         
         // Restaurar scroll del body
-        document.body.classList.remove('body-no-scroll');
+        document.body.classList.remove('modal-open');
     }
     
     /**

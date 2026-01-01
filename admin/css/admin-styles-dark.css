@@ -83,11 +83,28 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--background-dark);
     border-right: 1px solid var(--border-color);
     position: fixed;
-    height: 100vh;
+    top: 60px; /* Below header - default */
+    height: calc(100vh - 60px);
     overflow-y: auto;
     z-index: 100;
     display: flex;
     flex-direction: column;
+}
+
+/* Adjust sidebar for medium screens */
+@media (min-width: 769px) {
+    .sidebar {
+        top: 70px;
+        height: calc(100vh - 70px);
+    }
+}
+
+/* Adjust sidebar for large screens */
+@media (min-width: 1200px) {
+    .sidebar {
+        top: 80px;
+        height: calc(100vh - 80px);
+    }
 }
 
 .sidebar-header {
@@ -149,8 +166,25 @@ h1, h2, h3, h4, h5, h6 {
 .main-content {
     flex: 1;
     margin-left: 288px;
+    margin-top: 60px; /* Space for header - default */
     background: var(--background-darker);
-    min-height: 100vh;
+    min-height: calc(100vh - 60px);
+}
+
+/* Adjust main content for medium screens */
+@media (min-width: 769px) {
+    .main-content {
+        margin-top: 70px;
+        min-height: calc(100vh - 70px);
+    }
+}
+
+/* Adjust main content for large screens */
+@media (min-width: 1200px) {
+    .main-content {
+        margin-top: 80px;
+        min-height: calc(100vh - 80px);
+    }
 }
 
 .content-section {
@@ -904,12 +938,19 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     #recentConfirmations .guest-name {
-        font-size: 0.813rem;
+        font-size: 0.75rem; /* Reduced from 0.813rem */
         white-space: normal;
         line-height: 1.3;
         text-align: center;
         width: 100%;
         max-width: none;
+    }
+    
+    /* When names are split into multiple lines on tablets */
+    #recentConfirmations .guest-name div {
+        font-size: 0.688rem; /* Smaller for split names */
+        line-height: 1.2;
+        margin-bottom: 1px;
     }
     
     #recentConfirmations .guest-time {
@@ -1107,11 +1148,18 @@ h1, h2, h3, h4, h5, h6 {
     
     /* Smaller text */
     #recentConfirmations .guest-name {
-        font-size: 0.75rem;
+        font-size: 0.688rem; /* Reduced from 0.75rem */
         white-space: normal;
         line-height: 1.2;
         text-align: center;
         width: 100%;
+    }
+    
+    /* When names are split into multiple lines, make them even smaller */
+    #recentConfirmations .guest-name div {
+        font-size: 0.625rem; /* Smaller for split names */
+        line-height: 1.2;
+        margin-bottom: 1px;
     }
     
     #recentConfirmations .guest-info {
@@ -1189,7 +1237,13 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     #recentConfirmations .guest-name {
-        font-size: 0.688rem;
+        font-size: 0.625rem; /* Reduced from 0.688rem */
+    }
+    
+    /* When names are split into multiple lines on very small screens */
+    #recentConfirmations .guest-name div {
+        font-size: 0.563rem; /* Even smaller for split names */
+        line-height: 1.15;
     }
     
     #recentConfirmations .guest-time {
@@ -1364,6 +1418,12 @@ tbody tr:hover {
     border-color: rgba(239, 68, 68, 0.2);
 }
 
+.status-badge.partial {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -1498,32 +1558,58 @@ tbody tr:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
-    overflow-y: auto;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    overflow: hidden;
 }
 
 /* When modal is shown, use flexbox for centering */
 .modal[style*="display: block"] {
     display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Body no scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
 .modal-content {
     background: var(--surface-dark);
-    padding: 24px;
-    border-radius: 16px;
-    max-width: 480px;
-    width: 100%;
+    padding: 32px;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 90%;
     position: relative;
-    animation: slideIn 0.3s ease;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
-    margin: auto;
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    margin: 20px;
     max-height: 85vh;
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar for modal content */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
 }
 
 .modal-content h2 {
@@ -1582,16 +1668,39 @@ tbody tr:hover {
     margin-bottom: 20px;
 }
 
+/* Use exact same styles as table badges for consistency */
 .invitation-detail .status-badge-large {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--primary);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.813rem;
-    font-weight: 600;
+    padding: 4px 12px; /* Same as table badges */
+    border-radius: 9999px;
+    font-size: 0.75rem; /* Same as table badges */
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.invitation-detail .status-badge-large.confirmed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.invitation-detail .status-badge-large.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.invitation-detail .status-badge-large.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.invitation-detail .status-badge-large.partial {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    border-color: rgba(59, 130, 246, 0.2);
 }
 
 .invitation-detail .guest-section {
@@ -1821,18 +1930,45 @@ tbody tr:hover {
     }
 }
 
-/* Mobile Header */
+@keyframes modalSlideIn {
+    from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile Header - Now visible on all screens */
 .mobile-header {
-    display: none;
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 60px; /* Default height for mobile */
     background: var(--background-dark);
     border-bottom: 1px solid var(--border-color);
     z-index: 1001;
     padding: 0 16px;
+}
+
+/* Larger header for medium screens */
+@media (min-width: 769px) {
+    .mobile-header {
+        height: 70px;
+        padding: 0 24px;
+    }
+}
+
+/* Even larger header for large screens */
+@media (min-width: 1200px) {
+    .mobile-header {
+        height: 80px;
+        padding: 0 32px;
+    }
 }
 
 .mobile-header-content {
@@ -1848,6 +1984,317 @@ tbody tr:hover {
     gap: 12px;
 }
 
+.mobile-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Notification Button in Header */
+.notification-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.notification-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-btn .notification-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--danger);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: pulse-notification 2s infinite;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+}
+
+/* Notification Panel */
+.notification-panel {
+    position: fixed;
+    top: 60px; /* Default */
+    right: 0;
+    width: 360px;
+    max-width: 90vw;
+    height: calc(100vh - 60px);
+    background: var(--surface-dark);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Adjust notification panel for medium screens */
+@media (min-width: 769px) and (max-width: 1199px) {
+    .notification-panel {
+        top: 70px;
+        height: calc(100vh - 70px);
+    }
+}
+
+/* Adjust notification panel for large screens */
+@media (min-width: 1200px) {
+    .notification-panel {
+        top: 80px;
+        height: calc(100vh - 80px);
+    }
+}
+
+.notification-panel.active {
+    transform: translateX(0);
+}
+
+/* Mobile notification panel - full width sidebar */
+@media (max-width: 768px) {
+    .notification-panel {
+        width: 100%;
+        max-width: 100%;
+        top: 0;
+        height: 100vh;
+        z-index: 1002; /* Higher than mobile header */
+        background: var(--background-dark);
+    }
+}
+
+/* Notification Overlay for mobile */
+.notification-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    backdrop-filter: blur(2px);
+}
+
+.notification-overlay.active {
+    display: block;
+}
+
+.notification-panel-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-panel-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.notification-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-size: 0.813rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.notification-clear-btn:hover {
+    background: rgba(230, 25, 161, 0.1);
+}
+
+/* Notification header actions container */
+.notification-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Notification close button */
+.notification-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-close-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+/* Mobile adjustments for notification panel header */
+@media (max-width: 768px) {
+    .notification-panel-header {
+        padding: 20px;
+    }
+    
+    .notification-panel-header h3 {
+        font-size: 1rem;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .notification-clear-btn {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        white-space: nowrap;
+    }
+    
+    .notification-close-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.125rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .notification-panel-header {
+        padding: 16px;
+    }
+    
+    .notification-panel-header h3 {
+        font-size: 0.938rem;
+    }
+    
+    .notification-clear-btn {
+        font-size: 0.688rem;
+        padding: 3px 8px;
+    }
+    
+    .notification-close-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+        padding: 6px;
+    }
+}
+
+.notification-panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+/* Notification Item */
+.notification-item {
+    background: var(--background-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.notification-item:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.notification-item.unread {
+    border-left: 3px solid var(--primary);
+}
+
+.notification-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.notification-item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(230, 25, 161, 0.1);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+}
+
+.notification-item-content {
+    flex: 1;
+}
+
+.notification-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.notification-item-message {
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.notification-item-time {
+    font-size: 0.688rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.notification-item-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+}
+
+/* Empty State */
+.notification-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.notification-empty i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.notification-empty p {
+    font-size: 0.875rem;
+}
+
 .mobile-profile-pic {
     width: 32px;
     height: 32px;
@@ -1859,10 +2306,40 @@ tbody tr:hover {
     border: 2px solid var(--primary);
 }
 
+/* Larger profile pic for medium screens */
+@media (min-width: 769px) {
+    .mobile-profile-pic {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Even larger profile pic for large screens */
+@media (min-width: 1200px) {
+    .mobile-profile-pic {
+        width: 40px;
+        height: 40px;
+    }
+}
+
 .mobile-couple-name {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+/* Larger text for medium screens */
+@media (min-width: 769px) {
+    .mobile-couple-name {
+        font-size: 1.125rem;
+    }
+}
+
+/* Even larger text for large screens */
+@media (min-width: 1200px) {
+    .mobile-couple-name {
+        font-size: 1.25rem;
+    }
 }
 
 .mobile-menu-btn {
@@ -1874,10 +2351,18 @@ tbody tr:hover {
     cursor: pointer;
     border-radius: 8px;
     transition: var(--transition);
+    display: none; /* Hidden by default on large screens */
 }
 
 .mobile-menu-btn:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+/* Show menu button only on mobile */
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
 }
 
 /* Avatar Gradients */
@@ -2113,6 +2598,8 @@ tbody tr:hover {
         z-index: 1002; /* Higher than mobile header */
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
         top: 0; /* Start from top, not below header */
+        height: 100vh; /* Full viewport height */
+        height: 100dvh; /* Dynamic viewport height for mobile browsers */
     }
     
     /* Sidebar adjustments for mobile */
@@ -2160,7 +2647,7 @@ tbody tr:hover {
     
     .content-section {
         padding: 16px;
-        padding-top: 76px; /* Space for mobile header */
+        padding-top: 16px; /* Reduced padding - header spacing handled by margin-top */
         width: 100%;
         overflow-x: hidden;
     }
@@ -2186,24 +2673,44 @@ tbody tr:hover {
     
     /* Hero Section Mobile */
     .hero-section {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
+        margin-top: 9px; /* Reduced margin as requested */
     }
     
     .welcome-card {
         width: 100%;
-        min-height: 160px;
+        min-height: 150px; /* Increased height as requested */
     }
     
     .welcome-content {
-        padding: 20px;
+        padding: 16px; /* Reduced padding */
     }
     
     .welcome-content h2 {
-        font-size: 1.75rem;
+        font-size: 1.5rem; /* Smaller font */
+        margin-bottom: 4px;
     }
     
     .welcome-content p {
-        font-size: 0.813rem;
+        font-size: 0.75rem; /* Smaller font */
+        line-height: 1.3;
+    }
+    
+    .welcome-content .subtitle {
+        font-size: 0.625rem; /* Smaller subtitle */
+        margin-bottom: 4px;
+    }
+    
+    /* Hide period selector on very small screens if needed */
+    @media (max-width: 360px) {
+        .period-selector {
+            margin-top: 8px;
+        }
+        
+        .period-select {
+            font-size: 0.625rem;
+            padding: 4px 8px;
+        }
     }
     
     /* Timer Mobile */
@@ -2393,6 +2900,35 @@ tbody tr:hover {
 }
 
 @media (max-width: 480px) {
+    /* Hero Section adjustments for very small screens */
+    .hero-section {
+        margin-top: 9px; /* Same reduced margin for consistency */
+        margin-bottom: 16px;
+    }
+    
+    .welcome-card {
+        min-height: 150px; /* Keep same height as requested */
+    }
+    
+    .welcome-content {
+        padding: 14px;
+    }
+    
+    .welcome-content h2 {
+        font-size: 1.25rem;
+        margin-bottom: 2px;
+    }
+    
+    .welcome-content p {
+        font-size: 0.688rem;
+        margin-bottom: 0;
+    }
+    
+    .welcome-content .subtitle {
+        font-size: 0.563rem;
+        letter-spacing: 0.1em;
+    }
+    
     /* Recent Confirmations table adjustments for very small screens */
     #recentConfirmationsTable table th {
         font-size: 0.625rem !important;
@@ -2436,7 +2972,7 @@ tbody tr:hover {
     
     .content-section {
         padding: 12px;
-        padding-top: 72px; /* Space for mobile header */
+        padding-top: 12px; /* Reduced padding */
         max-width: 100vw;
     }
     
@@ -2445,33 +2981,7 @@ tbody tr:hover {
         margin-bottom: 16px;
     }
     
-    /* Hero Section Small Mobile */
-    .hero-section {
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .welcome-card {
-        min-height: 140px;
-        width: 100%;
-    }
-    
-    .welcome-content {
-        padding: 16px;
-    }
-    
-    .welcome-content h2 {
-        font-size: 1.25rem;
-    }
-    
-    .welcome-content .subtitle {
-        font-size: 0.625rem;
-    }
-    
-    .welcome-content p {
-        font-size: 0.75rem;
-        line-height: 1.4;
-    }
+    /* Hero Section Small Mobile - Already handled in previous media query */
     
     /* Timer Small Mobile */
     .timer-card {
@@ -3281,6 +3791,66 @@ th:contains("Mesa") {
 
 .notification-toast .toast-action:hover {
     background: rgba(230, 25, 161, 0.1);
+}
+
+/* Sound Enable Prompt */
+.sound-enable-prompt {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface-dark);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: var(--shadow-lg);
+    z-index: 2001;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+.sound-prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sound-prompt-content i {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+.sound-prompt-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.sound-prompt-content button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.813rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-left: 8px;
+}
+
+.sound-prompt-content button:hover {
+    background: var(--primary-dark);
 }
 
 /* Period Selector Styles */

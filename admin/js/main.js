@@ -52,6 +52,7 @@ import {
 
 import { Modal, ModalFactory, showToast } from './components/admin-modal.js';
 import { createAdminAPI, APIHelpers } from './admin-api.js';
+import { notificationService } from './services/notification-service.js';
 
 // Re-export everything for backward compatibility
 export {
@@ -109,8 +110,25 @@ export {
     
     // API
     createAdminAPI,
-    APIHelpers
+    APIHelpers,
+    
+    // Services
+    notificationService
 };
 
 // Initialize the admin panel when this module is imported
 console.log('Admin panel modules loaded successfully');
+
+// Start notification monitoring when the module loads
+if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+        // Load initial notifications
+        notificationService.loadInitialNotifications();
+        
+        // Start monitoring for new confirmations
+        notificationService.startMonitoring();
+        
+        // Update notification count
+        notificationService.updateNotificationCount();
+    });
+}

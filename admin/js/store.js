@@ -150,6 +150,14 @@ export class InvitationStore {
     }
     
     /**
+     * Update invitations (alias for setInvitations for compatibility)
+     * @param {Array} invitations - New invitations array
+     */
+    updateInvitations(invitations) {
+        this.setInvitations(invitations);
+    }
+    
+    /**
      * Update stats
      * @param {Object} stats - New stats object
      */
@@ -214,6 +222,14 @@ export class InvitationStore {
     setUI(ui) {
         this.state.ui = { ...this.state.ui, ...ui };
         this.notify('ui');
+    }
+    
+    /**
+     * Get current state
+     * @returns {Object} Current state
+     */
+    getState() {
+        return this.state;
     }
     
     /**

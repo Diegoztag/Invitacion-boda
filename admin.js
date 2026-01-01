@@ -55,6 +55,9 @@ import { Modal, ModalFactory, showToast } from './admin/js/components/admin-moda
 // Import API system
 import { createAdminAPI, APIHelpers } from './admin/js/admin-api.js';
 
+// Import notification service
+import { notificationService } from './admin/js/services/notification-service.js';
+
 // Load configuration from config.js
 const CONFIG = {
     backendUrl: WEDDING_CONFIG.api.backendUrl
@@ -66,9 +69,6 @@ const adminAPI = createAdminAPI(CONFIG.backendUrl);
 // Global variables
 let allInvitations = [];
 let confirmationChart = null;
-let lastKnownConfirmations = null;
-let notificationCheckInterval = null;
-let notificationSound = null;
 
 // Modal instances
 let invitationDetailModal = null;
@@ -85,8 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set active modal reference for form buttons
     window.activeModal = null;
     
-    // Initialize notification sound
-    initNotificationSound();
+    // Notification sound removed - now handled by notification-service.js
     
     // Update wedding title
     document.getElementById('weddingTitle').textContent = `Boda ${WEDDING_CONFIG.couple.displayName}`;
@@ -1523,161 +1522,30 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Notification System Functions
-function initNotificationSound() {
-    // Create audio element for notification sound
-    notificationSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
-    notificationSound.volume = 0.3;
-}
+// Notification System Functions - REMOVED (now handled by notification-service.js)
 
-// Check for new confirmations
-async function checkForNewConfirmations() {
-    try {
-        const result = await adminAPI.fetchInvitations();
-        if (APIHelpers.isSuccess(result)) {
-            const invitations = result.invitations || [];
-            
-            // Get confirmed invitations
-            const confirmedInvitations = invitations.filter(inv => inv.confirmed);
-            
-            // Check if this is the first check
-            if (lastKnownConfirmations === null) {
-                lastKnownConfirmations = confirmedInvitations.length;
-                return;
-            }
-            
-            // Check for new confirmations
-            const newConfirmationsCount = confirmedInvitations.length - lastKnownConfirmations;
-            
-            if (newConfirmationsCount > 0) {
-                // Find the new confirmations
-                const sortedConfirmations = confirmedInvitations
-                    .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
-                    .slice(0, newConfirmationsCount);
-                
-                // Show notification for each new confirmation
-                sortedConfirmations.forEach((invitation, index) => {
-                    setTimeout(() => {
-                        showNewConfirmationNotification(invitation);
-                    }, index * 500); // Stagger notifications
-                });
-                
-                // Update badge
-                updateNotificationBadge(newConfirmationsCount);
-                
-                // Play sound
-                if (notificationSound && localStorage.getItem('notificationSoundEnabled') !== 'false') {
-                    notificationSound.play().catch(e => console.log('Could not play sound:', e));
-                }
-                
-                // Reload dashboard data
-                loadDashboardData();
-                loadRecentConfirmations();
-            }
-            
-            lastKnownConfirmations = confirmedInvitations.length;
-        }
-    } catch (error) {
-        console.error('Error checking for new confirmations:', error);
-    }
-}
+// Check for new confirmations - REMOVED (now handled by notification-service.js)
 
-// Show notification for new confirmation
-function showNewConfirmationNotification(invitation) {
-    const guestName = invitation.guestNames.join(' y ');
-    const confirmedPasses = invitation.confirmedPasses || 0;
-    const willAttend = invitation.confirmationDetails?.willAttend !== false;
-    
-    // Create notification toast
-    const toast = document.createElement('div');
-    toast.className = 'notification-toast';
-    toast.innerHTML = `
-        <i class="toast-icon fas fa-${willAttend ? 'check-circle' : 'times-circle'}"></i>
-        <div class="toast-content">
-            <div class="toast-title">Nueva confirmación</div>
-            <div class="toast-message">
-                ${guestName} ${willAttend ? `confirmó asistencia (${confirmedPasses} ${confirmedPasses === 1 ? 'pase' : 'pases'})` : 'no podrá asistir'}
-            </div>
-        </div>
-        <button class="toast-action" onclick="viewInvitation('${invitation.code}')">Ver</button>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 100);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 5000);
-}
+// Show notification for new confirmation - REMOVED (now handled by notification-service.js)
 
-// Update notification badge
+// Update notification badge - REMOVED (notifications now handled by notification-service.js in header only)
 function updateNotificationBadge(count) {
-    const badge = document.getElementById('dashboardNotificationBadge');
-    if (badge) {
-        if (count > 0) {
-            badge.textContent = count > 9 ? '9+' : count;
-            badge.style.display = 'block';
-            
-            // Add pulse animation
-            badge.style.animation = 'pulse-notification 2s infinite';
-            
-            // Store in localStorage
-            localStorage.setItem('unreadNotifications', count);
-        } else {
-            badge.style.display = 'none';
-            localStorage.removeItem('unreadNotifications');
-        }
-    }
+    // This function is deprecated - notifications are now handled by the notification service
+    // which updates the badge in the header notification button only
+    return;
 }
 
-// Clear notification badge when viewing dashboard
+// Clear notification badge when viewing dashboard - REMOVED
 function clearNotificationBadge() {
-    updateNotificationBadge(0);
-}
-
-// Start notification checking
-function startNotificationChecking() {
-    // Check every 30 seconds
-    notificationCheckInterval = setInterval(checkForNewConfirmations, 30000);
-    
-    // Initial check
-    checkForNewConfirmations();
-}
-
-// Stop notification checking
-function stopNotificationChecking() {
-    if (notificationCheckInterval) {
-        clearInterval(notificationCheckInterval);
-        notificationCheckInterval = null;
-    }
+    // This function is deprecated - notifications are now handled by the notification service
+    return;
 }
 
 // Initialize notifications on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for stored unread notifications
-    const unreadCount = parseInt(localStorage.getItem('unreadNotifications') || '0');
-    if (unreadCount > 0) {
-        updateNotificationBadge(unreadCount);
-    }
-    
-    // Clear badge when dashboard is viewed
-    const dashboardNav = document.querySelector('.nav-item[href="#dashboard"]');
-    if (dashboardNav) {
-        dashboardNav.addEventListener('click', () => {
-            clearNotificationBadge();
-        });
-    }
-    
-    // Start checking for new confirmations
-    startNotificationChecking();
+    // Initialize the notification service
+    notificationService.loadInitialNotifications();
+    notificationService.startMonitoring();
 });
 
 // Export functions to window for onclick handlers
