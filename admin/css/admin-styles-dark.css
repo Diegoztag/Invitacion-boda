@@ -1665,6 +1665,7 @@ body.modal-open {
 
 .invitation-detail .status-header {
     text-align: center;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -1672,6 +1673,7 @@ body.modal-open {
 .invitation-detail .status-badge-large {
     display: inline-flex;
     align-items: center;
+    gap: 6px; /* Space between icon and text */
     padding: 4px 12px; /* Same as table badges */
     border-radius: 9999px;
     font-size: 0.75rem; /* Same as table badges */

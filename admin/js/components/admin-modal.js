@@ -16,6 +16,7 @@ export class Modal {
         
         this.modalElement = null;
         this.isOpen = false;
+        this.scrollPosition = 0; // Guardar posición del scroll
         
         this.init();
     }
@@ -89,6 +90,9 @@ export class Modal {
     open() {
         if (this.isOpen) return;
         
+        // Guardar posición actual del scroll
+        this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+        
         this.modalElement.classList.remove('modal-hidden');
         this.modalElement.classList.add('modal-visible');
         this.modalElement.style.display = 'block';
@@ -131,6 +135,9 @@ export class Modal {
         
         // Restaurar scroll del body
         document.body.classList.remove('modal-open');
+        
+        // Restaurar posición del scroll
+        window.scrollTo(0, this.scrollPosition);
     }
     
     /**
