@@ -157,10 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if the clicked element is the "Ver todos los invitados" link
         if (e.target && e.target.matches('a[href="#invitations"]')) {
             e.preventDefault();
-            // Navigate to "Invitados" section (create section)
-            const invitadosNavItem = document.querySelector('.nav-item[href="#create"]');
-            if (invitadosNavItem) {
-                invitadosNavItem.click();
+            // Navigate to "Invitaciones" section
+            const invitacionesNavItem = document.querySelector('.nav-item[href="#invitations"]');
+            if (invitacionesNavItem) {
+                invitacionesNavItem.click();
             }
         }
     });
@@ -267,9 +267,7 @@ function initNavigation() {
             if (targetId === 'dashboard') {
                 loadDashboardData();
             } else if (targetId === 'invitations') {
-                loadInvitations();
-            } else if (targetId === 'create') {
-                loadCreateSectionData();
+                loadInvitationsSectionData();
             }
         });
     });
@@ -669,16 +667,122 @@ async function loadInvitations() {
     }
 }
 
-// Display Invitations
-function displayInvitations(invitations) {
+// Load Invitations Section Data
+async function loadInvitationsSectionData() {
+    try {
+        const result = await adminAPI.fetchStats();
+        if (APIHelpers.isSuccess(result)) {
+            const stats = result.stats;
+            
+            // Update stats cards in invitations section
+            document.getElementById('totalInvitationsStats').textContent = stats.totalInvitations;
+            document.getElementById('confirmedPassesStats').textContent = stats.confirmedPasses;
+            document.getElementById('pendingInvitationsStats').textContent = stats.pendingInvitations;
+            document.getElementById('cancelledPassesStats').textContent = stats.cancelledPasses || 0;
+        } else {
+            throw new Error(APIHelpers.getErrorMessage(result));
+        }
+    } catch (error) {
+        console.error('Error loading invitations section data:', error);
+        // Show demo data
+        const demoStats = generateDemoStats();
+        document.getElementById('totalInvitationsStats').textContent = demoStats.totalInvitations;
+        document.getElementById('confirmedPassesStats').textContent = demoStats.confirmedPasses;
+        document.getElementById('pendingInvitationsStats').textContent = demoStats.pendingInvitations;
+        document.getElementById('cancelledPassesStats').textContent = demoStats.cancelledPasses || 0;
+    }
+    
+    // Load invitations for the table
+    loadInvitations();
+    
+    // Initialize pagination
+    initInvitationsPagination();
+}
+
+// Display invitations in the table
+function displayInvitations(invitations, page = 1, itemsPerPage = 5) {
     const tbody = document.getElementById('invitationsTableBody');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
     
-    invitations.forEach(invitation => {
+    // Calculate pagination info
+    const paginationInfo = calculatePaginationInfo(invitations.length, page, itemsPerPage);
+    const paginatedInvitations = invitations.slice(paginationInfo.startIndex, paginationInfo.endIndex);
+    
+    // Update pagination info display
+    document.getElementById('showingFrom').textContent = paginationInfo.showingFrom;
+    document.getElementById('showingTo').textContent = paginationInfo.showingTo;
+    document.getElementById('totalCount').textContent = paginationInfo.totalCount;
+    
+    // Render table rows
+    paginatedInvitations.forEach((invitation) => {
         const row = document.createElement('tr');
-        row.innerHTML = renderTableRow(invitation, 'invitations');
+        const statusInfo = getStatusBadge(invitation);
+        
+        // Calculate cancelled passes
+        const cancelledPasses = calculateCancelledPasses(invitation);
+        
+        // Get table number
+        const tableNumber = invitation.tableNumber || '-';
+        
+        row.innerHTML = `
+            <td>
+                <div class="guest-info">
+                    <div class="guest-avatar" style="background: ${getRandomGradient()}">
+                        ${getInitials(invitation.guestNames)}
+                    </div>
+                    <div>
+                        <div class="guest-name">${formatGuestNames(invitation.guestNames)}</div>
+                        ${invitation.phone ? `<div class="guest-detail">${formatPhone(invitation.phone)}</div>` : ''}
+                    </div>
+                </div>
+            </td>
+            <td class="text-center">
+                <span class="pass-count">${invitation.numberOfPasses}</span>
+            </td>
+            <td>
+                ${statusInfo.html}
+            </td>
+            <td class="text-center">
+                <span class="confirmed-count ${invitation.confirmedPasses > 0 ? 'has-confirmed' : ''}">${invitation.confirmedPasses}</span>
+            </td>
+            <td class="text-center">
+                <span class="cancelled-count ${cancelledPasses > 0 ? 'has-cancelled' : ''}">${cancelledPasses}</span>
+            </td>
+            <td class="text-center">
+                <span class="table-number">${tableNumber}</span>
+            </td>
+            <td class="text-right">
+                <div class="action-buttons">
+                    <button class="btn-icon" title="Ver detalles" onclick="viewInvitation('${invitation.code}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-icon" title="Copiar enlace" onclick="copyInvitationLink('${invitation.code}')">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
         tbody.appendChild(row);
     });
+    
+    // Update pagination controls
+    updateTablePagination({
+        currentPage: page,
+        totalPages: paginationInfo.totalPages,
+        prevBtnId: 'prevPage',
+        nextBtnId: 'nextPage',
+        numbersContainerId: 'paginationNumbers',
+        onPageChange: (newPage) => displayInvitations(invitations, newPage, itemsPerPage)
+    });
+}
+
+// Initialize invitations pagination
+function initInvitationsPagination() {
+    // Store current filtered invitations for pagination
+    window.currentFilteredInvitations = allInvitations;
 }
 
 // View Invitation Details
@@ -987,6 +1091,26 @@ function showImportModal() {
 
 function closeImportModal() {
     importCsvModal.close();
+    // Reset file input and upload area
+    const csvFile = document.getElementById('csvFile');
+    const fileName = document.getElementById('fileName');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const uploadBtn = document.getElementById('uploadCsvBtn');
+    const csvResults = document.getElementById('csvResults');
+    
+    if (csvFile) csvFile.value = '';
+    if (fileName) fileName.textContent = '';
+    if (fileUploadArea) {
+        fileUploadArea.classList.remove('has-file');
+        fileUploadArea.classList.remove('drag-over');
+    }
+    if (uploadBtn) {
+        uploadBtn.classList.remove('show');
+    }
+    if (csvResults) {
+        csvResults.innerHTML = '';
+        csvResults.classList.remove('show', 'success', 'error');
+    }
 }
 
 // Show Notification
@@ -1064,9 +1188,20 @@ function initCsvUpload() {
         handleFileSelect(file);
     });
     
-    // Click on upload area to select file
+    // Handle select file button click
+    const selectFileBtn = document.getElementById('selectFileBtn');
+    if (selectFileBtn) {
+        selectFileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            csvFile.click();
+        });
+    }
+    
+    // Click on upload area to select file (but not on button)
     fileUploadArea.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+        // Only trigger file selection if clicking on the area itself, not buttons or inputs
+        if (!e.target.closest('button') && !e.target.closest('input')) {
             csvFile.click();
         }
     });

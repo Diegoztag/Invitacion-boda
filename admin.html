@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="admin/css/admin-styles-dark.css">
     <link rel="stylesheet" href="admin/css/admin-inline-styles.css">
     <link rel="stylesheet" href="admin/css/admin-table-alignment-fix.css?v=3">
+    <link rel="stylesheet" href="admin/css/admin-invitations-table.css">
+    <link rel="stylesheet" href="admin/css/admin-stats-homologation.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="config.js"></script>
@@ -67,12 +69,8 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Resumen</span>
                 </a>
-                <a href="#create" class="nav-item">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Invitados</span>
-                </a>
                 <a href="#invitations" class="nav-item">
-                    <i class="fas fa-envelope"></i>
+                    <i class="fas fa-user-friends"></i>
                     <span>Invitaciones</span>
                 </a>
             </nav>
@@ -252,7 +250,7 @@
                         </button>
                     </div>
                     <div class="table-responsive">
-                        <table>
+                        <table class="recent-confirmations-table">
                             <thead>
                                 <tr>
                                     <th>Invitado</th>
@@ -276,166 +274,127 @@
 
             <!-- Invitations Section -->
             <section id="invitations" class="content-section">
-                <h1>Gestión de Invitaciones</h1>
-                <div class="actions-bar">
-                    <input type="text" id="searchInput" placeholder="Buscar invitación..." class="search-input">
-                    <button class="btn btn-primary" onclick="showCreateForm()">
-                        <i class="fas fa-plus"></i> Nueva Invitación
-                    </button>
-                    <button class="btn btn-secondary" onclick="exportAllInvitations()">
-                        <i class="fas fa-file-excel"></i> Exportar Todo
-                    </button>
+                <div class="section-header">
+                    <div>
+                        <h1>Gestión de Invitaciones</h1>
+                        <p class="section-subtitle">Gestiona las invitaciones, confirma asistencias y organiza las mesas para el gran día.</p>
+                    </div>
                 </div>
-                <div class="table-container">
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="stat-badge primary" title="Porcentaje de invitaciones enviadas">100%</span>
+                        </div>
+                        <div class="stat-content">
+                            <p>Total Invitados</p>
+                            <h3 id="totalInvitationsStats">0</h3>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                                Meta: <span id="targetInvitationsStats">150</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <span class="stat-badge success" id="confirmedChangeStats">+12%</span>
+                        </div>
+                        <div class="stat-content">
+                            <p>Confirmados</p>
+                            <h3 id="confirmedPassesStats">0</h3>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                                Meta: <span id="targetGuestsStats">250</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Pendientes</p>
+                            <h3 id="pendingInvitationsStats">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Rechazados</p>
+                            <h3 id="cancelledPassesStats">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions Bar -->
+                <div class="actions-bar">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="Buscar invitado..." class="search-input">
+                        <button class="btn-icon" title="Filtros" onclick="toggleFilters()">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                    <div class="actions-group">
+                        <button class="btn btn-secondary" onclick="showImportModal()">
+                            <i class="fas fa-file-upload"></i> Importar CSV
+                        </button>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="fas fa-plus"></i> Añadir Invitado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Invitations Table -->
+                <div class="table-container modern">
                     <table class="invitations-table">
                         <thead>
                             <tr>
-                                <th>Código</th>
                                 <th>Invitados</th>
                                 <th>Pases</th>
                                 <th>Estado</th>
                                 <th>Confirmados</th>
                                 <th>Cancelados</th>
-                                <th>Acciones</th>
+                                <th>Mesa</th>
+                                <th class="text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="invitationsTableBody">
                             <!-- Las invitaciones se cargarán aquí -->
                         </tbody>
                     </table>
+                    
+                    <!-- Pagination -->
+                    <div class="table-pagination">
+                        <p class="pagination-info">Mostrando <span id="showingFrom">1</span>-<span id="showingTo">5</span> de <span id="totalCount">0</span> invitados</p>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="prevPage" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="pagination-numbers" id="paginationNumbers">
+                                <button class="pagination-number active">1</button>
+                            </div>
+                            <button class="pagination-btn" id="nextPage">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-        <!-- Create Invitation Section (Now shows invitations list) -->
-        <section id="create" class="content-section">
-            <div class="section-header">
-                <div>
-                    <h1>Invitados</h1>
-                    <p class="section-subtitle">Gestiona las invitaciones, confirma asistencias y organiza las mesas para el gran día.</p>
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid" style="margin-bottom: 2rem;">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-badge-container"></div>
-                    </div>
-                    <div class="stat-content">
-                        <p>Total Invitados</p>
-                        <h3 id="totalInvitationsCreate">0</h3>
-                        <div class="stat-progress">
-                            <div class="stat-progress-bar" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card primary">
-                    <div class="stat-header">
-                        <div class="stat-icon success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-badge-container">
-                            <div class="stat-percentage">
-                                <i class="fas fa-arrow-trend-up"></i>
-                                <span>+12% esta semana</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-content">
-                        <p>Confirmados</p>
-                        <h3 id="confirmedPassesCreate">0</h3>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon warning">
-                            <i class="fas fa-hourglass-half"></i>
-                        </div>
-                        <div class="stat-badge-container"></div>
-                    </div>
-                    <div class="stat-content">
-                        <p>Pendientes</p>
-                        <h3 id="pendingInvitationsCreate">0</h3>
-                        <div class="stat-progress">
-                            <div class="stat-progress-bar warning" style="width: 40%"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon danger">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                        <div class="stat-badge-container"></div>
-                    </div>
-                    <div class="stat-content">
-                        <p>Rechazados</p>
-                        <h3 id="cancelledPassesCreate">0</h3>
-                        <div class="stat-progress">
-                            <div class="stat-progress-bar danger" style="width: 3%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Actions Bar -->
-            <div class="actions-bar">
-                <div class="search-wrapper">
-                    <input type="text" id="searchInputCreate" placeholder="Buscar invitado..." class="search-input">
-                    <button class="btn-icon" title="Filtros" onclick="toggleFilters()">
-                        <i class="fas fa-filter"></i>
-                    </button>
-                </div>
-                <div class="actions-group">
-                    <button class="btn btn-secondary" onclick="showImportModal()">
-                        <i class="fas fa-file-upload"></i> Importar CSV
-                    </button>
-                    <button class="btn btn-primary" onclick="showCreateModal()">
-                        <i class="fas fa-plus"></i> Añadir Invitado
-                    </button>
-                </div>
-            </div>
-
-            <!-- Invitations Table -->
-            <div class="table-container modern">
-                <table class="invitations-table">
-                    <thead>
-                        <tr>
-                            <th>Invitado</th>
-                            <th>Estado</th>
-                            <th class="text-center">Pases</th>
-                            <th>Mesa</th>
-                            <th class="text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invitationsTableBodyCreate">
-                        <!-- Invitations will be loaded here -->
-                    </tbody>
-                </table>
-                
-                <!-- Pagination -->
-                <div class="table-pagination">
-                    <p class="pagination-info">Mostrando <span id="showingFromCreate">1</span>-<span id="showingToCreate">5</span> de <span id="totalCountCreate">0</span> invitados</p>
-                    <div class="pagination-controls">
-                        <button class="pagination-btn" id="prevPageCreate" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="pagination-numbers" id="paginationNumbersCreate">
-                            <button class="pagination-number active">1</button>
-                        </div>
-                        <button class="pagination-btn" id="nextPageCreate">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         </main>
     </div>
@@ -598,12 +557,13 @@ Staff Fotografía,2,10,+521234567894,foto@studio.com,staff</pre>
                 
                 <div class="file-upload" id="fileUploadArea">
                     <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
-                    <p class="file-upload-text">Arrastra tu archivo CSV aquí o haz clic para seleccionar</p>
-                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
-                    <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
+                    <p class="file-upload-text">Arrastra tu archivo CSV aquí</p>
+                    <p class="file-upload-subtext">o</p>
+                    <button class="btn btn-secondary" type="button" id="selectFileBtn">
                         <i class="fas fa-folder-open"></i> Seleccionar archivo
                     </button>
-                    <span id="fileName"></span>
+                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                    <div id="fileName" class="file-name-display"></div>
                 </div>
                 
                 <button id="uploadCsvBtn" class="btn btn-primary">

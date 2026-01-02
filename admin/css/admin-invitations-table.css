@@ -1,0 +1,293 @@
+/* Invitations Table Alignment Fixes for Large Screens */
+
+/* Base table styles */
+.invitations-table {
+    width: 100%;
+    table-layout: fixed; /* Force fixed table layout for better column control */
+}
+
+/* Column width distribution for large screens */
+@media (min-width: 1200px) {
+    .invitations-table th:nth-child(1),
+    .invitations-table td:nth-child(1) {
+        width: 30%; /* Guest name column */
+        text-align: left;
+    }
+    
+    .invitations-table th:nth-child(2),
+    .invitations-table td:nth-child(2) {
+        width: 10%; /* Total passes */
+        text-align: center;
+    }
+    
+    .invitations-table th:nth-child(3),
+    .invitations-table td:nth-child(3) {
+        width: 15%; /* Status */
+        text-align: center;
+    }
+    
+    .invitations-table th:nth-child(4),
+    .invitations-table td:nth-child(4) {
+        width: 12%; /* Confirmed passes */
+        text-align: center;
+    }
+    
+    .invitations-table th:nth-child(5),
+    .invitations-table td:nth-child(5) {
+        width: 12%; /* Cancelled passes */
+        text-align: center;
+    }
+    
+    .invitations-table th:nth-child(6),
+    .invitations-table td:nth-child(6) {
+        width: 8%; /* Table number */
+        text-align: center;
+    }
+    
+    .invitations-table th:nth-child(7),
+    .invitations-table td:nth-child(7) {
+        width: 13%; /* Actions */
+        text-align: right;
+    }
+    
+    /* Ensure proper alignment of content within cells */
+    .invitations-table td {
+        vertical-align: middle;
+    }
+    
+    /* Guest info column specific styles */
+    .invitations-table .guest-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0; /* Allow text truncation */
+    }
+    
+    .invitations-table .guest-info > div {
+        flex: 1;
+        min-width: 0; /* Allow text truncation */
+    }
+    
+    .invitations-table .guest-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+    
+    /* Center align numeric values */
+    .invitations-table .pass-count,
+    .invitations-table .confirmed-count,
+    .invitations-table .cancelled-count,
+    .invitations-table .table-number {
+        display: inline-block;
+        min-width: 30px;
+        text-align: center;
+    }
+    
+    /* Status badge alignment */
+    .invitations-table .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    /* Action buttons alignment */
+    .invitations-table .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+}
+
+/* Extra large screens (1400px+) */
+@media (min-width: 1400px) {
+    .invitations-table th:nth-child(1),
+    .invitations-table td:nth-child(1) {
+        width: 32%; /* More space for guest names */
+    }
+    
+    .invitations-table th:nth-child(3),
+    .invitations-table td:nth-child(3) {
+        width: 14%; /* Slightly less for status */
+    }
+    
+    .invitations-table th:nth-child(7),
+    .invitations-table td:nth-child(7) {
+        width: 12%; /* Slightly less for actions */
+    }
+}
+
+/* Ultra wide screens (1920px+) */
+@media (min-width: 1920px) {
+    .invitations-table {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    .invitations-table th:nth-child(1),
+    .invitations-table td:nth-child(1) {
+        width: 35%; /* Even more space for guest names */
+    }
+    
+    .invitations-table th:nth-child(3),
+    .invitations-table td:nth-child(3) {
+        width: 12%; /* Adjust status column */
+    }
+    
+    .invitations-table th:nth-child(7),
+    .invitations-table td:nth-child(7) {
+        width: 10%; /* Adjust actions column */
+    }
+}
+
+/* Header alignment fixes */
+.invitations-table thead th {
+    padding: 12px 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Ensure consistent padding */
+.invitations-table tbody td {
+    padding: 16px;
+}
+
+/* Fix for misaligned headers */
+.invitations-table thead th:first-child {
+    padding-left: 16px;
+}
+
+.invitations-table thead th:last-child {
+    padding-right: 16px;
+}
+
+/* Responsive adjustments for medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .invitations-table th,
+    .invitations-table td {
+        padding: 12px 8px;
+        font-size: 0.875rem;
+    }
+    
+    .invitations-table .guest-name {
+        font-size: 0.875rem;
+    }
+    
+    .invitations-table .btn-icon {
+        padding: 6px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Mobile view (already handled in main styles, but ensure consistency) */
+@media (max-width: 767px) {
+    .invitations-table {
+        table-layout: auto;
+    }
+    
+    .invitations-table thead {
+        display: none;
+    }
+    
+    .invitations-table tbody td {
+        display: block;
+        text-align: left !important;
+        padding: 8px 16px;
+    }
+    
+    .invitations-table tbody td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        display: inline-block;
+        width: 120px;
+        margin-right: 8px;
+    }
+}
+
+/* Fix for status badge centering */
+.invitations-table td:nth-child(3) {
+    text-align: center !important;
+}
+
+.invitations-table td:nth-child(3) > * {
+    margin: 0 auto;
+}
+
+/* Ensure proper vertical alignment */
+.invitations-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.invitations-table tbody tr:hover {
+    background-color: rgba(230, 25, 161, 0.05);
+}
+
+/* Fix for action buttons spacing */
+.invitations-table .action-buttons .btn-icon {
+    flex-shrink: 0;
+}
+
+/* Ensure table doesn't overflow on very large screens */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Add subtle shadows for depth on large screens */
+@media (min-width: 1200px) {
+    .invitations-table {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .invitations-table thead {
+        background-color: rgba(230, 25, 161, 0.05);
+    }
+}
+
+/* Recent confirmations table - Center guest cell content on large screens */
+@media (min-width: 1200px) {
+    .recent-confirmations-table .guest-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .recent-confirmations-table td:first-child {
+        text-align: center;
+    }
+
+    /* Ensure guest info text remains left-aligned within the centered container */
+    .recent-confirmations-table .guest-info {
+        text-align: left;
+        flex: 0 1 auto;
+    }
+
+    /* Center all columns in recent confirmations table */
+    .recent-confirmations-table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Keep message column left-aligned for readability */
+    .recent-confirmations-table .message-cell {
+        text-align: left;
+    }
+
+    /* Ensure action buttons remain right-aligned */
+    .recent-confirmations-table .table-cell-right {
+        text-align: right;
+    }
+}
+
+/* For extra large screens, maintain the centering */
+@media (min-width: 1400px) {
+    .recent-confirmations-table .guest-cell {
+        padding: 0 20px;
+    }
+}

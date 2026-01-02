@@ -623,7 +623,8 @@ function renderRecentConfirmationRow(invitation, index) {
         .map(name => `<div>${name}</div>`)
         .join('');
     
-    const tableNumber = getTableNumber(invitation.code);
+    // Use actual tableNumber if available, otherwise use generated one
+    const tableNumber = invitation.tableNumber || getTableNumber(invitation.code);
     const passTypeText = invitation.confirmedPasses === 1 ? 'Adulto' : 'Adultos';
     const message = invitation.confirmationDetails?.message;
     
