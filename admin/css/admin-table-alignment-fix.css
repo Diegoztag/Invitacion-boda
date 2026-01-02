@@ -355,6 +355,43 @@
 
 /* Large screen fixes for all invitation tables */
 @media (min-width: 1200px) {
+    /* Fix table layout for better column control */
+    .table-container.modern table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+    
+    /* Set specific column widths for invitations table */
+    .table-container.modern th:nth-child(1),
+    .table-container.modern td:nth-child(1) { 
+        width: 30%; /* Invitado column */
+        text-align: left !important;
+    }
+    
+    .table-container.modern th:nth-child(2),
+    .table-container.modern td:nth-child(2) { 
+        width: 20%; /* Estado column */
+        text-align: center !important;
+    }
+    
+    .table-container.modern th:nth-child(3),
+    .table-container.modern td:nth-child(3) { 
+        width: 15%; /* Pases column */
+        text-align: center !important;
+    }
+    
+    .table-container.modern th:nth-child(4),
+    .table-container.modern td:nth-child(4) { 
+        width: 15%; /* Mesa column */
+        text-align: center !important;
+    }
+    
+    .table-container.modern th:nth-child(5),
+    .table-container.modern td:nth-child(5) { 
+        width: 20%; /* Acciones column */
+        text-align: right !important;
+    }
+    
     #invitationsTableBody tr,
     #invitationsTableBodyCreate tr {
         height: 80px;
@@ -364,6 +401,7 @@
     #invitationsTableBodyCreate td {
         height: 80px;
         padding: 12px 24px;
+        vertical-align: middle !important;
     }
     
     /* Guest cell in invitations tables */
@@ -374,17 +412,38 @@
         justify-content: flex-start;
         height: 100%;
         min-height: 60px;
+        gap: 12px;
     }
     
-    /* Center align specific columns */
-    #invitationsTableBody td:nth-child(2),
-    #invitationsTableBody td:nth-child(3),
-    #invitationsTableBody td:nth-child(4),
-    #invitationsTableBodyCreate td:nth-child(2),
-    #invitationsTableBodyCreate td:nth-child(3),
-    #invitationsTableBodyCreate td:nth-child(4) {
-        text-align: center;
-        vertical-align: middle;
+    /* Ensure guest info is properly aligned */
+    #invitationsTableBodyCreate .guest-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: left;
+    }
+    
+    /* Fix guest name alignment */
+    #invitationsTableBodyCreate .guest-name {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+    
+    #invitationsTableBodyCreate .guest-name div {
+        text-align: left;
+        line-height: 1.3;
+    }
+    
+    /* Ensure time text stays below name */
+    #invitationsTableBodyCreate .guest-time {
+        display: block;
+        margin-top: 4px;
+        text-align: left;
+        font-size: 0.75rem;
+        color: var(--text-muted);
     }
 }
 
@@ -440,5 +499,37 @@
     .table-container.modern tbody td {
         height: 80px;
         vertical-align: middle;
+    }
+    
+    /* Override any conflicting text-align from other CSS files */
+    #invitationsTableBodyCreate td {
+        text-align: left !important;
+    }
+    
+    #invitationsTableBodyCreate td:nth-child(2),
+    #invitationsTableBodyCreate td:nth-child(3),
+    #invitationsTableBodyCreate td:nth-child(4) {
+        text-align: center !important;
+    }
+    
+    #invitationsTableBodyCreate td:nth-child(5) {
+        text-align: right !important;
+    }
+}
+
+/* Very large screens (1540px+) specific adjustments */
+@media (min-width: 1540px) {
+    .table-container.modern tbody tr {
+        height: 90px;
+    }
+    
+    .table-container.modern tbody td {
+        height: 90px;
+        padding: 16px 32px;
+    }
+    
+    /* Increase gap for guest cell on very large screens */
+    #invitationsTableBodyCreate .guest-cell {
+        gap: 16px;
     }
 }

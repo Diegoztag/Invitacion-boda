@@ -1021,26 +1021,61 @@ function initCsvUpload() {
     const fileName = document.getElementById('fileName');
     const uploadBtn = document.getElementById('uploadCsvBtn');
     const csvResults = document.getElementById('csvResults');
+    const fileUploadArea = document.getElementById('fileUploadArea');
     
     let selectedFile = null;
     
+    // Handle file selection
+    function handleFileSelect(file) {
+        if (file && file.type === 'text/csv') {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileUploadArea.classList.add('has-file');
+            uploadBtn.classList.add('show');
+            csvResults.innerHTML = '';
+            csvResults.classList.remove('show', 'success', 'error');
+        } else if (file) {
+            showToast('Por favor selecciona un archivo CSV válido', 'error');
+        }
+    }
+    
+    // File input change event
     csvFile.addEventListener('change', (e) => {
-        selectedFile = e.target.files[0];
-        if (selectedFile) {
-            fileName.textContent = selectedFile.name;
-            uploadBtn.classList.remove('upload-button-hidden');
-            uploadBtn.classList.add('upload-button-visible');
-        } else {
-            fileName.textContent = '';
-            uploadBtn.classList.add('upload-button-hidden');
-            uploadBtn.classList.remove('upload-button-visible');
+        const file = e.target.files[0];
+        handleFileSelect(file);
+    });
+    
+    // Drag and drop functionality
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('drag-over');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('drag-over');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('drag-over');
+        
+        const file = e.dataTransfer.files[0];
+        handleFileSelect(file);
+    });
+    
+    // Click on upload area to select file
+    fileUploadArea.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+            csvFile.click();
         }
     });
     
     uploadBtn.addEventListener('click', async () => {
         if (!selectedFile) return;
         
-        csvResults.innerHTML = '<p>Procesando archivo...</p>';
+            csvResults.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Procesando archivo...</p>';
+            csvResults.classList.add('show');
         
         try {
             const text = await selectedFile.text();
@@ -1065,17 +1100,31 @@ function initCsvUpload() {
             createdInvitations = importResult.createdInvitations;
             
             // Show results
-            let resultsHTML = `<h4>Resultados de la carga:</h4>`;
-            resultsHTML += `<p class="success">✅ ${created} invitaciones creadas exitosamente</p>`;
+            let resultsHTML = '';
+            
+            if (created > 0) {
+                csvResults.classList.add('success');
+                csvResults.classList.remove('error');
+                resultsHTML += `<h5><i class="fas fa-check-circle result-icon"></i> Carga completada</h5>`;
+                resultsHTML += `<div class="result-details">`;
+                resultsHTML += `<p>${created} invitaciones creadas exitosamente</p>`;
+            } else {
+                csvResults.classList.add('error');
+                csvResults.classList.remove('success');
+                resultsHTML += `<h5><i class="fas fa-exclamation-circle result-icon"></i> Error en la carga</h5>`;
+                resultsHTML += `<div class="result-details">`;
+            }
             
             if (errors.length > 0) {
-                resultsHTML += `<p class="error">❌ ${errors.length} errores:</p>`;
-                resultsHTML += '<ul>';
+                resultsHTML += `<p>${errors.length} errores encontrados:</p>`;
+                resultsHTML += '<ul class="result-list">';
                 errors.forEach(error => {
                     resultsHTML += `<li>${error}</li>`;
                 });
                 resultsHTML += '</ul>';
             }
+            
+            resultsHTML += '</div>';
             
             if (createdInvitations.length > 0) {
                 resultsHTML += '<h4>Enlaces generados:</h4>';
@@ -1106,19 +1155,27 @@ function initCsvUpload() {
             
             csvResults.innerHTML = resultsHTML;
             
-            // Reset form
-            csvFile.value = '';
-            fileName.textContent = '';
-            uploadBtn.classList.add('upload-button-hidden');
-            uploadBtn.classList.remove('upload-button-visible');
-            selectedFile = null;
+            // Reset form after delay
+            setTimeout(() => {
+                csvFile.value = '';
+                fileName.textContent = '';
+                fileUploadArea.classList.remove('has-file');
+                uploadBtn.classList.remove('show');
+                selectedFile = null;
+            }, 1000);
             
             // Reload invitations list
             loadInvitations();
             loadDashboardData();
             
         } catch (error) {
-            csvResults.innerHTML = `<p class="error">Error al procesar el archivo: ${error.message}</p>`;
+            csvResults.classList.add('show', 'error');
+            csvResults.innerHTML = `
+                <h5><i class="fas fa-exclamation-triangle result-icon"></i> Error al procesar</h5>
+                <div class="result-details">
+                    <p>${error.message}</p>
+                </div>
+            `;
         }
     });
 }
@@ -1130,29 +1187,112 @@ function parseCSV(text) {
     
     const invitations = [];
     
-    // Skip header row
+    // Get headers to identify column positions
+    const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
+    const columnIndex = {
+        nombres: headers.indexOf('nombres'),
+        pases: headers.indexOf('pases'),
+        mesa: headers.indexOf('mesa'),
+        telefono: headers.indexOf('telefono'),
+        email: headers.indexOf('email'),
+        tipo: headers.indexOf('tipo')
+    };
+    
+    // Validate required columns
+    if (columnIndex.nombres === -1 || columnIndex.pases === -1) {
+        throw new Error('El archivo CSV debe contener las columnas "Nombres" y "Pases"');
+    }
+    
+    // Parse data rows
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
         
-        // Simple CSV parsing (handles basic cases)
-        const parts = line.split(',').map(part => part.trim());
+        // Parse CSV line (handles quoted values)
+        const parts = parseCSVLine(line);
         
-        if (parts.length >= 2) {
-            const names = parts[0].split(/\s+y\s+/i).map(n => n.trim());
-            const passes = parseInt(parts[1]);
+        if (parts.length > columnIndex.nombres && parts.length > columnIndex.pases) {
+            const names = parts[columnIndex.nombres].split(/\s+y\s+/i).map(n => n.trim()).filter(n => n);
+            const passes = parseInt(parts[columnIndex.pases]);
             
             if (names.length > 0 && !isNaN(passes) && passes > 0) {
-                invitations.push({
+                const invitation = {
                     guestNames: names,
-                    numberOfPasses: passes,
-                    phone: parts[2] || ''
-                });
+                    numberOfPasses: passes
+                };
+                
+                // Add optional fields if present
+                if (columnIndex.mesa !== -1 && parts[columnIndex.mesa]) {
+                    const mesa = parseInt(parts[columnIndex.mesa]);
+                    if (!isNaN(mesa)) {
+                        invitation.tableNumber = mesa;
+                    }
+                }
+                
+                if (columnIndex.telefono !== -1 && parts[columnIndex.telefono]) {
+                    invitation.phone = parts[columnIndex.telefono];
+                }
+                
+                if (columnIndex.email !== -1 && parts[columnIndex.email]) {
+                    invitation.email = parts[columnIndex.email];
+                }
+                
+                if (columnIndex.tipo !== -1 && parts[columnIndex.tipo]) {
+                    const tipo = parts[columnIndex.tipo].toLowerCase();
+                    if (['adults', 'family', 'staff'].includes(tipo)) {
+                        invitation.invitationType = tipo;
+                        
+                        // Set default pass distribution based on type
+                        if (tipo === 'family') {
+                            // For families, assume 2 adults and rest are children
+                            invitation.adultPasses = Math.min(2, passes);
+                            invitation.childPasses = Math.max(0, passes - 2);
+                        } else {
+                            // For adults and staff, all passes are adult passes
+                            invitation.adultPasses = passes;
+                            invitation.childPasses = 0;
+                        }
+                    }
+                }
+                
+                // If no type specified, default to adults
+                if (!invitation.invitationType) {
+                    invitation.invitationType = 'adults';
+                    invitation.adultPasses = passes;
+                    invitation.childPasses = 0;
+                }
+                
+                invitations.push(invitation);
             }
         }
     }
     
     return invitations;
+}
+
+// Helper function to parse CSV line handling quoted values
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    
+    // Don't forget the last value
+    result.push(current.trim());
+    
+    return result;
 }
 
 // Export invitation links

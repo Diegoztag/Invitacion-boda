@@ -365,61 +365,84 @@ h1, h2, h3, h4, h5, h6 {
     min-height: 140px; /* Ensure consistent height */
 }
 
-/* Stat cards in create section - taller and better distributed */
-#create .stat-card {
-    min-height: 180px;
-    padding: 28px;
+/* Make both sections have the same stat card styles */
+#create .stat-card,
+#dashboard .stat-card {
+    min-height: 185px;
+    height: 185px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
 }
 
-/* Better content distribution in create section */
-#create .stat-content {
+/* Larger height for medium and large screens */
+@media (min-width: 769px) {
+    #create .stat-card,
+    #dashboard .stat-card {
+        min-height: 200px;
+        height: 200px;
+    }
+}
+
+/* Same content distribution for both sections */
+#create .stat-content,
+#dashboard .stat-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
+    padding-right: 60px; /* Space for the icon */
 }
 
-/* Larger numbers in create section */
-#create .stat-content h3 {
-    font-size: 2.15rem;
-    margin-bottom: 15px;
-}
-
-/* Adjust icon position in create section */
-#create .stat-card .stat-icon {
-    top: 24px;
-    right: 24px;
+/* Same font sizes for both sections */
+#create .stat-content h3,
+#dashboard .stat-content h3 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    margin-top: 0;
+    line-height: 1;
 }
 
 /* Position icon in top right corner */
-.stat-card .stat-icon {
+#create .stat-card .stat-icon,
+#dashboard .stat-card .stat-icon {
     position: absolute;
-    top: 24px;
+    top: 50%;
     right: 24px;
+    transform: translateY(-50%);
 }
 
-/* Stat card backgrounds for create section */
+/* Position icon with absolute positioning */
+.stat-card .stat-icon {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+}
+
+/* Use same backgrounds as dashboard for consistency */
 #create .stat-card:nth-child(1) {
-    background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(79, 70, 229, 0.05) 100%);
-    border-color: rgba(147, 51, 234, 0.2);
+    background: linear-gradient(135deg, rgba(230, 25, 161, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+    border-color: rgba(230, 25, 161, 0.15);
 }
 
 #create .stat-card:nth-child(2) {
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-    border-color: rgba(236, 72, 153, 0.2);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(34, 197, 94, 0.05) 100%);
+    border-color: rgba(16, 185, 129, 0.15);
 }
 
 #create .stat-card:nth-child(3) {
-    background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-    border-color: rgba(251, 146, 60, 0.2);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.05) 100%);
+    border-color: rgba(245, 158, 11, 0.15);
 }
 
 #create .stat-card:nth-child(4) {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
-    border-color: rgba(239, 68, 68, 0.2);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border-color: rgba(239, 68, 68, 0.15);
 }
 
 .stat-card:hover {
@@ -428,12 +451,14 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
+/* Stat header with consistent spacing for all cards */
 .stat-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center; /* Center items vertically */
     margin-bottom: 16px;
     position: relative;
+    min-height: 40px; /* Reserve space for icon/badge area */
 }
 
 /* Adjust stat-header icon position */
@@ -441,6 +466,21 @@ h1, h2, h3, h4, h5, h6 {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+/* Reserve space for badge even when not present */
+.stat-header .stat-badge-container {
+    min-height: 28px; /* Height of badge */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Hide stat-badge-container on screens smaller than large */
+@media (max-width: 1199px) {
+    .stat-header .stat-badge-container {
+        display: none;
+    }
 }
 
 .stat-icon {
@@ -459,25 +499,25 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 1;
 }
 
-/* Enhanced icon backgrounds */
+/* Use same icon styles as dashboard */
 #create .stat-card:nth-child(1) .stat-icon {
-    background: rgba(147, 51, 234, 0.15);
-    color: #9333ea;
+    background: rgba(230, 25, 161, 0.1);
+    color: var(--primary);
 }
 
 #create .stat-card:nth-child(2) .stat-icon {
-    background: rgba(236, 72, 153, 0.15);
-    color: #ec4899;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
 }
 
 #create .stat-card:nth-child(3) .stat-icon {
-    background: rgba(251, 146, 60, 0.15);
-    color: #fb923c;
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
 }
 
 #create .stat-card:nth-child(4) .stat-icon {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
 }
 
 /* Stat Icon Colors */
@@ -502,7 +542,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .stat-card:hover .stat-icon {
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .stat-badge {
@@ -540,14 +580,16 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
     padding-right: 60px; /* Space for the icon */
+    flex: 1;
 }
 
 .stat-content h3 {
     font-size: 2.25rem;
     font-weight: 700;
-    margin-bottom: 8px;
-    margin-top: 8px;
+    margin-bottom: 4px;
+    margin-top: 0;
     line-height: 1;
 }
 
@@ -559,6 +601,16 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.05em;
     margin-bottom: 0;
     white-space: nowrap;
+}
+
+/* Ensure both sections have same paragraph styles */
+#create .stat-content p,
+#dashboard .stat-content p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .stat-content .stat-badge {
@@ -602,20 +654,21 @@ h1, h2, h3, h4, h5, h6 {
     transition: width 0.5s ease;
 }
 
+/* Use consistent progress bar colors */
 #create .stat-card:nth-child(1) .stat-progress-bar {
-    background: #9333ea;
+    background: var(--primary);
 }
 
 #create .stat-card:nth-child(2) .stat-progress-bar {
-    background: #10b981;
+    background: var(--success);
 }
 
 #create .stat-card:nth-child(3) .stat-progress-bar {
-    background: #fb923c;
+    background: var(--warning);
 }
 
 #create .stat-card:nth-child(4) .stat-progress-bar {
-    background: #ef4444;
+    background: var(--danger);
 }
 
 /* Chart Container */
@@ -1922,31 +1975,535 @@ body.modal-open {
     color: var(--danger);
 }
 
-/* CSV Upload Section */
+/* CSV Upload Section - Enhanced Modal Styles */
 .csv-upload-section {
-    background: var(--surface-dark);
-    padding: 24px;
-    border-radius: 12px;
-    margin-bottom: 32px;
-    border: 1px solid var(--border-color);
+    font-size: 0.813rem;
+}
+
+.csv-upload-section > p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 0.938rem;
+    text-align: center;
+    font-weight: 500;
 }
 
 .csv-format {
-    background: var(--background-dark);
-    padding: 16px;
-    border-radius: 8px;
-    margin: 16px 0;
-    border: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    padding: 0;
+    border-radius: 16px;
+    margin: 24px 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: hidden;
 }
 
-.csv-format pre {
-    background: var(--background-darker);
-    padding: 12px;
+.csv-format h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(230, 25, 161, 0.05);
+}
+
+.csv-format h4 i {
+    color: var(--primary);
+    font-size: 1.125rem;
+}
+
+/* CSV Columns Sections */
+.csv-columns-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.csv-columns-section:last-of-type {
+    border-bottom: none;
+}
+
+.csv-columns-section h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.csv-columns-section h5 i {
+    font-size: 1rem;
+}
+
+/* CSV Column Grid */
+.csv-column-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.csv-column-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: var(--transition);
+}
+
+.csv-column-item:hover {
+    border-color: rgba(230, 25, 161, 0.3);
+    background: rgba(230, 25, 161, 0.05);
+    transform: translateY(-2px);
+}
+
+.csv-column-item.required {
+    border-left: 3px solid var(--success);
+}
+
+.csv-column-item.optional {
+    border-left: 3px solid var(--primary);
+}
+
+.column-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.column-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.column-example {
+    font-size: 0.688rem;
+    font-family: 'Courier New', monospace;
+    color: var(--primary);
+    background: rgba(230, 25, 161, 0.1);
+    padding: 4px 8px;
     border-radius: 4px;
+    display: inline-block;
+}
+
+/* CSV Example Section */
+.csv-example-section {
+    padding: 20px 24px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.csv-example-section h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.csv-example-section h5 i {
+    color: var(--text-muted);
+}
+
+.csv-example {
+    background: var(--background-darker);
+    padding: 16px;
+    border-radius: 8px;
     overflow-x: auto;
     font-size: 0.75rem;
-    margin: 12px 0;
+    margin: 0;
     color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+}
+
+/* CSV Tips */
+.csv-tips {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(230, 25, 161, 0.05) 0%, rgba(147, 51, 234, 0.03) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.csv-tips h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+}
+
+.csv-tips h5 i {
+    color: var(--warning);
+}
+
+.csv-tips ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.csv-tips li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.csv-tips li:last-child {
+    margin-bottom: 0;
+}
+
+.csv-tips li i {
+    color: var(--primary);
+    font-size: 0.875rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* Text color classes */
+.text-success {
+    color: var(--success);
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+/* File Upload Area - Enhanced */
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(230, 25, 161, 0.03) 0%, rgba(147, 51, 234, 0.02) 100%);
+    border: 2px dashed rgba(230, 25, 161, 0.2);
+    border-radius: 16px;
+    transition: var(--transition);
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(230, 25, 161, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.file-upload:hover::before {
+    opacity: 1;
+}
+
+.file-upload:hover {
+    border-color: rgba(230, 25, 161, 0.3);
+    background: rgba(230, 25, 161, 0.05);
+}
+
+.file-upload.drag-over {
+    border-color: rgba(230, 25, 161, 0.5);
+    background: rgba(230, 25, 161, 0.1);
+    transform: scale(1.02);
+}
+
+.file-upload.has-file {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.file-upload-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.file-upload:hover .file-upload-icon {
+    transform: translateY(-4px);
+    opacity: 1;
+}
+
+.file-upload.has-file .file-upload-icon {
+    color: var(--success);
+    animation: bounceIn 0.5s ease;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.file-upload-text {
+    font-size: 0.938rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.file-upload .btn-secondary {
+    background: rgba(230, 25, 161, 0.1);
+    border: 1px solid rgba(230, 25, 161, 0.3);
+    color: var(--primary);
+}
+
+.file-upload .btn-secondary:hover {
+    background: rgba(230, 25, 161, 0.2);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+#fileName {
+    display: block;
+    margin-top: 12px;
+    font-size: 0.875rem;
+    color: var(--success);
+    font-weight: 600;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    animation: fadeInUp 0.3s ease;
+}
+
+#fileName:empty {
+    display: none;
+}
+
+/* Upload Button - Enhanced */
+#uploadCsvBtn {
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--primary);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+#uploadCsvBtn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(230, 25, 161, 0.3);
+}
+
+#uploadCsvBtn.show {
+    display: flex;
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* CSV Results - Enhanced */
+#csvResults {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+#csvResults.show {
+    display: block;
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+#csvResults.success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+#csvResults.error {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+#csvResults h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#csvResults.success h5 {
+    color: var(--success);
+}
+
+#csvResults.error h5 {
+    color: var(--danger);
+}
+
+#csvResults .result-icon {
+    font-size: 1.125rem;
+}
+
+#csvResults .result-details {
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+#csvResults .result-list {
+    margin-top: 12px;
+    padding-left: 20px;
+}
+
+#csvResults .result-list li {
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+}
+
+/* CSV Export Button */
+.csv-export-button {
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* CSV Links */
+.csv-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.csv-links::-webkit-scrollbar {
+    width: 6px;
+}
+
+.csv-links::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.csv-links::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.csv-link-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.csv-link-item strong {
+    color: var(--text-primary);
+    font-size: 0.813rem;
+}
+
+.csv-link-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--background-darker);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    font-size: 0.688rem;
+    margin-bottom: 4px;
+}
+
+.csv-link-item .btn-sm {
+    align-self: flex-start;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Import Modal Specific Styles */
+#importCsvModal .modal-content {
+    max-width: 720px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#importCsvModal .modal-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.375rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+#importCsvModal .modal-content h2 i {
+    color: var(--primary);
+    font-size: 1.25rem;
+    background: rgba(230, 25, 161, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Modal Actions for Import CSV */
+#importCsvModal .modal-actions {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    bottom: 0;
+    background: var(--surface-dark);
+    z-index: 10;
+}
+
+#importCsvModal .modal-actions .btn-secondary {
+    min-width: 120px;
+    justify-content: center;
 }
 
 /* Animations */
@@ -2395,11 +2952,11 @@ body.modal-open {
         display: block;
     }
     
-    /* Stack logo above title on small screens */
+    /* Keep horizontal layout on small screens */
     .mobile-header-left {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
     }
     
     .mobile-profile-pic {
@@ -2420,7 +2977,9 @@ body.modal-open {
     }
     
     .mobile-header-left {
-        gap: 2px;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
     }
     
     .mobile-profile-pic {
@@ -2454,6 +3013,12 @@ body.modal-open {
     .mobile-header {
         height: 52px;
         padding: 0 10px;
+    }
+    
+    .mobile-header-left {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
     }
     
     .mobile-profile-pic {

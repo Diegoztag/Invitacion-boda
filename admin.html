@@ -318,8 +318,11 @@
             <!-- Stats Cards -->
             <div class="stats-grid" style="margin-bottom: 2rem;">
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-badge-container"></div>
                     </div>
                     <div class="stat-content">
                         <p>Total Invitados</p>
@@ -331,22 +334,29 @@
                 </div>
                 
                 <div class="stat-card primary">
-                    <div class="stat-icon success">
-                        <i class="fas fa-check-circle"></i>
+                    <div class="stat-header">
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-badge-container">
+                            <div class="stat-percentage">
+                                <i class="fas fa-arrow-trend-up"></i>
+                                <span>+12% esta semana</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="stat-content">
                         <p>Confirmados</p>
                         <h3 id="confirmedPassesCreate">0</h3>
-                        <div class="stat-percentage">
-                            <i class="fas fa-arrow-trend-up"></i>
-                            <span>+12% esta semana</span>
-                        </div>
                     </div>
                 </div>
                 
                 <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class="fas fa-hourglass-half"></i>
+                    <div class="stat-header">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-badge-container"></div>
                     </div>
                     <div class="stat-content">
                         <p>Pendientes</p>
@@ -358,8 +368,11 @@
                 </div>
                 
                 <div class="stat-card">
-                    <div class="stat-icon danger">
-                        <i class="fas fa-times-circle"></i>
+                    <div class="stat-header">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-badge-container"></div>
                     </div>
                     <div class="stat-content">
                         <p>Rechazados</p>
@@ -515,35 +528,91 @@
                 <p>Carga múltiples invitaciones desde un archivo CSV</p>
                 
                 <div class="csv-format">
-                    <h4>Formato del CSV:</h4>
-                    <pre>Nombres,Pases,Telefono,Adultos,Niños,Tipo
-Juan Pérez y María García,2,+521234567890,2,0,adults
-Familia González,4,+521234567893,2,2,family
-Staff Fotografía,2,+521234567894,2,0,staff</pre>
-                    <small>
-                        <strong>Importante:</strong> 
-                        • Usa "y" para separar múltiples nombres
-                        • El teléfono es opcional
-                        • Las columnas Adultos, Niños y Tipo son opcionales
-                        • Guarda el archivo con codificación UTF-8
-                    </small>
+                    <h4><i class="fas fa-info-circle"></i> Formato del archivo CSV</h4>
+                    
+                    <!-- Columnas requeridas -->
+                    <div class="csv-columns-section">
+                        <h5><i class="fas fa-check-circle text-success"></i> Columnas requeridas</h5>
+                        <div class="csv-column-grid">
+                            <div class="csv-column-item required">
+                                <div class="column-name">Nombres</div>
+                                <div class="column-desc">Nombres de los invitados</div>
+                                <div class="column-example">Juan Pérez y María García</div>
+                            </div>
+                            <div class="csv-column-item required">
+                                <div class="column-name">Pases</div>
+                                <div class="column-desc">Total de pases asignados</div>
+                                <div class="column-example">2</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Columnas opcionales -->
+                    <div class="csv-columns-section">
+                        <h5><i class="fas fa-plus-circle text-primary"></i> Columnas opcionales</h5>
+                        <div class="csv-column-grid">
+                            <div class="csv-column-item optional">
+                                <div class="column-name">Mesa</div>
+                                <div class="column-desc">Número de mesa asignada</div>
+                                <div class="column-example">5</div>
+                            </div>
+                            <div class="csv-column-item optional">
+                                <div class="column-name">Telefono</div>
+                                <div class="column-desc">Número de contacto</div>
+                                <div class="column-example">+521234567890</div>
+                            </div>
+                            <div class="csv-column-item optional">
+                                <div class="column-name">Email</div>
+                                <div class="column-desc">Correo electrónico</div>
+                                <div class="column-example">juan@email.com</div>
+                            </div>
+                            <div class="csv-column-item optional">
+                                <div class="column-name">Tipo</div>
+                                <div class="column-desc">Tipo de invitación</div>
+                                <div class="column-example">family, adults, staff</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ejemplo visual -->
+                    <div class="csv-example-section">
+                        <h5><i class="fas fa-file-alt"></i> Ejemplo de archivo</h5>
+                        <pre class="csv-example">Nombres,Pases,Mesa,Telefono,Email,Tipo
+Juan Pérez y María García,2,5,+521234567890,juan@email.com,adults
+Familia González,4,8,+521234567893,,family
+Ana López,1,3,,,adults
+Staff Fotografía,2,10,+521234567894,foto@studio.com,staff</pre>
+                    </div>
+                    
+                    <!-- Tips -->
+                    <div class="csv-tips">
+                        <h5><i class="fas fa-lightbulb"></i> Tips para un mejor resultado</h5>
+                        <ul>
+                            <li><i class="fas fa-users"></i> Usa "y" para separar múltiples nombres en una invitación</li>
+                            <li><i class="fas fa-file-excel"></i> Puedes crear el archivo en Excel y guardarlo como CSV</li>
+                            <li><i class="fas fa-globe"></i> Asegúrate de guardar con codificación UTF-8 para acentos</li>
+                            <li><i class="fas fa-chair"></i> Asignar mesas desde el CSV ahorra tiempo después</li>
+                        </ul>
+                    </div>
                 </div>
                 
-                <div class="file-upload">
+                <div class="file-upload" id="fileUploadArea">
+                    <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                    <p class="file-upload-text">Arrastra tu archivo CSV aquí o haz clic para seleccionar</p>
                     <input type="file" id="csvFile" accept=".csv" style="display: none;">
                     <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
-                        <i class="fas fa-upload"></i> Seleccionar archivo CSV
+                        <i class="fas fa-folder-open"></i> Seleccionar archivo
                     </button>
-                    <span id="fileName" style="margin-left: 10px;"></span>
+                    <span id="fileName"></span>
                 </div>
                 
-                <button id="uploadCsvBtn" class="btn btn-primary" style="display: none; margin-top: 10px;">
+                <button id="uploadCsvBtn" class="btn btn-primary">
                     <i class="fas fa-file-import"></i> Cargar Invitaciones
                 </button>
                 
-                <div id="csvResults" style="margin-top: 20px;"></div>
+                <div id="csvResults"></div>
                 
-                <div class="modal-actions" style="margin-top: 20px;">
+                <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeImportModal()">
                         Cerrar
                     </button>
