@@ -1,0 +1,444 @@
+/* Fix for table alignment when guest names are displayed in multiple lines */
+
+/* Force table layout for better control */
+#recentConfirmationsTable table {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
+/* Set specific column widths for large screens */
+@media (min-width: 1200px) {
+    #recentConfirmationsTable th:nth-child(1),
+    #recentConfirmationsTable td:nth-child(1) { 
+        width: 25%; /* Invitado column */
+    }
+    
+    #recentConfirmationsTable th:nth-child(2),
+    #recentConfirmationsTable td:nth-child(2) { 
+        width: 15%; /* Estado column */
+    }
+    
+    #recentConfirmationsTable th:nth-child(3),
+    #recentConfirmationsTable td:nth-child(3) { 
+        width: 12%; /* Pases column */
+    }
+    
+    #recentConfirmationsTable th:nth-child(4),
+    #recentConfirmationsTable td:nth-child(4) { 
+        width: 10%; /* Mesa column */
+    }
+    
+    #recentConfirmationsTable th:nth-child(5),
+    #recentConfirmationsTable td:nth-child(5) { 
+        width: 28%; /* Mensaje column */
+    }
+    
+    #recentConfirmationsTable th:nth-child(6),
+    #recentConfirmationsTable td:nth-child(6) { 
+        width: 10%; /* Detalle column */
+    }
+}
+
+/* Ensure all table cells have proper vertical alignment */
+#recentConfirmationsTable td {
+    vertical-align: middle !important;
+    position: relative;
+}
+
+/* Guest cell specific adjustments for large screens */
+@media (min-width: 1200px) {
+    /* Force consistent row height on large screens */
+    #recentConfirmationsTable tbody tr {
+        height: 85px !important; /* Fixed height for consistency */
+    }
+    
+    /* All table cells must have the same height */
+    #recentConfirmationsTable td {
+        height: 85px !important;
+        padding: 8px 16px !important;
+        box-sizing: border-box;
+    }
+    
+    /* Guest cell container - use table-cell display for better alignment */
+    #recentConfirmationsTable td:first-child {
+        padding: 8px 16px !important;
+    }
+    
+    /* Guest cell flex container - side by side on large screens */
+    #recentConfirmationsTable .guest-cell {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        height: 100% !important;
+        gap: 12px !important;
+        flex-direction: row !important;
+    }
+    
+    #recentConfirmationsTable .guest-avatar {
+        flex-shrink: 0;
+    }
+    
+    /* Guest info container - left aligned on large screens */
+    #recentConfirmationsTable .guest-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        text-align: left !important;
+        width: 100% !important;
+        gap: 4px !important;
+    }
+    
+    /* Guest names container - left aligned */
+    #recentConfirmationsTable .guest-name {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        gap: 2px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* Individual name lines */
+    #recentConfirmationsTable .guest-name div {
+        line-height: 1.2 !important;
+        text-align: left !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    /* Ensure time text stays below name */
+    #recentConfirmationsTable .guest-time {
+        display: block !important;
+        margin-top: 2px !important;
+        text-align: left !important;
+    }
+    
+    /* Status column - ensure badge is centered */
+    #recentConfirmationsTable td:nth-child(2) {
+        text-align: center !important;
+    }
+    
+    /* Passes column - stack the display */
+    #recentConfirmationsTable td:nth-child(3) {
+        text-align: center !important;
+    }
+    
+    #recentConfirmationsTable .passes-count {
+        display: block;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    
+    #recentConfirmationsTable .passes-type {
+        display: block;
+        font-size: 0.75em;
+        line-height: 1.2;
+        margin-top: 2px;
+    }
+    
+    /* Mesa column */
+    #recentConfirmationsTable td:nth-child(4) {
+        text-align: center !important;
+    }
+    
+    #recentConfirmationsTable .table-cell-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+    
+    /* Message column */
+    #recentConfirmationsTable td:nth-child(5) {
+        text-align: center !important;
+        padding: 8px !important;
+    }
+    
+    #recentConfirmationsTable .message-text {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        line-height: 1.3;
+        max-height: 3.9em; /* 3 lines max */
+    }
+    
+    /* Actions column */
+    #recentConfirmationsTable td:nth-child(6) {
+        text-align: center !important;
+    }
+}
+
+/* Specific fixes for very large screens */
+@media (min-width: 1540px) {
+    #recentConfirmationsTable tbody tr {
+        height: 90px !important;
+    }
+    
+    #recentConfirmationsTable td {
+        height: 90px !important;
+        padding: 10px 20px !important;
+    }
+    
+    /* Side-by-side layout for guest cell on very large screens */
+    #recentConfirmationsTable .guest-cell {
+        flex-direction: row !important;
+        gap: 16px;
+        justify-content: flex-start;
+    }
+    
+    /* Left align guest info on very large screens */
+    #recentConfirmationsTable .guest-info {
+        text-align: left;
+        align-items: flex-start;
+    }
+    
+    #recentConfirmationsTable .guest-name {
+        align-items: flex-start;
+    }
+    
+    #recentConfirmationsTable .guest-name div {
+        text-align: left;
+    }
+    
+    /* Ensure time text stays below name */
+    #recentConfirmationsTable .guest-time {
+        display: block;
+        margin-top: 4px;
+    }
+}
+
+/* When names are split into multiple divs */
+#recentConfirmationsTable .guest-name-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+#recentConfirmationsTable .guest-name-cell div {
+    line-height: 1.3;
+    text-align: center;
+}
+
+/* Ensure other columns are properly centered */
+#recentConfirmationsTable td:nth-child(2), /* Estado */
+#recentConfirmationsTable td:nth-child(3), /* Pases */
+#recentConfirmationsTable td:nth-child(4), /* Mesa */
+#recentConfirmationsTable td:nth-child(5), /* Mensaje */
+#recentConfirmationsTable td:nth-child(6) { /* Acciones */
+    vertical-align: middle !important;
+}
+
+/* Status badge centering */
+#recentConfirmationsTable .status-badge {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+/* Passes display centering */
+#recentConfirmationsTable td:nth-child(3) {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+#recentConfirmationsTable .passes-count,
+#recentConfirmationsTable .passes-type {
+    display: block;
+    text-align: center;
+}
+
+/* Table number display centering */
+#recentConfirmationsTable .table-cell-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px; /* Match guest cell height */
+}
+
+#recentConfirmationsTable .table-number-display {
+    text-align: center;
+}
+
+/* Message cell alignment */
+#recentConfirmationsTable .message-cell {
+    vertical-align: middle !important;
+}
+
+#recentConfirmationsTable .message-text {
+    display: block;
+    text-align: center;
+}
+
+/* Action button alignment */
+#recentConfirmationsTable .table-cell-right {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Responsive adjustments for medium screens */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    #recentConfirmationsTable tbody tr {
+        height: 70px;
+    }
+    
+    #recentConfirmationsTable td {
+        height: 70px;
+        padding: 10px 16px;
+    }
+    
+    #recentConfirmationsTable .guest-cell {
+        min-height: 52px;
+    }
+    
+    #recentConfirmationsTable .table-cell-center {
+        min-height: 52px;
+    }
+}
+
+/* Responsive adjustments for tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+    #recentConfirmationsTable tbody tr {
+        height: auto;
+        min-height: 60px;
+    }
+    
+    #recentConfirmationsTable td {
+        height: auto;
+        padding: 12px 6px;
+    }
+    
+    #recentConfirmationsTable .guest-cell {
+        min-height: 48px;
+    }
+    
+    #recentConfirmationsTable .table-cell-center {
+        min-height: 48px;
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+    #recentConfirmationsTable tbody tr {
+        height: auto;
+        min-height: 56px;
+    }
+    
+    #recentConfirmationsTable td {
+        height: auto;
+        padding: 10px 2px;
+    }
+    
+    #recentConfirmationsTable .guest-cell {
+        min-height: 48px;
+    }
+    
+    #recentConfirmationsTable .table-cell-center {
+        min-height: 48px;
+    }
+}
+
+/* Main invitations table alignment fix */
+#invitationsTable td,
+#invitationsTableBody td,
+#invitationsTableBodyCreate td {
+    vertical-align: middle !important;
+}
+
+/* Large screen fixes for all invitation tables */
+@media (min-width: 1200px) {
+    #invitationsTableBody tr,
+    #invitationsTableBodyCreate tr {
+        height: 80px;
+    }
+    
+    #invitationsTableBody td,
+    #invitationsTableBodyCreate td {
+        height: 80px;
+        padding: 12px 24px;
+    }
+    
+    /* Guest cell in invitations tables */
+    #invitationsTableBody .guest-cell,
+    #invitationsTableBodyCreate .guest-cell {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100%;
+        min-height: 60px;
+    }
+    
+    /* Center align specific columns */
+    #invitationsTableBody td:nth-child(2),
+    #invitationsTableBody td:nth-child(3),
+    #invitationsTableBody td:nth-child(4),
+    #invitationsTableBodyCreate td:nth-child(2),
+    #invitationsTableBodyCreate td:nth-child(3),
+    #invitationsTableBodyCreate td:nth-child(4) {
+        text-align: center;
+        vertical-align: middle;
+    }
+}
+
+/* When guest names are displayed with line breaks in main table */
+.guest-name-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+}
+
+.guest-name-cell div {
+    line-height: 1.3;
+}
+
+/* Ensure proper row height for all tables */
+.table-container tbody tr {
+    min-height: 60px;
+}
+
+.table-container tbody tr td {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Fix alignment for passes display across all tables */
+.passes-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.passes-count {
+    font-weight: 700;
+    display: block;
+}
+
+.passes-type {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    display: block;
+}
+
+/* Ensure consistent height for table rows with multiple line content */
+@media (min-width: 1200px) {
+    .table-container.modern tbody tr {
+        height: 80px;
+    }
+    
+    .table-container.modern tbody td {
+        height: 80px;
+        vertical-align: middle;
+    }
+}

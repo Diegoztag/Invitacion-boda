@@ -244,7 +244,9 @@ class NotificationService {
     async checkForNewConfirmations() {
         try {
             // Obtener invitaciones actualizadas del servidor
-            const response = await fetch('/api/invitations');
+            // Usar la URL completa del backend desde la configuración
+            const backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || 'http://localhost:3000/api';
+            const response = await fetch(`${backendUrl}/invitations`);
             if (!response.ok) return;
             
             const data = await response.json();
