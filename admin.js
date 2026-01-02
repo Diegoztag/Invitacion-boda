@@ -750,30 +750,36 @@ async function loadInvitationsSectionData() {
             document.getElementById('pendingInvitationsStats').textContent = pendingInvitations;
             document.getElementById('cancelledPassesStats').textContent = rejectedInvitations;
             
-            // Update percentage badge for invitations
-            const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
-            const invitationPercentage = Math.round((totalInvitations / targetInvitations) * 100);
+            // Remove percentage badge for invitations section - not needed here
             const percentageBadge = document.querySelector('#invitations .stat-badge.primary');
             if (percentageBadge) {
-                percentageBadge.textContent = `${invitationPercentage}%`;
-                percentageBadge.title = 'Porcentaje de invitaciones enviadas';
+                percentageBadge.remove();
             }
             
-            // Update confirmed change badge
+            // Update confirmed change badge - show percentage of confirmed invitations
             const confirmedChangeBadge = document.getElementById('confirmedChangeStats');
             if (confirmedChangeBadge) {
-                // Calculate recent confirmations (last 7 days)
-                const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-                const recentConfirmations = invitations.filter(inv => 
-                    inv.confirmed && 
-                    inv.confirmationDate && 
-                    new Date(inv.confirmationDate) >= sevenDaysAgo
-                ).length;
+                // Calculate percentage of confirmed invitations vs total invitations
+                const confirmedPercentage = totalInvitations > 0 ? 
+                    Math.round((confirmedInvitations / totalInvitations) * 100) : 0;
                 
-                const percentageChange = confirmedInvitations > 0 ? 
-                    Math.round((recentConfirmations / confirmedInvitations) * 100) : 0;
+                confirmedChangeBadge.textContent = `${confirmedPercentage}%`;
+                confirmedChangeBadge.title = 'Porcentaje de invitaciones confirmadas';
                 
-                confirmedChangeBadge.textContent = `+${percentageChange}%`;
+                // Ensure stat-badge class is present
+                if (!confirmedChangeBadge.classList.contains('stat-badge')) {
+                    confirmedChangeBadge.classList.add('stat-badge');
+                }
+                
+                // Update badge color based on percentage
+                confirmedChangeBadge.classList.remove('success', 'warning', 'danger', 'primary');
+                if (confirmedPercentage >= 70) {
+                    confirmedChangeBadge.classList.add('success');
+                } else if (confirmedPercentage >= 40) {
+                    confirmedChangeBadge.classList.add('warning');
+                } else {
+                    confirmedChangeBadge.classList.add('danger');
+                }
             }
         } else {
             throw new Error(APIHelpers.getErrorMessage(result));
@@ -1698,7 +1704,7 @@ function toggleFilters() {
         filterDropdown.className = 'filter-dropdown';
         filterDropdown.innerHTML = `
             <div class="filter-dropdown-content">
-                <h4>Filtrar por estado</h4>
+                <h4><i class="fas fa-filter"></i> Filtrar por estado</h4>
                 <label class="filter-option">
                     <input type="checkbox" id="filterConfirmed" checked> 
                     <span>Confirmados</span>
@@ -1712,7 +1718,7 @@ function toggleFilters() {
                     <span>Cancelados</span>
                 </label>
                 <hr class="filter-divider">
-                <h4>Filtrar por tipo</h4>
+                <h4><i class="fas fa-tags"></i> Filtrar por tipo</h4>
                 <label class="filter-option">
                     <input type="checkbox" id="filterAdults" checked> 
                     <span>Adultos/Parejas</span>
@@ -1732,83 +1738,44 @@ function toggleFilters() {
             </div>
         `;
         
-        // Position it relative to the filter button
-        const filterBtn = document.querySelector('.btn-icon[title="Filtros"]');
-        const actionsBar = filterBtn.closest('.actions-bar');
-        actionsBar.classList.add('position-relative');
-        actionsBar.appendChild(filterDropdown);
-        
-        // Add styles for the dropdown
-        const dropdownStyles = `
-            .filter-dropdown {
-                position: absolute;
-                top: 100%;
-                right: 0;
-                margin-top: 8px;
-                background: var(--surface-dark);
-                border: 1px solid var(--border-color);
-                border-radius: 12px;
-                padding: 16px;
-                box-shadow: var(--shadow-lg);
-                z-index: 100;
-                min-width: 250px;
-                display: none;
-            }
-            
-            .filter-dropdown.show {
-                display: block;
-            }
-            
-            .filter-dropdown-content h4 {
-                font-size: 0.875rem;
-                font-weight: 600;
-                margin-bottom: 12px;
-                color: var(--text-primary);
-            }
-            
-            .filter-option {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-bottom: 8px;
-                cursor: pointer;
-                font-size: 0.875rem;
-                color: var(--text-secondary);
-            }
-            
-            .filter-option:hover {
-                color: var(--text-primary);
-            }
-            
-            .filter-option input[type="checkbox"] {
-                cursor: pointer;
-            }
-            
-            .btn-sm {
-                padding: 6px 12px;
-                font-size: 0.75rem;
-            }
-        `;
-        
-        // Add styles if not already added
-        if (!document.getElementById('filterStyles')) {
-            const styleElement = document.createElement('style');
-            styleElement.id = 'filterStyles';
-            styleElement.textContent = dropdownStyles;
-            document.head.appendChild(styleElement);
+        // Position it relative to the search wrapper
+        const searchWrapper = document.querySelector('.search-wrapper');
+        if (searchWrapper) {
+            searchWrapper.appendChild(filterDropdown);
         }
     }
     
-    // Toggle dropdown visibility
-    filterDropdown.classList.toggle('show');
+    // Toggle dropdown visibility with animation
+    const isShowing = filterDropdown.classList.contains('show');
+    
+    if (!isShowing) {
+        // Show dropdown
+        filterDropdown.classList.add('show');
+        
+        // Animate filter options
+        const filterOptions = filterDropdown.querySelectorAll('.filter-option');
+        filterOptions.forEach((option, index) => {
+            option.style.animation = 'none';
+            setTimeout(() => {
+                option.style.animation = '';
+            }, 10);
+        });
+    } else {
+        // Hide dropdown
+        filterDropdown.classList.remove('show');
+    }
     
     // Close dropdown when clicking outside
-    document.addEventListener('click', function closeDropdown(e) {
-        if (!e.target.closest('.filter-dropdown') && !e.target.closest('.btn-icon[title="Filtros"]')) {
-            filterDropdown.classList.remove('show');
-            document.removeEventListener('click', closeDropdown);
-        }
-    });
+    if (!isShowing) {
+        setTimeout(() => {
+            document.addEventListener('click', function closeDropdown(e) {
+                if (!e.target.closest('.filter-dropdown') && !e.target.closest('.btn-icon[title="Filtros"]')) {
+                    filterDropdown.classList.remove('show');
+                    document.removeEventListener('click', closeDropdown);
+                }
+            });
+        }, 100);
+    }
 }
 
 // Reset filters
@@ -1858,18 +1825,17 @@ function applyFilters() {
     });
     
     // Apply search term if any
-    const searchInput = document.getElementById('searchInputCreate');
+    const searchInput = document.getElementById('searchInput');
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
     
     const finalFiltered = searchTerm ? filteredInvitations.filter(invitation => {
         return invitation.code.toLowerCase().includes(searchTerm) ||
                invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
-               (invitation.email && invitation.email.toLowerCase().includes(searchTerm)) ||
                (invitation.phone && invitation.phone.includes(searchTerm));
     }) : filteredInvitations;
     
     // Display filtered results
-    displayCreateSectionInvitations(finalFiltered);
+    displayInvitations(finalFiltered);
     
     // Close dropdown
     document.getElementById('filterDropdown').classList.remove('show');

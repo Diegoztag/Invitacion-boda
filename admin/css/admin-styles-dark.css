@@ -380,9 +380,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Larger height for medium and large screens */
 @media (min-width: 769px) {
     #create .stat-card,
-    #dashboard .stat-card {
-        min-height: 200px;
-        height: 200px;
+    #dashboard .stat-card,
+    #invitations .stat-card {
+        min-height: 190px;
+        height: 190px;
     }
 }
 
@@ -463,8 +464,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Adjust stat-header icon position */
 .stat-header .stat-icon {
-    position: absolute;
-    top: 0;
     right: 0;
 }
 
@@ -611,6 +610,102 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Allow text wrapping on small screens */
+@media (max-width: 768px) {
+    .stat-content p {
+        white-space: normal !important;
+        line-height: 1.2;
+        word-break: break-word;
+    }
+    
+    #create .stat-content p,
+    #dashboard .stat-content p {
+        white-space: normal !important;
+        line-height: 1.2;
+        word-break: break-word;
+    }
+    
+    /* Adjust padding for wrapped text */
+    .stat-content {
+        padding-right: 50px; /* Less padding for icon space */
+    }
+    
+    #create .stat-content,
+    #dashboard .stat-content {
+        padding-right: 50px;
+    }
+}
+
+/* Even smaller screens need more text wrapping */
+@media (max-width: 480px) {
+    .stat-content p {
+        font-size: 0.688rem;
+        letter-spacing: 0.03em;
+    }
+    
+    #create .stat-content p,
+    #dashboard .stat-content p {
+        font-size: 0.688rem;
+        letter-spacing: 0.03em;
+    }
+    
+    /* Reduce padding even more */
+    .stat-content {
+        padding-right: 40px;
+    }
+    
+    #create .stat-content,
+    #dashboard .stat-content {
+        padding-right: 40px;
+    }
+    
+    /* Make icons smaller to give more space to text */
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        right: 16px;
+    }
+    
+    .stat-icon i {
+        font-size: 16px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+    .stat-content p {
+        font-size: 0.625rem;
+        letter-spacing: 0.02em;
+    }
+    
+    #create .stat-content p,
+    #dashboard .stat-content p {
+        font-size: 0.625rem;
+        letter-spacing: 0.02em;
+    }
+    
+    /* Minimal padding */
+    .stat-content {
+        padding-right: 35px;
+    }
+    
+    #create .stat-content,
+    #dashboard .stat-content {
+        padding-right: 35px;
+    }
+    
+    /* Even smaller icons */
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+        right: 12px;
+    }
+    
+    .stat-icon i {
+        font-size: 14px;
+    }
 }
 
 .stat-content .stat-badge {
@@ -3991,6 +4086,157 @@ body.modal-open {
     background: linear-gradient(135deg, var(--surface-darker), var(--surface-dark));
 }
 
+/* Filter Dropdown Styles */
+.filter-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--surface-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 280px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.filter-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.filter-dropdown-content {
+    padding: 20px;
+}
+
+.filter-dropdown-content h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-dropdown-content h4:not(:first-child) {
+    margin-top: 20px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.filter-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    border-radius: 4px;
+}
+
+.filter-option span {
+    flex: 1;
+    user-select: none;
+}
+
+.filter-divider {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid var(--border-color);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.filter-actions .btn-sm {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 0.813rem;
+    font-weight: 500;
+}
+
+/* Position relative for actions bar */
+.actions-bar.position-relative {
+    position: relative;
+}
+
+/* Animation for filter dropdown items */
+.filter-dropdown.show .filter-option {
+    animation: fadeInUp 0.3s ease forwards;
+    opacity: 0;
+}
+
+.filter-dropdown.show .filter-option:nth-child(1) { animation-delay: 0.05s; }
+.filter-dropdown.show .filter-option:nth-child(2) { animation-delay: 0.1s; }
+.filter-dropdown.show .filter-option:nth-child(3) { animation-delay: 0.15s; }
+.filter-dropdown.show .filter-option:nth-child(4) { animation-delay: 0.2s; }
+.filter-dropdown.show .filter-option:nth-child(5) { animation-delay: 0.25s; }
+.filter-dropdown.show .filter-option:nth-child(6) { animation-delay: 0.3s; }
+.filter-dropdown.show .filter-option:nth-child(7) { animation-delay: 0.35s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+}
+
+/* Responsive adjustments for filter dropdown */
+@media (max-width: 768px) {
+    .filter-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 100%;
+        max-width: 400px;
+        z-index: 200; /* Higher z-index to overlap other buttons */
+        /* Keep the same animation as desktop */
+    }
+    
+    /* If dropdown goes off-screen, adjust position */
+    @media (max-width: 480px) {
+        .filter-dropdown {
+            max-width: 100%;
+        }
+    }
+    
+    .filter-dropdown-content {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+}
+
 /* Utility Classes */
 .text-primary { color: var(--primary); }
 .text-success { color: var(--success); }
@@ -4073,6 +4319,7 @@ body.modal-open {
 
 /* Search Wrapper */
 .search-wrapper {
+    position: relative;
     display: flex;
     gap: 8px;
     flex: 1;

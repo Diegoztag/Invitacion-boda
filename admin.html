@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="admin/css/admin-inline-styles.css">
     <link rel="stylesheet" href="admin/css/admin-table-alignment-fix.css?v=3">
     <link rel="stylesheet" href="admin/css/admin-invitations-table.css">
+    <link rel="stylesheet" href="admin/css/admin-invitations-alignment-fix.css">
     <link rel="stylesheet" href="admin/css/admin-stats-homologation.css">
     <link rel="stylesheet" href="admin/css/admin-stats-badge-fix.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -71,7 +72,7 @@
                     <span>Resumen</span>
                 </a>
                 <a href="#invitations" class="nav-item">
-                    <i class="fas fa-user-friends"></i>
+                    <i class="fas fa-envelope"></i>
                     <span>Invitaciones</span>
                 </a>
             </nav>
@@ -285,14 +286,10 @@
                             <div class="stat-icon primary">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <span class="stat-badge primary" title="Porcentaje de invitaciones enviadas">100%</span>
                         </div>
                         <div class="stat-content">
                             <p>Total Invitaciones</p>
                             <h3 id="totalInvitationsStats">0</h3>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-                                Meta: <span id="targetInvitationsStats">150</span>
-                            </p>
                         </div>
                     </div>
                     
@@ -301,14 +298,11 @@
                             <div class="stat-icon success">
                                 <i class="fas fa-check-circle"></i>
                             </div>
-                            <span class="stat-badge success" id="confirmedChangeStats">+12%</span>
+                            <span class="stat-badge success" id="confirmedChangeStats">+0%</span>
                         </div>
                         <div class="stat-content">
                             <p>Invitaciones Confirmadas</p>
                             <h3 id="confirmedPassesStats">0</h3>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-                                Meta: <span id="targetGuestsStats">150</span>
-                            </p>
                         </div>
                     </div>
                     
