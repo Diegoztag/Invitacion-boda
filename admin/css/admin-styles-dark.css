@@ -3220,6 +3220,10 @@ body.modal-open {
         margin-bottom: 24px;
     }
     
+    .welcome-card {
+        min-height: 200px; /* Adjusted height for medium screens */
+    }
+    
     .welcome-content h2 {
         font-size: 2rem;
     }

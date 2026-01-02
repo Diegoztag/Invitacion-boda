@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="admin/css/admin-table-alignment-fix.css?v=3">
     <link rel="stylesheet" href="admin/css/admin-invitations-table.css">
     <link rel="stylesheet" href="admin/css/admin-stats-homologation.css">
+    <link rel="stylesheet" href="admin/css/admin-stats-badge-fix.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="config.js"></script>
@@ -131,15 +132,14 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-user-check"></i>
                             </div>
-                            <span class="stat-badge primary" title="Porcentaje de invitaciones enviadas">100%</span>
                         </div>
                         <div class="stat-content">
-                            <p>Invitaciones</p>
+                            <p>Total Pases</p>
                             <h3 id="totalInvitations">0</h3>
                             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-                                Meta: <span id="targetInvitations">150</span>
+                                Meta: <span id="targetInvitations">250</span>
                             </p>
                         </div>
                     </div>
@@ -152,10 +152,10 @@
                             <span class="stat-badge success" id="confirmedChange">+0</span>
                         </div>
                         <div class="stat-content">
-                            <p>Confirmados</p>
+                            <p>Pases Confirmados</p>
                             <h3 id="confirmedPasses">0</h3>
                             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-                                Meta: <span id="targetGuests">250</span>
+                                Faltan <span id="remainingGuests">0</span> pases
                             </p>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Pendientes</p>
+                            <p>Pases Pendientes</p>
                             <h3 id="pendingInvitations">0</h3>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Rechazados</p>
+                            <p>Pases Cancelados</p>
                             <h3 id="cancelledPasses">0</h3>
                         </div>
                     </div>
@@ -202,8 +202,8 @@
                     <div class="chart-container">
                         <div class="chart-header">
                             <div>
-                                <h3>Desglose de Pases</h3>
-                                <p>Distribución por tipo</p>
+                                <h3>Desglose de Pases Activos</h3>
+                                <p>Distribución por tipo (no incluye cancelaciones)</p>
                             </div>
                             <span class="chart-value"><span id="totalPassesChart">0</span> <small style="font-size: 0.875rem; font-weight: 400; color: var(--text-muted);">Pases</small></span>
                         </div>
@@ -245,9 +245,6 @@
                 <div class="table-container" id="recentConfirmationsTable">
                     <div class="table-header">
                         <h3>Últimas Confirmaciones</h3>
-                        <button class="btn btn-primary" onclick="showCreateForm()">
-                            <i class="fas fa-plus"></i> <span class="btn-text">Añadir Invitado</span>
-                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="recent-confirmations-table">
@@ -267,7 +264,7 @@
                         </table>
                     </div>
                     <div style="padding: 16px; text-align: center; border-top: 1px solid var(--border-color);">
-                        <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Ver todos los invitados</a>
+                        <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Gestionar invitaciones</a>
                     </div>
                 </div>
             </section>
@@ -286,12 +283,12 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
-                                <i class="fas fa-users"></i>
+                                <i class="fas fa-envelope"></i>
                             </div>
                             <span class="stat-badge primary" title="Porcentaje de invitaciones enviadas">100%</span>
                         </div>
                         <div class="stat-content">
-                            <p>Total Invitados</p>
+                            <p>Total Invitaciones</p>
                             <h3 id="totalInvitationsStats">0</h3>
                             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
                                 Meta: <span id="targetInvitationsStats">150</span>
@@ -307,10 +304,10 @@
                             <span class="stat-badge success" id="confirmedChangeStats">+12%</span>
                         </div>
                         <div class="stat-content">
-                            <p>Confirmados</p>
+                            <p>Invitaciones Confirmadas</p>
                             <h3 id="confirmedPassesStats">0</h3>
                             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-                                Meta: <span id="targetGuestsStats">250</span>
+                                Meta: <span id="targetGuestsStats">150</span>
                             </p>
                         </div>
                     </div>
@@ -322,7 +319,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Pendientes</p>
+                            <p>Invitaciones Pendientes</p>
                             <h3 id="pendingInvitationsStats">0</h3>
                         </div>
                     </div>
@@ -334,7 +331,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Rechazados</p>
+                            <p>Invitaciones Canceladas</p>
                             <h3 id="cancelledPassesStats">0</h3>
                         </div>
                     </div>

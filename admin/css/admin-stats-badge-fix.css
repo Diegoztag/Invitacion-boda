@@ -1,0 +1,55 @@
+/* Fix for stat badge colors */
+.stat-badge.danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Ensure all stat badges have consistent styling */
+.stat-badge {
+    font-size: 0.688rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+/* Color variations */
+.stat-badge.primary {
+    background: rgba(230, 25, 161, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(230, 25, 161, 0.2);
+}
+
+.stat-badge.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.stat-badge.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.stat-badge.danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Hover effects for better interactivity */
+.stat-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure trend icon is properly sized */
+.stat-badge .trend-icon {
+    font-size: 10px;
+}

@@ -331,7 +331,8 @@ export function updateStatsUI(stats, suffix = '') {
     const cancelledPassesEl = document.getElementById(`cancelledPasses${suffix}`);
     
     if (totalInvitationsEl) {
-        totalInvitationsEl.textContent = stats.totalInvitations;
+        // En el dashboard, mostrar totalPasses en lugar de totalInvitations
+        totalInvitationsEl.textContent = stats.totalPasses || stats.totalInvitations;
     }
     
     if (confirmedPassesEl) {
@@ -339,7 +340,8 @@ export function updateStatsUI(stats, suffix = '') {
     }
     
     if (pendingInvitationsEl) {
-        pendingInvitationsEl.textContent = stats.pendingInvitations;
+        // En el dashboard, mostrar pendingPasses en lugar de pendingInvitations
+        pendingInvitationsEl.textContent = stats.pendingPasses || stats.pendingInvitations;
     }
     
     if (cancelledPassesEl) {
@@ -442,7 +444,7 @@ export function getStatusBadge(invitation, options = {}) {
     if (invitation.confirmed && invitation.confirmationDetails) {
         if (!invitation.confirmationDetails.willAttend) {
             status = 'rejected';
-            statusText = 'Rechazado';
+            statusText = 'Cancelado';
             statusClass = 'rejected';
             statusColor = '#f44336';
             statusIcon = 'times-circle';

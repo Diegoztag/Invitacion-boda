@@ -283,19 +283,44 @@ async function loadDashboardData() {
             // Update stats cards using utility function
             updateStatsUI(stats);
             
-            // Update invitation percentage badge
-            const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
-            updateInvitationPercentageBadge(stats.totalInvitations, targetInvitations);
+            // Update confirmed percentage badge (based on confirmed passes vs target)
+            const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
+            const confirmedPercentage = Math.round((stats.confirmedPasses / targetTotal) * 100);
+            const confirmedBadge = document.getElementById('confirmedChange');
+            if (confirmedBadge) {
+                confirmedBadge.textContent = `${confirmedPercentage}%`;
+                confirmedBadge.title = 'Porcentaje de confirmados';
+                // Ensure stat-badge class is present
+                if (!confirmedBadge.classList.contains('stat-badge')) {
+                    confirmedBadge.classList.add('stat-badge');
+                }
+                // Update badge color based on percentage
+                confirmedBadge.classList.remove('success', 'warning', 'danger', 'primary');
+                if (confirmedPercentage >= 70) {
+                    confirmedBadge.classList.add('success');
+                } else if (confirmedPercentage >= 40) {
+                    confirmedBadge.classList.add('warning');
+                } else {
+                    confirmedBadge.classList.add('danger');
+                }
+            }
             
             // Update target elements
             updateTargetElements({
-                targetInvitations: targetInvitations,
-                targetTotal: WEDDING_CONFIG.guests?.targetTotal || 250
+                targetInvitations: targetTotal,
+                targetTotal: targetTotal
             });
             
-            // Update confirmed change indicator
-            const recentConfirmations = await calculateRecentConfirmations();
-            updateConfirmedChangeIndicator(recentConfirmations);
+            // Calculate and display remaining guests
+            const remainingGuests = Math.max(0, targetTotal - stats.confirmedPasses);
+            const remainingGuestsEl = document.getElementById('remainingGuests');
+            if (remainingGuestsEl) {
+                remainingGuestsEl.textContent = remainingGuests;
+            }
+            
+            // Update confirmed change indicator - COMENTADO porque ahora mostramos porcentaje
+            // const recentConfirmations = await calculateRecentConfirmations();
+            // updateConfirmedChangeIndicator(recentConfirmations);
             
             // Get selected period from dropdown
             const periodSelector = document.getElementById('confirmationPeriod');
@@ -327,15 +352,41 @@ async function loadDashboardData() {
         // Update stats using utility functions
         updateStatsUI(demoStats);
         
-        // Update invitation percentage badge
-        const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
-        updateInvitationPercentageBadge(demoStats.totalInvitations, targetInvitations);
+        // Update confirmed percentage badge for demo data
+        const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
+        const confirmedPercentage = Math.round((demoStats.confirmedPasses / targetTotal) * 100);
+        const confirmedBadge = document.getElementById('confirmedChange');
+        if (confirmedBadge) {
+            confirmedBadge.textContent = `${confirmedPercentage}%`;
+            confirmedBadge.title = 'Porcentaje de confirmados';
+            // Ensure stat-badge class is present
+            if (!confirmedBadge.classList.contains('stat-badge')) {
+                confirmedBadge.classList.add('stat-badge');
+            }
+            // Update badge color based on percentage
+            confirmedBadge.classList.remove('success', 'warning', 'danger', 'primary');
+            if (confirmedPercentage >= 70) {
+                confirmedBadge.classList.add('success');
+            } else if (confirmedPercentage >= 40) {
+                confirmedBadge.classList.add('warning');
+            } else {
+                confirmedBadge.classList.add('danger');
+            }
+        }
         
         // Update target elements
+        const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
         updateTargetElements({
             targetInvitations: targetInvitations,
-            targetTotal: WEDDING_CONFIG.guests?.targetTotal || 250
+            targetTotal: targetTotal
         });
+        
+        // Calculate and display remaining guests for demo data
+        const remainingGuests = Math.max(0, targetTotal - demoStats.confirmedPasses);
+        const remainingGuestsEl = document.getElementById('remainingGuests');
+        if (remainingGuestsEl) {
+            remainingGuestsEl.textContent = remainingGuests;
+        }
         
         // Update pass distribution with demo data
         updatePassDistribution(demoStats);
@@ -350,7 +401,11 @@ async function loadDashboardData() {
 
 // Update Pass Distribution
 function updatePassDistribution(stats) {
-    const totalPasses = stats.totalPasses || 0;
+    // Calculate ACTIVE passes only (confirmed + pending, excluding cancelled)
+    const confirmedPasses = stats.confirmedPasses || 0;
+    const pendingPasses = stats.pendingPasses || 0;
+    const activePasses = confirmedPasses + pendingPasses; // Exclude cancelled passes
+    
     const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false; // Default to true if not specified
     
     // Use real data from stats if available, otherwise use estimated distribution
@@ -359,38 +414,47 @@ function updatePassDistribution(stats) {
     
     // Check if we have detailed pass breakdown in stats
     if (stats.adultPasses !== undefined && stats.childPasses !== undefined && stats.staffPasses !== undefined) {
-        // Use actual data from backend
-        adultPasses = stats.adultPasses;
-        childPasses = allowChildren ? stats.childPasses : 0;
-        staffPasses = stats.staffPasses;
+        // Calculate active passes for each category (proportionally)
+        const totalOriginal = stats.totalPasses || 1; // Avoid division by zero
+        const activeRatio = activePasses / totalOriginal;
+        
+        adultPasses = Math.round(stats.adultPasses * activeRatio);
+        childPasses = allowChildren ? Math.round(stats.childPasses * activeRatio) : 0;
+        staffPasses = Math.round(stats.staffPasses * activeRatio);
+        
+        // Adjust for rounding errors
+        const calculatedTotal = adultPasses + childPasses + staffPasses;
+        if (calculatedTotal !== activePasses && activePasses > 0) {
+            adultPasses += (activePasses - calculatedTotal);
+        }
     } else {
         // Fallback to estimated distribution if detailed data not available
         if (allowChildren) {
             // Normal distribution with children
-            adultPasses = Math.floor(totalPasses * 0.8); // 80% adults
-            childPasses = Math.floor(totalPasses * 0.15); // 15% children
-            staffPasses = totalPasses - adultPasses - childPasses; // 5% staff
+            adultPasses = Math.floor(activePasses * 0.8); // 80% adults
+            childPasses = Math.floor(activePasses * 0.15); // 15% children
+            staffPasses = activePasses - adultPasses - childPasses; // 5% staff
         } else {
             // No children allowed - redistribute percentages
-            adultPasses = Math.floor(totalPasses * 0.95); // 95% adults
+            adultPasses = Math.floor(activePasses * 0.95); // 95% adults
             childPasses = 0; // 0% children
-            staffPasses = totalPasses - adultPasses; // 5% staff
+            staffPasses = activePasses - adultPasses; // 5% staff
         }
     }
     
     // Calculate percentages (handle division by zero)
-    if (totalPasses > 0) {
-        adultPercent = Math.round((adultPasses / totalPasses) * 100);
-        childPercent = allowChildren ? Math.round((childPasses / totalPasses) * 100) : 0;
-        staffPercent = Math.round((staffPasses / totalPasses) * 100);
+    if (activePasses > 0) {
+        adultPercent = Math.round((adultPasses / activePasses) * 100);
+        childPercent = allowChildren ? Math.round((childPasses / activePasses) * 100) : 0;
+        staffPercent = Math.round((staffPasses / activePasses) * 100);
     } else {
         adultPercent = 0;
         childPercent = 0;
         staffPercent = 0;
     }
     
-    // Update total passes
-    document.getElementById('totalPassesChart').textContent = totalPasses;
+    // Update total passes (now showing active passes only)
+    document.getElementById('totalPassesChart').textContent = activePasses;
     
     // Update adult passes
     document.getElementById('adultPasses').textContent = `${adultPasses} (${adultPercent}%)`;
@@ -670,26 +734,57 @@ async function loadInvitations() {
 // Load Invitations Section Data
 async function loadInvitationsSectionData() {
     try {
-        const result = await adminAPI.fetchStats();
+        const result = await adminAPI.fetchInvitations();
         if (APIHelpers.isSuccess(result)) {
-            const stats = result.stats;
+            const invitations = result.invitations || [];
             
-            // Update stats cards in invitations section
-            document.getElementById('totalInvitationsStats').textContent = stats.totalInvitations;
-            document.getElementById('confirmedPassesStats').textContent = stats.confirmedPasses;
-            document.getElementById('pendingInvitationsStats').textContent = stats.pendingInvitations;
-            document.getElementById('cancelledPassesStats').textContent = stats.cancelledPasses || 0;
+            // Calculate invitation counts (not passes)
+            const totalInvitations = invitations.length;
+            const confirmedInvitations = invitations.filter(inv => inv.confirmed && inv.confirmationDetails?.willAttend !== false).length;
+            const pendingInvitations = invitations.filter(inv => !inv.confirmed).length;
+            const rejectedInvitations = invitations.filter(inv => inv.confirmed && inv.confirmationDetails?.willAttend === false).length;
+            
+            // Update stats cards in invitations section with invitation counts
+            document.getElementById('totalInvitationsStats').textContent = totalInvitations;
+            document.getElementById('confirmedPassesStats').textContent = confirmedInvitations;
+            document.getElementById('pendingInvitationsStats').textContent = pendingInvitations;
+            document.getElementById('cancelledPassesStats').textContent = rejectedInvitations;
+            
+            // Update percentage badge for invitations
+            const targetInvitations = WEDDING_CONFIG.guests?.targetInvitations || 150;
+            const invitationPercentage = Math.round((totalInvitations / targetInvitations) * 100);
+            const percentageBadge = document.querySelector('#invitations .stat-badge.primary');
+            if (percentageBadge) {
+                percentageBadge.textContent = `${invitationPercentage}%`;
+                percentageBadge.title = 'Porcentaje de invitaciones enviadas';
+            }
+            
+            // Update confirmed change badge
+            const confirmedChangeBadge = document.getElementById('confirmedChangeStats');
+            if (confirmedChangeBadge) {
+                // Calculate recent confirmations (last 7 days)
+                const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                const recentConfirmations = invitations.filter(inv => 
+                    inv.confirmed && 
+                    inv.confirmationDate && 
+                    new Date(inv.confirmationDate) >= sevenDaysAgo
+                ).length;
+                
+                const percentageChange = confirmedInvitations > 0 ? 
+                    Math.round((recentConfirmations / confirmedInvitations) * 100) : 0;
+                
+                confirmedChangeBadge.textContent = `+${percentageChange}%`;
+            }
         } else {
             throw new Error(APIHelpers.getErrorMessage(result));
         }
     } catch (error) {
         console.error('Error loading invitations section data:', error);
         // Show demo data
-        const demoStats = generateDemoStats();
-        document.getElementById('totalInvitationsStats').textContent = demoStats.totalInvitations;
-        document.getElementById('confirmedPassesStats').textContent = demoStats.confirmedPasses;
-        document.getElementById('pendingInvitationsStats').textContent = demoStats.pendingInvitations;
-        document.getElementById('cancelledPassesStats').textContent = demoStats.cancelledPasses || 0;
+        document.getElementById('totalInvitationsStats').textContent = 11;
+        document.getElementById('confirmedPassesStats').textContent = 8;
+        document.getElementById('pendingInvitationsStats').textContent = 2;
+        document.getElementById('cancelledPassesStats').textContent = 1;
     }
     
     // Load invitations for the table
@@ -1614,7 +1709,7 @@ function toggleFilters() {
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" id="filterRejected" checked> 
-                    <span>Rechazados</span>
+                    <span>Cancelados</span>
                 </label>
                 <hr class="filter-divider">
                 <h4>Filtrar por tipo</h4>

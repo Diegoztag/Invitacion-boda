@@ -132,7 +132,7 @@ const WEDDING_CONFIG = {
     
     // Configuración de invitados
     guests: {
-        targetTotal: 250, // Número total de invitados esperados (personas)
+        targetTotal: 130, // Número total de invitados esperados (personas)
         targetInvitations: 150, // Número estimado de invitaciones a enviar
         allowChildren: false // true = se permiten niños, false = solo adultos
     },

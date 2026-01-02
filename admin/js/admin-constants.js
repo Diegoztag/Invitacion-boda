@@ -70,7 +70,7 @@ export const INVITATION_STATUS = {
 export const STATUS_LABELS = {
     [INVITATION_STATUS.PENDING]: 'Pendiente',
     [INVITATION_STATUS.CONFIRMED]: 'Confirmado',
-    [INVITATION_STATUS.REJECTED]: 'Rechazado',
+    [INVITATION_STATUS.REJECTED]: 'Cancelado',
     [INVITATION_STATUS.PARTIAL]: 'Parcial'
 };
 
