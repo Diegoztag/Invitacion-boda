@@ -827,15 +827,19 @@ function displayInvitations(invitations, page = 1, itemsPerPage = 5) {
         // Get table number
         const tableNumber = invitation.tableNumber || '-';
         
+        // Get gradient class for avatar
+        const { className: gradientClass } = getRandomGradient();
+        
         row.innerHTML = `
             <td>
-                <div class="guest-info">
-                    <div class="guest-avatar" style="background: ${getRandomGradient()}">
-                        ${getInitials(invitation.guestNames)}
+                <div class="guest-cell">
+                    <div class="guest-avatar ${gradientClass}">
+                        ${getInitials(invitation.guestNames[0])}
                     </div>
-                    <div>
-                        <div class="guest-name">${formatGuestNames(invitation.guestNames)}</div>
-                        ${invitation.phone ? `<div class="guest-detail">${formatPhone(invitation.phone)}</div>` : ''}
+                    <div class="guest-info">
+                        <div>
+                            ${invitation.guestNames.map(name => `<div class="guest-name">${name}</div>`).join('')}
+                        </div>
                     </div>
                 </div>
             </td>
@@ -1188,6 +1192,10 @@ function closeCreateModal() {
 function showImportModal() {
     window.activeModal = importCsvModal;
     importCsvModal.open();
+    // Re-initialize CSV upload after modal opens
+    setTimeout(() => {
+        initCsvUploadHandlers();
+    }, 100);
 }
 
 function closeImportModal() {
@@ -1240,89 +1248,244 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// Initialize CSV Upload
-function initCsvUpload() {
+// Initialize CSV Upload Handlers (separate function for re-initialization)
+function initCsvUploadHandlers() {
     const csvFile = document.getElementById('csvFile');
-    const fileName = document.getElementById('fileName');
-    const uploadBtn = document.getElementById('uploadCsvBtn');
-    const csvResults = document.getElementById('csvResults');
-    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileUploadWrapper = document.querySelector('.file-upload-wrapper');
     
-    let selectedFile = null;
+    if (!csvFile || !fileUploadWrapper) {
+        console.error('CSV upload elements not found');
+        return;
+    }
     
     // Handle file selection
     function handleFileSelect(file) {
-        if (file && file.type === 'text/csv') {
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileUploadArea.classList.add('has-file');
-            uploadBtn.classList.add('show');
-            csvResults.innerHTML = '';
-            csvResults.classList.remove('show', 'success', 'error');
+        console.log('handleFileSelect called with file:', file);
+        console.log('File type:', file?.type);
+        console.log('File name:', file?.name);
+        console.log('File size:', file?.size);
+        
+        // Check if file is CSV by extension if MIME type is not set
+        const isCSV = file && (
+            file.type === 'text/csv' || 
+            file.type === 'application/vnd.ms-excel' ||
+            file.type === 'application/csv' ||
+            file.type === '' && file.name.toLowerCase().endsWith('.csv')
+        );
+        
+        console.log('Is CSV file?', isCSV);
+        
+        if (isCSV) {
+            // Get elements
+            const fileNameEl = document.getElementById('fileName');
+            const fileSelectedInfoEl = document.getElementById('fileSelectedInfo');
+            const csvResultsEl = document.getElementById('csvResults');
+            
+            console.log('File is valid CSV, processing...');
+            
+            if (fileNameEl) {
+                fileNameEl.textContent = file.name;
+                console.log('File name set:', file.name);
+            }
+            if (fileSelectedInfoEl) {
+                // Use setProperty with important flag to override CSS !important
+                fileSelectedInfoEl.style.setProperty('display', 'flex', 'important');
+                console.log('File info shown');
+            }
+            if (csvResultsEl) {
+                csvResultsEl.innerHTML = '';
+                csvResultsEl.classList.remove('show', 'success', 'error');
+            }
+            
+            // Store file for upload
+            window.selectedCsvFile = file;
+            console.log('File stored in window.selectedCsvFile:', window.selectedCsvFile);
+            
+            // Enable upload button - more robust approach
+            const enableButton = () => {
+                const uploadBtn = document.getElementById('uploadCsvBtn');
+                console.log('Looking for upload button...');
+                
+                if (uploadBtn) {
+                    console.log('Button found, current disabled state:', uploadBtn.disabled);
+                    console.log('Button HTML:', uploadBtn.outerHTML);
+                    
+                    // Multiple approaches to ensure button is enabled
+                    uploadBtn.disabled = false;
+                    uploadBtn.removeAttribute('disabled');
+                    
+                    // Force style update with !important to override CSS
+                    uploadBtn.style.setProperty('opacity', '1', 'important');
+                    uploadBtn.style.setProperty('cursor', 'pointer', 'important');
+                    uploadBtn.style.setProperty('background-color', '#e619a1', 'important');
+                    uploadBtn.style.setProperty('pointer-events', 'auto', 'important');
+                    
+                    // Remove any disabled classes
+                    uploadBtn.classList.remove('disabled');
+                    
+                    // Force a reflow to ensure styles are applied
+                    uploadBtn.offsetHeight;
+                    
+                    // Ensure onclick handler is set
+                    uploadBtn.onclick = window.handleCsvUpload;
+                    console.log('Button onclick handler set:', uploadBtn.onclick);
+                    
+                    // Also add event listener as backup
+                    uploadBtn.addEventListener('click', window.handleCsvUpload);
+                    console.log('Button event listener added');
+                    
+                    // Check if it worked
+                    setTimeout(() => {
+                        console.log('Button disabled state after update:', uploadBtn.disabled);
+                        console.log('Button computed styles:', window.getComputedStyle(uploadBtn).opacity);
+                        console.log('Button onclick handler:', uploadBtn.onclick);
+                        
+                        // If still disabled, try a more aggressive approach
+                        if (uploadBtn.disabled) {
+                            console.log('Button still disabled, trying aggressive approach...');
+                            // Clone and replace the button to remove all event listeners and states
+                            const newBtn = uploadBtn.cloneNode(true);
+                            newBtn.disabled = false;
+                            newBtn.removeAttribute('disabled');
+                            newBtn.style.setProperty('opacity', '1', 'important');
+                            newBtn.style.setProperty('cursor', 'pointer', 'important');
+                            newBtn.style.setProperty('background-color', '#e619a1', 'important');
+                            newBtn.onclick = window.handleCsvUpload;
+                            uploadBtn.parentNode.replaceChild(newBtn, uploadBtn);
+                        }
+                    }, 50);
+                } else {
+                    console.error('Upload button not found in DOM');
+                    // Try again after a longer delay
+                    setTimeout(enableButton, 200);
+                }
+            };
+            
+            // Try to enable button with multiple attempts
+            setTimeout(enableButton, 100);
+            
         } else if (file) {
             showToast('Por favor selecciona un archivo CSV válido', 'error');
         }
     }
     
+    // Clear file selection
+    window.clearFileSelection = function() {
+        window.selectedCsvFile = null;
+        
+        // Get elements
+        const csvFileEl = document.getElementById('csvFile');
+        const fileNameEl = document.getElementById('fileName');
+        const fileSelectedInfoEl = document.getElementById('fileSelectedInfo');
+        const csvResultsEl = document.getElementById('csvResults');
+        const uploadBtnEl = document.getElementById('uploadCsvBtn');
+        
+        if (csvFileEl) csvFileEl.value = '';
+        if (fileNameEl) fileNameEl.textContent = '';
+        if (fileSelectedInfoEl) {
+            // Remove inline style to avoid specificity issues
+            fileSelectedInfoEl.style.display = '';
+        }
+        if (csvResultsEl) {
+            csvResultsEl.innerHTML = '';
+            csvResultsEl.classList.remove('show', 'success', 'error');
+        }
+        
+        // Disable upload button
+        if (uploadBtnEl) {
+            uploadBtnEl.disabled = true;
+            uploadBtnEl.setAttribute('disabled', 'disabled');
+        }
+    };
+    
     // File input change event
     csvFile.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        handleFileSelect(file);
-    });
-    
-    // Drag and drop functionality
-    fileUploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileUploadArea.classList.add('drag-over');
-    });
-    
-    fileUploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        fileUploadArea.classList.remove('drag-over');
-    });
-    
-    fileUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileUploadArea.classList.remove('drag-over');
-        
-        const file = e.dataTransfer.files[0];
-        handleFileSelect(file);
-    });
-    
-    // Handle select file button click
-    const selectFileBtn = document.getElementById('selectFileBtn');
-    if (selectFileBtn) {
-        selectFileBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            csvFile.click();
-        });
-    }
-    
-    // Click on upload area to select file (but not on button)
-    fileUploadArea.addEventListener('click', (e) => {
-        // Only trigger file selection if clicking on the area itself, not buttons or inputs
-        if (!e.target.closest('button') && !e.target.closest('input')) {
-            csvFile.click();
+        if (file) {
+            handleFileSelect(file);
         }
     });
     
-    uploadBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
+    // Drag and drop functionality
+    fileUploadWrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadWrapper.classList.add('drag-over');
+        console.log('Drag over detected');
+    });
+    
+    fileUploadWrapper.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        fileUploadWrapper.classList.remove('drag-over');
+        console.log('Drag leave detected');
+    });
+    
+    fileUploadWrapper.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileUploadWrapper.classList.remove('drag-over');
         
-            csvResults.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Procesando archivo...</p>';
-            csvResults.classList.add('show');
+        console.log('Drop event detected');
+        console.log('Files in dataTransfer:', e.dataTransfer.files.length);
+        
+        const file = e.dataTransfer.files[0];
+        console.log('First file from drop:', file);
+        
+        if (file) {
+            console.log('Processing dropped file...');
+            handleFileSelect(file);
+            
+            // Update file input
+            try {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                csvFile.files = dataTransfer.files;
+                console.log('File input updated successfully');
+            } catch (error) {
+                console.error('Error updating file input:', error);
+                // Fallback for browsers that don't support DataTransfer
+                console.log('Using fallback method for file input');
+            }
+        } else {
+            console.error('No file found in drop event');
+        }
+    });
+}
+
+// Initialize CSV Upload
+function initCsvUpload() {
+    // Initial setup - will be called again when modal opens
+    setTimeout(() => {
+        initCsvUploadHandlers();
+    }, 100);
+    
+    // Handle CSV upload
+    window.handleCsvUpload = async function() {
+        const file = window.selectedCsvFile;
+        if (!file) {
+            showToast('Por favor selecciona un archivo CSV', 'error');
+            return;
+        }
+        
+        const csvResultsEl = document.getElementById('csvResults');
+        if (csvResultsEl) {
+            csvResultsEl.innerHTML = '<p><span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Procesando archivo...</p>';
+            csvResultsEl.classList.add('show');
+        }
         
         try {
-            const text = await selectedFile.text();
+            const text = await file.text();
             const invitations = parseCSV(text);
             
             if (invitations.length === 0) {
-                csvResults.innerHTML = '<p class="error">No se encontraron invitaciones válidas en el archivo</p>';
+                if (csvResultsEl) {
+                    csvResultsEl.innerHTML = '<p class="error">No se encontraron invitaciones válidas en el archivo</p>';
+                }
                 return;
             }
             
-            csvResults.innerHTML = `<p>Creando ${invitations.length} invitaciones...</p>`;
+            if (csvResultsEl) {
+                csvResultsEl.innerHTML = `<p>Creando ${invitations.length} invitaciones...</p>`;
+            }
             
             let created = 0;
             let errors = [];
@@ -1339,15 +1502,19 @@ function initCsvUpload() {
             let resultsHTML = '';
             
             if (created > 0) {
-                csvResults.classList.add('success');
-                csvResults.classList.remove('error');
-                resultsHTML += `<h5><i class="fas fa-check-circle result-icon"></i> Carga completada</h5>`;
+                if (csvResultsEl) {
+                    csvResultsEl.classList.add('success');
+                    csvResultsEl.classList.remove('error');
+                }
+                resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">check_circle</span> Carga completada</h5>`;
                 resultsHTML += `<div class="result-details">`;
                 resultsHTML += `<p>${created} invitaciones creadas exitosamente</p>`;
             } else {
-                csvResults.classList.add('error');
-                csvResults.classList.remove('success');
-                resultsHTML += `<h5><i class="fas fa-exclamation-circle result-icon"></i> Error en la carga</h5>`;
+                if (csvResultsEl) {
+                    csvResultsEl.classList.add('error');
+                    csvResultsEl.classList.remove('success');
+                }
+                resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Error en la carga</h5>`;
                 resultsHTML += `<div class="result-details">`;
             }
             
@@ -1389,15 +1556,13 @@ function initCsvUpload() {
                 window.createdInvitations = createdInvitations;
             }
             
-            csvResults.innerHTML = resultsHTML;
+            if (csvResultsEl) {
+                csvResultsEl.innerHTML = resultsHTML;
+            }
             
             // Reset form after delay
             setTimeout(() => {
-                csvFile.value = '';
-                fileName.textContent = '';
-                fileUploadArea.classList.remove('has-file');
-                uploadBtn.classList.remove('show');
-                selectedFile = null;
+                window.clearFileSelection();
             }, 1000);
             
             // Reload invitations list
@@ -1405,15 +1570,18 @@ function initCsvUpload() {
             loadDashboardData();
             
         } catch (error) {
-            csvResults.classList.add('show', 'error');
-            csvResults.innerHTML = `
-                <h5><i class="fas fa-exclamation-triangle result-icon"></i> Error al procesar</h5>
-                <div class="result-details">
-                    <p>${error.message}</p>
-                </div>
-            `;
+            const csvResultsEl = document.getElementById('csvResults');
+            if (csvResultsEl) {
+                csvResultsEl.classList.add('show', 'error');
+                csvResultsEl.innerHTML = `
+                    <h5 class="result-header"><span class="material-symbols-outlined result-icon">warning</span> Error al procesar</h5>
+                    <div class="result-details">
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
         }
-    });
+    };
 }
 
 // Parse CSV content

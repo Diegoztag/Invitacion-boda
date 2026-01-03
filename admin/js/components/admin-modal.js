@@ -42,6 +42,38 @@ export class Modal {
      * Obtiene el template HTML del modal
      */
     getTemplate() {
+        // Para el modal CSV específicamente
+        if (this.id === 'importCsvModal') {
+            return `
+                <div class="modal-backdrop">
+                    <div class="modal modal-${this.size}">
+                        <div class="modal-header">
+                            <div class="modal-header-content">
+                                <div class="modal-icon-wrapper">
+                                    <span class="material-symbols-outlined modal-icon">table_view</span>
+                                </div>
+                                <h3 class="modal-title">${this.title}</h3>
+                            </div>
+                            <p class="modal-subtitle">Carga masiva de invitados para tu boda de forma rápida.</p>
+                        </div>
+                        <div class="modal-body">
+                            ${this.content}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancel modal-btn-standard" onclick="window.activeModal?.close()">
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-import modal-btn-standard" id="uploadCsvBtn" onclick="window.handleCsvUpload()" disabled>
+                                <span class="material-symbols-outlined btn-icon">upload</span>
+                                Importar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Template genérico para otros modales
         return `
             <div class="modal-content modal-${this.size}">
                 <div class="modal-header">
@@ -63,12 +95,17 @@ export class Modal {
     setupEventListeners() {
         // Cerrar con botón X
         const closeBtn = this.modalElement.querySelector('.modal-close');
-        closeBtn.addEventListener('click', () => this.close());
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.close());
+        }
         
         // Cerrar al hacer clic en el overlay
         if (this.closeOnOverlay) {
-            this.modalElement.addEventListener('click', (e) => {
-                if (e.target === this.modalElement) {
+            const backdrop = this.modalElement.querySelector('.modal-backdrop');
+            const target = backdrop || this.modalElement;
+            
+            target.addEventListener('click', (e) => {
+                if (e.target === target) {
                     this.close();
                 }
             });
@@ -271,25 +308,41 @@ export class ModalFactory {
     static createImportCSVModal() {
         const content = `
             <div class="csv-upload-section">
-                <div class="csv-instructions">
-                    <h4>Formato del archivo CSV:</h4>
-                    <p>El archivo debe tener las siguientes columnas:</p>
-                    <code>Nombres,Pases,Teléfono</code>
-                    <p class="text-muted">Ejemplo: Juan y María,2,+521234567890</p>
+                <div class="format-info-wrapper">
+                    <p class="format-info-header">
+                        <span class="material-symbols-outlined format-info-icon">info</span>
+                        Formato del archivo CSV
+                    </p>
+                    <div class="format-info-content">
+                        <div class="format-info-item">
+                            <span class="format-label">Columnas requeridas</span>
+                            <code class="format-code primary">Nombres,Pases,Teléfono</code>
+                        </div>
+                        <div class="format-info-item">
+                            <span class="format-label">Ejemplo de fila</span>
+                            <code class="format-code secondary">Juan y María,2,+521234567890</code>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="file-upload-area">
-                    <input type="file" id="csvFile" accept=".csv" class="file-input-hidden">
-                    <label for="csvFile" class="file-upload-label">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Seleccionar archivo CSV</span>
-                    </label>
-                    <div id="fileName" class="file-name"></div>
-                </div>
+                <label class="file-upload-wrapper" for="csvFile">
+                    <input type="file" id="csvFile" accept=".csv" class="file-input">
+                    <div class="file-upload-content">
+                        <div class="upload-icon-wrapper">
+                            <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                        </div>
+                        <p class="upload-text">Seleccionar archivo CSV</p>
+                        <p class="upload-subtext">o arrastra y suelta aquí</p>
+                    </div>
+                </label>
                 
-                <button id="uploadCsvBtn" class="btn btn-primary upload-button-hidden">
-                    <i class="fas fa-upload"></i> Cargar Invitaciones
-                </button>
+                <div id="fileSelectedInfo" class="file-selected">
+                    <div class="file-selected-info">
+                        <span class="material-symbols-outlined file-selected-icon">description</span>
+                        <span id="fileName" class="file-selected-name"></span>
+                    </div>
+                    <span class="material-symbols-outlined file-selected-remove" onclick="window.clearFileSelection()">close</span>
+                </div>
                 
                 <div id="csvResults" class="csv-results"></div>
             </div>
@@ -298,18 +351,32 @@ export class ModalFactory {
         return new Modal({
             id: 'importCsvModal',
             title: 'Importar desde CSV',
-            size: 'large',
+            size: 'medium',
             content: content,
             onClose: () => {
                 // Reset form when closing
-                document.getElementById('csvFile').value = '';
-                document.getElementById('fileName').textContent = '';
+                const csvFile = document.getElementById('csvFile');
+                const fileName = document.getElementById('fileName');
+                const fileSelectedInfo = document.getElementById('fileSelectedInfo');
+                const csvResults = document.getElementById('csvResults');
                 const uploadBtn = document.getElementById('uploadCsvBtn');
-                if (uploadBtn) {
-                    uploadBtn.classList.add('upload-button-hidden');
-                    uploadBtn.classList.remove('upload-button-visible');
+                
+                if (csvFile) csvFile.value = '';
+                if (fileName) fileName.textContent = '';
+                if (fileSelectedInfo) {
+                    // Remove inline style to avoid specificity issues
+                    fileSelectedInfo.style.display = '';
+                    // The CSS will handle the initial hidden state
                 }
-                document.getElementById('csvResults').innerHTML = '';
+                if (csvResults) {
+                    csvResults.innerHTML = '';
+                    csvResults.classList.remove('show', 'success', 'error');
+                }
+                // Ensure upload button is disabled when closing
+                if (uploadBtn) uploadBtn.disabled = true;
+                
+                // Clear selected file reference
+                window.selectedCsvFile = null;
             }
         });
     }

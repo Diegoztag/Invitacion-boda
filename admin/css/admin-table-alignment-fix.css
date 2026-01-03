@@ -365,7 +365,6 @@
     .table-container.modern th:nth-child(1),
     .table-container.modern td:nth-child(1) { 
         width: 30%; /* Invitado column */
-        text-align: left !important;
     }
     
     .table-container.modern th:nth-child(2),
@@ -389,7 +388,6 @@
     .table-container.modern th:nth-child(5),
     .table-container.modern td:nth-child(5) { 
         width: 20%; /* Acciones column */
-        text-align: right !important;
     }
     
     #invitationsTableBody tr,
@@ -400,7 +398,7 @@
     #invitationsTableBody td,
     #invitationsTableBodyCreate td {
         height: 80px;
-        padding: 12px 24px;
+        padding: 12px 14px;
         vertical-align: middle !important;
     }
     
@@ -510,10 +508,6 @@
     #invitationsTableBodyCreate td:nth-child(3),
     #invitationsTableBodyCreate td:nth-child(4) {
         text-align: center !important;
-    }
-    
-    #invitationsTableBodyCreate td:nth-child(5) {
-        text-align: right !important;
     }
 }
 

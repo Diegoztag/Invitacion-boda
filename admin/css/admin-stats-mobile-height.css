@@ -111,9 +111,3 @@
     }
 }
 
-/* Ensure consistent height across all stat cards in grid */
-@media (max-width: 768px) {
-    #dashboard .stats-grid {
-        grid-auto-rows: 200px;
-    }
-}
