@@ -494,7 +494,7 @@
     top: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    overflow: auto !important;
+    overflow: hidden !important; /* Cambiado de auto a hidden para prevenir scroll */
     background-color: rgba(0, 0, 0, 0.7) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
