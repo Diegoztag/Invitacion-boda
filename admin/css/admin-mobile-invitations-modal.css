@@ -1,0 +1,176 @@
+/* Mobile Invitations Modal Styles */
+
+/* Modal header for mobile */
+.modal-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modal-header-mobile h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-header-mobile .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-header-mobile .btn-icon:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* All invitations modal specific styles */
+.all-invitations-modal {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.all-invitations-modal .table-container {
+    padding: 0;
+    margin: 0;
+    background-color: var(--bg-primary);
+}
+
+.all-invitations-modal .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure the table uses the same styles as recent confirmations */
+.all-invitations-modal .recent-confirmations-table {
+    width: 100%;
+    min-width: 600px;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+    /* Modal content adjustments for mobile */
+    #allInvitationsModal .modal-content {
+        border-radius: 16px 16px 0 0;
+        margin: 10% auto 0;
+        max-height: 90vh;
+        height: auto;
+    }
+    
+    /* Table adjustments for mobile */
+    .all-invitations-modal .recent-confirmations-table {
+        min-width: unset;
+        font-size: 0.875rem;
+    }
+    
+    .all-invitations-modal .recent-confirmations-table th,
+    .all-invitations-modal .recent-confirmations-table td {
+        padding: 8px 12px;
+    }
+    
+    /* Hide message column on very small screens */
+    @media (max-width: 480px) {
+        .all-invitations-modal .message-column,
+        .all-invitations-modal .message-cell {
+            display: none;
+        }
+    }
+    
+    /* Adjust guest cell for mobile */
+    .all-invitations-modal .guest-cell {
+        gap: 8px;
+    }
+    
+    .all-invitations-modal .guest-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .all-invitations-modal .guest-name {
+        font-size: 0.875rem;
+    }
+    
+    /* Adjust status badges for mobile */
+    .all-invitations-modal .status-badge {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+    }
+    
+    /* Adjust action buttons for mobile */
+    .all-invitations-modal .btn-icon {
+        padding: 6px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Smooth scrolling for the table container */
+.all-invitations-modal .table-container {
+    scroll-behavior: smooth;
+}
+
+/* Add subtle shadow at the top when scrolling */
+.all-invitations-modal .table-container::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.all-invitations-modal .table-container.scrolled::before {
+    opacity: 1;
+}
+
+/* Ensure proper modal overlay on mobile */
+@media (max-width: 768px) {
+    #allInvitationsModal {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+    }
+}
+
+/* Animation for modal appearance */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    #allInvitationsModal .modal-content {
+        animation: slideUp 0.3s ease-out;
+    }
+}
+
+/* Ensure proper z-index stacking */
+#allInvitationsModal {
+    z-index: 1050;
+}
+
+#allInvitationsModal .modal-content {
+    z-index: 1051;
+}

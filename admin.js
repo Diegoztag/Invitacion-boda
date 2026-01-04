@@ -108,6 +108,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial update
     updateResponsiveLabels();
     
+    // Handle table scroll indicator
+    function checkTableScroll() {
+        const tableContainers = document.querySelectorAll('.table-container');
+        tableContainers.forEach(container => {
+            const table = container.querySelector('table');
+            if (table && container.scrollWidth > container.clientWidth) {
+                container.classList.add('scrollable');
+            } else {
+                container.classList.remove('scrollable');
+            }
+        });
+    }
+    
+    // Check on load and resize
+    window.addEventListener('resize', checkTableScroll);
+    setTimeout(checkTableScroll, 100);
+    
     // Update mobile header couple name
     const mobileCoupleName = document.querySelector('.mobile-couple-name');
     if (mobileCoupleName) {
@@ -801,7 +818,7 @@ async function loadInvitationsSectionData() {
 }
 
 // Display invitations in the table
-function displayInvitations(invitations, page = 1, itemsPerPage = 5) {
+function displayInvitations(invitations, page = 1, itemsPerPage = 20) {
     const tbody = document.getElementById('invitationsTableBody');
     if (!tbody) return;
     
@@ -816,60 +833,11 @@ function displayInvitations(invitations, page = 1, itemsPerPage = 5) {
     document.getElementById('showingTo').textContent = paginationInfo.showingTo;
     document.getElementById('totalCount').textContent = paginationInfo.totalCount;
     
-    // Render table rows
-    paginatedInvitations.forEach((invitation) => {
+    // Render table rows using the same format as recent confirmations
+    paginatedInvitations.forEach((invitation, index) => {
         const row = document.createElement('tr');
-        const statusInfo = getStatusBadge(invitation);
-        
-        // Calculate cancelled passes
-        const cancelledPasses = calculateCancelledPasses(invitation);
-        
-        // Get table number
-        const tableNumber = invitation.tableNumber || '-';
-        
-        // Get gradient class for avatar
-        const { className: gradientClass } = getRandomGradient();
-        
-        row.innerHTML = `
-            <td>
-                <div class="guest-cell">
-                    <div class="guest-avatar ${gradientClass}">
-                        ${getInitials(invitation.guestNames[0])}
-                    </div>
-                    <div class="guest-info">
-                        <div>
-                            ${invitation.guestNames.map(name => `<div class="guest-name">${name}</div>`).join('')}
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-center">
-                <span class="pass-count">${invitation.numberOfPasses}</span>
-            </td>
-            <td>
-                ${statusInfo.html}
-            </td>
-            <td class="text-center">
-                <span class="confirmed-count ${invitation.confirmedPasses > 0 ? 'has-confirmed' : ''}">${invitation.confirmedPasses}</span>
-            </td>
-            <td class="text-center">
-                <span class="cancelled-count ${cancelledPasses > 0 ? 'has-cancelled' : ''}">${cancelledPasses}</span>
-            </td>
-            <td class="text-center">
-                <span class="table-number">${tableNumber}</span>
-            </td>
-            <td class="text-right">
-                <div class="action-buttons">
-                    <button class="btn-icon" title="Ver detalles" onclick="viewInvitation('${invitation.code}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-icon" title="Copiar enlace" onclick="copyInvitationLink('${invitation.code}')">
-                        <i class="fas fa-link"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        
+        // Use 'recent' type to get the same format as recent confirmations table
+        row.innerHTML = renderTableRow(invitation, 'recent', paginationInfo.startIndex + index);
         tbody.appendChild(row);
     });
     
@@ -888,6 +856,40 @@ function displayInvitations(invitations, page = 1, itemsPerPage = 5) {
 function initInvitationsPagination() {
     // Store current filtered invitations for pagination
     window.currentFilteredInvitations = allInvitations;
+    
+    // Initialize items per page selector
+    const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    if (itemsPerPageSelect) {
+        // Load saved preference or use default
+        const savedItemsPerPage = localStorage.getItem('invitationsPerPage') || '20';
+        itemsPerPageSelect.value = savedItemsPerPage;
+        
+        // Add change event listener
+        itemsPerPageSelect.addEventListener('change', (e) => {
+            const newItemsPerPage = parseInt(e.target.value);
+            
+            // Save preference
+            localStorage.setItem('invitationsPerPage', newItemsPerPage);
+            
+            // Get current filtered invitations
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            let invitationsToDisplay = allInvitations;
+            
+            // Apply search filter if there's a search term
+            if (searchTerm) {
+                invitationsToDisplay = allInvitations.filter(invitation => {
+                    return invitation.code.toLowerCase().includes(searchTerm) ||
+                           invitation.guestNames.some(name => name.toLowerCase().includes(searchTerm)) ||
+                           (invitation.phone && invitation.phone.includes(searchTerm));
+                });
+            }
+            
+            // Re-display with new items per page, starting from page 1
+            displayInvitations(invitationsToDisplay, 1, newItemsPerPage);
+        });
+    }
 }
 
 // View Invitation Details
@@ -989,6 +991,80 @@ function viewInvitation(code) {
     
     invitationDetailModal.setContent(detailsContent);
     invitationDetailModal.open();
+}
+
+// Show all invitations table (for mobile view)
+function showAllInvitationsTable() {
+    // Create modal content with table similar to recent confirmations
+    const tableContent = `
+        <div class="all-invitations-modal">
+            <div class="modal-header-mobile">
+                <h3>Todas las Invitaciones</h3>
+                <button class="btn-icon" onclick="closeAllInvitationsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="table-container" style="max-height: 80vh; overflow-y: auto;">
+                <div class="table-responsive">
+                    <table class="recent-confirmations-table">
+                        <thead>
+                            <tr>
+                                <th>Invitado</th>
+                                <th>Estado</th>
+                                <th>Pases</th>
+                                <th>Mesa</th>
+                                <th class="message-column">Mensaje</th>
+                                <th style="text-align: right;">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allInvitationsTableBody">
+                            <!-- Invitations will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Create a custom modal for all invitations
+    const modal = document.createElement('div');
+    modal.id = 'allInvitationsModal';
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 95%; width: 95%; margin: 2.5% auto;">
+            ${tableContent}
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Populate the table with all invitations
+    const tbody = document.getElementById('allInvitationsTableBody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        
+        allInvitations.forEach((invitation, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = renderTableRow(invitation, 'recent', index);
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeAllInvitationsModal();
+        }
+    });
+}
+
+// Close all invitations modal
+function closeAllInvitationsModal() {
+    const modal = document.getElementById('allInvitationsModal');
+    if (modal) {
+        modal.remove();
+    }
 }
 
 // Copy Invitation Link
@@ -1163,7 +1239,12 @@ function initSearch() {
                        (invitation.phone && invitation.phone.includes(searchTerm));
             });
             
-            displayInvitations(filteredInvitations);
+            // Get current items per page value
+            const itemsPerPageSelect = document.getElementById('itemsPerPage');
+            const itemsPerPage = itemsPerPageSelect ? parseInt(itemsPerPageSelect.value) : 20;
+            
+            // Display with current items per page setting
+            displayInvitations(filteredInvitations, 1, itemsPerPage);
         });
     }
 }
@@ -2002,8 +2083,12 @@ function applyFilters() {
                (invitation.phone && invitation.phone.includes(searchTerm));
     }) : filteredInvitations;
     
-    // Display filtered results
-    displayInvitations(finalFiltered);
+    // Get current items per page value
+    const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    const itemsPerPage = itemsPerPageSelect ? parseInt(itemsPerPageSelect.value) : 20;
+    
+    // Display filtered results with current items per page
+    displayInvitations(finalFiltered, 1, itemsPerPage);
     
     // Close dropdown
     document.getElementById('filterDropdown').classList.remove('show');
@@ -2066,3 +2151,4 @@ window.toggleFilters = toggleFilters;
 window.resetFilters = resetFilters;
 window.applyFilters = applyFilters;
 window.exportInvitationLinks = exportInvitationLinks;
+window.closeAllInvitationsModal = closeAllInvitationsModal;

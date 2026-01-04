@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="admin/css/admin-stats-mobile-height.css">
     <link rel="stylesheet" href="admin/css/admin-charts-mobile-fix.css">
     <link rel="stylesheet" href="admin/css/admin-search-filter-size.css">
+    <link rel="stylesheet" href="admin/css/admin-mobile-invitations-modal.css">
+    <link rel="stylesheet" href="admin/css/admin-pagination-selector.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -357,27 +359,40 @@
                 </div>
 
                 <!-- Invitations Table -->
-                <div class="table-container modern">
-                    <table class="invitations-table">
-                        <thead>
-                            <tr>
-                                <th>Invitados</th>
-                                <th>Pases</th>
-                                <th>Estado</th>
-                                <th>Confirmados</th>
-                                <th>Cancelados</th>
-                                <th>Mesa</th>
-                                <th class="text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invitationsTableBody">
-                            <!-- Las invitaciones se cargarán aquí -->
-                        </tbody>
-                    </table>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="recent-confirmations-table">
+                            <thead>
+                                <tr>
+                                    <th>Invitado</th>
+                                    <th>Estado</th>
+                                    <th>Pases</th>
+                                    <th>Mesa</th>
+                                    <th class="message-column">Mensaje</th>
+                                    <th style="text-align: right;">Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invitationsTableBody">
+                                <!-- Las invitaciones se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
                     
                     <!-- Pagination -->
                     <div class="table-pagination">
-                        <p class="pagination-info">Mostrando <span id="showingFrom">1</span>-<span id="showingTo">5</span> de <span id="totalCount">0</span> invitados</p>
+                        <div class="pagination-left">
+                            <p class="pagination-info">Mostrando <span id="showingFrom">1</span>-<span id="showingTo">20</span> de <span id="totalCount">0</span> invitados</p>
+                            <div class="items-per-page">
+                                <label for="itemsPerPage">Mostrar:</label>
+                                <select id="itemsPerPage" class="items-per-page-select">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="30">30</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="pagination-controls">
                             <button class="pagination-btn" id="prevPage" disabled>
                                 <i class="fas fa-chevron-left"></i>
