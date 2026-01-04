@@ -1,0 +1,98 @@
+/* Estilos para campos dinámicos de invitados */
+.guest-field-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.guest-name-field {
+    flex: 1;
+}
+
+.guest-type-field {
+    flex: 0 0 120px;
+}
+
+.guest-name-input {
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.guest-name-input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #e619a1;
+    outline: none;
+}
+
+.guest-type-select {
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.guest-type-select:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #e619a1;
+    outline: none;
+}
+
+.guest-type-select option {
+    background: #2d1b27;
+    color: #ffffff;
+}
+
+/* Ajustes para el contenedor de campos */
+#guestFieldsContainer {
+    margin-top: 20px;
+}
+
+#guestFields {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Scrollbar personalizado para campos de invitados */
+#guestFields::-webkit-scrollbar {
+    width: 6px;
+}
+
+#guestFields::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+#guestFields::-webkit-scrollbar-thumb {
+    background: rgba(230, 25, 161, 0.3);
+    border-radius: 3px;
+}
+
+#guestFields::-webkit-scrollbar-thumb:hover {
+    background: rgba(230, 25, 161, 0.5);
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+    .guest-field-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .guest-type-field {
+        flex: 1;
+        width: 100%;
+    }
+}

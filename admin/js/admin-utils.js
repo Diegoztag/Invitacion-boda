@@ -122,10 +122,9 @@ export function getTimeAgo(date) {
  * @returns {string} Texto descriptivo del tipo de pase
  */
 export function getPassTypeText(invitation) {
-    if (invitation.invitationType === 'family') {
+    // Determinar tipo basado en la composición de pases
+    if (invitation.childPasses && invitation.childPasses > 0) {
         return 'familia';
-    } else if (invitation.invitationType === 'staff') {
-        return 'staff';
     } else if (invitation.numberOfPasses === 1) {
         return 'adulto';
     } else {
@@ -300,7 +299,6 @@ export function parseSimpleCSV(text) {
             const phone = parts[2] || '';
             const adultPasses = parts[3] ? parseInt(parts[3]) : passes;
             const childPasses = parts[4] ? parseInt(parts[4]) : 0;
-            const invitationType = parts[5] || 'adults';
             
             if (names.length > 0 && !isNaN(passes) && passes > 0) {
                 invitations.push({
@@ -308,8 +306,7 @@ export function parseSimpleCSV(text) {
                     numberOfPasses: passes,
                     phone: formatPhone(phone),
                     adultPasses,
-                    childPasses,
-                    invitationType
+                    childPasses
                 });
             }
         }

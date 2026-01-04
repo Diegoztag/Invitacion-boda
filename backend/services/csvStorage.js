@@ -19,7 +19,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType,tableNumber\n';
+                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
             
@@ -86,7 +86,7 @@ class CSVStorageService {
             // Default values for new fields
             const adultPasses = invitation.adultPasses || invitation.numberOfPasses;
             const childPasses = invitation.childPasses || 0;
-            const invitationType = invitation.invitationType || 'adults';
+            const staffPasses = invitation.staffPasses || 0;
             
             const row = [
                 code,
@@ -99,7 +99,7 @@ class CSVStorageService {
                 '',
                 adultPasses,
                 childPasses,
-                invitationType,
+                staffPasses,
                 invitation.tableNumber || ''
             ].join(',') + '\n';
             
@@ -115,7 +115,7 @@ class CSVStorageService {
                 confirmedPasses: 0,
                 adultPasses: adultPasses,
                 childPasses: childPasses,
-                invitationType: invitationType,
+                staffPasses: staffPasses,
                 tableNumber: invitation.tableNumber || null
             };
         } catch (error) {
@@ -151,7 +151,7 @@ class CSVStorageService {
                         // Add new fields with defaults for backward compatibility
                         adultPasses: parts[8] ? parseInt(parts[8]) : parseInt(parts[2]),
                         childPasses: parts[9] ? parseInt(parts[9]) : 0,
-                        invitationType: parts[10] || 'adults',
+                        staffPasses: parts[10] ? parseInt(parts[10]) : 0,
                         tableNumber: parts[11] ? parseInt(parts[11]) : null
                     };
                     
@@ -208,7 +208,7 @@ class CSVStorageService {
             await fs.appendFile(this.confirmationsFile, confirmationRow);
             
             // Rewrite invitations file
-            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType,tableNumber\n';
+            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber\n';
             
             for (const inv of invitations) {
                 const row = [
@@ -222,7 +222,7 @@ class CSVStorageService {
                     inv.confirmationDate || '',
                     inv.adultPasses || inv.numberOfPasses,
                     inv.childPasses || 0,
-                    inv.invitationType || 'adults',
+                    inv.staffPasses || 0,
                     inv.tableNumber || ''
                 ].join(',') + '\n';
                 csvContent += row;
@@ -302,10 +302,13 @@ class CSVStorageService {
             }
             
             // Use actual data from invitation if available
-            if (invitation.invitationType === 'staff') {
-                staffPasses += invitation.numberOfPasses;
+            if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined && invitation.staffPasses !== undefined) {
+                // Use specific adult/child/staff breakdown
+                adultPasses += invitation.adultPasses;
+                childPasses += invitation.childPasses;
+                staffPasses += invitation.staffPasses;
             } else if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
-                // Use specific adult/child breakdown
+                // Old data with only adult/child breakdown
                 adultPasses += invitation.adultPasses;
                 childPasses += invitation.childPasses;
             } else {
@@ -372,11 +375,19 @@ class CSVStorageService {
                             // Add new fields if present in CSV
                             adultPasses: parts[4] ? parseInt(parts[4]) : undefined,
                             childPasses: parts[5] ? parseInt(parts[5]) : undefined,
-                            invitationType: parts[6] || undefined
+                            staffPasses: parts[6] ? parseInt(parts[6]) : undefined
                         };
                         
                         // Validate pass breakdown if provided
-                        if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+                        if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined && invitation.staffPasses !== undefined) {
+                            const totalFromBreakdown = invitation.adultPasses + invitation.childPasses + invitation.staffPasses;
+                            if (totalFromBreakdown !== invitation.numberOfPasses) {
+                                errors.push(`Línea ${i + 1}: La suma de adultos (${invitation.adultPasses}), niños (${invitation.childPasses}) y staff (${invitation.staffPasses}) = ${totalFromBreakdown} no coincide con el total de pases (${invitation.numberOfPasses})`);
+                                continue;
+                            }
+                        } else if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+                            // Old format without staff - default staff to 0
+                            invitation.staffPasses = 0;
                             const totalFromBreakdown = invitation.adultPasses + invitation.childPasses;
                             if (totalFromBreakdown !== invitation.numberOfPasses) {
                                 errors.push(`Línea ${i + 1}: La suma de adultos y niños (${totalFromBreakdown}) no coincide con el total de pases (${invitation.numberOfPasses})`);

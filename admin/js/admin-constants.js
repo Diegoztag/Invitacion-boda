@@ -89,12 +89,13 @@ export const PERCENTAGE_THRESHOLDS = {
     LOW: 0
 };
 
-// Tipos de invitación
-export const INVITATION_TYPES = {
-    ADULTS: 'adults',
-    FAMILY: 'family',
-    STAFF: 'staff'
-};
+// Tipos de invitación - DEPRECATED: Ya no usamos invitationType
+// La categorización ahora se hace por invitado individual (adult/child/staff)
+// export const INVITATION_TYPES = {
+//     ADULTS: 'adults',
+//     FAMILY: 'family',
+//     STAFF: 'staff'
+// };
 
 // Textos para tipos de pases
 export const PASS_TYPE_LABELS = {

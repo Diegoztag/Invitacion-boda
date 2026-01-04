@@ -253,61 +253,32 @@ export class ModalFactory {
             </div>
             
             <form id="createInvitationForm">
-                <div class="form-group">
-                    <label>Tipo de invitación</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="invitationType" value="adults" checked>
-                            <span>Adultos/Pareja</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="invitationType" value="family">
-                            <span>Familia</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="invitationType" value="staff">
-                            <span>Staff/Proveedor</span>
-                        </label>
-                    </div>
-                </div>
-                
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="adultPassesInput">Adultos</label>
-                        <input type="number" id="adultPassesInput" name="adultPasses" 
+                    <div class="form-group" style="flex: 0 0 40%;">
+                        <label for="numberOfPasses">🎟️ Número de pases</label>
+                        <input type="number" id="numberOfPasses" name="numberOfPasses" 
                                min="1" max="10" value="1" required>
                     </div>
                     
-                    <div class="form-group hidden" id="childPassesGroup">
-                        <label for="childPassesInput">Niños</label>
-                        <input type="number" id="childPassesInput" name="childPasses" 
-                               min="0" max="10" value="0">
+                    <div class="form-group" style="flex: 0 0 40%;">
+                        <label for="tableNumber">🪑 Mesa (opcional)</label>
+                        <input type="number" id="tableNumber" name="tableNumber" 
+                               min="1" placeholder="Número de mesa">
                     </div>
                 </div>
                 
-                <div class="total-passes">
-                    <span>Total de pases:</span>
-                    <strong id="totalPassesValue">1</strong>
-                </div>
-                
-                <div id="guestNamesContainer" class="form-group">
-                    <label>Nombres de invitados</label>
-                    <div id="guestNameFields">
-                        <!-- Los campos de nombres se generarán dinámicamente aquí -->
+                <div id="guestFieldsContainer" class="form-group">
+                    <label>👥 Invitados</label>
+                    <div id="guestFields">
+                        <!-- Los campos de invitados se generarán dinámicamente aquí -->
                     </div>
-                    <small class="form-hint">Ingresa un nombre por cada pase</small>
+                    <small class="form-hint">Completa el nombre y tipo de cada invitado</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="phone">Teléfono (opcional)</label>
+                    <label for="phone">📱 Teléfono (opcional)</label>
                     <input type="tel" id="phone" name="phone" 
                            placeholder="+52 1234567890">
-                </div>
-                
-                <div class="form-group">
-                    <label for="tableNumber">Mesa (opcional)</label>
-                    <input type="number" id="tableNumber" name="tableNumber" 
-                           min="1" placeholder="Número de mesa">
                 </div>
                 
                 <div class="modal-actions">

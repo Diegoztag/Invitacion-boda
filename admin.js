@@ -9,7 +9,6 @@ import {
     STATUS_LABELS,
     BADGE_CLASSES,
     PERCENTAGE_THRESHOLDS,
-    INVITATION_TYPES,
     PASS_TYPE_LABELS,
     TIME_CONFIG,
     TIME_LABELS,
@@ -475,7 +474,9 @@ function updatePassDistribution(stats) {
     
     // Update adult passes
     document.getElementById('adultPasses').textContent = `${adultPasses} (${adultPercent}%)`;
-    document.getElementById('adultProgress').className = `progress-fill primary progress-fill-${Math.round(adultPercent / 10) * 10}`;
+    const adultProgressEl = document.getElementById('adultProgress');
+    adultProgressEl.className = 'progress-fill primary';
+    adultProgressEl.style.width = `${adultPercent}%`;
     
     // Update child passes
     const childPassesElement = document.getElementById('childPasses');
@@ -491,14 +492,17 @@ function updatePassDistribution(stats) {
     } else {
         // Enable children section
         childPassesElement.textContent = `${childPasses} (${childPercent}%)`;
-        childProgressElement.className = `progress-fill warning progress-fill-${Math.round(childPercent / 10) * 10}`;
+        childProgressElement.className = 'progress-fill warning';
+        childProgressElement.style.width = `${childPercent}%`;
         childProgressItem.classList.remove('disabled-section');
         childProgressItem.querySelector('.progress-label').textContent = 'Niños';
     }
     
     // Update staff passes
     document.getElementById('staffPasses').textContent = `${staffPasses} (${staffPercent}%)`;
-    document.getElementById('staffProgress').className = `progress-fill muted progress-fill-${Math.round(staffPercent / 10) * 10}`;
+    const staffProgressEl = document.getElementById('staffProgress');
+    staffProgressEl.className = 'progress-fill muted';
+    staffProgressEl.style.width = `${staffPercent}%`;
     
     // Update label text based on screen size
     const staffLabel = document.querySelector('.progress-item:nth-child(3) .progress-label');
@@ -1064,140 +1068,8 @@ function copyToClipboard(text) {
 
 // Initialize Create Form
 function initCreateForm() {
-    const form = document.getElementById('createInvitationForm');
-    
-    // Handle invitation type changes
-    const invitationTypeRadios = document.querySelectorAll('input[name="invitationType"]');
-    const adultPassesInput = document.getElementById('adultPassesInput');
-    const childPassesInput = document.getElementById('childPassesInput');
-    const childPassesGroup = document.getElementById('childPassesGroup');
-    const totalPassesValue = document.getElementById('totalPassesValue');
-    
-    // Check if children are allowed
-    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
-    
-    // If children are not allowed, show informative message
-    if (!allowChildren) {
-        // Add informative message
-        // Mensaje de celebración ya está incluido en el template del modal
-    }
-    
-    // Update total passes display
-    function updateTotalPasses() {
-        const adultPasses = parseInt(adultPassesInput.value) || 0;
-        const childPasses = parseInt(childPassesInput.value) || 0;
-        const total = adultPasses + childPasses;
-        totalPassesValue.textContent = total;
-    }
-    
-    // Handle invitation type changes
-    invitationTypeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const type = e.target.value;
-            
-            if (type === 'family') {
-                // Show child passes input
-                childPassesGroup.classList.remove('hidden');
-                
-                if (!allowChildren) {
-                    // If children not allowed, disable the input
-                    childPassesInput.value = '0';
-                    childPassesInput.disabled = true;
-                    childPassesInput.classList.add('disabled-input');
-                    childPassesGroup.querySelector('label').innerHTML = 'Niños <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: normal;">(no permitidos)</span>';
-                } else {
-                    // Enable if children are allowed
-                    childPassesInput.disabled = false;
-                    childPassesInput.classList.remove('disabled-input');
-                    childPassesGroup.querySelector('label').textContent = 'Niños';
-                }
-            } else {
-                // Hide child passes input
-                childPassesGroup.classList.add('hidden');
-                childPassesInput.value = '0';
-            }
-            
-            // Set default values based on type - all default to 1 adult pass
-            if (type === 'adults') {
-                adultPassesInput.value = '1';
-            } else if (type === 'family') {
-                adultPassesInput.value = '1';
-                childPassesInput.value = '0';
-            } else if (type === 'staff') {
-                adultPassesInput.value = '1';
-            }
-            
-            updateTotalPasses();
-        });
-    });
-    
-    // Update total when inputs change
-    adultPassesInput.addEventListener('input', updateTotalPasses);
-    childPassesInput.addEventListener('input', updateTotalPasses);
-    
-    // Form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(form);
-        const invitationType = formData.get('invitationType');
-        
-        // Collect guest names from dynamic fields
-        const guestNames = [];
-        const nameInputs = form.querySelectorAll('.guest-name-input');
-        nameInputs.forEach(input => {
-            const name = input.value.trim();
-            if (name) {
-                guestNames.push(name);
-            }
-        });
-        
-        // Get pass counts
-        const adultPasses = parseInt(formData.get('adultPasses')) || 0;
-        const childPasses = parseInt(formData.get('childPasses')) || 0;
-        const totalPasses = adultPasses + childPasses;
-        
-        const invitationData = {
-            guestNames: guestNames,
-            numberOfPasses: totalPasses,
-            phone: formData.get('phone'),
-            // Add new fields for pass breakdown
-            adultPasses: adultPasses,
-            childPasses: childPasses,
-            invitationType: invitationType,
-            // Add table number if provided
-            tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null
-        };
-        
-        try {
-            console.log('Enviando invitación:', invitationData);
-            const result = await adminAPI.createInvitation(invitationData);
-            console.log('Respuesta del servidor:', result);
-            
-            if (APIHelpers.isSuccess(result)) {
-                showToast('Invitación creada exitosamente', 'success');
-                form.reset();
-                // Reset to default values - 1 adult pass
-                adultPassesInput.value = '1';
-                childPassesInput.value = '0';
-                childPassesGroup.classList.add('hidden');
-                updateTotalPasses();
-                
-                // Show invitation details
-                const invitationUrl = result.invitationUrl;
-                
-                // Close modal and reload invitations
-                closeCreateModal();
-                loadInvitations();
-                loadDashboardData();
-            } else {
-                throw new Error(APIHelpers.getErrorMessage(result));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast(error.message || 'Error al crear la invitación', 'error');
-        }
-    });
+    // This function is now empty as the form initialization
+    // is handled by initCreateFormInModal when the modal opens
 }
 
 
@@ -1251,11 +1123,17 @@ function showCreateModal() {
 function closeCreateModal() {
     createInvitationModal.close();
     // Reset form
-    document.getElementById('createInvitationForm').reset();
-    document.getElementById('adultPassesInput').value = '1';
-    document.getElementById('childPassesInput').value = '0';
-    document.getElementById('childPassesGroup').classList.add('hidden');
-    document.getElementById('totalPassesValue').textContent = '1';
+    const form = document.getElementById('createInvitationForm');
+    if (form) {
+        form.reset();
+        // Reset number of passes to 1
+        const numberOfPassesInput = document.getElementById('numberOfPasses');
+        if (numberOfPassesInput) {
+            numberOfPassesInput.value = '1';
+            // Trigger change event to regenerate fields
+            numberOfPassesInput.dispatchEvent(new Event('input'));
+        }
+    }
 }
 
 function showImportModal() {
@@ -1564,6 +1442,74 @@ function initCsvUpload() {
             let errors = [];
             let createdInvitations = [];
             
+            // First, check if we have capacity for the invitations
+            try {
+                // Parse CSV to check total passes needed
+                const parsedInvitations = parseCSV(text);
+                const totalPassesNeeded = parsedInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
+                
+                // Get current stats to check available capacity
+                const statsResult = await adminAPI.fetchStats();
+                if (APIHelpers.isSuccess(statsResult)) {
+                    const stats = statsResult.stats;
+                    const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 130;
+                    
+                    // Calculate total passes already assigned (including pending)
+                    const totalAssignedPasses = stats.totalPasses || 0;
+                    const availablePasses = targetTotal - totalAssignedPasses;
+                    
+                    // Check if the import would exceed the limit
+                    if (totalPassesNeeded > availablePasses) {
+                        if (csvResultsEl) {
+                            csvResultsEl.classList.add('show', 'error');
+                            if (availablePasses <= 0) {
+                                csvResultsEl.innerHTML = `
+                                    <h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Sin capacidad disponible</h5>
+                                    <div class="result-details">
+                                        <p>No hay pases disponibles. Se ha alcanzado el límite de ${targetTotal} invitados.</p>
+                                    </div>
+                                `;
+                            } else {
+                                csvResultsEl.innerHTML = `
+                                    <h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Capacidad insuficiente</h5>
+                                    <div class="result-details">
+                                        <p>El archivo requiere ${totalPassesNeeded} pases pero solo quedan ${availablePasses} disponibles.</p>
+                                        <p>Límite total de la fiesta: ${targetTotal} invitados</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                        return; // Stop import
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking capacity:', error);
+                // Continue with import if we can't check capacity
+            }
+            
+            // Check if children are allowed before importing
+            const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+            
+            // If children are not allowed, validate CSV doesn't contain children
+            if (!allowChildren) {
+                const parsedInvitations = parseCSV(text);
+                const hasChildren = parsedInvitations.some(inv => inv.childPasses && inv.childPasses > 0);
+                
+                if (hasChildren) {
+                    if (csvResultsEl) {
+                        csvResultsEl.classList.add('show', 'error');
+                        csvResultsEl.innerHTML = `
+                            <h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Niños no permitidos</h5>
+                            <div class="result-details">
+                                <p>El archivo contiene invitaciones con niños, pero los niños no están permitidos en esta boda.</p>
+                                <p>Por favor, modifica el archivo para incluir solo adultos y staff.</p>
+                            </div>
+                        `;
+                    }
+                    return; // Stop import
+                }
+            }
+            
             // Use API to import invitations - pass the raw CSV content
             const importResult = await adminAPI.importInvitations(text);
             
@@ -1731,30 +1677,7 @@ function parseCSV(text) {
                     invitation.email = parts[columnIndex.email];
                 }
                 
-                if (columnIndex.tipo !== -1 && parts[columnIndex.tipo]) {
-                    const tipo = parts[columnIndex.tipo].toLowerCase();
-                    if (['adults', 'family', 'staff'].includes(tipo)) {
-                        invitation.invitationType = tipo;
-                        
-                        // Set default pass distribution based on type
-                        if (tipo === 'family') {
-                            // For families, assume 2 adults and rest are children
-                            invitation.adultPasses = Math.min(2, passes);
-                            invitation.childPasses = Math.max(0, passes - 2);
-                        } else {
-                            // For adults and staff, all passes are adult passes
-                            invitation.adultPasses = passes;
-                            invitation.childPasses = 0;
-                        }
-                    }
-                }
-                
-                // If no type specified, default to adults
-                if (!invitation.invitationType) {
-                    invitation.invitationType = 'adults';
-                    invitation.adultPasses = passes;
-                    invitation.childPasses = 0;
-                }
+                // Remove invitationType handling - now handled by individual guest types
                 
                 invitations.push(invitation);
             }
@@ -1852,7 +1775,8 @@ async function loadCreateSectionInvitations() {
                 numberOfPasses: 4,
                 confirmed: true,
                 confirmedPasses: 4,
-                invitationType: 'family'
+                adultPasses: 2,
+                childPasses: 2
             },
             {
                 code: 'def456',
@@ -1861,7 +1785,8 @@ async function loadCreateSectionInvitations() {
                 numberOfPasses: 1,
                 confirmed: false,
                 confirmedPasses: 0,
-                invitationType: 'adults'
+                adultPasses: 1,
+                childPasses: 0
             },
             {
                 code: 'ghi789',
@@ -1870,7 +1795,8 @@ async function loadCreateSectionInvitations() {
                 numberOfPasses: 2,
                 confirmed: true,
                 confirmedPasses: 2,
-                invitationType: 'adults'
+                adultPasses: 2,
+                childPasses: 0
             },
             {
                 code: 'jkl012',
@@ -1888,7 +1814,8 @@ async function loadCreateSectionInvitations() {
                 numberOfPasses: 1,
                 confirmed: false,
                 confirmedPasses: 0,
-                invitationType: 'staff'
+                adultPasses: 1,
+                childPasses: 0
             }
         ];
         allInvitations = demoInvitations;
@@ -1975,20 +1902,6 @@ function toggleFilters() {
                     <input type="checkbox" id="filterRejected" checked> 
                     <span>Cancelados</span>
                 </label>
-                <hr class="filter-divider">
-                <h4><i class="fas fa-tags"></i> Filtrar por tipo</h4>
-                <label class="filter-option">
-                    <input type="checkbox" id="filterAdults" checked> 
-                    <span>Adultos/Parejas</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" id="filterFamily" checked> 
-                    <span>Familias</span>
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" id="filterStaff" checked> 
-                    <span>Staff/Proveedores</span>
-                </label>
                 <div class="filter-actions">
                     <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Restablecer</button>
                     <button class="btn btn-sm btn-primary" onclick="applyFilters()">Aplicar</button>
@@ -2049,9 +1962,6 @@ function applyFilters() {
     const filterConfirmed = document.getElementById('filterConfirmed').checked;
     const filterPending = document.getElementById('filterPending').checked;
     const filterRejected = document.getElementById('filterRejected').checked;
-    const filterAdults = document.getElementById('filterAdults').checked;
-    const filterFamily = document.getElementById('filterFamily').checked;
-    const filterStaff = document.getElementById('filterStaff').checked;
     
     // Filter invitations based on selected filters
     const filteredInvitations = allInvitations.filter(invitation => {
@@ -2067,19 +1977,7 @@ function applyFilters() {
             statusMatch = filterPending;
         }
         
-        // Check type filters
-        let typeMatch = true;
-        if (invitation.invitationType) {
-            if (invitation.invitationType === 'adults') {
-                typeMatch = filterAdults;
-            } else if (invitation.invitationType === 'family') {
-                typeMatch = filterFamily;
-            } else if (invitation.invitationType === 'staff') {
-                typeMatch = filterStaff;
-            }
-        }
-        
-        return statusMatch && typeMatch;
+        return statusMatch;
     });
     
     // Apply search term if any
@@ -2154,130 +2052,149 @@ function initCreateFormInModal() {
         return;
     }
     
-    // Handle invitation type changes
-    const invitationTypeRadios = document.querySelectorAll('input[name="invitationType"]');
-    const adultPassesInput = document.getElementById('adultPassesInput');
-    const childPassesInput = document.getElementById('childPassesInput');
-    const childPassesGroup = document.getElementById('childPassesGroup');
-    const totalPassesValue = document.getElementById('totalPassesValue');
-    const guestNameFields = document.getElementById('guestNameFields');
+    // Get form elements
+    const numberOfPassesInput = document.getElementById('numberOfPasses');
+    const guestFields = document.getElementById('guestFields');
     
-    // Check if children are allowed
-    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+    // Store current guest data for preservation
+    let currentGuestData = [];
     
-    // Function to generate name fields based on number of passes
-    function generateNameFields() {
-        const adultPasses = parseInt(adultPassesInput.value) || 0;
-        const childPasses = parseInt(childPassesInput.value) || 0;
-        const total = adultPasses + childPasses;
+    // Function to save current guest data
+    function saveCurrentGuestData() {
+        currentGuestData = [];
+        const guestNameInputs = guestFields.querySelectorAll('.guest-name-input');
+        const guestTypeSelects = guestFields.querySelectorAll('.guest-type-select');
+        
+        guestNameInputs.forEach((input, index) => {
+            currentGuestData.push({
+                name: input.value,
+                type: guestTypeSelects[index]?.value || 'adult'
+            });
+        });
+    }
+    
+    // Function to generate guest fields based on number of passes
+    function generateGuestFields(preserveData = true) {
+        const numberOfPasses = parseInt(numberOfPassesInput.value) || 1;
+        
+        // Save current data before clearing if preserveData is true
+        if (preserveData && guestFields.children.length > 0) {
+            saveCurrentGuestData();
+        }
         
         // Clear existing fields
-        guestNameFields.innerHTML = '';
+        guestFields.innerHTML = '';
         
         // Generate fields for each pass
-        for (let i = 0; i < total; i++) {
-            const isChild = i >= adultPasses;
+        for (let i = 0; i < numberOfPasses; i++) {
             const fieldDiv = document.createElement('div');
-            fieldDiv.className = 'guest-name-field';
+            fieldDiv.className = 'guest-field-row';
+            
+            // Get preserved data if available
+            const preservedName = preserveData && currentGuestData[i] ? currentGuestData[i].name : '';
+            const preservedType = preserveData && currentGuestData[i] ? currentGuestData[i].type : 'adult';
+            
+            // Check if children are allowed
+            const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+            
             fieldDiv.innerHTML = `
-                <input type="text" 
-                       name="guestName_${i}" 
-                       class="guest-name-input" 
-                       placeholder="${isChild ? 'Nombre del niño' : 'Nombre del invitado'}" 
-                       required>
-                <span class="guest-type-indicator">${isChild ? '👶' : '👤'}</span>
+                <div class="guest-name-field">
+                    <input type="text" 
+                           name="guestName_${i}" 
+                           class="guest-name-input" 
+                           placeholder="Nombre del invitado" 
+                           value="${preservedName}"
+                           required>
+                </div>
+                <div class="guest-type-field">
+                    <select name="guestType_${i}" class="guest-type-select" required>
+                        <option value="adult" ${preservedType === 'adult' ? 'selected' : ''}>Adulto</option>
+                        ${allowChildren ? `<option value="child" ${preservedType === 'child' ? 'selected' : ''}>Niño</option>` : ''}
+                        <option value="staff" ${preservedType === 'staff' ? 'selected' : ''}>Staff/Proveedor</option>
+                    </select>
+                </div>
             `;
-            guestNameFields.appendChild(fieldDiv);
+            guestFields.appendChild(fieldDiv);
         }
     }
     
-    // Update total passes display
-    function updateTotalPasses() {
-        const adultPasses = parseInt(adultPassesInput.value) || 0;
-        const childPasses = parseInt(childPassesInput.value) || 0;
-        const total = adultPasses + childPasses;
-        totalPassesValue.textContent = total;
-        
-        // Generate name fields when passes change
-        generateNameFields();
-    }
-    
-    // Handle invitation type changes
-    invitationTypeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const type = e.target.value;
-            
-            if (type === 'family') {
-                // Show child passes input
-                childPassesGroup.classList.remove('hidden');
-                
-                if (!allowChildren) {
-                    // If children not allowed, disable the input
-                    childPassesInput.value = '0';
-                    childPassesInput.disabled = true;
-                    childPassesInput.classList.add('disabled-input');
-                    childPassesGroup.querySelector('label').innerHTML = 'Niños <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: normal;">(no permitidos)</span>';
-                } else {
-                    // Enable if children are allowed
-                    childPassesInput.disabled = false;
-                    childPassesInput.classList.remove('disabled-input');
-                    childPassesGroup.querySelector('label').textContent = 'Niños';
-                }
-            } else {
-                // Hide child passes input
-                childPassesGroup.classList.add('hidden');
-                childPassesInput.value = '0';
-            }
-            
-            // Set default values based on type - all default to 1 adult pass
-            if (type === 'adults') {
-                adultPassesInput.value = '1';
-            } else if (type === 'family') {
-                adultPassesInput.value = '1';
-                childPassesInput.value = '0';
-            } else if (type === 'staff') {
-                adultPassesInput.value = '1';
-            }
-            
-            updateTotalPasses();
-        });
-    });
-    
-    // Update total when inputs change
-    adultPassesInput.addEventListener('input', updateTotalPasses);
-    childPassesInput.addEventListener('input', updateTotalPasses);
+    // Update fields when number of passes changes
+    numberOfPassesInput.addEventListener('input', () => generateGuestFields(true));
     
     // Form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const formData = new FormData(form);
-        const guestNamesInput = formData.get('guestNames');
-        const invitationType = formData.get('invitationType');
+        const numberOfPasses = parseInt(formData.get('numberOfPasses')) || 1;
         
-        // Parse guest names - split only by " y " (with spaces)
-        // No dividir por comas para evitar crear múltiples nombres cuando el usuario
-        // ingresa nombres separados por comas como "pino, cristian, lupe"
-        const guestNames = guestNamesInput
-            .split(/\s+y\s+/)
-            .map(name => name.trim())
-            .filter(name => name);
+        // First, check if we have capacity for this invitation
+        try {
+            // Get current stats to check available capacity
+            const statsResult = await adminAPI.fetchStats();
+            if (APIHelpers.isSuccess(statsResult)) {
+                const stats = statsResult.stats;
+                const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 130;
+                
+                // Calculate total passes already assigned (including pending)
+                const totalAssignedPasses = stats.totalPasses || 0;
+                const availablePasses = targetTotal - totalAssignedPasses;
+                
+                // Check if the new invitation would exceed the limit
+                if (numberOfPasses > availablePasses) {
+                    if (availablePasses <= 0) {
+                        showToast('❌ No hay pases disponibles. Se ha alcanzado el límite de invitados.', 'error');
+                    } else {
+                        showToast(`❌ Solo quedan ${availablePasses} pases disponibles. No se pueden asignar ${numberOfPasses} pases.`, 'error');
+                    }
+                    return; // Stop form submission
+                }
+            }
+        } catch (error) {
+            console.error('Error checking capacity:', error);
+            // Continue with creation if we can't check capacity
+        }
         
-        // Get pass counts
-        const adultPasses = parseInt(formData.get('adultPasses')) || 0;
-        const childPasses = parseInt(formData.get('childPasses')) || 0;
-        const totalPasses = adultPasses + childPasses;
+        // Collect guest data
+        const guests = [];
+        let adultPasses = 0;
+        let childPasses = 0;
+        let staffPasses = 0;
+        
+        for (let i = 0; i < numberOfPasses; i++) {
+            const name = formData.get(`guestName_${i}`);
+            const type = formData.get(`guestType_${i}`);
+            
+            if (name && type) {
+                guests.push({
+                    name: name.trim(),
+                    type: type
+                });
+                
+                // Count passes by type
+                if (type === 'adult') {
+                    adultPasses++;
+                } else if (type === 'child') {
+                    childPasses++;
+                } else if (type === 'staff') {
+                    staffPasses++;
+                }
+            }
+        }
+        
+        // Extract guest names for the invitation
+        const guestNames = guests.map(g => g.name);
         
         const invitationData = {
             guestNames: guestNames,
-            numberOfPasses: totalPasses,
+            numberOfPasses: numberOfPasses,
             phone: formData.get('phone'),
-            // Add new fields for pass breakdown
             adultPasses: adultPasses,
             childPasses: childPasses,
-            invitationType: invitationType,
-            // Add table number if provided
-            tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null
+            staffPasses: staffPasses,
+            tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null,
+            // Include detailed guest information
+            guests: guests
         };
         
         try {
@@ -2286,16 +2203,12 @@ function initCreateFormInModal() {
             console.log('Respuesta del servidor:', result);
             
             if (APIHelpers.isSuccess(result)) {
-                showToast('✅ 1 invitación creada y homologada exitosamente', 'success');
+                showToast('✅ Invitación creada exitosamente', 'success');
                 form.reset();
-                // Reset to default values - 1 adult pass
-                adultPassesInput.value = '1';
-                childPassesInput.value = '0';
-                childPassesGroup.classList.add('hidden');
-                updateTotalPasses();
-                
-                // Show invitation details
-                const invitationUrl = result.invitationUrl;
+                // Reset to default values
+                numberOfPassesInput.value = '1';
+                currentGuestData = []; // Clear preserved data
+                generateGuestFields(false); // Don't preserve data on reset
                 
                 // Close modal and reload invitations
                 closeCreateModal();
@@ -2310,8 +2223,8 @@ function initCreateFormInModal() {
         }
     });
     
-    // Initialize total passes display
-    updateTotalPasses();
+    // Initialize with one guest field
+    generateGuestFields(false); // Don't preserve data on initial load
 }
 
 // Export functions to window for onclick handlers
