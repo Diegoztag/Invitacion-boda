@@ -1,12 +1,12 @@
-Nombres,Pases,Telefono,Adultos,Niños,Tipo
-Juan Pérez y María García,2,+521234567890,2,0,adults
-Pedro López,1,+521234567891,1,0,adults
-Ana Martínez y Carlos Ruiz,2,+521234567892,2,0,adults
-Familia González,4,+521234567893,2,2,family
-Staff Fotografía,2,+521234567894,2,0,staff
-Roberto Sánchez,1,+521234567895,1,0,adults
-Laura Hernández y Miguel Torres,2,+521234567896,2,0,adults
-Familia Rodríguez,3,+521234567897,2,1,family
-Carmen Flores,1,+521234567898,1,0,adults
-José Ramírez y Patricia Díaz,2,+521234567899,2,0,adults
-Familia Morales,5,+521234567900,3,2,family
+Nombres,Pases,Mesa,Telefono,Adultos,Niños,Tipo
+Juan Pérez y María García,2,1,+521234567890,2,0,adults
+Pedro López,1,2,+521234567891,1,0,adults
+Ana Martínez y Carlos Ruiz,2,1,+521234567892,2,0,adults
+Familia González,4,3,+521234567893,2,2,family
+Staff Fotografía,2,10,+521234567894,2,0,staff
+Roberto Sánchez,1,2,+521234567895,1,0,adults
+Laura Hernández y Miguel Torres,2,4,+521234567896,2,0,adults
+Familia Rodríguez,3,5,+521234567897,2,1,family
+Carmen Flores,1,6,+521234567898,1,0,adults
+José Ramírez y Patricia Díaz,2,4,+521234567899,2,0,adults
+Familia Morales,5,7,+521234567900,3,2,family

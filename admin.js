@@ -534,30 +534,10 @@ function displayRecentConfirmations(confirmations) {
     
     tbody.innerHTML = '';
     
+    // Si no hay confirmaciones, la tabla quedará vacía
     if (confirmations.length === 0) {
-        // Show demo data if no confirmations
-        const demoData = [
-            {
-                code: 'demo1',
-                guestNames: ['Carlos Méndez'],
-                confirmationDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                confirmedPasses: 2,
-                confirmationDetails: {
-                    willAttend: true,
-                    message: '¡Felicidades! Ahí estaremos sin falta.'
-                }
-            },
-            {
-                code: 'demo2',
-                guestNames: ['Lucía Ramos'],
-                confirmationDate: new Date(Date.now() - 5 * 60 * 60 * 1000),
-                confirmedPasses: 1,
-                confirmationDetails: {
-                    willAttend: true
-                }
-            }
-        ];
-        confirmations = demoData;
+        // No mostrar datos demo - dejar la tabla vacía
+        return;
     }
     
     confirmations.forEach((invitation, index) => {
@@ -1184,7 +1164,9 @@ function initCreateForm() {
             // Add new fields for pass breakdown
             adultPasses: adultPasses,
             childPasses: childPasses,
-            invitationType: invitationType
+            invitationType: invitationType,
+            // Add table number if provided
+            tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null
         };
         
         try {
@@ -1203,7 +1185,6 @@ function initCreateForm() {
                 
                 // Show invitation details
                 const invitationUrl = result.invitationUrl;
-                showToast(`Código: ${result.invitation.code}`, 'success');
                 
                 // Close modal and reload invitations
                 closeCreateModal();
@@ -1364,6 +1345,9 @@ function initCsvUploadHandlers() {
         console.log('Is CSV file?', isCSV);
         
         if (isCSV) {
+            // Set flag to indicate we have a selected file
+            window.hasSelectedFile = true;
+            
             // Get elements
             const fileNameEl = document.getElementById('fileName');
             const fileSelectedInfoEl = document.getElementById('fileSelectedInfo');
@@ -1418,9 +1402,7 @@ function initCsvUploadHandlers() {
                     uploadBtn.onclick = window.handleCsvUpload;
                     console.log('Button onclick handler set:', uploadBtn.onclick);
                     
-                    // Also add event listener as backup
-                    uploadBtn.addEventListener('click', window.handleCsvUpload);
-                    console.log('Button event listener added');
+                    // Event listener removed - using only onclick to avoid duplicate calls
                     
                     // Check if it worked
                     setTimeout(() => {
@@ -1460,6 +1442,7 @@ function initCsvUploadHandlers() {
     // Clear file selection
     window.clearFileSelection = function() {
         window.selectedCsvFile = null;
+        window.hasSelectedFile = false; // Clear the flag
         
         // Get elements
         const csvFileEl = document.getElementById('csvFile');
@@ -1479,8 +1462,8 @@ function initCsvUploadHandlers() {
             csvResultsEl.classList.remove('show', 'success', 'error');
         }
         
-        // Disable upload button
-        if (uploadBtnEl) {
+        // Disable upload button only if no file is selected
+        if (uploadBtnEl && !window.hasSelectedFile) {
             uploadBtnEl.disabled = true;
             uploadBtnEl.setAttribute('disabled', 'disabled');
         }
@@ -1557,105 +1540,124 @@ function initCsvUpload() {
         const csvResultsEl = document.getElementById('csvResults');
         if (csvResultsEl) {
             csvResultsEl.innerHTML = '<p><span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Procesando archivo...</p>';
+            csvResultsEl.classList.remove('error', 'success'); // Limpiar clases de estado anterior
             csvResultsEl.classList.add('show');
         }
         
         try {
             const text = await file.text();
-            const invitations = parseCSV(text);
             
-            if (invitations.length === 0) {
+            // Validar que el archivo no esté vacío
+            if (!text.trim()) {
                 if (csvResultsEl) {
-                    csvResultsEl.innerHTML = '<p class="error">No se encontraron invitaciones válidas en el archivo</p>';
+                    csvResultsEl.innerHTML = '<p class="error">El archivo está vacío</p>';
+                    csvResultsEl.classList.add('show', 'error');
                 }
                 return;
             }
             
             if (csvResultsEl) {
-                csvResultsEl.innerHTML = `<p>Creando ${invitations.length} invitaciones...</p>`;
+                csvResultsEl.innerHTML = '<p>Procesando archivo CSV...</p>';
             }
             
             let created = 0;
             let errors = [];
-            const createdInvitations = [];
+            let createdInvitations = [];
             
-            // Use API to import invitations
-            const importResult = await adminAPI.importInvitations(invitations);
+            // Use API to import invitations - pass the raw CSV content
+            const importResult = await adminAPI.importInvitations(text);
             
             created = importResult.created;
-            errors = importResult.errors.map(err => `${err.guestNames}: ${err.error}`);
+            // Manejar errores - pueden venir como strings o como objetos
+            errors = importResult.errors.map(err => {
+                if (typeof err === 'string') {
+                    return err;
+                } else if (err && err.guestNames && err.error) {
+                    return `${err.guestNames}: ${err.error}`;
+                } else if (err && err.error) {
+                    return err.error;
+                } else {
+                    return 'Error desconocido';
+                }
+            });
             createdInvitations = importResult.createdInvitations;
             
-            // Show results
-            let resultsHTML = '';
-            
-            if (created > 0) {
-                if (csvResultsEl) {
-                    csvResultsEl.classList.add('success');
-                    csvResultsEl.classList.remove('error');
+            // Si la importación fue exitosa y no hay errores, cerrar modal y mostrar toast
+            if (created > 0 && errors.length === 0) {
+                // Cerrar el modal primero
+                closeImportModal();
+                
+                // Mostrar toast de éxito después de cerrar el modal
+                setTimeout(() => {
+                    showToast(`${created} invitaciones creadas exitosamente`, 'success');
+                }, 300); // Pequeño delay para que se vea después de cerrar el modal
+                
+                // Recargar los datos
+                loadInvitations();
+                loadDashboardData();
+                
+                // Actualizar estadísticas de la sección de invitaciones si está activa
+                const invitationsSection = document.getElementById('invitations');
+                if (invitationsSection && invitationsSection.classList.contains('active')) {
+                    loadInvitationsSectionData();
                 }
-                resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">check_circle</span> Carga completada</h5>`;
-                resultsHTML += `<div class="result-details">`;
-                resultsHTML += `<p>${created} invitaciones creadas exitosamente</p>`;
+                
+                // Store created invitations for potential export later
+                window.createdInvitations = createdInvitations;
             } else {
-                if (csvResultsEl) {
-                    csvResultsEl.classList.add('error');
-                    csvResultsEl.classList.remove('success');
+                // Si hay errores o no se creó nada, mostrar los resultados en el modal
+                let resultsHTML = '';
+                
+                if (created > 0) {
+                    // Importación parcial - algunas invitaciones creadas pero con errores
+                    // NO mostrar toast aquí, dejar que el usuario vea los detalles en el modal
+                    
+                    if (csvResultsEl) {
+                        csvResultsEl.classList.add('success');
+                        csvResultsEl.classList.remove('error');
+                    }
+                    resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">check_circle</span> Carga completada</h5>`;
+                    resultsHTML += `<div class="result-details">`;
+                    resultsHTML += `<p>${created} invitaciones creadas exitosamente</p>`;
+                } else {
+                    // No se creó ninguna invitación
+                    // NO mostrar toast aquí, dejar que el usuario vea los errores en el modal
+                    
+                    if (csvResultsEl) {
+                        csvResultsEl.classList.add('error');
+                        csvResultsEl.classList.remove('success');
+                    }
+                    resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Error en la carga</h5>`;
+                    resultsHTML += `<div class="result-details">`;
                 }
-                resultsHTML += `<h5 class="result-header"><span class="material-symbols-outlined result-icon">error</span> Error en la carga</h5>`;
-                resultsHTML += `<div class="result-details">`;
-            }
-            
-            if (errors.length > 0) {
-                resultsHTML += `<p>${errors.length} errores encontrados:</p>`;
-                resultsHTML += '<ul class="result-list">';
-                errors.forEach(error => {
-                    resultsHTML += `<li>${error}</li>`;
-                });
-                resultsHTML += '</ul>';
-            }
-            
-            resultsHTML += '</div>';
-            
-            if (createdInvitations.length > 0) {
-                resultsHTML += '<h4>Enlaces generados:</h4>';
-                resultsHTML += '<div class="csv-links">';
-                createdInvitations.forEach(inv => {
-                    resultsHTML += `
-                        <div class="csv-link-item">
-                            <strong>${inv.guestNames.join(' y ')}</strong><br>
-                            <input type="text" value="${inv.url}" readonly class="csv-link-input">
-                            <button class="btn btn-sm" onclick="copyToClipboard('${inv.url}')">
-                                <i class="fas fa-copy"></i> Copiar
-                            </button>
-                        </div>
-                    `;
-                });
+                
+                if (errors.length > 0) {
+                    resultsHTML += `<p>${errors.length} errores encontrados:</p>`;
+                    resultsHTML += '<ul class="result-list">';
+                    errors.forEach(error => {
+                        resultsHTML += `<li>${error}</li>`;
+                    });
+                    resultsHTML += '</ul>';
+                }
+                
                 resultsHTML += '</div>';
                 
-                // Add export button
-                resultsHTML += `
-                    <button class="btn btn-secondary csv-export-button" onclick="exportInvitationLinks()">
-                        <i class="fas fa-download"></i> Descargar todos los enlaces
-                    </button>
-                `;
+                if (csvResultsEl) {
+                    csvResultsEl.innerHTML = resultsHTML;
+                }
                 
-                // Store for export
-                window.createdInvitations = createdInvitations;
+                // Si hubo algunos éxitos, también recargar los datos
+                if (created > 0) {
+                    loadInvitations();
+                    loadDashboardData();
+                    
+                    // Actualizar estadísticas de la sección de invitaciones si está activa
+                    const invitationsSection = document.getElementById('invitations');
+                    if (invitationsSection && invitationsSection.classList.contains('active')) {
+                        loadInvitationsSectionData();
+                    }
+                }
             }
-            
-            if (csvResultsEl) {
-                csvResultsEl.innerHTML = resultsHTML;
-            }
-            
-            // Reset form after delay
-            setTimeout(() => {
-                window.clearFileSelection();
-            }, 1000);
-            
-            // Reload invitations list
-            loadInvitations();
-            loadDashboardData();
             
         } catch (error) {
             const csvResultsEl = document.getElementById('csvResults');
@@ -2273,7 +2275,9 @@ function initCreateFormInModal() {
             // Add new fields for pass breakdown
             adultPasses: adultPasses,
             childPasses: childPasses,
-            invitationType: invitationType
+            invitationType: invitationType,
+            // Add table number if provided
+            tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null
         };
         
         try {
@@ -2282,7 +2286,7 @@ function initCreateFormInModal() {
             console.log('Respuesta del servidor:', result);
             
             if (APIHelpers.isSuccess(result)) {
-                showToast('Invitación creada exitosamente', 'success');
+                showToast('✅ 1 invitación creada y homologada exitosamente', 'success');
                 form.reset();
                 // Reset to default values - 1 adult pass
                 adultPassesInput.value = '1';
@@ -2292,7 +2296,6 @@ function initCreateFormInModal() {
                 
                 // Show invitation details
                 const invitationUrl = result.invitationUrl;
-                showToast(`Código: ${result.invitation.code}`, 'success');
                 
                 // Close modal and reload invitations
                 closeCreateModal();

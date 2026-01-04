@@ -304,6 +304,12 @@ export class ModalFactory {
                            placeholder="+52 1234567890">
                 </div>
                 
+                <div class="form-group">
+                    <label for="tableNumber">Mesa (opcional)</label>
+                    <input type="number" id="tableNumber" name="tableNumber" 
+                           min="1" placeholder="Número de mesa">
+                </div>
+                
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="window.activeModal?.close()">
                         Cancelar
@@ -441,13 +447,16 @@ export class ModalFactory {
 /**
  * Utilidad para mostrar notificaciones tipo toast
  */
-export function showToast(message, type = 'success', duration = 3000) {
+export function showToast(message, type = 'success', duration = 10000) {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'exclamation-circle'}"></i>
         <span>${message}</span>
     `;
+    
+    // Asegurar que el toast tenga un z-index alto
+    toast.style.zIndex = '9999';
     
     document.body.appendChild(toast);
     

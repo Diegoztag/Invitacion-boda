@@ -307,37 +307,32 @@ export class AdminAPI {
     }
     
     /**
-     * Importa invitaciones desde un array de datos
-     * @param {Array} invitationsData - Array de objetos con datos de invitaciones
+     * Importa invitaciones desde contenido CSV
+     * @param {string} csvContent - Contenido del archivo CSV
      * @returns {Promise<Object>} Resultado de la importación
      */
-    async importInvitations(invitationsData) {
-        const results = {
-            success: true,
-            created: 0,
-            errors: [],
-            createdInvitations: []
-        };
+    async importInvitations(csvContent) {
+        const result = await this.fetchWithErrorHandling('/import-csv', {
+            method: 'POST',
+            body: JSON.stringify({ csvContent })
+        });
         
-        for (const invitationData of invitationsData) {
-            const result = await this.createInvitation(invitationData);
-            
-            if (result.success) {
-                results.created++;
-                results.createdInvitations.push({
-                    ...result.invitation,
-                    url: result.invitationUrl
-                });
-            } else {
-                results.errors.push({
-                    guestNames: invitationData.guestNames.join(' y '),
-                    error: result.error
-                });
-            }
+        if (result.success) {
+            const data = result.data;
+            return {
+                success: true,
+                created: data.imported || 0,
+                errors: data.errors || [],
+                createdInvitations: data.invitations || []
+            };
         }
         
-        results.success = results.errors.length === 0;
-        return results;
+        return {
+            success: false,
+            created: 0,
+            errors: [result.error],
+            createdInvitations: []
+        };
     }
 }
 

@@ -19,7 +19,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType\n';
+                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType,tableNumber\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
             
@@ -99,7 +99,8 @@ class CSVStorageService {
                 '',
                 adultPasses,
                 childPasses,
-                invitationType
+                invitationType,
+                invitation.tableNumber || ''
             ].join(',') + '\n';
             
             await fs.appendFile(this.invitationsFile, row);
@@ -114,7 +115,8 @@ class CSVStorageService {
                 confirmedPasses: 0,
                 adultPasses: adultPasses,
                 childPasses: childPasses,
-                invitationType: invitationType
+                invitationType: invitationType,
+                tableNumber: invitation.tableNumber || null
             };
         } catch (error) {
             console.error('Error saving invitation:', error);
@@ -149,7 +151,8 @@ class CSVStorageService {
                         // Add new fields with defaults for backward compatibility
                         adultPasses: parts[8] ? parseInt(parts[8]) : parseInt(parts[2]),
                         childPasses: parts[9] ? parseInt(parts[9]) : 0,
-                        invitationType: parts[10] || 'adults'
+                        invitationType: parts[10] || 'adults',
+                        tableNumber: parts[11] ? parseInt(parts[11]) : null
                     };
                     
                     // Add confirmation details if available
@@ -205,7 +208,7 @@ class CSVStorageService {
             await fs.appendFile(this.confirmationsFile, confirmationRow);
             
             // Rewrite invitations file
-            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType\n';
+            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,invitationType,tableNumber\n';
             
             for (const inv of invitations) {
                 const row = [
@@ -219,7 +222,8 @@ class CSVStorageService {
                     inv.confirmationDate || '',
                     inv.adultPasses || inv.numberOfPasses,
                     inv.childPasses || 0,
-                    inv.invitationType || 'adults'
+                    inv.invitationType || 'adults',
+                    inv.tableNumber || ''
                 ].join(',') + '\n';
                 csvContent += row;
             }
@@ -363,11 +367,12 @@ class CSVStorageService {
                         const invitation = {
                             guestNames: parts[0].split(/\s+y\s+/i).map(n => n.trim()),
                             numberOfPasses: parseInt(parts[1]),
-                            phone: parts[2] || '',
+                            tableNumber: parts[2] ? parseInt(parts[2]) : undefined,
+                            phone: parts[3] || '',
                             // Add new fields if present in CSV
-                            adultPasses: parts[3] ? parseInt(parts[3]) : undefined,
-                            childPasses: parts[4] ? parseInt(parts[4]) : undefined,
-                            invitationType: parts[5] || undefined
+                            adultPasses: parts[4] ? parseInt(parts[4]) : undefined,
+                            childPasses: parts[5] ? parseInt(parts[5]) : undefined,
+                            invitationType: parts[6] || undefined
                         };
                         
                         // Validate pass breakdown if provided

@@ -154,11 +154,20 @@ app.post('/api/import-csv', async (req, res) => {
         
         const result = await csvStorage.importInvitations(csvContent);
         
+        // Add URLs to each imported invitation
+        const invitationsWithUrls = result.imported.map(invitation => ({
+            ...invitation,
+            url: invitationService.generateInvitationUrl(
+                invitation.code, 
+                `${req.protocol}://${req.get('host')}`
+            )
+        }));
+        
         res.json({ 
             success: true, 
             imported: result.imported.length,
             errors: result.errors,
-            invitations: result.imported
+            invitations: invitationsWithUrls
         });
     } catch (error) {
         console.error('Error importing CSV:', error);

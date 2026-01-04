@@ -3213,6 +3213,151 @@ body.modal-open {
     }
 }
 
+/* Simple Toast Styles */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--surface-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 10000 !important; /* Very high z-index to ensure it's on top */
+    max-width: 450px;
+    min-width: 350px;
+}
+
+/* Position toast at top-right below header for medium and large screens */
+@media (min-width: 769px) {
+    .toast {
+        top: 90px; /* 70px header + 20px spacing */
+        bottom: auto;
+        right: 24px;
+        padding: 24px 32px;
+        max-width: 500px;
+        min-width: 400px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .toast {
+        top: 100px; /* 80px header + 20px spacing */
+        right: 32px;
+        padding: 28px 36px;
+        max-width: 550px;
+        min-width: 450px;
+    }
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast i {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast span {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Larger text for medium and large screens */
+@media (min-width: 769px) {
+    .toast i {
+        font-size: 1.75rem;
+    }
+    
+    .toast span {
+        font-size: 1.125rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .toast i {
+        font-size: 2rem;
+    }
+    
+    .toast span {
+        font-size: 1.25rem;
+    }
+}
+
+/* Toast variants */
+.toast.toast-success {
+    border-left: 5px solid var(--success);
+}
+
+.toast.toast-success i {
+    color: var(--success);
+}
+
+.toast.toast-error {
+    border-left: 5px solid var(--danger);
+}
+
+.toast.toast-error i {
+    color: var(--danger);
+}
+
+.toast.toast-warning {
+    border-left: 5px solid var(--warning);
+}
+
+.toast.toast-warning i {
+    color: var(--warning);
+}
+
+/* Mobile adjustments for toast - keep at bottom */
+@media (max-width: 768px) {
+    .toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        max-width: none;
+        transform: translateY(100px);
+        padding: 16px 20px;
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+    
+    .toast i {
+        font-size: 1.25rem;
+    }
+    
+    .toast span {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast {
+        bottom: 12px;
+        right: 12px;
+        left: 12px;
+        padding: 12px 16px;
+    }
+    
+    .toast i {
+        font-size: 1.125rem;
+    }
+    
+    .toast span {
+        font-size: 0.813rem;
+    }
+}
+
 /* Avatar Gradients */
 .guest-avatar-gradient-1 {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
