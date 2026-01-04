@@ -1099,10 +1099,7 @@ function initCreateForm() {
     // If children are not allowed, show informative message
     if (!allowChildren) {
         // Add informative message
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'children-not-allowed-message';
-        messageDiv.innerHTML = '<i class="fas fa-heart icon-primary"></i> <strong>Celebración íntima:</strong> Hemos decidido que nuestra boda sea una celebración entre adultos para poder compartir este momento especial de una manera más íntima con ustedes.';
-        form.insertBefore(messageDiv, form.querySelector('.form-group'));
+        // Mensaje de celebración ya está incluido en el template del modal
     }
     
     // Update total passes display
@@ -1127,7 +1124,7 @@ function initCreateForm() {
                     childPassesInput.value = '0';
                     childPassesInput.disabled = true;
                     childPassesInput.classList.add('disabled-input');
-                    childPassesGroup.querySelector('label').innerHTML = 'Niños <small class="children-not-allowed-label">(no permitidos)</small>';
+                    childPassesGroup.querySelector('label').innerHTML = 'Niños <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: normal;">(no permitidos)</span>';
                 } else {
                     // Enable if children are allowed
                     childPassesInput.disabled = false;
@@ -1140,11 +1137,11 @@ function initCreateForm() {
                 childPassesInput.value = '0';
             }
             
-            // Set default values based on type
+            // Set default values based on type - all default to 1 adult pass
             if (type === 'adults') {
-                adultPassesInput.value = '2';
+                adultPassesInput.value = '1';
             } else if (type === 'family') {
-                adultPassesInput.value = '2';
+                adultPassesInput.value = '1';
                 childPassesInput.value = '0';
             } else if (type === 'staff') {
                 adultPassesInput.value = '1';
@@ -1163,14 +1160,17 @@ function initCreateForm() {
         e.preventDefault();
         
         const formData = new FormData(form);
-        const guestNamesInput = formData.get('guestNames');
         const invitationType = formData.get('invitationType');
         
-        // Parse guest names
-        const guestNames = guestNamesInput
-            .split(/[,y]/)
-            .map(name => name.trim())
-            .filter(name => name);
+        // Collect guest names from dynamic fields
+        const guestNames = [];
+        const nameInputs = form.querySelectorAll('.guest-name-input');
+        nameInputs.forEach(input => {
+            const name = input.value.trim();
+            if (name) {
+                guestNames.push(name);
+            }
+        });
         
         // Get pass counts
         const adultPasses = parseInt(formData.get('adultPasses')) || 0;
@@ -1188,13 +1188,15 @@ function initCreateForm() {
         };
         
         try {
+            console.log('Enviando invitación:', invitationData);
             const result = await adminAPI.createInvitation(invitationData);
+            console.log('Respuesta del servidor:', result);
             
             if (APIHelpers.isSuccess(result)) {
                 showToast('Invitación creada exitosamente', 'success');
                 form.reset();
-                // Reset to default values
-                adultPassesInput.value = '2';
+                // Reset to default values - 1 adult pass
+                adultPassesInput.value = '1';
                 childPassesInput.value = '0';
                 childPassesGroup.classList.add('hidden');
                 updateTotalPasses();
@@ -1258,16 +1260,21 @@ function showCreateForm() {
 function showCreateModal() {
     window.activeModal = createInvitationModal;
     createInvitationModal.open();
+    
+    // Initialize form after modal is opened
+    setTimeout(() => {
+        initCreateFormInModal();
+    }, 100);
 }
 
 function closeCreateModal() {
     createInvitationModal.close();
     // Reset form
     document.getElementById('createInvitationForm').reset();
-    document.getElementById('adultPassesInput').value = '2';
+    document.getElementById('adultPassesInput').value = '1';
     document.getElementById('childPassesInput').value = '0';
     document.getElementById('childPassesGroup').classList.add('hidden');
-    document.getElementById('totalPassesValue').textContent = '2';
+    document.getElementById('totalPassesValue').textContent = '1';
 }
 
 function showImportModal() {
@@ -2136,6 +2143,173 @@ document.addEventListener('DOMContentLoaded', () => {
     notificationService.loadInitialNotifications();
     notificationService.startMonitoring();
 });
+
+// Initialize Create Form in Modal (for dynamic initialization)
+function initCreateFormInModal() {
+    const form = document.getElementById('createInvitationForm');
+    if (!form) {
+        console.error('Create invitation form not found');
+        return;
+    }
+    
+    // Handle invitation type changes
+    const invitationTypeRadios = document.querySelectorAll('input[name="invitationType"]');
+    const adultPassesInput = document.getElementById('adultPassesInput');
+    const childPassesInput = document.getElementById('childPassesInput');
+    const childPassesGroup = document.getElementById('childPassesGroup');
+    const totalPassesValue = document.getElementById('totalPassesValue');
+    const guestNameFields = document.getElementById('guestNameFields');
+    
+    // Check if children are allowed
+    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+    
+    // Function to generate name fields based on number of passes
+    function generateNameFields() {
+        const adultPasses = parseInt(adultPassesInput.value) || 0;
+        const childPasses = parseInt(childPassesInput.value) || 0;
+        const total = adultPasses + childPasses;
+        
+        // Clear existing fields
+        guestNameFields.innerHTML = '';
+        
+        // Generate fields for each pass
+        for (let i = 0; i < total; i++) {
+            const isChild = i >= adultPasses;
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'guest-name-field';
+            fieldDiv.innerHTML = `
+                <input type="text" 
+                       name="guestName_${i}" 
+                       class="guest-name-input" 
+                       placeholder="${isChild ? 'Nombre del niño' : 'Nombre del invitado'}" 
+                       required>
+                <span class="guest-type-indicator">${isChild ? '👶' : '👤'}</span>
+            `;
+            guestNameFields.appendChild(fieldDiv);
+        }
+    }
+    
+    // Update total passes display
+    function updateTotalPasses() {
+        const adultPasses = parseInt(adultPassesInput.value) || 0;
+        const childPasses = parseInt(childPassesInput.value) || 0;
+        const total = adultPasses + childPasses;
+        totalPassesValue.textContent = total;
+        
+        // Generate name fields when passes change
+        generateNameFields();
+    }
+    
+    // Handle invitation type changes
+    invitationTypeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const type = e.target.value;
+            
+            if (type === 'family') {
+                // Show child passes input
+                childPassesGroup.classList.remove('hidden');
+                
+                if (!allowChildren) {
+                    // If children not allowed, disable the input
+                    childPassesInput.value = '0';
+                    childPassesInput.disabled = true;
+                    childPassesInput.classList.add('disabled-input');
+                    childPassesGroup.querySelector('label').innerHTML = 'Niños <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: normal;">(no permitidos)</span>';
+                } else {
+                    // Enable if children are allowed
+                    childPassesInput.disabled = false;
+                    childPassesInput.classList.remove('disabled-input');
+                    childPassesGroup.querySelector('label').textContent = 'Niños';
+                }
+            } else {
+                // Hide child passes input
+                childPassesGroup.classList.add('hidden');
+                childPassesInput.value = '0';
+            }
+            
+            // Set default values based on type - all default to 1 adult pass
+            if (type === 'adults') {
+                adultPassesInput.value = '1';
+            } else if (type === 'family') {
+                adultPassesInput.value = '1';
+                childPassesInput.value = '0';
+            } else if (type === 'staff') {
+                adultPassesInput.value = '1';
+            }
+            
+            updateTotalPasses();
+        });
+    });
+    
+    // Update total when inputs change
+    adultPassesInput.addEventListener('input', updateTotalPasses);
+    childPassesInput.addEventListener('input', updateTotalPasses);
+    
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const guestNamesInput = formData.get('guestNames');
+        const invitationType = formData.get('invitationType');
+        
+        // Parse guest names - split only by " y " (with spaces)
+        // No dividir por comas para evitar crear múltiples nombres cuando el usuario
+        // ingresa nombres separados por comas como "pino, cristian, lupe"
+        const guestNames = guestNamesInput
+            .split(/\s+y\s+/)
+            .map(name => name.trim())
+            .filter(name => name);
+        
+        // Get pass counts
+        const adultPasses = parseInt(formData.get('adultPasses')) || 0;
+        const childPasses = parseInt(formData.get('childPasses')) || 0;
+        const totalPasses = adultPasses + childPasses;
+        
+        const invitationData = {
+            guestNames: guestNames,
+            numberOfPasses: totalPasses,
+            phone: formData.get('phone'),
+            // Add new fields for pass breakdown
+            adultPasses: adultPasses,
+            childPasses: childPasses,
+            invitationType: invitationType
+        };
+        
+        try {
+            console.log('Enviando invitación:', invitationData);
+            const result = await adminAPI.createInvitation(invitationData);
+            console.log('Respuesta del servidor:', result);
+            
+            if (APIHelpers.isSuccess(result)) {
+                showToast('Invitación creada exitosamente', 'success');
+                form.reset();
+                // Reset to default values - 1 adult pass
+                adultPassesInput.value = '1';
+                childPassesInput.value = '0';
+                childPassesGroup.classList.add('hidden');
+                updateTotalPasses();
+                
+                // Show invitation details
+                const invitationUrl = result.invitationUrl;
+                showToast(`Código: ${result.invitation.code}`, 'success');
+                
+                // Close modal and reload invitations
+                closeCreateModal();
+                loadInvitations();
+                loadDashboardData();
+            } else {
+                throw new Error(APIHelpers.getErrorMessage(result));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast(error.message || 'Error al crear la invitación', 'error');
+        }
+    });
+    
+    // Initialize total passes display
+    updateTotalPasses();
+}
 
 // Export functions to window for onclick handlers
 window.showCreateForm = showCreateForm;

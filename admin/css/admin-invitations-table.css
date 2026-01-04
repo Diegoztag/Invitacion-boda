@@ -24,46 +24,49 @@
     -webkit-overflow-scrolling: touch;
 }
 
-/* Center all table content */
+/* Default table alignment - center most columns except guest */
 .recent-confirmations-table th,
 .recent-confirmations-table td {
-    text-align: center !important;
-    vertical-align: middle !important;
+    text-align: center;
+    vertical-align: middle;
 }
 
-/* Center guest cell content */
+/* Guest cell default alignment */
 .recent-confirmations-table .guest-cell {
-    justify-content: center !important;
+    justify-content: flex-start;
     width: 100%;
 }
 
-/* Keep guest info centered but text left-aligned within container */
+/* Guest info default alignment */
 .recent-confirmations-table .guest-info {
-    text-align: center !important;
+    text-align: left;
 }
 
 .recent-confirmations-table .guest-name {
-    text-align: center !important;
+    text-align: left;
 }
 
-/* Center all specific columns */
+/* Specific column alignments */
 .recent-confirmations-table td:nth-child(1),
+.recent-confirmations-table th:nth-child(1) {
+    text-align: left;
+}
+
 .recent-confirmations-table td:nth-child(2),
 .recent-confirmations-table td:nth-child(3),
 .recent-confirmations-table td:nth-child(4),
-.recent-confirmations-table td:nth-child(5),
 .recent-confirmations-table td:nth-child(6) {
-    text-align: center !important;
+    text-align: center;
 }
 
-/* Center the action buttons column */
-.recent-confirmations-table .table-cell-right {
-    text-align: center !important;
-}
-
-/* Center message cell content */
+/* Message cell alignment */
 .recent-confirmations-table .message-cell {
-    text-align: center !important;
+    text-align: left;
+}
+
+/* Action buttons alignment */
+.recent-confirmations-table .table-cell-right {
+    text-align: right;
 }
 
 /* Ensure passes display is centered */
@@ -451,31 +454,41 @@
     }
 }
 
-/* Recent confirmations table - Center guest cell content on large screens */
+/* Recent confirmations table - Left align guest cell content on large screens */
 @media (min-width: 1541px) {
     .recent-confirmations-table .guest-cell {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 12px;
         width: 100%;
     }
 
     .recent-confirmations-table td:first-child {
-        text-align: center;
+        text-align: left;
     }
 
-    /* Ensure guest info text remains left-aligned within the centered container */
+    /* Ensure guest info text remains left-aligned */
     .recent-confirmations-table .guest-info {
         text-align: left;
         flex: 0 1 auto;
     }
 
-    /* Center all columns in recent confirmations table */
+    /* Center all columns in recent confirmations table except first */
     .recent-confirmations-table td {
         text-align: center;
         vertical-align: middle;
+    }
+    
+    /* First column (guest) should be left-aligned */
+    .recent-confirmations-table td:nth-child(1) {
+        text-align: left !important;
+    }
+    
+    /* First header (Invitado) should also be left-aligned */
+    .recent-confirmations-table th:nth-child(1) {
+        text-align: left !important;
     }
 
     /* Keep message column left-aligned for readability */

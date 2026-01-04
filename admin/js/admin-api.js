@@ -62,13 +62,18 @@ export class AdminAPI {
      */
     async fetchWithErrorHandling(endpoint, options = {}) {
         try {
-            const response = await fetch(`${this.backendUrl}${endpoint}`, {
+            const url = `${this.backendUrl}${endpoint}`;
+            console.log('Fetching:', url, 'with options:', options);
+            
+            const response = await fetch(url, {
                 ...options,
                 headers: {
                     ...this.headers,
                     ...options.headers
                 }
             });
+            
+            console.log('Response status:', response.status);
             
             if (!response.ok) {
                 const error = new Error(`HTTP error! status: ${response.status}`);
@@ -77,11 +82,14 @@ export class AdminAPI {
             }
             
             const data = await response.json();
+            console.log('Response data:', data);
+            
             return {
                 success: true,
                 data
             };
         } catch (error) {
+            console.error('Fetch error:', error);
             return this.handleApiError(error, endpoint);
         }
     }

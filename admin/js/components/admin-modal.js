@@ -130,6 +130,9 @@ export class Modal {
         // Guardar posición actual del scroll
         this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
         
+        // Guardar el ancho del body antes de aplicar fixed
+        const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+        
         this.modalElement.classList.remove('modal-hidden');
         this.modalElement.classList.add('modal-visible');
         this.modalElement.style.display = 'block';
@@ -147,6 +150,14 @@ export class Modal {
         
         // Prevenir scroll del body
         document.body.classList.add('modal-open');
+        
+        // Compensar por la barra de scroll que desaparece
+        if (scrollBarWidth > 0) {
+            document.body.style.paddingRight = `${scrollBarWidth}px`;
+        }
+        
+        // Mantener la posición visual del contenido
+        document.body.style.top = `-${this.scrollPosition}px`;
     }
     
     /**
@@ -172,6 +183,10 @@ export class Modal {
         
         // Restaurar scroll del body
         document.body.classList.remove('modal-open');
+        
+        // Remover el padding y top
+        document.body.style.paddingRight = '';
+        document.body.style.top = '';
         
         // Restaurar posición del scroll
         window.scrollTo(0, this.scrollPosition);
@@ -232,14 +247,12 @@ export class ModalFactory {
      */
     static createInvitationFormModal() {
         const content = `
+            <div class="celebration-message">
+                <p>💕 Hemos decidido que nuestra boda sea una <strong>celebración íntima</strong>. 
+                Cada invitación es especial y queremos compartir este momento con ustedes de una manera más personal.</p>
+            </div>
+            
             <form id="createInvitationForm">
-                <div class="form-group">
-                    <label for="guestNames">Nombres de invitados</label>
-                    <input type="text" id="guestNames" name="guestNames" required 
-                           placeholder="Ej: Juan Pérez y María García">
-                    <small>Separa los nombres con "y" o comas</small>
-                </div>
-                
                 <div class="form-group">
                     <label>Tipo de invitación</label>
                     <div class="radio-group">
@@ -262,7 +275,7 @@ export class ModalFactory {
                     <div class="form-group">
                         <label for="adultPassesInput">Adultos</label>
                         <input type="number" id="adultPassesInput" name="adultPasses" 
-                               min="1" max="10" value="2" required>
+                               min="1" max="10" value="1" required>
                     </div>
                     
                     <div class="form-group hidden" id="childPassesGroup">
@@ -272,15 +285,23 @@ export class ModalFactory {
                     </div>
                 </div>
                 
+                <div class="total-passes">
+                    <span>Total de pases:</span>
+                    <strong id="totalPassesValue">1</strong>
+                </div>
+                
+                <div id="guestNamesContainer" class="form-group">
+                    <label>Nombres de invitados</label>
+                    <div id="guestNameFields">
+                        <!-- Los campos de nombres se generarán dinámicamente aquí -->
+                    </div>
+                    <small class="form-hint">Ingresa un nombre por cada pase</small>
+                </div>
+                
                 <div class="form-group">
                     <label for="phone">Teléfono (opcional)</label>
                     <input type="tel" id="phone" name="phone" 
                            placeholder="+52 1234567890">
-                </div>
-                
-                <div class="total-passes">
-                    <span>Total de pases:</span>
-                    <strong id="totalPassesValue">2</strong>
                 </div>
                 
                 <div class="modal-actions">

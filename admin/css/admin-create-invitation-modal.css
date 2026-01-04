@@ -1,0 +1,549 @@
+/* Estilos mejorados para el modal de creación de invitaciones */
+
+/* Modal backdrop con blur effect */
+#createInvitationModal {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Contenedor del modal */
+#createInvitationModal .modal-content {
+    background: linear-gradient(135deg, #2d1b27 0%, #1a0f15 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.7),
+        0 10px 25px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    overflow: visible;
+    max-width: 650px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Header del modal */
+#createInvitationModal .modal-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 28px 40px;
+    position: relative;
+}
+
+#createInvitationModal .modal-header h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#createInvitationModal .modal-header h3::before {
+    content: '✨';
+    font-size: 1.3rem;
+}
+
+/* Botón de cerrar */
+#createInvitationModal .modal-close {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#createInvitationModal .modal-close:hover {
+    background: rgba(230, 25, 161, 0.2);
+    border-color: rgba(230, 25, 161, 0.4);
+    transform: translateY(-50%) rotate(90deg);
+}
+
+/* Body del modal */
+#createInvitationModal .modal-body {
+    padding: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    max-height: calc(90vh - 120px);
+    min-height: 400px;
+    /* Ensure content is visible */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Scrollbar personalizada para el modal */
+#createInvitationModal .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+#createInvitationModal .modal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+#createInvitationModal .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(230, 25, 161, 0.3);
+    border-radius: 4px;
+}
+
+#createInvitationModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(230, 25, 161, 0.5);
+}
+
+/* Mensaje de celebración */
+.celebration-message {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.celebration-message::before {
+    display: none;
+}
+
+.celebration-message p {
+    margin: 0;
+    color: #e0d5dc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.celebration-message strong {
+    color: #e619a1;
+}
+
+/* Grupos de formulario */
+#createInvitationForm .form-group {
+    margin-bottom: 24px;
+}
+
+#createInvitationForm .form-group label {
+    display: block;
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+#createInvitationForm .form-group small {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-top: 6px;
+}
+
+/* Inputs de texto */
+#createInvitationForm input[type="text"],
+#createInvitationForm input[type="tel"],
+#createInvitationForm input[type="number"] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#createInvitationForm input[type="text"]:focus,
+#createInvitationForm input[type="tel"]:focus,
+#createInvitationForm input[type="number"]:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(230, 25, 161, 0.1);
+}
+
+#createInvitationForm input::placeholder {
+    color: #64748b;
+}
+
+/* Radio buttons mejorados */
+#createInvitationForm .radio-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#createInvitationForm .radio-label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 140px;
+}
+
+#createInvitationForm .radio-label:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(230, 25, 161, 0.3);
+}
+
+#createInvitationForm input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+#createInvitationForm input[type="radio"] + span {
+    position: relative;
+    padding-left: 28px;
+    color: #e0d5dc;
+    font-size: 0.9rem;
+}
+
+#createInvitationForm input[type="radio"] + span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+#createInvitationForm input[type="radio"]:checked + span::before {
+    border-color: #e619a1;
+    background: #e619a1;
+}
+
+#createInvitationForm input[type="radio"]:checked + span::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+#createInvitationForm input[type="radio"]:checked ~ span {
+    color: #ffffff;
+}
+
+#createInvitationForm .radio-label:has(input[type="radio"]:checked) {
+    background: rgba(230, 25, 161, 0.1);
+    border-color: rgba(230, 25, 161, 0.4);
+}
+
+/* Form row para inputs de números */
+#createInvitationForm .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+/* Asegurar que ambos campos tengan la misma altura */
+#createInvitationForm .form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* Input de número mejorado */
+#createInvitationForm input[type="number"] {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(230, 25, 161, 0.3);
+}
+
+/* Estilos para los botones de incremento/decremento nativos */
+#createInvitationForm input[type="number"]::-webkit-inner-spin-button,
+#createInvitationForm input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 40px;
+    background: rgba(230, 25, 161, 0.1);
+    border-left: 1px solid rgba(230, 25, 161, 0.3);
+    cursor: pointer;
+}
+
+#createInvitationForm input[type="number"]:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(230, 25, 161, 0.5);
+}
+
+/* Alineación para el label de niños cuando está deshabilitado */
+#childPassesGroup label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#childPassesGroup .children-not-allowed-label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+/* Total de pases */
+#createInvitationForm .total-passes {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#createInvitationForm .total-passes span {
+    color: #e0d5dc;
+    font-size: 0.95rem;
+}
+
+#createInvitationForm .total-passes strong {
+    color: #e619a1;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Acciones del modal */
+#createInvitationForm .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#createInvitationForm .modal-actions button {
+    flex: 1;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#createInvitationForm .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0d5dc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#createInvitationForm .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+#createInvitationForm .btn-primary {
+    background: linear-gradient(135deg, #e619a1 0%, #d1158e 100%);
+    color: white;
+    box-shadow: 0 4px 20px rgba(230, 25, 161, 0.3);
+}
+
+#createInvitationForm .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(230, 25, 161, 0.4);
+}
+
+#createInvitationForm .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Animación para el ícono del botón */
+#createInvitationForm .btn-primary i {
+    transition: transform 0.3s ease;
+}
+
+#createInvitationForm .btn-primary:hover i {
+    transform: rotate(90deg);
+}
+
+/* Media queries para diferentes tamaños de pantalla */
+@media (min-width: 768px) {
+    #createInvitationModal .modal-content {
+        max-width: 700px;
+    }
+}
+
+@media (min-width: 1024px) {
+    #createInvitationModal .modal-content {
+        max-width: 750px;
+    }
+    
+    #createInvitationModal .modal-body {
+        padding: 45px 50px;
+    }
+}
+
+/* Responsive para móviles */
+@media (max-width: 767px) {
+    #createInvitationModal .modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+        max-width: none;
+        max-height: calc(100vh - 40px);
+    }
+    
+    #createInvitationModal .modal-header {
+        padding: 20px 24px;
+    }
+    
+    #createInvitationModal .modal-body {
+        padding: 24px;
+        max-height: calc(100vh - 140px);
+    }
+    
+    #createInvitationForm .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    #createInvitationForm .radio-group {
+        flex-direction: column;
+    }
+    
+    #createInvitationForm .radio-label {
+        width: 100%;
+    }
+}
+
+/* Animación de aparición suave */
+#createInvitationModal.modal-visible .modal-content {
+    animation: modalBounceIn 0.5s ease-out;
+}
+
+@keyframes modalBounceIn {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Efecto de brillo sutil en hover para el modal completo */
+#createInvitationModal .modal-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+#createInvitationModal .modal-content:hover::before {
+    opacity: 1;
+}
+
+/* Override conflicting styles from admin-create-modal-fix.css */
+#createInvitationModal {
+    display: none !important;
+    position: fixed !important;
+    z-index: 1001 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+#createInvitationModal.modal-visible {
+    display: block !important;
+}
+
+/* Ensure modal content is properly displayed */
+#createInvitationModal .modal-content {
+    position: relative !important;
+    margin: 5% auto !important;
+    overflow: visible !important;
+}
+
+/* Ensure form content is visible */
+#createInvitationModal form {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Fix for hidden class */
+.hidden {
+    display: none !important;
+}
+
+/* Ensure all form elements are visible */
+#createInvitationModal .form-group,
+#createInvitationModal .form-row,
+#createInvitationModal .radio-group,
+#createInvitationModal .total-passes,
+#createInvitationModal .modal-actions {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#createInvitationModal .form-group {
+    display: block !important;
+}
+
+#createInvitationModal .form-group.hidden {
+    display: none !important;
+}
+
+/* Ensure celebration message is visible */
+#createInvitationModal .celebration-message {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
