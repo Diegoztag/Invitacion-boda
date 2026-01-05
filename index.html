@@ -101,8 +101,11 @@
             </div>
             <div class="dress-code">
                 <h3 id="dressCodeTitle">Código de Vestimenta</h3>
-                <p id="dressCodeDescription">Formal - Evitar colores pasteles</p>
-                <p id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
+                <p class="dress-code-main" id="dressCodeDescription">Formal - Evitar colores pasteles</p>
+                <p class="dress-code-note" id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
+                <div class="dress-code-image">
+                    <img src="img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
+                </div>
                 <div id="noChildrenNote" class="no-children-note" style="display: none;">
                     <i class="fas fa-info-circle"></i>
                     <p id="noChildrenMessage"></p>
@@ -178,7 +181,7 @@
                     <h3 id="locationVenueName">Hacienda los Reyes</h3>
                     <p><i class="fas fa-map-marker-alt"></i> <span id="locationAddress">Ejido el 30</span></p>
                     <button class="btn btn-primary" id="directionsButton" onclick="openInMaps()">
-                        <i class="fas fa-directions"></i> Cómo llegar
+                        <i class="fas fa-map-marked-alt"></i> Cómo llegar
                     </button>
                 </div>
                 <div class="map-container">
@@ -193,6 +196,12 @@
         <div class="container">
             <h2 class="section-title" id="rsvpTitle">Confirma tu Asistencia</h2>
             <p class="section-subtitle" id="rsvpSubtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
+            
+            <!-- Letter Header -->
+            <div class="letter-header animate-fade-in-delay-2">
+                <p class="letter-greeting">Queridos invitados,</p>
+                <p class="letter-intro">Nos encantaría contar con su presencia en este día tan especial. Por favor, tómense un momento para confirmar su asistencia completando el siguiente formulario.</p>
+            </div>
             
             <!-- Mensaje de invitación ya confirmada -->
             <div id="alreadyConfirmed" class="already-confirmed" style="display: none;">

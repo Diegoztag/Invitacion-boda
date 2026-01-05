@@ -82,8 +82,8 @@ const WEDDING_CONFIG = {
     // Código de vestimenta
     dressCode: {
         title: "Código de Vestimenta",
-        description: "Formal - Evitar colores pasteles",
-        note: ""
+        description: "Formal/Etiqueta",
+        note: "Evitar colores pasteles"
     },
     
     // Mensajes personalizables
@@ -168,6 +168,12 @@ const WEDDING_CONFIG = {
                 icon: "fas fa-gift",
                 url: "https://mesaderegalos.liverpool.com.mx/milistaderegalos/51861860",
                 description: "Ver mesa de regalos en Liverpool"
+            },
+            {
+                name: "Lluvia de sobres",
+                icon: "fas fa-envelope",
+                url: "#",
+                description: "Efectivo en recepción"
             }
         ],
         bankAccount: {

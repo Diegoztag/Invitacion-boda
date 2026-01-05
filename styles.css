@@ -88,6 +88,21 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
     margin-bottom: 20px;
     color: var(--primary-color);
+    position: relative;
+    padding-bottom: 20px;
+}
+
+/* Decorative line under section titles */
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    border-radius: 2px;
 }
 
 .section-subtitle {
@@ -187,35 +202,41 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     cursor: pointer;
     z-index: 1002;
-    padding: 5px;
-    background: none;
+    padding: 4px;
+    background: transparent;
     border: none;
     width: 35px;
     height: 35px;
     justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle:hover span {
+    background: var(--secondary-color);
 }
 
 .nav-toggle span {
     width: 25px;
     height: 3px;
     background: var(--primary-color);
-    margin: 3px 0;
+    margin: 4px 0;
     transition: var(--transition);
-    border-radius: 3px;
+    border-radius: 2px;
     display: block;
 }
 
 .nav-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
+    transform: rotate(45deg) translate(6px, 6px);
 }
 
 .nav-toggle.active span:nth-child(2) {
     opacity: 0;
+    transform: scale(0);
 }
 
 .nav-toggle.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -6px);
+    transform: rotate(-45deg) translate(6px, -6px);
 }
 
 /* Navigation Menu */
@@ -348,8 +369,23 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3') center/cover;
+    background: url('img/photo2.jpg') center/cover;
     overflow: hidden; /* Prevent any overflow issues */
+    background-attachment: fixed; /* Parallax effect */
+}
+
+/* Decorative frame for hero */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 2px solid rgba(212, 165, 116, 0.3);
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .hero-overlay {
@@ -372,12 +408,27 @@ h1, h2, h3, h4, h5, h6 {
 .hero-title {
     font-size: 3rem;
     margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+    position: relative;
+}
+
+/* Decorative flourish under title */
+.hero-title::after {
+    content: '❦';
+    display: block;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-top: 10px;
+    opacity: 0.8;
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
     font-weight: 300;
     margin-bottom: 30px;
+    font-style: italic;
+    opacity: 0.9;
 }
 
 /* Invitation Info */
@@ -438,11 +489,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .countdown-item {
     text-align: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
+    padding: 20px 15px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
     min-width: 80px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.countdown-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .countdown-value {
@@ -627,17 +687,46 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .event-card {
-    background: var(--white);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, var(--white) 0%, rgba(248, 244, 230, 0.5) 100%);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(212, 165, 116, 0.15);
     text-align: center;
-    transition: var(--transition);
+    transition: all 0.4s ease;
+    position: relative;
+    border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+/* Decorative corners for event cards */
+.event-card::before,
+.event-card::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--primary-color);
+    opacity: 0.3;
+}
+
+.event-card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 10px 0 0 0;
+}
+
+.event-card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 10px 0;
 }
 
 .event-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(212, 165, 116, 0.25);
 }
 
 .event-icon {
@@ -670,9 +759,72 @@ h1, h2, h3, h4, h5, h6 {
 
 .dress-code {
     text-align: center;
-    padding: 30px;
-    background: var(--accent-color);
-    border-radius: 15px;
+    padding: 50px 30px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, rgba(248, 244, 230, 0.7) 100%);
+    border-radius: 20px;
+    margin-top: 50px;
+    box-shadow: 0 10px 30px rgba(212, 165, 116, 0.15);
+    border: 1px solid rgba(212, 165, 116, 0.1);
+}
+
+.dress-code h3 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-family: 'Playfair Display', serif;
+}
+
+.dress-code-main {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.dress-code-note {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.dress-code-image {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.dress-code-image img {
+    max-width: 250px;
+    height: auto;
+}
+
+/* Mobile adjustments for dress code */
+@media (max-width: 768px) {
+    .dress-code {
+        padding: 40px 20px;
+        margin-top: 30px;
+    }
+    
+    .dress-code h3 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+    
+    .dress-code-main {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .dress-code-note {
+        font-size: 1rem;
+        margin-bottom: 25px;
+    }
+    
+    .dress-code-image img {
+        max-width: 180px;
+    }
 }
 
 /* No Children Note */
@@ -737,20 +889,48 @@ h1, h2, h3, h4, h5, h6 {
 
 .itinerary-content {
     flex: 1;
-    background: var(--white);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, var(--white) 0%, var(--accent-color) 100%);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(212, 165, 116, 0.1);
+    border: 1px solid rgba(212, 165, 116, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.itinerary-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+}
+
+.itinerary-content:hover {
+    transform: translateX(10px);
+    box-shadow: 0 6px 30px rgba(212, 165, 116, 0.2);
+}
+
+.itinerary-content:hover::before {
+    opacity: 1;
 }
 
 .itinerary-content h4 {
-    margin-bottom: 5px;
-    color: var(--text-dark);
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
 }
 
 .itinerary-content p {
     color: var(--text-light);
     font-size: 0.9rem;
+    font-style: italic;
 }
 
 /* Location */
@@ -790,37 +970,124 @@ h1, h2, h3, h4, h5, h6 {
     height: 100%;
 }
 
+/* Letter Header */
+.letter-header {
+    max-width: 700px;
+    margin: 0 auto 40px;
+    text-align: center;
+    padding: 30px;
+    background: rgba(248, 244, 230, 0.3);
+    border-radius: 15px;
+    border: 1px solid rgba(212, 165, 116, 0.1);
+    position: relative;
+}
+
+.letter-greeting {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.letter-intro {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    font-style: italic;
+    opacity: 0.9;
+}
+
 /* RSVP Form */
 .rsvp-form {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
-    background: var(--white);
-    padding: 30px;
+    background: linear-gradient(135deg, #fffef9 0%, #faf8f0 100%);
+    padding: 60px 50px;
     border-radius: 15px;
-    box-shadow: var(--shadow);
+    box-shadow: 
+        0 20px 60px rgba(212, 165, 116, 0.15),
+        0 0 0 1px rgba(212, 165, 116, 0.1),
+        inset 0 0 0 8px rgba(212, 165, 116, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Envelope flap effect */
+.rsvp-form::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 350px solid transparent;
+    border-right: 350px solid transparent;
+    border-top: 100px solid rgba(212, 165, 116, 0.08);
+    z-index: 0;
+}
+
+/* Letter stamp/seal */
+.rsvp-form::after {
+    content: '💌';
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    font-size: 3rem;
+    opacity: 0.3;
+    transform: rotate(15deg);
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Decorative border pattern */
+.rsvp {
+    position: relative;
+}
+
+.rsvp::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    height: 90%;
+    border: 2px dashed rgba(212, 165, 116, 0.2);
+    border-radius: 20px;
+    pointer-events: none;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--primary-color);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: inherit;
+    padding: 15px 20px;
+    border: 2px solid rgba(212, 165, 116, 0.2);
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-group input:focus,
@@ -828,23 +1095,58 @@ h1, h2, h3, h4, h5, h6 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
+    background: var(--white);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 0 0 3px rgba(212, 165, 116, 0.1);
+}
+
+/* Textarea special styling */
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-style: italic;
+    line-height: 1.6;
 }
 
 .radio-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(248, 244, 230, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(212, 165, 116, 0.1);
 }
 
 .radio-label {
     display: flex;
     align-items: center;
     cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.radio-label:hover {
+    background: rgba(212, 165, 116, 0.1);
 }
 
 .radio-label input[type="radio"] {
     width: auto;
-    margin-right: 10px;
+    margin-right: 12px;
+    accent-color: var(--primary-color);
+}
+
+.radio-label input[type="radio"]:checked + span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.radio-label span {
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
 }
 
 /* Already Confirmed Message */
@@ -872,22 +1174,34 @@ h1, h2, h3, h4, h5, h6 {
 #attendingNamesList {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(248, 244, 230, 0.2);
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
 .attending-name {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: inherit;
+    padding: 15px 20px;
+    border: 2px solid rgba(212, 165, 116, 0.2);
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .attending-name:focus {
     outline: none;
     border-color: var(--primary-color);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+}
+
+.attending-name::placeholder {
+    color: rgba(139, 115, 85, 0.5);
+    font-style: italic;
 }
 
 /* Form Control Select */
@@ -911,8 +1225,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 12px 30px;
-    background: var(--primary-color);
+    padding: 14px 35px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--white);
     text-decoration: none;
     border: none;
@@ -920,12 +1234,35 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
+}
+
+.btn i {
+    color: var(--white);
+    margin-right: 8px;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
 }
 
 .btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn-primary {
@@ -940,23 +1277,56 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Instagram Hashtag Section */
 .instagram-section {
-    background: var(--white);
+    background: linear-gradient(135deg, var(--white) 0%, var(--accent-color) 50%, var(--white) 100%);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative floating hearts background */
+.instagram-section::before {
+    content: '♥ ♥ ♥ ♥ ♥';
+    position: absolute;
+    top: 10%;
+    left: -100px;
+    font-size: 2rem;
+    color: rgba(212, 165, 116, 0.1);
+    animation: floatHearts 20s linear infinite;
+}
+
+@keyframes floatHearts {
+    to {
+        transform: translateX(calc(100vw + 200px));
+    }
 }
 
 .hashtag-container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 40px 20px;
-    background: var(--accent-color);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
+    padding: 50px 30px;
+    background: var(--white);
+    border-radius: 25px;
+    box-shadow: 0 15px 50px rgba(212, 165, 116, 0.2);
+    position: relative;
+    border: 2px solid rgba(212, 165, 116, 0.2);
+    transition: all 0.3s ease;
+}
+
+.hashtag-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(212, 165, 116, 0.3);
 }
 
 .hashtag-icon {
     font-size: 4rem;
     color: var(--primary-color);
     margin-bottom: 20px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .hashtag-text {
@@ -964,6 +1334,10 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color);
     margin-bottom: 20px;
     font-family: 'Playfair Display', serif;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .hashtag-description {
@@ -1282,8 +1656,27 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 2rem;
     }
     
-    .rsvp-form {
+    .letter-header {
         padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .letter-greeting {
+        font-size: 1.4rem;
+    }
+    
+    .letter-intro {
+        font-size: 1rem;
+    }
+    
+    .rsvp-form {
+        padding: 30px 20px;
+    }
+    
+    .rsvp-form::before {
+        border-left: 175px solid transparent;
+        border-right: 175px solid transparent;
+        border-top: 50px solid rgba(212, 165, 116, 0.08);
     }
     
     .modal-content {
