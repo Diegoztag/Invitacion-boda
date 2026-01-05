@@ -19,7 +19,7 @@ class CSVStorageService {
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber\n';
+                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
             
@@ -100,7 +100,11 @@ class CSVStorageService {
                 adultPasses,
                 childPasses,
                 staffPasses,
-                invitation.tableNumber || ''
+                invitation.tableNumber || '',
+                '',  // status (empty = active)
+                '',        // cancelledAt
+                '',        // cancelledBy
+                ''         // cancellationReason
             ].join(',') + '\n';
             
             await fs.appendFile(this.invitationsFile, row);
@@ -152,7 +156,12 @@ class CSVStorageService {
                         adultPasses: parts[8] ? parseInt(parts[8]) : parseInt(parts[2]),
                         childPasses: parts[9] ? parseInt(parts[9]) : 0,
                         staffPasses: parts[10] ? parseInt(parts[10]) : 0,
-                        tableNumber: parts[11] ? parseInt(parts[11]) : null
+                        tableNumber: parts[11] ? parseInt(parts[11]) : null,
+                        // Add status fields
+                        status: parts[12] || '',  // empty = active
+                        cancelledAt: parts[13] || null,
+                        cancelledBy: parts[14] || null,
+                        cancellationReason: parts[15] || null
                     };
                     
                     // Add confirmation details if available
@@ -176,6 +185,92 @@ class CSVStorageService {
     async getInvitationByCode(code) {
         const invitations = await this.getAllInvitations();
         return invitations.find(inv => inv.code === code);
+    }
+
+    // Update invitation (admin)
+    async updateInvitation(code, updateData) {
+        try {
+            const invitations = await this.getAllInvitations();
+            const invitationIndex = invitations.findIndex(inv => inv.code === code);
+            
+            if (invitationIndex === -1) {
+                throw new Error('Invitación no encontrada');
+            }
+            
+            // Update invitation with new data
+            const updatedInvitation = {
+                ...invitations[invitationIndex],
+                ...updateData
+            };
+            
+            invitations[invitationIndex] = updatedInvitation;
+            
+            // If updating confirmation status and it includes confirmation details
+            if (updateData.confirmed && updateData.confirmationDetails) {
+                // Save or update confirmation details
+                const confirmationRow = [
+                    code,
+                    updateData.confirmationDetails.willAttend ? 'true' : 'false',
+                    updateData.confirmationDetails.numberOfGuests || updateData.confirmedPasses || 0,
+                    this.formatCSVValue(updateData.confirmationDetails.attendingNames?.join(', ') || ''),
+                    this.formatCSVValue(updateData.phone || ''),
+                    this.formatCSVValue(updateData.confirmationDetails.dietaryRestrictions || ''),
+                    this.formatCSVValue(updateData.confirmationDetails.message || ''),
+                    updateData.confirmationDate || new Date().toISOString()
+                ].join(',') + '\n';
+                
+                // Check if confirmation already exists
+                const confirmations = await this.getAllConfirmations();
+                const existingConfirmation = confirmations.find(conf => conf.code === code);
+                
+                if (!existingConfirmation) {
+                    // Add new confirmation
+                    await fs.appendFile(this.confirmationsFile, confirmationRow);
+                } else {
+                    // Update existing confirmations file
+                    let confirmationContent = 'code,willAttend,attendingGuests,attendingNames,phone,dietaryRestrictions,message,confirmedAt\n';
+                    
+                    for (const conf of confirmations) {
+                        if (conf.code === code) {
+                            // Use updated data
+                            confirmationContent += confirmationRow;
+                        } else {
+                            // Keep existing data
+                            const row = [
+                                conf.code,
+                                conf.willAttend ? 'true' : 'false',
+                                conf.attendingGuests,
+                                this.formatCSVValue(conf.attendingNames?.join(', ') || ''),
+                                this.formatCSVValue(conf.phone || ''),
+                                this.formatCSVValue(conf.dietaryRestrictions || ''),
+                                this.formatCSVValue(conf.message || ''),
+                                conf.confirmedAt
+                            ].join(',') + '\n';
+                            confirmationContent += row;
+                        }
+                    }
+                    
+                    await fs.writeFile(this.confirmationsFile, confirmationContent);
+                }
+            }
+            
+            // Rewrite invitations file using helper method
+            await this.rewriteInvitationsFile(invitations);
+            
+            // Return updated invitation with confirmation details if available
+            if (updatedInvitation.confirmed) {
+                const confirmations = await this.getAllConfirmations();
+                const confirmation = confirmations.find(conf => conf.code === code);
+                if (confirmation) {
+                    updatedInvitation.confirmationDetails = confirmation;
+                }
+            }
+            
+            return updatedInvitation;
+        } catch (error) {
+            console.error('Error updating invitation:', error);
+            throw error;
+        }
     }
 
     // Update invitation confirmation
@@ -207,28 +302,8 @@ class CSVStorageService {
             
             await fs.appendFile(this.confirmationsFile, confirmationRow);
             
-            // Rewrite invitations file
-            let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber\n';
-            
-            for (const inv of invitations) {
-                const row = [
-                    inv.code,
-                    this.formatCSVValue(inv.guestNames.join(' y ')),
-                    inv.numberOfPasses,
-                    this.formatCSVValue(inv.phone),
-                    inv.createdAt,
-                    inv.confirmed,
-                    inv.confirmedPasses,
-                    inv.confirmationDate || '',
-                    inv.adultPasses || inv.numberOfPasses,
-                    inv.childPasses || 0,
-                    inv.staffPasses || 0,
-                    inv.tableNumber || ''
-                ].join(',') + '\n';
-                csvContent += row;
-            }
-            
-            await fs.writeFile(this.invitationsFile, csvContent);
+            // Rewrite invitations file using helper method
+            await this.rewriteInvitationsFile(invitations);
             
             // Return updated invitation with confirmation details
             const updatedInvitation = invitations[invitationIndex];
@@ -278,14 +353,21 @@ class CSVStorageService {
 
     // Get statistics
     async getStats() {
-        const invitations = await this.getAllInvitations();
+        const allInvitations = await this.getAllInvitations();
         const confirmations = await this.getAllConfirmations();
+        
+        // Filter out inactive invitations for stats
+        const invitations = allInvitations.filter(inv => inv.status !== 'inactive');
+        const inactiveInvitations = allInvitations.filter(inv => inv.status === 'inactive');
         
         // Calculate cancelled passes (both not attending and partial confirmations)
         let cancelledPasses = 0;
         let adultPasses = 0;
         let childPasses = 0;
         let staffPasses = 0;
+        
+        // Inactive invitations don't count in any statistics
+        // Only count cancelled passes from active invitations where guest cancelled
         
         invitations.forEach(invitation => {
             if (invitation.confirmed) {
@@ -328,6 +410,7 @@ class CSVStorageService {
             pendingPasses: invitations.filter(inv => !inv.confirmed)
                 .reduce((sum, inv) => sum + inv.numberOfPasses, 0),
             cancelledPasses: cancelledPasses,
+            inactiveInvitations: inactiveInvitations.length,
             // Add breakdown of pass types
             adultPasses: adultPasses,
             childPasses: childPasses,
@@ -347,6 +430,91 @@ class CSVStorageService {
             confirmations,
             exportDate: new Date().toISOString()
         };
+    }
+
+    // Deactivate invitation (soft delete)
+    async deactivateInvitation(code, deactivatedBy = 'admin', deactivationReason = '') {
+        try {
+            const invitations = await this.getAllInvitations();
+            const invitationIndex = invitations.findIndex(inv => inv.code === code);
+            
+            if (invitationIndex === -1) {
+                throw new Error('Invitación no encontrada');
+            }
+            
+            // Update invitation with deactivation data
+            invitations[invitationIndex].status = 'inactive';
+            invitations[invitationIndex].cancelledAt = new Date().toISOString();
+            invitations[invitationIndex].cancelledBy = deactivatedBy;
+            invitations[invitationIndex].cancellationReason = deactivationReason;
+            
+            // Rewrite invitations file
+            await this.rewriteInvitationsFile(invitations);
+            
+            return invitations[invitationIndex];
+        } catch (error) {
+            console.error('Error deactivating invitation:', error);
+            throw error;
+        }
+    }
+
+    // Activate inactive invitation
+    async activateInvitation(code) {
+        try {
+            const invitations = await this.getAllInvitations();
+            const invitationIndex = invitations.findIndex(inv => inv.code === code);
+            
+            if (invitationIndex === -1) {
+                throw new Error('Invitación no encontrada');
+            }
+            
+            if (invitations[invitationIndex].status !== 'inactive') {
+                throw new Error('La invitación no está inactiva');
+            }
+            
+            // Update invitation to active status (empty)
+            invitations[invitationIndex].status = '';
+            invitations[invitationIndex].cancelledAt = '';
+            invitations[invitationIndex].cancelledBy = '';
+            invitations[invitationIndex].cancellationReason = '';
+            
+            // Rewrite invitations file
+            await this.rewriteInvitationsFile(invitations);
+            
+            return invitations[invitationIndex];
+        } catch (error) {
+            console.error('Error activating invitation:', error);
+            throw error;
+        }
+    }
+
+    // Helper method to rewrite invitations file
+    async rewriteInvitationsFile(invitations) {
+        let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
+        
+        for (const inv of invitations) {
+            const row = [
+                inv.code,
+                this.formatCSVValue(inv.guestNames.join(' y ')),
+                inv.numberOfPasses,
+                this.formatCSVValue(inv.phone || ''),
+                inv.createdAt,
+                inv.confirmed,
+                inv.confirmedPasses || 0,
+                inv.confirmationDate || '',
+                inv.adultPasses || inv.numberOfPasses,
+                inv.childPasses || 0,
+                inv.staffPasses || 0,
+                inv.tableNumber || '',
+                inv.status || '',
+                inv.cancelledAt || '',
+                inv.cancelledBy || '',
+                this.formatCSVValue(inv.cancellationReason || '')
+            ].join(',') + '\n';
+            csvContent += row;
+        }
+        
+        await fs.writeFile(this.invitationsFile, csvContent);
     }
 
     // Import invitations from CSV content

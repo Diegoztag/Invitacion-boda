@@ -12,6 +12,21 @@ Sistema web completo para gestionar invitaciones digitales personalizadas de bod
 - **Mesa de Regalos**: Sección con enlaces a tiendas y datos bancarios
 - **Hashtag de Instagram**: Para que los invitados compartan fotos del evento
 - **Diseño Responsivo**: Funciona perfectamente en móviles y computadoras
+- **Sistema de Estados**: Gestión de invitaciones activas/inactivas y confirmaciones
+- **Arquitectura Modular**: Código organizado y mantenible
+
+## 📚 Documentación
+
+Para desarrolladores y contribuidores:
+- **[AGENT.md](./AGENT.md)** - Guía principal para agentes IA y desarrolladores
+- **[docs/](./docs/)** - Documentación técnica completa
+  - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Arquitectura del sistema
+  - [API.md](./docs/API.md) - Documentación de la API
+  - [BUSINESS_RULES.md](./docs/BUSINESS_RULES.md) - Reglas de negocio
+  - [TECHNICAL_ROADMAP.md](./docs/TECHNICAL_ROADMAP.md) - Estado actual y roadmap
+  - [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Guía de contribución
+  - [SETUP.md](./docs/SETUP.md) - Configuración detallada
+  - [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Guía de despliegue
 
 ## 🚀 Instalación Rápida
 
@@ -299,6 +314,43 @@ Si tienes problemas o preguntas:
 2. Verifica que seguiste todos los pasos de configuración
 3. Revisa los logs del servidor para mensajes de error
 
+## 🛠️ Para Desarrolladores
+
+### Estructura del Proyecto
+```
+invitacion-boda/
+├── backend/              # Servidor Node.js/Express
+├── admin/               # Recursos del panel admin
+│   ├── js/             # JavaScript modular
+│   └── css/            # Estilos modulares
+├── data/               # Archivos CSV (generados)
+├── docs/               # Documentación técnica
+├── AGENT.md            # Guía para agentes IA
+├── config.js           # Configuración global
+├── index.html          # Página de invitación
+└── admin.html          # Panel de administración
+```
+
+### Tecnologías Utilizadas
+- **Frontend**: HTML5, CSS3, JavaScript ES6+ (Vanilla)
+- **Backend**: Node.js, Express.js
+- **Base de Datos**: CSV (decisión consciente por portabilidad)
+- **Estilos**: Bootstrap 5, CSS personalizado
+- **Iconos**: Font Awesome
+
+### Principios de Desarrollo
+- **SOLID**: Principios de diseño orientado a objetos
+- **DRY**: Don't Repeat Yourself
+- **KISS**: Keep It Simple, Stupid
+- **Clean Code**: Código limpio y mantenible
+- **Modular**: Arquitectura modular y reutilizable
+
+### Contribuir al Proyecto
+1. Lee [CONTRIBUTING.md](./docs/CONTRIBUTING.md) para conocer los estándares
+2. Consulta [TECHNICAL_ROADMAP.md](./docs/TECHNICAL_ROADMAP.md) para ver qué está pendiente
+3. Sigue las reglas de negocio en [BUSINESS_RULES.md](./docs/BUSINESS_RULES.md)
+4. Actualiza la documentación relevante después de tus cambios
+
 ## 📄 Licencia
 
 Este proyecto es de código abierto y está disponible bajo la licencia MIT.
@@ -306,3 +358,5 @@ Este proyecto es de código abierto y está disponible bajo la licencia MIT.
 ---
 
 ¡Felicidades por tu boda! 🎉💒
+
+**Última actualización**: Enero 2025

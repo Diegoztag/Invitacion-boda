@@ -438,7 +438,14 @@ export function getStatusBadge(invitation, options = {}) {
     let statusColor = '#ff9800';
     let statusIcon = 'clock';
     
-    if (invitation.confirmed && invitation.confirmationDetails) {
+    // Check if invitation is inactive first
+    if (invitation.status === 'inactive') {
+        status = 'inactive';
+        statusText = 'Inactivo';
+        statusClass = 'inactive';
+        statusColor = '#9e9e9e';
+        statusIcon = 'power-off';
+    } else if (invitation.confirmed && invitation.confirmationDetails) {
         if (!invitation.confirmationDetails.willAttend) {
             status = 'rejected';
             statusText = 'Cancelado';

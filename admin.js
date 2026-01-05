@@ -883,98 +883,612 @@ function viewInvitation(code) {
     
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
     
-    // Get status badge with icon for modal
-    const statusBadgeInfo = getStatusBadge(invitation, { showIcon: true });
+    // Store current invitation for editing
+    window.currentEditingInvitation = invitation;
     
-    // Use utility function to calculate cancelled passes
-    const cancelledPasses = calculateCancelledPasses(invitation);
-    
-    const detailsContent = `
-        <div class="invitation-detail">
-            <!-- Status Header -->
-            <div class="status-header">
-                ${statusBadgeInfo.html}
-            </div>
-            
-            <!-- Guest Info Section -->
-            <div class="guest-section">
-                <h4>${invitation.guestNames.join(' y ')}</h4>
-                <div class="info-row">
-                    <span><strong>Código:</strong> ${invitation.code}</span>
-                    <span><strong>Pases:</strong> ${invitation.numberOfPasses}</span>
+    // Function to render view mode
+    function renderViewMode() {
+        // Get status badge with icon for modal - usar showIcon para badge grande
+        const statusBadgeInfo = getStatusBadge(invitation, { showIcon: true });
+        
+        // Use utility function to calculate cancelled passes
+        const cancelledPasses = calculateCancelledPasses(invitation);
+        
+        const detailsContent = `
+            <div class="invitation-detail" data-mode="view">
+                <!-- Status Header with Badge Style -->
+                <div class="status-header-emoji">
+                    ${statusBadgeInfo.html}
+                </div>
+                
+                <!-- Guest Info Section -->
+                <div class="guest-info-section">
+                    <p class="info-item"><i class="fas fa-users"></i> <strong>Invitados:</strong> ${invitation.guestNames.join(' y ')}</p>
+                    <p class="info-item"><i class="fas fa-ticket-alt"></i> <strong>Pases:</strong> ${invitation.numberOfPasses}</p>
+                    ${invitation.tableNumber ? `<p class="info-item"><i class="fas fa-chair"></i> <strong>Mesa:</strong> ${invitation.tableNumber}</p>` : '<p class="info-item"><i class="fas fa-chair"></i> <strong>Mesa:</strong> Sin asignar</p>'}
                     ${invitation.phone || invitation.confirmationDetails?.phone ? `
-                        <span><strong>Tel:</strong> ${invitation.phone || invitation.confirmationDetails?.phone}</span>
+                        <p class="info-item"><i class="fas fa-phone"></i> <strong>Teléfono:</strong> ${invitation.phone || invitation.confirmationDetails?.phone}</p>
+                    ` : '<p class="info-item"><i class="fas fa-phone"></i> <strong>Teléfono:</strong> No proporcionado</p>'}
+                </div>
+                
+                <!-- Confirmation Status Section -->
+                <div class="confirmation-status-section">
+                    <h5 class="section-divider">Estado de Confirmación</h5>
+                    ${invitation.confirmed ? `
+                        ${invitation.confirmationDetails?.willAttend ? `
+                            <p class="info-item"><strong>Asistirá:</strong> Sí (${invitation.confirmedPasses} personas)</p>
+                            <p class="info-item"><strong>Confirmado el:</strong> ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</p>
+                            ${invitation.confirmationDetails?.message ? `
+                                <p class="info-item"><strong>Mensaje:</strong> "${invitation.confirmationDetails.message}"</p>
+                            ` : ''}
+                        ` : `
+                            <p class="info-item"><strong>Asistirá:</strong> No</p>
+                            <p class="info-item"><strong>Confirmado el:</strong> ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</p>
+                        `}
                     ` : ''}
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
+                        <i class="fas fa-link"></i> Copiar Link
+                    </button>
+                    ${invitation.status === 'inactive' ? `
+                        <button class="btn btn-primary" onclick="activateInvitation('${code}')">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>
+                    ` : `
+                        <button class="btn btn-primary" onclick="editInvitation('${code}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger" onclick="deactivateInvitation('${code}')">
+                            <i class="fas fa-power-off"></i> Desactivar Invitación
+                        </button>
+                    `}
                 </div>
             </div>
+        `;
+        
+        invitationDetailModal.setContent(detailsContent);
+    }
+    
+    // Initial render in view mode
+    renderViewMode();
+    invitationDetailModal.open();
+}
+
+// Deactivate Invitation
+function deactivateInvitation(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
+    
+    // Check if invitation is confirmed and show warning
+    if (invitation.confirmed) {
+        const confirmModal = ModalFactory.createConfirmModal({
+            title: 'Advertencia: Invitación Confirmada',
+            message: `Esta invitación ya fue confirmada por ${invitation.guestNames.join(' y ')}. ¿Estás seguro de que deseas desactivarla?`,
+            confirmText: 'Sí, desactivar',
+            confirmClass: 'danger',
+            onConfirm: () => {
+                proceedWithDeactivation(code, invitation);
+            }
+        });
+        
+        window.activeModal = confirmModal;
+        confirmModal.open();
+    } else {
+        proceedWithDeactivation(code, invitation);
+    }
+}
+
+// Proceed with deactivation
+function proceedWithDeactivation(code, invitation) {
+    // Create deactivation modal
+    const deactivateModal = ModalFactory.createDeactivateInvitationModal(invitation);
+    window.activeDeactivateModal = deactivateModal;
+    
+    // Define the confirm deactivate function
+    window.confirmDeactivateInvitation = async function() {
+        const deactivationReason = document.getElementById('deactivationReason').value.trim();
+        
+        try {
+            const response = await fetch(`${CONFIG.backendUrl}/invitation/${code}/deactivate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    deactivatedBy: 'admin',
+                    deactivationReason: deactivationReason
+                })
+            });
             
-            ${invitation.confirmed ? `
-                <!-- Confirmation Details -->
-                <div>
-                    ${invitation.confirmationDetails?.willAttend ? `
-                        <div class="stats-grid-mini">
-                            <div class="stat-mini">
-                                <div class="stat-mini-value stat-value-success">${invitation.confirmedPasses}</div>
-                                <div class="stat-mini-label">Confirmados</div>
-                            </div>
-                            ${cancelledPasses > 0 ? `
-                                <div class="stat-mini">
-                                    <div class="stat-mini-value stat-value-danger">${cancelledPasses}</div>
-                                    <div class="stat-mini-label">Cancelados</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                        
-                        ${invitation.confirmationDetails?.attendingNames?.length > 0 ? `
-                            <div class="attendees-list">
-                                <strong>Asistentes:</strong> ${invitation.confirmationDetails.attendingNames.join(', ')}
-                            </div>
-                        ` : ''}
-                        
-                        ${invitation.confirmationDetails?.dietaryRestrictions ? `
-                            <div class="dietary-note">
-                                <i class="fas fa-utensils"></i>
-                                ${invitation.confirmationDetails.dietaryRestrictions}
-                            </div>
-                        ` : ''}
-                    ` : `
-                        <div class="declined-message">
-                            <p>Invitación declinada</p>
-                        </div>
-                    `}
+            // Verificar si la respuesta es exitosa
+            if (!response.ok) {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
+                } else {
+                    // Si no es JSON, probablemente es HTML (error 404 o similar)
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('Invitación desactivada exitosamente', 'success');
+                
+                // Update local data
+                invitation.status = 'inactive';
+                invitation.cancelledAt = new Date().toISOString();
+                invitation.cancelledBy = 'admin';
+                invitation.cancellationReason = deactivationReason;
+                
+                // Close modals
+                deactivateModal.close();
+                if (invitationDetailModal) {
+                    invitationDetailModal.close();
+                }
+                
+                // Reload data
+                loadInvitations();
+                loadDashboardData();
+                
+                // Update invitations section if active
+                const invitationsSection = document.getElementById('invitations');
+                if (invitationsSection && invitationsSection.classList.contains('active')) {
+                    loadInvitationsSectionData();
+                }
+            } else {
+                throw new Error(result.error || 'Error al desactivar la invitación');
+            }
+        } catch (error) {
+            console.error('Error deactivating invitation:', error);
+            showToast(error.message || 'Error al desactivar la invitación', 'error');
+        }
+    };
+    
+    deactivateModal.open();
+}
+
+// Activate Invitation
+async function activateInvitation(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
+    
+    // Confirm activation
+    const confirmModal = ModalFactory.createConfirmModal({
+        title: 'Activar Invitación',
+        message: `¿Estás seguro de activar la invitación de ${invitation.guestNames.join(' y ')}?`,
+        confirmText: 'Activar',
+        confirmClass: 'primary',
+        onConfirm: async () => {
+            try {
+                const response = await fetch(`${CONFIG.backendUrl}/invitation/${code}/activate`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Verificar si la respuesta es exitosa
+                if (!response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
+                    } else {
+                        // Si no es JSON, probablemente es HTML (error 404 o similar)
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('Invitación activada exitosamente', 'success');
                     
-                    ${invitation.confirmationDetails?.message ? `
-                        <div class="message-box">
-                            <p>"${invitation.confirmationDetails.message}"</p>
-                        </div>
-                    ` : ''}
+                    // Update local data
+                    invitation.status = '';  // empty = active
+                    invitation.cancelledAt = null;
+                    invitation.cancelledBy = null;
+                    invitation.cancellationReason = null;
                     
-                    <p class="timestamp">
-                        ${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })}
-                    </p>
+                    // Close modal if open
+                    if (invitationDetailModal) {
+                        invitationDetailModal.close();
+                    }
+                    
+                    // Reload data
+                    loadInvitations();
+                    loadDashboardData();
+                    
+                    // Update invitations section if active
+                    const invitationsSection = document.getElementById('invitations');
+                    if (invitationsSection && invitationsSection.classList.contains('active')) {
+                        loadInvitationsSectionData();
+                    }
+                } else {
+                    throw new Error(result.error || 'Error al activar la invitación');
+                }
+            } catch (error) {
+                console.error('Error activating invitation:', error);
+                showToast(error.message || 'Error al activar la invitación', 'error');
+            }
+        }
+    });
+    
+    window.activeModal = confirmModal;
+    confirmModal.open();
+}
+
+// Edit Invitation
+function editInvitation(code) {
+    const invitation = window.currentEditingInvitation || allInvitations.find(inv => inv.code === code);
+    if (!invitation) return;
+    
+    // Get guest details from the invitation
+    const guests = [];
+    if (invitation.guests && invitation.guests.length > 0) {
+        // Use existing guest details if available
+        guests.push(...invitation.guests);
+    } else {
+        // Create guest list from names and pass counts
+        const guestNames = invitation.guestNames || [];
+        const adultPasses = invitation.adultPasses || invitation.numberOfPasses;
+        const childPasses = invitation.childPasses || 0;
+        const staffPasses = invitation.staffPasses || 0;
+        
+        let adultCount = 0;
+        let childCount = 0;
+        let staffCount = 0;
+        
+        // Distribute names among types based on pass counts
+        guestNames.forEach((name, index) => {
+            if (staffCount < staffPasses) {
+                guests.push({ name, type: 'staff' });
+                staffCount++;
+            } else if (childCount < childPasses) {
+                guests.push({ name, type: 'child' });
+                childCount++;
+            } else {
+                guests.push({ name, type: 'adult' });
+                adultCount++;
+            }
+        });
+    }
+    
+    // Check if children are allowed
+    const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
+    
+    // Function to generate guest fields
+    function generateEditGuestFields(numberOfPasses, preservedGuests = []) {
+        let fieldsHTML = '';
+        for (let i = 0; i < numberOfPasses; i++) {
+            const guest = preservedGuests[i] || { name: '', type: 'adult' };
+            fieldsHTML += `
+                <div class="guest-field-row">
+                    <div class="guest-name-field">
+                        <input type="text" 
+                               name="guestName_${i}" 
+                               class="guest-name-input" 
+                               placeholder="Nombre del invitado" 
+                               value="${guest.name}"
+                               required>
+                    </div>
+                    <div class="guest-type-field">
+                        <select name="guestType_${i}" class="guest-type-select" required>
+                            <option value="adult" ${guest.type === 'adult' ? 'selected' : ''}>Adulto</option>
+                            ${allowChildren ? `<option value="child" ${guest.type === 'child' ? 'selected' : ''}>Niño</option>` : ''}
+                            <option value="staff" ${guest.type === 'staff' ? 'selected' : ''}>Staff/Proveedor</option>
+                        </select>
+                    </div>
                 </div>
-            ` : ''}
+            `;
+        }
+        return fieldsHTML;
+    }
+    
+    const editContent = `
+        <div class="invitation-detail" data-mode="edit">
+            <div class="edit-header">
+                <h3><i class="fas fa-edit"></i> Editando Invitación</h3>
+            </div>
             
-            <!-- Link Section -->
-            <div class="link-section">
-                <div class="link-input-group">
-                    <input type="text" value="${invitationUrl}" readonly>
-                    <button class="btn btn-primary" onclick="copyToClipboard('${invitationUrl}')">
-                        <i class="fas fa-copy"></i> Copiar
+            <form id="editInvitationForm">
+                <!-- Basic Info -->
+                <div class="form-group">
+                    <label>Número de Pases</label>
+                    <input type="number" 
+                           id="editNumberOfPasses" 
+                           name="numberOfPasses" 
+                           min="1" 
+                           max="10" 
+                           value="${invitation.numberOfPasses}" 
+                           required>
+                    <small class="form-text text-muted">Cambiar el número de pases ajustará los campos de invitados</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mesa</label>
+                    <input type="number" 
+                           name="tableNumber" 
+                           min="1" 
+                           value="${invitation.tableNumber || ''}" 
+                           placeholder="Número de mesa (opcional)">
+                </div>
+                
+                <!-- Guest Fields -->
+                <div class="form-group">
+                    <label>Invitados</label>
+                    <div id="editGuestFields">
+                        ${generateEditGuestFields(invitation.numberOfPasses, guests)}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" 
+                           name="phone" 
+                           value="${invitation.phone || invitation.confirmationDetails?.phone || ''}" 
+                           placeholder="+52 123 456 7890">
+                </div>
+                
+                <!-- Confirmation Status -->
+                <div class="form-group">
+                    <label>Estado de Confirmación</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" 
+                                   name="confirmationStatus" 
+                                   value="confirmed" 
+                                   ${invitation.confirmed && invitation.confirmationDetails?.willAttend !== false ? 'checked' : ''}>
+                            <span>Sí asistirán</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" 
+                                   name="confirmationStatus" 
+                                   value="declined" 
+                                   ${invitation.confirmed && invitation.confirmationDetails?.willAttend === false ? 'checked' : ''}>
+                            <span>No podrán asistir</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" 
+                                   name="confirmationStatus" 
+                                   value="pending" 
+                                   ${!invitation.confirmed ? 'checked' : ''}>
+                            <span>Sin confirmar</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Confirmed Passes (only show if confirmed) -->
+                <div class="form-group" id="confirmedPassesGroup" style="${invitation.confirmed && invitation.confirmationDetails?.willAttend !== false ? '' : 'display: none;'}">
+                    <label>Número de Asistentes Confirmados</label>
+                    <input type="number" 
+                           name="confirmedPasses" 
+                           min="0" 
+                           max="${invitation.numberOfPasses}" 
+                           value="${invitation.confirmedPasses || 0}">
+                    <small class="form-text text-muted">Cuántas personas asistirán de las ${invitation.numberOfPasses} invitadas</small>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cancelEditInvitation('${code}')">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     `;
     
-    invitationDetailModal.setContent(detailsContent);
-    invitationDetailModal.open();
+    invitationDetailModal.setContent(editContent);
+    
+    // Initialize edit form handlers
+    setTimeout(() => {
+        const editForm = document.getElementById('editInvitationForm');
+        const editNumberOfPassesInput = document.getElementById('editNumberOfPasses');
+        const editGuestFields = document.getElementById('editGuestFields');
+        
+        // Store current guest data for preservation
+        let currentEditGuestData = guests.slice();
+        
+        // Function to save current guest data
+        function saveCurrentEditGuestData() {
+            currentEditGuestData = [];
+            const guestNameInputs = editGuestFields.querySelectorAll('.guest-name-input');
+            const guestTypeSelects = editGuestFields.querySelectorAll('.guest-type-select');
+            
+            guestNameInputs.forEach((input, index) => {
+                currentEditGuestData.push({
+                    name: input.value,
+                    type: guestTypeSelects[index]?.value || 'adult'
+                });
+            });
+        }
+        
+        // Update fields when number of passes changes
+        editNumberOfPassesInput.addEventListener('input', () => {
+            const newNumberOfPasses = parseInt(editNumberOfPassesInput.value) || 1;
+            
+            // Save current data before regenerating
+            saveCurrentEditGuestData();
+            
+            // Regenerate fields with preserved data
+            editGuestFields.innerHTML = generateEditGuestFields(newNumberOfPasses, currentEditGuestData);
+        });
+        
+        // Handle confirmation status changes
+        const confirmationRadios = editForm.querySelectorAll('input[name="confirmationStatus"]');
+        const confirmedPassesGroup = document.getElementById('confirmedPassesGroup');
+        const confirmedPassesInput = editForm.querySelector('input[name="confirmedPasses"]');
+        
+        confirmationRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'confirmed' && radio.checked) {
+                    confirmedPassesGroup.style.display = '';
+                    // Update max value based on current number of passes
+                    const currentPasses = parseInt(editNumberOfPassesInput.value) || 1;
+                    confirmedPassesInput.max = currentPasses;
+                    confirmedPassesInput.value = Math.min(confirmedPassesInput.value, currentPasses);
+                } else {
+                    confirmedPassesGroup.style.display = 'none';
+                }
+            });
+        });
+        
+        // Form submission
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(editForm);
+            const numberOfPasses = parseInt(formData.get('numberOfPasses')) || 1;
+            const originalPasses = invitation.numberOfPasses;
+            
+            // Check capacity if increasing passes
+            if (numberOfPasses > originalPasses) {
+                try {
+                    const statsResult = await adminAPI.fetchStats();
+                    if (APIHelpers.isSuccess(statsResult)) {
+                        const stats = statsResult.stats;
+                        const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 130;
+                        const totalAssignedPasses = stats.totalPasses || 0;
+                        const availablePasses = targetTotal - totalAssignedPasses;
+                        const additionalPassesNeeded = numberOfPasses - originalPasses;
+                        
+                        if (additionalPassesNeeded > availablePasses) {
+                            if (availablePasses <= 0) {
+                                showToast('No hay pases disponibles. Se ha alcanzado el límite de invitados.', 'error');
+                            } else {
+                                showToast(`Solo quedan ${availablePasses} pases disponibles. No se pueden agregar ${additionalPassesNeeded} pases más.`, 'error');
+                            }
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking capacity:', error);
+                }
+            }
+            
+            // Collect guest data
+            const guests = [];
+            let adultPasses = 0;
+            let childPasses = 0;
+            let staffPasses = 0;
+            
+            for (let i = 0; i < numberOfPasses; i++) {
+                const name = formData.get(`guestName_${i}`);
+                const type = formData.get(`guestType_${i}`);
+                
+                if (name && type) {
+                    guests.push({
+                        name: name.trim(),
+                        type: type
+                    });
+                    
+                    if (type === 'adult') {
+                        adultPasses++;
+                    } else if (type === 'child') {
+                        childPasses++;
+                    } else if (type === 'staff') {
+                        staffPasses++;
+                    }
+                }
+            }
+            
+            // Extract guest names
+            const guestNames = guests.map(g => g.name);
+            
+            // Prepare update data
+            const updateData = {
+                guestNames: guestNames,
+                numberOfPasses: numberOfPasses,
+                phone: formData.get('phone') || null,
+                tableNumber: formData.get('tableNumber') ? parseInt(formData.get('tableNumber')) : null,
+                adultPasses: adultPasses,
+                childPasses: childPasses,
+                staffPasses: staffPasses,
+                guests: guests
+            };
+            
+            // Handle confirmation status
+            const confirmationStatus = formData.get('confirmationStatus');
+            if (confirmationStatus === 'confirmed') {
+                updateData.confirmed = true;
+                updateData.confirmationDetails = {
+                    willAttend: true,
+                    numberOfGuests: parseInt(formData.get('confirmedPasses')) || numberOfPasses,
+                    attendingNames: guestNames.slice(0, parseInt(formData.get('confirmedPasses')) || numberOfPasses)
+                };
+                updateData.confirmedPasses = updateData.confirmationDetails.numberOfGuests;
+            } else if (confirmationStatus === 'declined') {
+                updateData.confirmed = true;
+                updateData.confirmationDetails = {
+                    willAttend: false
+                };
+                updateData.confirmedPasses = 0;
+            } else {
+                updateData.confirmed = false;
+                updateData.confirmationDetails = null;
+                updateData.confirmedPasses = 0;
+            }
+            
+            try {
+                // Call API to update invitation
+                const result = await adminAPI.updateInvitation(code, updateData);
+                
+                if (APIHelpers.isSuccess(result)) {
+                    showToast('Invitación actualizada exitosamente', 'success');
+                    
+                    // Update local data
+                    Object.assign(invitation, updateData);
+                    if (result.invitation) {
+                        Object.assign(invitation, result.invitation);
+                    }
+                    
+                    // Close modal and refresh data
+                    invitationDetailModal.close();
+                    loadInvitations();
+                    loadDashboardData();
+                    
+                    // Update invitations section if active
+                    const invitationsSection = document.getElementById('invitations');
+                    if (invitationsSection && invitationsSection.classList.contains('active')) {
+                        loadInvitationsSectionData();
+                    }
+                } else {
+                    throw new Error(APIHelpers.getErrorMessage(result));
+                }
+            } catch (error) {
+                console.error('Error updating invitation:', error);
+                showToast(error.message || 'Error al actualizar la invitación', 'error');
+            }
+        });
+    }, 100);
+}
+
+// Cancel edit invitation
+function cancelEditInvitation(code) {
+    // Re-render view mode
+    viewInvitation(code);
 }
 
 // Show all invitations table (for mobile view)
@@ -1902,6 +2416,10 @@ function toggleFilters() {
                     <input type="checkbox" id="filterRejected" checked> 
                     <span>Cancelados</span>
                 </label>
+                <label class="filter-option">
+                    <input type="checkbox" id="filterInactive"> 
+                    <span>Inactivos</span>
+                </label>
                 <div class="filter-actions">
                     <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Restablecer</button>
                     <button class="btn btn-sm btn-primary" onclick="applyFilters()">Aplicar</button>
@@ -1962,10 +2480,16 @@ function applyFilters() {
     const filterConfirmed = document.getElementById('filterConfirmed').checked;
     const filterPending = document.getElementById('filterPending').checked;
     const filterRejected = document.getElementById('filterRejected').checked;
+    const filterInactive = document.getElementById('filterInactive').checked;
     
     // Filter invitations based on selected filters
     const filteredInvitations = allInvitations.filter(invitation => {
-        // Check status filters
+        // Check if invitation is inactive first
+        if (invitation.status === 'inactive') {
+            return filterInactive;
+        }
+        
+        // Check status filters for active invitations
         let statusMatch = false;
         if (invitation.confirmed) {
             if (invitation.confirmationDetails?.willAttend === false) {
@@ -2143,9 +2667,9 @@ function initCreateFormInModal() {
                 // Check if the new invitation would exceed the limit
                 if (numberOfPasses > availablePasses) {
                     if (availablePasses <= 0) {
-                        showToast('❌ No hay pases disponibles. Se ha alcanzado el límite de invitados.', 'error');
+                        showToast('No hay pases disponibles. Se ha alcanzado el límite de invitados.', 'error');
                     } else {
-                        showToast(`❌ Solo quedan ${availablePasses} pases disponibles. No se pueden asignar ${numberOfPasses} pases.`, 'error');
+                        showToast(`Solo quedan ${availablePasses} pases disponibles. No se pueden asignar ${numberOfPasses} pases.`, 'error');
                     }
                     return; // Stop form submission
                 }
@@ -2203,7 +2727,7 @@ function initCreateFormInModal() {
             console.log('Respuesta del servidor:', result);
             
             if (APIHelpers.isSuccess(result)) {
-                showToast('✅ Invitación creada exitosamente', 'success');
+                showToast('Invitación creada exitosamente', 'success');
                 form.reset();
                 // Reset to default values
                 numberOfPassesInput.value = '1';
@@ -2237,6 +2761,10 @@ window.exportAllInvitations = exportAllInvitations;
 window.copyInvitationLink = copyInvitationLink;
 window.copyToClipboard = copyToClipboard;
 window.viewInvitation = viewInvitation;
+window.editInvitation = editInvitation;
+window.cancelEditInvitation = cancelEditInvitation;
+window.deactivateInvitation = deactivateInvitation;
+window.activateInvitation = activateInvitation;
 window.toggleFilters = toggleFilters;
 window.resetFilters = resetFilters;
 window.applyFilters = applyFilters;

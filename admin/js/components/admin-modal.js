@@ -413,6 +413,70 @@ export class ModalFactory {
         
         return modal;
     }
+    
+    /**
+     * Crea un modal para desactivar invitación
+     */
+    static createDeactivateInvitationModal(invitation) {
+        const content = `
+            <div class="cancel-invitation-modal">
+                <div class="warning-icon">
+                    <i class="fas fa-power-off"></i>
+                </div>
+                
+                <p class="cancel-question">¿Estás seguro de desactivar esta invitación?</p>
+                
+                <div class="invitation-info">
+                    <div class="info-item">
+                        <strong>Invitado:</strong> ${invitation.guestNames.join(' y ')}
+                    </div>
+                    <div class="info-item">
+                        <strong>Pases:</strong> ${invitation.numberOfPasses}
+                    </div>
+                    <div class="info-item">
+                        <strong>Estado actual:</strong> ${invitation.confirmed ? 'Confirmado' : 'Sin confirmar'}
+                    </div>
+                </div>
+                
+                <div class="warning-message">
+                    <p><strong>⚠️ Esta acción:</strong></p>
+                    <ul>
+                        <li>Marcará la invitación como inactiva</li>
+                        <li>El link dejará de funcionar temporalmente</li>
+                        <li>NO se contará en las estadísticas</li>
+                        <li>Podrás activarla nuevamente cuando desees</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deactivationReason">Motivo de desactivación (opcional):</label>
+                    <textarea id="deactivationReason" rows="3" class="form-control" 
+                              placeholder="Ej: Invitación duplicada, error en datos, etc."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.activeDeactivateModal?.close()">
+                        Volver
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="window.confirmDeactivateInvitation()">
+                        <i class="fas fa-power-off"></i> Confirmar Desactivación
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        const modal = new Modal({
+            id: 'deactivateInvitationModal',
+            title: '⚠️ Confirmar Desactivación',
+            size: 'medium',
+            content: content
+        });
+        
+        // Guardar referencia a la invitación
+        modal.invitation = invitation;
+        
+        return modal;
+    }
 }
 
 /**

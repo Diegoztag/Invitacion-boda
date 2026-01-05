@@ -88,6 +88,67 @@ app.post('/api/invitation', async (req, res) => {
     }
 });
 
+// Update invitation (admin only)
+app.put('/api/invitation/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        const updateData = req.body;
+        
+        const updatedInvitation = await invitationService.updateInvitation(code, updateData);
+        
+        res.json({ 
+            success: true, 
+            invitation: updatedInvitation
+        });
+    } catch (error) {
+        console.error('Error updating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al actualizar la invitación'
+        });
+    }
+});
+
+// Deactivate invitation (soft delete)
+app.put('/api/invitation/:code/deactivate', async (req, res) => {
+    try {
+        const { code } = req.params;
+        const { deactivatedBy = 'admin', deactivationReason = '' } = req.body;
+        
+        const deactivatedInvitation = await csvStorage.deactivateInvitation(code, deactivatedBy, deactivationReason);
+        
+        res.json({ 
+            success: true, 
+            message: 'Invitación desactivada exitosamente',
+            invitation: deactivatedInvitation
+        });
+    } catch (error) {
+        console.error('Error deactivating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al desactivar la invitación'
+        });
+    }
+});
+
+// Activate inactive invitation
+app.put('/api/invitation/:code/activate', async (req, res) => {
+    try {
+        const { code } = req.params;
+        
+        const activatedInvitation = await csvStorage.activateInvitation(code);
+        
+        res.json({ 
+            success: true, 
+            message: 'Invitación activada exitosamente',
+            invitation: activatedInvitation
+        });
+    } catch (error) {
+        console.error('Error activating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al activar la invitación'
+        });
+    }
+});
+
 // Confirm attendance for specific invitation
 app.post('/api/invitation/:code/confirm', async (req, res) => {
     try {
