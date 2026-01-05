@@ -949,188 +949,345 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
 }
 
-/* Itinerary Section */
+/* Itinerary Section - Diseño Premium y Refinado */
 .itinerary {
-    background: var(--white);
+    background: linear-gradient(180deg, 
+        var(--white) 0%, 
+        rgba(248, 244, 230, 0.3) 20%,
+        rgba(248, 244, 230, 0.5) 50%, 
+        rgba(248, 244, 230, 0.3) 80%,
+        var(--white) 100%
+    );
     position: relative;
     overflow: hidden;
+    padding: 100px 0;
+}
+
+/* Patrón decorativo de fondo sutil */
+.itinerary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(212, 165, 116, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(212, 165, 116, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(212, 165, 116, 0.02) 0%, transparent 30%);
+    pointer-events: none;
 }
 
 .itinerary-timeline {
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
     position: relative;
-    padding-left: 20px;
+    padding: 60px 20px 60px 100px;
 }
 
-/* Simple vertical line */
+/* Línea vertical premium con efecto de brillo */
 .itinerary-timeline::before {
     content: '';
     position: absolute;
-    left: 40px;
+    left: 50px;
     top: 20px;
     bottom: 20px;
     width: 2px;
-    background: rgba(212, 165, 116, 0.3);
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        rgba(212, 165, 116, 0.2) 2%,
+        rgba(212, 165, 116, 0.6) 10%,
+        var(--primary-color) 20%,
+        var(--primary-color) 80%,
+        rgba(212, 165, 116, 0.6) 90%,
+        rgba(212, 165, 116, 0.2) 98%,
+        transparent 100%
+    );
+    box-shadow: 0 0 20px rgba(212, 165, 116, 0.2);
 }
 
-.itinerary-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 40px;
-    position: relative;
-    padding-left: 60px;
-    opacity: 0.4;
-    transform: scale(0.75);
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: left center;
-    will-change: transform, opacity;
-}
-
-/* Initial fade in animation */
-.itinerary-item.animate-in {
-    animation: fadeInUp 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.85);
-    }
-    to {
-        opacity: 0.6;
-        transform: translateY(0) scale(0.85);
-    }
-}
-
-/* When item is in focus (center of viewport) */
-.itinerary-item.in-focus {
-    transform: scale(1) !important;
-    opacity: 1 !important;
-    z-index: 10;
-}
-
-/* Ensure other items stay small when one is in focus */
-.itinerary-item:not(.in-focus) {
-    transform: scale(0.75) !important;
-    opacity: 0.3 !important;
-}
-
-/* Smooth transition states */
-.itinerary-item {
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
-    transform: translateZ(0);
-}
-
-.itinerary-item.in-focus .itinerary-time {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    opacity: 1;
-}
-
-.itinerary-item.in-focus .itinerary-content {
-    box-shadow: 0 10px 30px rgba(212, 165, 116, 0.25);
-    border-color: var(--primary-color);
-    background: linear-gradient(135deg, var(--white) 0%, rgba(248, 244, 230, 0.8) 100%);
-}
-
-.itinerary-item.in-focus .itinerary-content h4 {
-    font-size: 1.4rem;
-    color: var(--primary-color);
-}
-
-.itinerary-item.in-focus .itinerary-content p {
-    font-size: 1.05rem;
-    color: var(--text-dark);
-}
-
-/* Removed in-focus dot styles */
-
-/* Remove timeline dots */
-.itinerary-item::before {
+/* Decoración superior elegante */
+.itinerary-timeline::after {
     display: none;
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: -5px;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 0 5px rgba(212, 165, 116, 0.2),
+        0 0 0 10px rgba(212, 165, 116, 0.1),
+        0 0 30px rgba(212, 165, 116, 0.3);
 }
 
-/* Removed dot animation styles */
+/* Decoración inferior */
+.itinerary::after {
+    content: '❦';
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: var(--primary-color);
+    opacity: 0.3;
+}
+
+.itinerary-item {
+    position: relative;
+    margin-bottom: 70px;
+    opacity: 0;
+    transform: translateX(40px);
+    animation: elegantSlideIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
 .itinerary-item:last-child {
     margin-bottom: 0;
 }
 
-/* Time display with dynamic sizing */
-.itinerary-time {
+.itinerary-item:nth-child(1) { animation-delay: 0.1s; }
+.itinerary-item:nth-child(2) { animation-delay: 0.2s; }
+.itinerary-item:nth-child(3) { animation-delay: 0.3s; }
+.itinerary-item:nth-child(4) { animation-delay: 0.4s; }
+.itinerary-item:nth-child(5) { animation-delay: 0.5s; }
+.itinerary-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes elegantSlideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Punto premium en la línea del tiempo */
+.itinerary-dot {
     position: absolute;
-    left: -25px;
-    top: 32px;
-    min-width: 70px;
-    text-align: right;
-    font-weight: 600;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    opacity: 0.8;
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: right center;
-}
-
-.itinerary-item.animate-in .itinerary-time {
-    opacity: 0.6;
-}
-
-/* Content card with dynamic sizing */
-.itinerary-content {
-    flex: 1;
+    left: -51px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
     background: linear-gradient(135deg, var(--white) 0%, var(--accent-color) 100%);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 3px 15px rgba(212, 165, 116, 0.1);
-    border: 2px solid transparent;
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    z-index: 3;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 0 0 0 rgba(212, 165, 116, 0.4),
+        0 2px 10px rgba(212, 165, 116, 0.3);
+}
+
+/* Punto interno con animación */
+.itinerary-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+/* Anillo decorativo alrededor del punto */
+.itinerary-dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(212, 165, 116, 0.3);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.itinerary-item:hover .itinerary-dot {
+    transform: translateY(-50%) scale(1.2);
+    background: var(--primary-color);
+    box-shadow: 
+        0 0 0 8px rgba(212, 165, 116, 0.15),
+        0 4px 20px rgba(212, 165, 116, 0.4);
+}
+
+.itinerary-item:hover .itinerary-dot::after {
+    opacity: 1;
+    background: var(--white);
+}
+
+.itinerary-item:hover .itinerary-dot::before {
+    opacity: 1;
+    width: 35px;
+    height: 35px;
+}
+
+/* Contenido del itinerario premium */
+.itinerary-content {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(248, 244, 230, 0.4) 50%,
+        rgba(255, 255, 255, 0.9) 100%
+    );
+    padding: 40px 45px;
+    border-radius: 25px;
+    box-shadow: 
+        0 5px 25px rgba(212, 165, 116, 0.12),
+        0 10px 40px rgba(212, 165, 116, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(212, 165, 116, 0.15);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    margin-left: 20px;
-    transform-origin: left center;
+    overflow: hidden;
 }
 
-/* Hover effect only when in focus */
-.itinerary-item.in-focus .itinerary-content:hover {
-    transform: translateX(10px);
-    box-shadow: 0 15px 40px rgba(212, 165, 116, 0.35);
-    border-color: rgba(212, 165, 116, 0.6);
+/* Efecto de brillo sutil */
+.itinerary-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
 }
 
-.itinerary-content h4 {
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    font-weight: 600;
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.itinerary-content p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 0;
-    font-style: italic;
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Decorative icon with animation */
+/* Línea conectora elegante */
 .itinerary-content::after {
+    content: '';
+    position: absolute;
+    left: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        var(--primary-color) 0%, 
+        rgba(212, 165, 116, 0.3) 100%
+    );
+}
+
+/* Hora con estilo premium */
+.itinerary-time {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    letter-spacing: 3px;
+    position: relative;
+    display: inline-block;
+}
+
+/* Decoración bajo la hora */
+.itinerary-time::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        var(--primary-color) 0%, 
+        transparent 100%
+    );
+    opacity: 0.5;
+}
+
+/* Título del evento elegante */
+.itinerary-content h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+}
+
+/* Descripción refinada */
+.itinerary-content p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    font-weight: 300;
+    opacity: 0.85;
+    margin: 0;
+}
+
+/* Icono decorativo flotante */
+.itinerary-item::before {
     content: '✦';
     position: absolute;
-    top: 25px;
-    right: 25px;
-    color: var(--primary-color);
-    opacity: 0.3;
+    right: 30px;
+    top: 20px;
     font-size: 1.2rem;
-    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--primary-color);
+    opacity: 0.2;
+    transition: all 0.5s ease;
 }
 
-.itinerary-item.in-focus .itinerary-content::after {
-    opacity: 0.5;
-    transform: rotate(360deg);
+/* Efectos hover premium */
+.itinerary-item:hover .itinerary-content {
+    transform: translateX(8px);
+    box-shadow: 
+        0 8px 35px rgba(212, 165, 116, 0.18),
+        0 15px 50px rgba(212, 165, 116, 0.12);
+    border-color: rgba(212, 165, 116, 0.3);
+}
+
+.itinerary-item:hover .itinerary-content::before {
+    opacity: 1;
+    transform: rotate(45deg) translateX(100%);
+}
+
+.itinerary-item:hover::before {
+    opacity: 0.4;
+    transform: rotate(180deg) scale(1.2);
+}
+
+.itinerary-item:hover .itinerary-time {
+    color: var(--secondary-color);
+}
+
+/* Estado activo/foco */
+.itinerary-item.in-focus .itinerary-content {
+    background: linear-gradient(135deg, 
+        var(--white) 0%, 
+        rgba(212, 165, 116, 0.08) 100%
+    );
+    border-color: var(--primary-color);
+}
+
+.itinerary-item.in-focus .itinerary-dot {
+    background: var(--primary-color);
+    transform: translateY(-50%) scale(1.3);
+    box-shadow: 
+        0 0 0 12px rgba(212, 165, 116, 0.2),
+        0 0 25px rgba(212, 165, 116, 0.4);
+}
+
+.itinerary-item.in-focus .itinerary-time {
+    color: var(--primary-color);
+    font-weight: 400;
+}
+
+.itinerary-item.in-focus h4 {
+    color: var(--primary-color);
 }
 
 /* Mobile adjustments for itinerary */

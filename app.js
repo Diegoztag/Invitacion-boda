@@ -105,15 +105,16 @@ function updateDynamicContent() {
         }
     }
     
-    // Itinerary
+    // Itinerary - Diseño minimalista
     const itineraryTimeline = document.getElementById('itineraryTimeline');
     itineraryTimeline.innerHTML = '';
     WEDDING_CONFIG.schedule.forEach(item => {
         const div = document.createElement('div');
         div.className = 'itinerary-item';
         div.innerHTML = `
-            <div class="itinerary-time">${item.time}</div>
+            <div class="itinerary-dot"></div>
             <div class="itinerary-content">
+                <div class="itinerary-time">${item.time}</div>
                 <h4>${item.title}</h4>
                 <p>${item.description}</p>
             </div>
@@ -924,63 +925,25 @@ function initAnimations() {
         itineraryObserver.observe(el);
     });
 
-    // Add dynamic zoom effect for itinerary items based on scroll position
+    // Minimal itinerary focus effect
     const itineraryItems = document.querySelectorAll('.itinerary-item');
     if (itineraryItems.length > 0) {
-        // Use requestAnimationFrame for smoother animations
-        let ticking = false;
-        let currentFocusedItem = null;
-        
-        function updateItineraryZoom() {
-            const windowHeight = window.innerHeight;
-            const centerY = windowHeight / 2;
-            let closestItem = null;
-            let closestDistance = Infinity;
-
-            // First, find the item closest to center
-            itineraryItems.forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const itemCenterY = rect.top + rect.height / 2;
-                const distanceFromCenter = Math.abs(centerY - itemCenterY);
-                
-                if (distanceFromCenter < closestDistance) {
-                    closestDistance = distanceFromCenter;
-                    closestItem = item;
+        const itineraryObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-focus');
+                } else {
+                    entry.target.classList.remove('in-focus');
                 }
             });
-
-            // Only update if the focused item has changed
-            if (closestItem !== currentFocusedItem) {
-                // Remove focus from all items
-                itineraryItems.forEach(item => {
-                    item.classList.remove('in-focus');
-                });
-                
-                // Add focus to closest item if it's within threshold
-                if (closestDistance < 200) { // Threshold for considering an item "in focus"
-                    closestItem.classList.add('in-focus');
-                    currentFocusedItem = closestItem;
-                } else {
-                    currentFocusedItem = null;
-                }
-            }
-            
-            ticking = false;
-        }
+        }, {
+            threshold: 0.5,
+            rootMargin: '0px'
+        });
         
-        function requestTick() {
-            if (!ticking) {
-                requestAnimationFrame(updateItineraryZoom);
-                ticking = true;
-            }
-        }
-        
-        // Initial call
-        updateItineraryZoom();
-        
-        // Throttled scroll event
-        window.addEventListener('scroll', requestTick, { passive: true });
-        window.addEventListener('resize', requestTick, { passive: true });
+        itineraryItems.forEach(item => {
+            itineraryObserver.observe(item);
+        });
     }
 
     // Add parallax effect to hero section
