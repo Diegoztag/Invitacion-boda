@@ -467,7 +467,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('img/photo2.jpg') center/cover;
+    background: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center/cover;
     overflow: hidden; /* Prevent any overflow issues */
     background-attachment: fixed; /* Parallax effect */
 }
@@ -1350,10 +1350,11 @@ h1, h2, h3, h4, h5, h6 {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 800px;
-    height: 90%;
+    height: 85%;
     border: 2px dashed rgba(212, 165, 116, 0.2);
     border-radius: 20px;
     pointer-events: none;
+    margin-top: 30px;
 }
 
 .form-group {
@@ -1571,8 +1572,8 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-/* Instagram Hashtag Section */
-.instagram-section {
+/* Carousel Section */
+.carousel-section {
     background: linear-gradient(135deg, var(--white) 0%, var(--accent-color) 50%, var(--white) 100%);
     text-align: center;
     position: relative;
@@ -1580,7 +1581,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Decorative floating hearts background */
-.instagram-section::before {
+.carousel-section::before {
     content: '♥ ♥ ♥ ♥ ♥';
     position: absolute;
     top: 10%;
@@ -1593,6 +1594,210 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes floatHearts {
     to {
         transform: translateX(calc(100vw + 200px));
+    }
+}
+
+/* Instagram Hashtag Section */
+.instagram-section {
+    background: var(--white);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Photo Carousel Styles */
+.photo-carousel-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 50px auto 60px;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(212, 165, 116, 0.3);
+    overflow: hidden;
+    border: 3px solid rgba(212, 165, 116, 0.2);
+}
+
+.photo-carousel {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-color);
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Slide Caption */
+.slide-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    color: var(--white);
+    padding: 30px 20px 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+}
+
+.carousel-slide:hover .slide-caption {
+    transform: translateY(0);
+}
+
+/* Carousel Controls */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--primary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-control:hover {
+    background: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
+}
+
+.carousel-control i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.carousel-control:hover i {
+    color: var(--white);
+}
+
+.carousel-prev {
+    left: 20px;
+}
+
+.carousel-next {
+    right: 20px;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(212, 165, 116, 0.3);
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicator.active {
+    background: var(--primary-color);
+    transform: scale(1.3);
+}
+
+.carousel-indicator:hover {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .photo-carousel-container {
+        margin: 30px 10px 40px;
+        border-radius: 15px;
+    }
+    
+    .photo-carousel {
+        height: 400px;
+    }
+    
+    .carousel-control {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .carousel-control i {
+        font-size: 1rem;
+    }
+    
+    .carousel-prev {
+        left: 10px;
+    }
+    
+    .carousel-next {
+        right: 10px;
+    }
+    
+    .slide-caption {
+        font-size: 1.1rem;
+        padding: 20px 15px 15px;
+    }
+    
+    .carousel-indicators {
+        bottom: 10px;
+        padding: 8px 15px;
+        gap: 8px;
+    }
+    
+    .carousel-indicator {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-carousel {
+        height: 300px;
+    }
+    
+    .slide-caption {
+        font-size: 1rem;
+        transform: translateY(0);
     }
 }
 

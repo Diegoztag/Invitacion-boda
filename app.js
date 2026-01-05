@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initRSVPForm();
     initAnimations();
+    initPhotoCarousel();
 });
 
 // Update all dynamic content from configuration
@@ -131,13 +132,43 @@ function updateDynamicContent() {
     document.getElementById('rsvpTitle').textContent = WEDDING_CONFIG.messages.rsvpTitle;
     document.getElementById('rsvpSubtitle').textContent = `${WEDDING_CONFIG.messages.rsvpSubtitle} ${WEDDING_CONFIG.event.confirmationDeadline}`;
     
-    // Photo section - Check if enabled
+    // Carousel Section - Check if enabled
+    const carouselSection = document.getElementById('carousel');
+    if (WEDDING_CONFIG.carouselSection && WEDDING_CONFIG.carouselSection.enabled) {
+        // Update carousel section content
+        const carouselTitle = document.getElementById('carouselSectionTitle');
+        if (carouselTitle) {
+            carouselTitle.textContent = WEDDING_CONFIG.carouselSection.title;
+        }
+        
+        const carouselSubtitle = document.getElementById('carouselSectionSubtitle');
+        if (carouselSubtitle) {
+            carouselSubtitle.textContent = WEDDING_CONFIG.carouselSection.subtitle;
+        }
+        
+        // Show the section
+        if (carouselSection) {
+            carouselSection.style.display = 'block';
+        }
+    } else {
+        // Hide carousel section if not enabled
+        if (carouselSection) {
+            carouselSection.style.display = 'none';
+        }
+    }
+    
+    // Photo/Hashtag Section - Check if enabled
     const photoSection = document.getElementById('fotos');
     if (WEDDING_CONFIG.photoSection && WEDDING_CONFIG.photoSection.enabled) {
         // Update photo section content
         const photoTitle = document.getElementById('photoSectionTitle');
         if (photoTitle) {
-            photoTitle.textContent = WEDDING_CONFIG.photoSection.title || WEDDING_CONFIG.messages.photoSectionTitle;
+            photoTitle.textContent = WEDDING_CONFIG.photoSection.title;
+        }
+        
+        const photoSubtitle = document.getElementById('photoSectionSubtitle');
+        if (photoSubtitle) {
+            photoSubtitle.textContent = WEDDING_CONFIG.photoSection.subtitle;
         }
         
         // Update hashtag if enabled
@@ -147,7 +178,7 @@ function updateDynamicContent() {
                 instagramHashtag.textContent = WEDDING_CONFIG.couple.hashtag;
             }
             
-            const hashtagDescription = document.querySelector('.hashtag-description');
+            const hashtagDescription = document.getElementById('hashtagDescription');
             if (hashtagDescription && WEDDING_CONFIG.photoSection.hashtagDescription) {
                 hashtagDescription.textContent = WEDDING_CONFIG.photoSection.hashtagDescription;
             }
@@ -989,6 +1020,178 @@ function initAnimations() {
         title.style.transition = 'all 0.8s ease';
         titleObserver.observe(title);
     });
+}
+
+// Photo Carousel
+function initPhotoCarousel() {
+    const track = document.getElementById('carouselTrack');
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+    const indicatorsContainer = document.getElementById('carouselIndicators');
+    
+    if (!track) return;
+    
+    // Load photos from configuration
+    if (WEDDING_CONFIG.carouselSection && WEDDING_CONFIG.carouselSection.photos) {
+        track.innerHTML = ''; // Clear existing content
+        
+        WEDDING_CONFIG.carouselSection.photos.forEach((photo, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <img src="${photo.url}" alt="${photo.alt || `Foto ${index + 1}`}">
+                <div class="slide-caption">${photo.caption || ''}</div>
+            `;
+            track.appendChild(slide);
+        });
+    }
+    
+    const slides = track.querySelectorAll('.carousel-slide');
+    let currentSlide = 0;
+    
+    // Get carousel configuration from the correct section
+    const carouselConfig = WEDDING_CONFIG.carouselSection?.carousel || {};
+    const showNavigationButtons = carouselConfig.showNavigationButtons !== false;
+    const showIndicators = carouselConfig.showIndicators !== false;
+    const autoPlayDelay = carouselConfig.autoPlayDelay || 5000;
+    const enableAutoPlay = carouselConfig.enableAutoPlay !== false;
+    const enableSwipe = carouselConfig.enableSwipe !== false;
+    const enableKeyboard = carouselConfig.enableKeyboard !== false;
+    
+    // Show/hide navigation buttons based on config
+    if (prevBtn && nextBtn) {
+        if (!showNavigationButtons) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        }
+    }
+    
+    // Create indicators if enabled
+    if (showIndicators && indicatorsContainer) {
+        slides.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.classList.add('carousel-indicator');
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => goToSlide(index));
+            indicatorsContainer.appendChild(indicator);
+        });
+    } else if (indicatorsContainer) {
+        indicatorsContainer.style.display = 'none';
+    }
+    
+    const indicators = indicatorsContainer?.querySelectorAll('.carousel-indicator') || [];
+    
+    function updateCarousel() {
+        // Move track
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Update button states if navigation buttons are shown
+        if (showNavigationButtons && prevBtn && nextBtn) {
+            prevBtn.style.opacity = currentSlide === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = currentSlide === slides.length - 1 ? '0.5' : '1';
+        }
+    }
+    
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+    }
+    
+    function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateCarousel();
+        }
+    }
+    
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateCarousel();
+        }
+    }
+    
+    // Event listeners
+    if (prevBtn && nextBtn && showNavigationButtons) {
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+    }
+    
+    // Touch support for mobile
+    if (enableSwipe) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        track.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        track.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+    }
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+    }
+    
+    // Keyboard navigation
+    if (enableKeyboard) {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+        });
+    }
+    
+    // Auto-play (optional)
+    let autoPlayInterval;
+    
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(() => {
+            if (currentSlide < slides.length - 1) {
+                nextSlide();
+            } else {
+                goToSlide(0);
+            }
+        }, autoPlayDelay);
+    }
+    
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+    
+    // Start auto-play if enabled
+    if (enableAutoPlay) {
+        startAutoPlay();
+        
+        // Pause on hover
+        track.addEventListener('mouseenter', stopAutoPlay);
+        track.addEventListener('mouseleave', startAutoPlay);
+        
+        // Pause on touch
+        track.addEventListener('touchstart', stopAutoPlay);
+        track.addEventListener('touchend', () => {
+            setTimeout(startAutoPlay, 2000);
+        });
+    }
 }
 
 // Service Worker for offline functionality

@@ -201,11 +201,55 @@ const WEDDING_CONFIG = {
         // bride.name[0] & groom.name[0] = "F & D"
     },
     
-    // Configuración de la sección de fotos/Instagram
+    // Configuración del Carrusel (Nuestra Historia)
+    carouselSection: {
+        enabled: true, // true = mostrar carrusel, false = ocultar
+        title: "Nuestra Historia",
+        subtitle: "Un viaje de amor que comenzó hace años",
+        carousel: {
+            showNavigationButtons: false, // true = mostrar botones de navegación (flechas), false = ocultar
+            showIndicators: false, // true = mostrar indicadores (puntos), false = ocultar
+            autoPlayDelay: 8000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
+            enableAutoPlay: true, // true = activar reproducción automática, false = desactivar
+            enableSwipe: true, // true = permitir navegación táctil (swipe), false = desactivar
+            enableKeyboard: false // true = permitir navegación con teclado, false = desactivar
+        },
+        // Fotos del carrusel - puedes agregar, quitar o modificar las fotos
+        photos: [
+            {
+                url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "Nuestro primer encuentro",
+                alt: "Nuestra historia 1"
+            },
+            {
+                url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "La propuesta",
+                alt: "Nuestra historia 2"
+            },
+            {
+                url: "https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "Nuestras aventuras juntos",
+                alt: "Nuestra historia 3"
+            },
+            {
+                url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "Momentos especiales",
+                alt: "Nuestra historia 4"
+            }
+            // Puedes agregar más fotos aquí siguiendo el mismo formato:
+            // {
+            //     url: "URL_DE_LA_IMAGEN",
+            //     caption: "Descripción de la foto",
+            //     alt: "Texto alternativo"
+            // }
+        ]
+    },
+    
+    // Configuración de la sección de Instagram/Hashtag
     photoSection: {
-        enabled: false, // true = mostrar sección de fotos, false = ocultar
+        enabled: true, // true = mostrar sección de hashtag, false = ocultar
         title: "Comparte tus Fotos",
-        subtitle: "Ayúdanos a capturar todos los momentos especiales de nuestro día",
+        subtitle: "Captura y comparte los momentos especiales de nuestro día",
         showHashtag: true, // true = mostrar hashtag de Instagram, false = ocultar
         hashtagDescription: "¡Usa este hashtag en Instagram para compartir tus fotos, videos y stories!"
     }
