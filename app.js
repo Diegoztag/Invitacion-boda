@@ -432,13 +432,20 @@ function initNavigation() {
 
     function highlightNavigation() {
         const scrollY = window.pageYOffset;
+        const navbar = document.getElementById('navbar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 80;
+        
+        // Add buffer for better detection
+        const buffer = 20;
 
         sections.forEach(section => {
             const sectionHeight = section.offsetHeight;
-            const sectionTop = section.offsetTop - 100;
+            const sectionTop = section.offsetTop - navbarHeight - buffer;
+            const sectionBottom = sectionTop + sectionHeight;
             const sectionId = section.getAttribute('id');
 
-            if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+            // More tolerant detection: check if scroll position is within section bounds
+            if (scrollY >= sectionTop && scrollY < sectionBottom) {
                 navItems.forEach(item => {
                     item.classList.remove('active');
                     if (item.getAttribute('href') === `#${sectionId}`) {
@@ -447,6 +454,21 @@ function initNavigation() {
                 });
             }
         });
+        
+        // Special case for the last section
+        const lastSection = sections[sections.length - 1];
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // If we're at the bottom of the page, activate the last section
+        if (scrollY + windowHeight >= documentHeight - 10) {
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${lastSection.getAttribute('id')}`) {
+                    item.classList.add('active');
+                }
+            });
+        }
     }
 
     window.addEventListener('scroll', highlightNavigation);
@@ -501,6 +523,14 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
+                // Immediately activate the clicked nav link
+                if (this.classList.contains('nav-link')) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+                
                 // Get the actual navbar height dynamically
                 const navbar = document.getElementById('navbar');
                 const navbarHeight = navbar ? navbar.offsetHeight : 80;
@@ -511,6 +541,13 @@ function initSmoothScroll() {
                     top: offsetTop,
                     behavior: 'smooth'
                 });
+                
+                // After scroll completes, ensure the correct item is highlighted
+                // This handles edge cases where the scroll position might be slightly off
+                setTimeout(() => {
+                    const event = new Event('scroll');
+                    window.dispatchEvent(event);
+                }, 1000);
             }
         });
     });
@@ -825,12 +862,132 @@ function initAnimations() {
         });
     }, observerOptions);
 
-    // Observe elements
-    document.querySelectorAll('.timeline-item, .event-card, .itinerary-item').forEach(el => {
+    // Special observer for itinerary items with staggered animation
+    const itineraryObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add animate-in class for CSS animations
+                entry.target.classList.add('animate-in');
+                
+                // Remove observer after animation
+                itineraryObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observe timeline and event cards
+    document.querySelectorAll('.timeline-item, .event-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'all 0.6s ease';
         observer.observe(el);
+    });
+
+    // Observe itinerary items with special animation
+    document.querySelectorAll('.itinerary-item').forEach((el, index) => {
+        // Set staggered animation delay
+        el.style.transitionDelay = `${index * 0.1}s`;
+        itineraryObserver.observe(el);
+    });
+
+    // Add dynamic zoom effect for itinerary items based on scroll position
+    const itineraryItems = document.querySelectorAll('.itinerary-item');
+    if (itineraryItems.length > 0) {
+        // Use requestAnimationFrame for smoother animations
+        let ticking = false;
+        let currentFocusedItem = null;
+        
+        function updateItineraryZoom() {
+            const windowHeight = window.innerHeight;
+            const centerY = windowHeight / 2;
+            let closestItem = null;
+            let closestDistance = Infinity;
+
+            // First, find the item closest to center
+            itineraryItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const itemCenterY = rect.top + rect.height / 2;
+                const distanceFromCenter = Math.abs(centerY - itemCenterY);
+                
+                if (distanceFromCenter < closestDistance) {
+                    closestDistance = distanceFromCenter;
+                    closestItem = item;
+                }
+            });
+
+            // Only update if the focused item has changed
+            if (closestItem !== currentFocusedItem) {
+                // Remove focus from all items
+                itineraryItems.forEach(item => {
+                    item.classList.remove('in-focus');
+                });
+                
+                // Add focus to closest item if it's within threshold
+                if (closestDistance < 200) { // Threshold for considering an item "in focus"
+                    closestItem.classList.add('in-focus');
+                    currentFocusedItem = closestItem;
+                } else {
+                    currentFocusedItem = null;
+                }
+            }
+            
+            ticking = false;
+        }
+        
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateItineraryZoom);
+                ticking = true;
+            }
+        }
+        
+        // Initial call
+        updateItineraryZoom();
+        
+        // Throttled scroll event
+        window.addEventListener('scroll', requestTick, { passive: true });
+        window.addEventListener('resize', requestTick, { passive: true });
+    }
+
+    // Add parallax effect to hero section
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxSpeed = 0.5;
+            hero.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+        });
+    }
+
+    // Animate section titles on scroll
+    const sectionTitles = document.querySelectorAll('.section-title');
+    const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                
+                // Animate the decorative line after title
+                const afterElement = entry.target.querySelector('::after');
+                if (afterElement) {
+                    setTimeout(() => {
+                        entry.target.classList.add('animated');
+                    }, 300);
+                }
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+
+    sectionTitles.forEach(title => {
+        title.style.opacity = '0';
+        title.style.transform = 'translateY(30px)';
+        title.style.transition = 'all 0.8s ease';
+        titleObserver.observe(title);
     });
 }
 
