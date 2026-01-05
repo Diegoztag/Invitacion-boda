@@ -22,7 +22,7 @@ const WEDDING_CONFIG = {
             month: "Febrero",
             year: "2026"
         },
-        confirmationDeadline: "15 de Enero",
+        confirmationDeadline: "20 de Enero",
         type: "Nuestra Boda" // Puede ser "Nuestra Boda", "Nuestro Matrimonio", etc.
     },
     
@@ -36,7 +36,7 @@ const WEDDING_CONFIG = {
         },
         ceremony: {
             name: "Ceremonia Civil",
-            time: "5:30 PM",
+            time: "5:00 PM",
             description: "Firma de documentos"
         },
         reception: {
@@ -53,39 +53,29 @@ const WEDDING_CONFIG = {
     // Itinerario del día
     schedule: [
         {
-            time: "5:00 PM",
+            time: "5:00 p.m",
             title: "Ceremonia Civil",
-            description: "Firma de documentos"
+            description: ""
         },
         {
-            time: "5:30 PM",
-            title: "Sesión de Fotos",
-            description: "Fotos con familia y amigos"
+            time: "7:00 p.m",
+            title: "Recepción de Invitados",
+            description: ""
         },
         {
-            time: "6:00 PM",
-            title: "Llegada de Invitados",
-            description: "Recepción en la hacienda"
+            time: "7:00 p.m",
+            title: "Entrada de los novios",
+            description: ""
         },
         {
-            time: "6:30 PM",
-            title: "Cocktail de Bienvenida",
-            description: "Aperitivos y bebidas"
-        },
-        {
-            time: "8:00 PM",
+            time: "7:30 p.m",
             title: "Cena",
-            description: "Banquete de celebración"
+            description: ""
         },
         {
             time: "8:30 PM",
-            title: "Primer Baile",
-            description: "Los novios abren la pista"
-        },
-        {
-            time: "9:00 PM",
             title: "Fiesta",
-            description: "¡A bailar toda la noche!"
+            description: ""
         }
     ],
     
@@ -93,7 +83,7 @@ const WEDDING_CONFIG = {
     dressCode: {
         title: "Código de Vestimenta",
         description: "Formal - Evitar colores pasteles",
-        note: "Recuerden que será al aire libre, asistan bien abrigados"
+        note: ""
     },
     
     // Mensajes personalizables
@@ -134,7 +124,9 @@ const WEDDING_CONFIG = {
     guests: {
         targetTotal: 130, // Número total de invitados esperados (personas)
         targetInvitations: 150, // Número estimado de invitaciones a enviar
-        allowChildren: false // true = se permiten niños, false = solo adultos
+        allowChildren: false, // true = se permiten niños, false = solo adultos
+        showNoChildrenNote: false, // true = mostrar nota de "no niños", false = ocultar
+        noChildrenMessage: "Esperamos contar con su comprensión para que este sea un evento solo para adultos"
     },
     
     // Configuración del mapa
@@ -179,7 +171,7 @@ const WEDDING_CONFIG = {
             }
         ],
         bankAccount: {
-            enabled: true,
+            enabled: false,
             title: "Transferencia Bancaria",
             icon: "fas fa-university",
             description: "Si prefieres hacer una transferencia",
@@ -201,6 +193,15 @@ const WEDDING_CONFIG = {
         text: "F & D", // Texto personalizado para el logo (solo se usa si custom es true)
         // Si custom es false, se generarán automáticamente las iniciales de:
         // bride.name[0] & groom.name[0] = "F & D"
+    },
+    
+    // Configuración de la sección de fotos/Instagram
+    photoSection: {
+        enabled: false, // true = mostrar sección de fotos, false = ocultar
+        title: "Comparte tus Fotos",
+        subtitle: "Ayúdanos a capturar todos los momentos especiales de nuestro día",
+        showHashtag: true, // true = mostrar hashtag de Instagram, false = ocultar
+        hashtagDescription: "¡Usa este hashtag en Instagram para compartir tus fotos, videos y stories!"
     }
 };
 

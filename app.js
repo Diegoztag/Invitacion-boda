@@ -78,12 +78,30 @@ function updateDynamicContent() {
     // Dress code
     document.getElementById('dressCodeTitle').textContent = WEDDING_CONFIG.dressCode.title;
     document.getElementById('dressCodeDescription').textContent = WEDDING_CONFIG.dressCode.description;
-    document.getElementById('dressCodeNote').textContent = WEDDING_CONFIG.dressCode.note;
+    
+    // Only show dress code note if it has content
+    const dressCodeNoteElement = document.getElementById('dressCodeNote');
+    if (WEDDING_CONFIG.dressCode.note && WEDDING_CONFIG.dressCode.note.trim() !== '') {
+        dressCodeNoteElement.textContent = WEDDING_CONFIG.dressCode.note;
+        dressCodeNoteElement.style.display = 'block';
+    } else {
+        dressCodeNoteElement.style.display = 'none';
+    }
     
     // Show no children note if configured
     const noChildrenNote = document.getElementById('noChildrenNote');
-    if (noChildrenNote && WEDDING_CONFIG.guests && WEDDING_CONFIG.guests.allowChildren === false) {
-        noChildrenNote.style.display = 'block';
+    const noChildrenMessage = document.getElementById('noChildrenMessage');
+    
+    if (noChildrenNote && noChildrenMessage && WEDDING_CONFIG.guests) {
+        // Show only if: children not allowed AND showNoChildrenNote is true
+        if (WEDDING_CONFIG.guests.allowChildren === false && 
+            WEDDING_CONFIG.guests.showNoChildrenNote === true) {
+            noChildrenMessage.textContent = WEDDING_CONFIG.guests.noChildrenMessage || 
+                "Esperamos contar con su comprensión para que este sea un evento solo para adultos";
+            noChildrenNote.style.display = 'flex';
+        } else {
+            noChildrenNote.style.display = 'none';
+        }
     }
     
     // Itinerary
@@ -113,11 +131,50 @@ function updateDynamicContent() {
     document.getElementById('rsvpTitle').textContent = WEDDING_CONFIG.messages.rsvpTitle;
     document.getElementById('rsvpSubtitle').textContent = `${WEDDING_CONFIG.messages.rsvpSubtitle} ${WEDDING_CONFIG.event.confirmationDeadline}`;
     
-    // Photo section
-    document.getElementById('photoSectionTitle').textContent = WEDDING_CONFIG.messages.photoSectionTitle;
-    
-    // Instagram hashtag
-    document.getElementById('instagramHashtag').textContent = WEDDING_CONFIG.couple.hashtag;
+    // Photo section - Check if enabled
+    const photoSection = document.getElementById('fotos');
+    if (WEDDING_CONFIG.photoSection && WEDDING_CONFIG.photoSection.enabled) {
+        // Update photo section content
+        const photoTitle = document.getElementById('photoSectionTitle');
+        if (photoTitle) {
+            photoTitle.textContent = WEDDING_CONFIG.photoSection.title || WEDDING_CONFIG.messages.photoSectionTitle;
+        }
+        
+        // Update hashtag if enabled
+        if (WEDDING_CONFIG.photoSection.showHashtag) {
+            const instagramHashtag = document.getElementById('instagramHashtag');
+            if (instagramHashtag) {
+                instagramHashtag.textContent = WEDDING_CONFIG.couple.hashtag;
+            }
+            
+            const hashtagDescription = document.querySelector('.hashtag-description');
+            if (hashtagDescription && WEDDING_CONFIG.photoSection.hashtagDescription) {
+                hashtagDescription.textContent = WEDDING_CONFIG.photoSection.hashtagDescription;
+            }
+        } else {
+            // Hide hashtag container if not enabled
+            const hashtagContainer = document.querySelector('.hashtag-container');
+            if (hashtagContainer) {
+                hashtagContainer.style.display = 'none';
+            }
+        }
+        
+        // Show the section
+        if (photoSection) {
+            photoSection.style.display = 'block';
+        }
+    } else {
+        // Hide photo section if not enabled
+        if (photoSection) {
+            photoSection.style.display = 'none';
+        }
+        
+        // Also hide the navigation link to photos
+        const photoNavLink = document.querySelector('a[href="#fotos"]');
+        if (photoNavLink && photoNavLink.parentElement) {
+            photoNavLink.parentElement.style.display = 'none';
+        }
+    }
     
     // Footer
     document.getElementById('footerNames').textContent = WEDDING_CONFIG.couple.displayName;
@@ -310,17 +367,90 @@ function hideLoader() {
 function initNavigation() {
     // Mobile menu toggle
     navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
+        const isActive = navToggle.classList.contains('active');
+        
+        if (!isActive) {
+            // Opening menu
+            navToggle.classList.add('active');
+            navMenu.classList.add('active');
+            document.body.classList.add('menu-open');
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Closing menu
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
     });
 
-    // Close menu on link click
+    // Close menu when clicking on a link
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
             navToggle.classList.remove('active');
             navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
         });
     });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('active') && 
+            !navMenu.contains(e.target) && 
+            !navToggle.contains(e.target)) {
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Close menu when clicking on overlay
+    document.body.addEventListener('click', (e) => {
+        if (e.target === document.body && document.body.classList.contains('menu-open')) {
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Add scroll effect to navbar
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Highlight active section in navigation
+    const sections = document.querySelectorAll('section[id]');
+    const navItems = document.querySelectorAll('.nav-link');
+
+    function highlightNavigation() {
+        const scrollY = window.pageYOffset;
+
+        sections.forEach(section => {
+            const sectionHeight = section.offsetHeight;
+            const sectionTop = section.offsetTop - 100;
+            const sectionId = section.getAttribute('id');
+
+            if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${sectionId}`) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
+    }
+
+    window.addEventListener('scroll', highlightNavigation);
+    highlightNavigation(); // Call on load
 
     // Navbar scroll effect
     let lastScroll = 0;
@@ -371,7 +501,12 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                const offsetTop = target.offsetTop - 80;
+                // Get the actual navbar height dynamically
+                const navbar = document.getElementById('navbar');
+                const navbarHeight = navbar ? navbar.offsetHeight : 80;
+                // Calculate the exact position without extra buffer that might show hero
+                const offsetTop = target.offsetTop - navbarHeight;
+                
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
