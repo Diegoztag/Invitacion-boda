@@ -32,7 +32,7 @@ app.use(express.json());
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    max: 1000 // limit each IP to 1000 requests per windowMs
 });
 app.use('/api/', limiter);
 
@@ -84,6 +84,67 @@ app.post('/api/invitation', async (req, res) => {
         res.status(500).json({ 
             error: 'Error al crear la invitación',
             details: error.message 
+        });
+    }
+});
+
+// Update invitation (admin only)
+app.put('/api/invitation/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        const updateData = req.body;
+        
+        const updatedInvitation = await invitationService.updateInvitation(code, updateData);
+        
+        res.json({ 
+            success: true, 
+            invitation: updatedInvitation
+        });
+    } catch (error) {
+        console.error('Error updating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al actualizar la invitación'
+        });
+    }
+});
+
+// Deactivate invitation (soft delete)
+app.put('/api/invitation/:code/deactivate', async (req, res) => {
+    try {
+        const { code } = req.params;
+        const { deactivatedBy = 'admin', deactivationReason = '' } = req.body;
+        
+        const deactivatedInvitation = await csvStorage.deactivateInvitation(code, deactivatedBy, deactivationReason);
+        
+        res.json({ 
+            success: true, 
+            message: 'Invitación desactivada exitosamente',
+            invitation: deactivatedInvitation
+        });
+    } catch (error) {
+        console.error('Error deactivating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al desactivar la invitación'
+        });
+    }
+});
+
+// Activate inactive invitation
+app.put('/api/invitation/:code/activate', async (req, res) => {
+    try {
+        const { code } = req.params;
+        
+        const activatedInvitation = await csvStorage.activateInvitation(code);
+        
+        res.json({ 
+            success: true, 
+            message: 'Invitación activada exitosamente',
+            invitation: activatedInvitation
+        });
+    } catch (error) {
+        console.error('Error activating invitation:', error);
+        res.status(400).json({ 
+            error: error.message || 'Error al activar la invitación'
         });
     }
 });
@@ -154,11 +215,20 @@ app.post('/api/import-csv', async (req, res) => {
         
         const result = await csvStorage.importInvitations(csvContent);
         
+        // Add URLs to each imported invitation
+        const invitationsWithUrls = result.imported.map(invitation => ({
+            ...invitation,
+            url: invitationService.generateInvitationUrl(
+                invitation.code, 
+                `${req.protocol}://${req.get('host')}`
+            )
+        }));
+        
         res.json({ 
             success: true, 
             imported: result.imported.length,
             errors: result.errors,
-            invitations: result.imported
+            invitations: invitationsWithUrls
         });
     } catch (error) {
         console.error('Error importing CSV:', error);

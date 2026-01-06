@@ -1,0 +1,471 @@
+/* CSV Import Modal Styles - Modern Dark Theme */
+
+/* Note: These styles are specific to the CSV import modal only */
+/* They should not affect other modals in the system */
+
+/* CSV Modal Header */
+#importCsvModal .modal-header {
+    padding: 1.5rem 1.5rem 0.5rem;
+}
+
+#importCsvModal .modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+#importCsvModal .modal-icon-wrapper {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(230, 25, 161, 0.1);
+    color: #e619a1;
+}
+
+#importCsvModal .modal-icon {
+    font-size: 1.5rem;
+    font-variation-settings: 'FILL' 1;
+}
+
+#importCsvModal .modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+}
+
+#importCsvModal .modal-subtitle {
+    color: #c893b6;
+    font-size: 0.875rem;
+    margin-left: 3rem;
+}
+
+/* CSV Modal Body */
+#importCsvModal .modal-body {
+    padding: 1rem 1.5rem;
+    flex: 1;
+}
+
+/* Format Info Section */
+.format-info-wrapper {
+    background-color: rgba(33, 17, 28, 0.8);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(101, 52, 85, 0.5);
+    margin-bottom: 1.5rem;
+}
+
+.format-info-header {
+    font-size: 0.875rem;
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.format-info-icon {
+    font-size: 1rem;
+    color: #e619a1;
+}
+
+.format-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.format-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.format-label {
+    font-size: 0.75rem;
+    color: #c893b6;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.format-code {
+    font-size: 0.875rem;
+    font-family: monospace;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    width: fit-content;
+}
+
+.format-code.primary {
+    color: #e619a1;
+    background-color: rgba(230, 25, 161, 0.05);
+    border: 1px solid rgba(230, 25, 161, 0.2);
+}
+
+.format-code.secondary {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    word-break: break-all;
+}
+
+/* File Upload Area */
+.file-upload-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 9rem;
+    border-radius: 0.75rem;
+    border: 2px dashed #653455;
+    background-color: rgba(33, 17, 28, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.file-upload-wrapper:hover {
+    border-color: rgba(230, 25, 161, 0.5);
+    background-color: rgba(230, 25, 161, 0.05);
+}
+
+.file-upload-wrapper.drag-over {
+    border-color: #e619a1;
+    background-color: rgba(230, 25, 161, 0.1);
+    transform: scale(1.02);
+}
+
+.file-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem 1.5rem;
+    pointer-events: none;
+}
+
+.upload-icon-wrapper {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 50%;
+    background-color: #2d1b29;
+    border: 1px solid #653455;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.file-upload-wrapper:hover .upload-icon-wrapper {
+    color: #e619a1;
+    border-color: rgba(230, 25, 161, 0.3);
+}
+
+.upload-icon {
+    font-size: 1.875rem;
+    color: #c893b6;
+}
+
+.file-upload-wrapper:hover .upload-icon {
+    color: #e619a1;
+}
+
+.upload-text {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.file-upload-wrapper:hover .upload-text {
+    color: #e619a1;
+}
+
+.upload-subtext {
+    font-size: 0.75rem;
+    color: #c893b6;
+}
+
+.file-input {
+    display: none;
+}
+
+/* File Selected State */
+#importCsvModal .file-selected {
+    background-color: rgba(230, 25, 161, 0.1);
+    border: 1px solid #e619a1;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    display: none !important; /* Hidden by default with !important to override any inline styles */
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeIn 0.3s ease;
+}
+
+/* When file is selected, JavaScript will set display: flex */
+#importCsvModal .file-selected[style*="display: flex"] {
+    animation: fadeIn 0.3s ease;
+}
+
+#importCsvModal .file-selected-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#importCsvModal .file-selected-icon {
+    color: #e619a1;
+    font-size: 1.25rem;
+}
+
+#importCsvModal .file-selected-name {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+#importCsvModal .file-selected-remove {
+    color: #c893b6;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    font-size: 1.25rem;
+}
+
+#importCsvModal .file-selected-remove:hover {
+    color: #ef4444;
+}
+
+/* CSV Modal Footer */
+#importCsvModal .modal-footer {
+    padding: 0.5rem 1.5rem 1.5rem;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Ensure buttons are right-aligned on medium and large screens */
+@media (min-width: 641px) {
+    #importCsvModal .modal-footer {
+        justify-content: flex-end;
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    
+    /* Make buttons more compact on larger screens */
+    #importCsvModal .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        min-width: auto;
+    }
+    
+    #importCsvModal .btn-cancel {
+        min-width: 100px;
+    }
+    
+    #importCsvModal .btn-import {
+        min-width: 120px;
+    }
+}
+
+/* Large screens - even more specific alignment */
+@media (min-width: 1024px) {
+    #importCsvModal .modal-footer {
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+}
+
+/* Generic button class for consistent sizing */
+.modal-btn-standard {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    min-width: 100px !important;
+    height: 46px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-cancel {
+    border: 1px solid #653455;
+    background-color: transparent;
+    color: #c893b6;
+    justify-content: center; /* Center the text */
+}
+
+/* Apply standard sizing to modal buttons */
+#importCsvModal .btn-cancel.modal-btn-standard,
+#importCsvModal .btn-import.modal-btn-standard {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    min-width: 100px !important;
+    height: 46px !important;
+}
+
+.btn-cancel:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-import {
+    background-color: #e619a1;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-import:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    font-size: 1.125rem;
+}
+
+/* Results Section */
+#csvResults {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+#csvResults.show {
+    display: block;
+}
+
+#csvResults.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+#csvResults.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+#csvResults.success .result-header {
+    color: #10b981;
+}
+
+#csvResults.error .result-header {
+    color: #ef4444;
+}
+
+.result-icon {
+    font-size: 1.25rem;
+}
+
+.result-details {
+    font-size: 0.875rem;
+    color: #c893b6;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    #importCsvModal .modal-header {
+        padding: 1.25rem 1.25rem 0.5rem;
+    }
+    
+    #importCsvModal .modal-body {
+        padding: 1rem 1.25rem;
+    }
+    
+    #importCsvModal .modal-footer {
+        padding: 0.5rem 1.25rem 1.25rem;
+    }
+    
+    #importCsvModal .file-upload-wrapper {
+        height: 8rem;
+    }
+    
+    #importCsvModal .upload-icon-wrapper {
+        padding: 0.625rem;
+    }
+    
+    #importCsvModal .upload-icon {
+        font-size: 1.5rem;
+    }
+}
+
+/* Dark mode specific enhancements */
+@media (prefers-color-scheme: dark) {
+    .modal {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+    
+    .file-upload-wrapper:hover {
+        box-shadow: 0 0 20px rgba(230, 25, 161, 0.1);
+    }
+}
+
+/* Custom scrollbar for CSV modal content */
+#importCsvModal .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+#importCsvModal .modal-body::-webkit-scrollbar-track {
+    background: #21111c;
+    border-radius: 3px;
+}
+
+#importCsvModal .modal-body::-webkit-scrollbar-thumb {
+    background: #653455;
+    border-radius: 3px;
+}
+
+#importCsvModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #e619a1;
+}

@@ -1,0 +1,503 @@
+/* 
+ * DEPRECATED: These styles were for the old .invitations-table class
+ * Now both tables use .recent-confirmations-table class and share the same styles
+ * from admin-styles-dark.css
+ */
+
+/* Mobile view - Since we're using recent-confirmations-table class, no need for specific mobile styles */
+/* The table will inherit all mobile styles from admin-styles-dark.css */
+
+/* Just ensure the table uses the same responsive behavior */
+@media (max-width: 1200px) {
+    /* Hide message column on mobile - same as recent confirmations */
+    .recent-confirmations-table .message-column,
+    .recent-confirmations-table td:nth-child(5) {
+        display: none !important;
+    }
+}
+
+/* 
+ * Table container styles - applies to all tables
+ */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Default table alignment - center most columns except guest */
+.recent-confirmations-table th,
+.recent-confirmations-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Guest cell default alignment */
+.recent-confirmations-table .guest-cell {
+    justify-content: flex-start;
+    width: 100%;
+}
+
+/* Guest info default alignment */
+.recent-confirmations-table .guest-info {
+    text-align: left;
+}
+
+.recent-confirmations-table .guest-name {
+    text-align: left;
+}
+
+/* Specific column alignments */
+.recent-confirmations-table td:nth-child(1),
+.recent-confirmations-table th:nth-child(1) {
+    text-align: left;
+}
+
+.recent-confirmations-table td:nth-child(2),
+.recent-confirmations-table td:nth-child(3),
+.recent-confirmations-table td:nth-child(4),
+.recent-confirmations-table td:nth-child(6) {
+    text-align: center;
+}
+
+/* Message cell alignment */
+.recent-confirmations-table .message-cell {
+    text-align: left;
+}
+
+/* Action buttons alignment */
+.recent-confirmations-table .table-cell-right {
+    text-align: right;
+}
+
+/* Ensure passes display is centered */
+.recent-confirmations-table .passes-count,
+.recent-confirmations-table .passes-type {
+    text-align: center !important;
+    display: block;
+    width: 100%;
+}
+
+/* Apply same responsive behavior as dashboard table to invitations table */
+/* Stack avatar above names for screens below 1540px */
+@media (max-width: 1540px) {
+    .recent-confirmations-table .guest-cell {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px;
+        min-width: auto;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    /* Center avatar when stacked */
+    .recent-confirmations-table .guest-avatar {
+        align-self: center !important;
+        margin: 0 auto !important;
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Center guest info */
+    .recent-confirmations-table .guest-info {
+        width: 100%;
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .recent-confirmations-table .guest-name {
+        text-align: center !important;
+        width: 100%;
+        max-width: none;
+        display: block;
+    }
+    
+    /* Adjust font sizes for this breakpoint */
+    .recent-confirmations-table .guest-name div {
+        font-size: 0.875rem;
+        line-height: 1.3;
+        text-align: center !important;
+    }
+    
+    .recent-confirmations-table .guest-time {
+        font-size: 0.75rem;
+        text-align: center !important;
+        width: 100%;
+    }
+    
+    /* Stack passes display vertically */
+    .recent-confirmations-table td:nth-child(3) {
+        text-align: center;
+    }
+    
+    .recent-confirmations-table td:nth-child(3) .passes-count {
+        display: block;
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 2px;
+    }
+    
+    .recent-confirmations-table td:nth-child(3) .passes-type {
+        display: block;
+        font-size: 0.688rem;
+        color: var(--text-muted);
+    }
+}
+
+/* Responsive adjustments for tablets and medium screens */
+@media (max-width: 1024px) {
+    /* Apply mobile-like layout for guest cell on tablets too */
+    .recent-confirmations-table .guest-cell {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px;
+        min-width: auto;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    /* Center avatar when stacked */
+    .recent-confirmations-table .guest-avatar {
+        align-self: center !important;
+        margin: 0 auto !important;
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Center guest info */
+    .recent-confirmations-table .guest-info {
+        width: 100%;
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .recent-confirmations-table .guest-name {
+        font-size: 0.75rem;
+        white-space: normal;
+        line-height: 1.3;
+        text-align: center !important;
+        width: 100%;
+        max-width: none;
+        display: block;
+    }
+    
+    /* When names are split into multiple lines on tablets */
+    .recent-confirmations-table .guest-name div {
+        font-size: 0.688rem;
+        line-height: 1.2;
+        margin-bottom: 1px;
+        text-align: center !important;
+    }
+    
+    .recent-confirmations-table .guest-time {
+        font-size: 0.688rem;
+        text-align: center !important;
+        width: 100%;
+    }
+    
+    /* Adjust table padding for tablets */
+    .recent-confirmations-table td {
+        padding: 12px 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Adjust status badge for tablets */
+    .recent-confirmations-table .status-badge {
+        font-size: 0.688rem;
+        padding: 3px 8px;
+    }
+    
+    /* Adjust passes display for tablets */
+    .recent-confirmations-table td:nth-child(3) .passes-count {
+        display: block;
+        font-weight: 700;
+        font-size: 0.813rem;
+    }
+    
+    .recent-confirmations-table td:nth-child(3) .passes-type {
+        display: block;
+        font-size: 0.625rem;
+        color: var(--text-muted);
+    }
+    
+    /* Adjust table number for tablets */
+    .recent-confirmations-table td:nth-child(4) {
+        font-size: 0.688rem;
+    }
+    
+    /* Adjust action button for tablets */
+    .recent-confirmations-table .btn-icon {
+        padding: 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Center align headers to match centered content on tablets */
+    .recent-confirmations-table th:nth-child(1) {
+        text-align: center;
+    }
+}
+
+/* Mobile adjustments - Apply same styles as tablets */
+@media (max-width: 768px) {
+    /* Apply mobile-like layout for guest cell same as tablets */
+    .recent-confirmations-table .guest-cell {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px;
+        min-width: auto;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    /* Center avatar when stacked - same as tablets */
+    .recent-confirmations-table .guest-avatar {
+        align-self: center !important;
+        margin: 0 auto !important;
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Center guest info - same as tablets */
+    .recent-confirmations-table .guest-info {
+        width: 100%;
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .recent-confirmations-table .guest-name {
+        font-size: 0.75rem;
+        white-space: normal;
+        line-height: 1.3;
+        text-align: center !important;
+        width: 100%;
+        max-width: none;
+        display: block;
+    }
+    
+    /* When names are split into multiple lines - same as tablets */
+    .recent-confirmations-table .guest-name div {
+        font-size: 0.688rem;
+        line-height: 1.2;
+        margin-bottom: 1px;
+        text-align: center !important;
+    }
+    
+    .recent-confirmations-table .guest-time {
+        font-size: 0.688rem;
+        text-align: center !important;
+        width: 100%;
+    }
+    
+    /* Adjust table padding - same as tablets */
+    .recent-confirmations-table td {
+        padding: 12px 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Adjust status badge - same as tablets */
+    .recent-confirmations-table .status-badge {
+        font-size: 0.688rem;
+        padding: 3px 8px;
+    }
+    
+    /* Adjust passes display - same as tablets */
+    .recent-confirmations-table td:nth-child(3) .passes-count {
+        display: block;
+        font-weight: 700;
+        font-size: 0.813rem;
+    }
+    
+    .recent-confirmations-table td:nth-child(3) .passes-type {
+        display: block;
+        font-size: 0.625rem;
+        color: var(--text-muted);
+    }
+    
+    /* Adjust table number - same as tablets */
+    .recent-confirmations-table td:nth-child(4) {
+        font-size: 0.688rem;
+    }
+    
+    /* Adjust action button - same as tablets */
+    .recent-confirmations-table .btn-icon {
+        padding: 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Center align headers to match centered content - same as tablets */
+    .recent-confirmations-table th:nth-child(1) {
+        text-align: center;
+    }
+}
+
+/* Very small screens - Apply same styles as tablets */
+@media (max-width: 480px) {
+    /* Apply mobile-like layout for guest cell same as tablets */
+    .recent-confirmations-table .guest-cell {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px;
+        min-width: auto;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    /* Center avatar when stacked - same as tablets */
+    .recent-confirmations-table .guest-avatar {
+        align-self: center !important;
+        margin: 0 auto !important;
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Center guest info - same as tablets */
+    .recent-confirmations-table .guest-info {
+        width: 100%;
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .recent-confirmations-table .guest-name {
+        font-size: 0.75rem;
+        white-space: normal;
+        line-height: 1.3;
+        text-align: center !important;
+        width: 100%;
+        max-width: none;
+        display: block;
+    }
+    
+    /* When names are split into multiple lines - same as tablets */
+    .recent-confirmations-table .guest-name div {
+        font-size: 0.688rem;
+        line-height: 1.2;
+        margin-bottom: 1px;
+        text-align: center !important;
+    }
+    
+    .recent-confirmations-table .guest-time {
+        font-size: 0.688rem;
+        text-align: center !important;
+        width: 100%;
+    }
+    
+    /* Adjust table padding - same as tablets */
+    .recent-confirmations-table td {
+        padding: 12px 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Adjust status badge - same as tablets */
+    .recent-confirmations-table .status-badge {
+        font-size: 0.688rem;
+        padding: 3px 8px;
+    }
+    
+    /* Adjust passes display - same as tablets */
+    .recent-confirmations-table td:nth-child(3) .passes-count {
+        display: block;
+        font-weight: 700;
+        font-size: 0.813rem;
+    }
+    
+    .recent-confirmations-table td:nth-child(3) .passes-type {
+        display: block;
+        font-size: 0.625rem;
+        color: var(--text-muted);
+    }
+    
+    /* Adjust table number - same as tablets */
+    .recent-confirmations-table td:nth-child(4) {
+        font-size: 0.688rem;
+    }
+    
+    /* Adjust action button - same as tablets */
+    .recent-confirmations-table .btn-icon {
+        padding: 6px;
+        font-size: 0.75rem;
+    }
+    
+    /* Center align headers to match centered content - same as tablets */
+    .recent-confirmations-table th:nth-child(1) {
+        text-align: center;
+    }
+}
+
+/* Recent confirmations table - Left align guest cell content on large screens */
+@media (min-width: 1541px) {
+    .recent-confirmations-table .guest-cell {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .recent-confirmations-table td:first-child {
+        text-align: left;
+    }
+
+    /* Ensure guest info text remains left-aligned */
+    .recent-confirmations-table .guest-info {
+        text-align: left;
+        flex: 0 1 auto;
+    }
+
+    /* Center all columns in recent confirmations table except first */
+    .recent-confirmations-table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    /* First column (guest) should be left-aligned */
+    .recent-confirmations-table td:nth-child(1) {
+        text-align: left !important;
+    }
+    
+    /* First header (Invitado) should also be left-aligned */
+    .recent-confirmations-table th:nth-child(1) {
+        text-align: left !important;
+    }
+
+    /* Keep message column left-aligned for readability */
+    .recent-confirmations-table .message-cell {
+        text-align: left;
+    }
+
+    /* Ensure action buttons remain right-aligned */
+    .recent-confirmations-table .table-cell-right {
+        text-align: right;
+    }
+}

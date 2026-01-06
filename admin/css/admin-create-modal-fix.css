@@ -1,0 +1,153 @@
+/* Fix for Create Invitation Modal */
+
+/* Override the display: none !important from admin-styles-dark.css */
+#createInvitationModal.modal-visible {
+    display: block !important;
+}
+
+/* Make modal content scrollable */
+#createInvitationModal .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex !important;
+    flex-direction: column;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure modal body is visible */
+#createInvitationModal .modal-body {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(90vh - 200px) !important;
+    min-height: 300px;
+    padding-bottom: 20px !important;
+}
+
+/* Ensure form is visible */
+#createInvitationModal #createInvitationForm {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Ensure all form groups are visible */
+#createInvitationModal .form-group {
+    display: block !important;
+    margin-bottom: 20px;
+}
+
+#createInvitationModal .form-row {
+    display: flex !important;
+    gap: 16px;
+}
+
+#createInvitationModal .radio-group {
+    display: flex !important;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Ensure form is scrollable */
+#createInvitationModal .create-form {
+    flex: 1;
+    overflow-y: visible !important;
+    padding-bottom: 20px;
+}
+
+/* Ensure the entire form content is visible */
+#createInvitationModal form {
+    display: block !important;
+    visibility: visible !important;
+    min-height: 100%;
+}
+
+/* Make sure all form content is accessible */
+#createInvitationModal .modal-content {
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: 90vh !important;
+    height: auto !important;
+}
+
+/* Fix modal actions to be always visible */
+#createInvitationModal .modal-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface-dark);
+    padding: 20px 0;
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 768px) {
+    #createInvitationModal .modal-content {
+        max-height: 85vh;
+        margin: 10% auto;
+        width: 95%;
+        max-width: 95%;
+    }
+    
+    #createInvitationModal .modal-actions {
+        padding: 16px 0;
+        flex-direction: column-reverse;
+    }
+    
+    #createInvitationModal .modal-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Fix for duplicate IDs - use more specific selectors */
+#createInvitationModal #adultPassesInput,
+#createInvitationModal #childPassesInput {
+    width: 100%;
+}
+
+/* Ensure the modal is properly centered */
+#createInvitationModal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* Ensure buttons are visible */
+#createInvitationModal .btn {
+    min-height: 40px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#createInvitationModal .btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+#createInvitationModal .btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+#createInvitationModal .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+#createInvitationModal .btn-secondary:hover {
+    background: var(--surface-dark);
+}

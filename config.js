@@ -22,7 +22,7 @@ const WEDDING_CONFIG = {
             month: "Febrero",
             year: "2026"
         },
-        confirmationDeadline: "15 de Enero",
+        confirmationDeadline: "20 de Enero",
         type: "Nuestra Boda" // Puede ser "Nuestra Boda", "Nuestro Matrimonio", etc.
     },
     
@@ -36,7 +36,7 @@ const WEDDING_CONFIG = {
         },
         ceremony: {
             name: "Ceremonia Civil",
-            time: "5:30 PM",
+            time: "5:00 PM",
             description: "Firma de documentos"
         },
         reception: {
@@ -53,47 +53,37 @@ const WEDDING_CONFIG = {
     // Itinerario del día
     schedule: [
         {
-            time: "5:00 PM",
+            time: "5:00 p.m",
             title: "Ceremonia Civil",
-            description: "Firma de documentos"
+            description: ""
         },
         {
-            time: "5:30 PM",
-            title: "Sesión de Fotos",
-            description: "Fotos con familia y amigos"
+            time: "7:00 p.m",
+            title: "Recepción de Invitados",
+            description: ""
         },
         {
-            time: "6:00 PM",
-            title: "Llegada de Invitados",
-            description: "Recepción en la hacienda"
+            time: "7:00 p.m",
+            title: "Entrada de los novios",
+            description: ""
         },
         {
-            time: "6:30 PM",
-            title: "Cocktail de Bienvenida",
-            description: "Aperitivos y bebidas"
-        },
-        {
-            time: "8:00 PM",
+            time: "7:30 p.m",
             title: "Cena",
-            description: "Banquete de celebración"
+            description: ""
         },
         {
             time: "8:30 PM",
-            title: "Primer Baile",
-            description: "Los novios abren la pista"
-        },
-        {
-            time: "9:00 PM",
             title: "Fiesta",
-            description: "¡A bailar toda la noche!"
+            description: ""
         }
     ],
     
     // Código de vestimenta
     dressCode: {
         title: "Código de Vestimenta",
-        description: "Formal - Evitar colores pasteles",
-        note: "Recuerden que será al aire libre, asistan bien abrigados"
+        description: "Formal/Etiqueta",
+        note: "Evitar colores pasteles"
     },
     
     // Mensajes personalizables
@@ -119,7 +109,8 @@ const WEDDING_CONFIG = {
     
     // URLs de imágenes
     images: {
-        heroBackground: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3",
+        // Imagen de fondo del hero - puedes usar una URL o una ruta local
+        heroBackground: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
         ceremonyIcon: "fas fa-heart",
         receptionIcon: "fas fa-champagne-glasses"
     },
@@ -128,6 +119,15 @@ const WEDDING_CONFIG = {
     api: {
         backendUrl: "http://localhost:3000/api",
         googleMapsApiKey: "YOUR_API_KEY"
+    },
+    
+    // Configuración de invitados
+    guests: {
+        targetTotal: 130, // Número total de invitados esperados (personas)
+        targetInvitations: 150, // Número estimado de invitaciones a enviar
+        allowChildren: false, // true = se permiten niños, false = solo adultos
+        showNoChildrenNote: false, // true = mostrar nota de "no niños", false = ocultar
+        noChildrenMessage: "Esperamos contar con su comprensión para que este sea un evento solo para adultos"
     },
     
     // Configuración del mapa
@@ -169,10 +169,16 @@ const WEDDING_CONFIG = {
                 icon: "fas fa-gift",
                 url: "https://mesaderegalos.liverpool.com.mx/milistaderegalos/51861860",
                 description: "Ver mesa de regalos en Liverpool"
+            },
+            {
+                name: "Lluvia de sobres",
+                icon: "fas fa-envelope",
+                url: "#",
+                description: "Efectivo en recepción"
             }
         ],
         bankAccount: {
-            enabled: true,
+            enabled: false,
             title: "Transferencia Bancaria",
             icon: "fas fa-university",
             description: "Si prefieres hacer una transferencia",
@@ -194,6 +200,59 @@ const WEDDING_CONFIG = {
         text: "F & D", // Texto personalizado para el logo (solo se usa si custom es true)
         // Si custom es false, se generarán automáticamente las iniciales de:
         // bride.name[0] & groom.name[0] = "F & D"
+    },
+    
+    // Configuración del Carrusel (Nuestra Historia)
+    carouselSection: {
+        enabled: true, // true = mostrar carrusel, false = ocultar
+        title: "Galería",
+        subtitle: "",
+        carousel: {
+            showNavigationButtons: false, // true = mostrar botones de navegación (flechas), false = ocultar
+            showIndicators: false, // true = mostrar indicadores (puntos), false = ocultar
+            autoPlayDelay: 8000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
+            enableAutoPlay: true, // true = activar reproducción automática, false = desactivar
+            enableSwipe: true, // true = permitir navegación táctil (swipe), false = desactivar
+            enableKeyboard: false // true = permitir navegación con teclado, false = desactivar
+        },
+        // Fotos del carrusel - puedes agregar, quitar o modificar las fotos
+        photos: [
+            {
+                url: "https://i.ibb.co/hFctrJw4/62e95a3a-801c-41e3-ab9c-559717091f48.jpg",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                caption: "",
+                alt: ""
+            }
+            // Puedes agregar más fotos aquí siguiendo el mismo formato:
+            // {
+            //     url: "URL_DE_LA_IMAGEN",
+            //     caption: "Descripción de la foto",
+            //     alt: "Texto alternativo"
+            // }
+        ]
+    },
+    
+    // Configuración de la sección de Instagram/Hashtag
+    photoSection: {
+        enabled: false, // true = mostrar sección de hashtag, false = ocultar
+        title: "Comparte tus Fotos",
+        subtitle: "Captura y comparte los momentos especiales de nuestro día",
+        showHashtag: true, // true = mostrar hashtag de Instagram, false = ocultar
+        hashtagDescription: "¡Usa este hashtag en Instagram para compartir tus fotos, videos y stories!"
     }
 };
 

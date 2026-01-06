@@ -44,10 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initRSVPForm();
     initAnimations();
+    initPhotoCarousel();
 });
 
 // Update all dynamic content from configuration
 function updateDynamicContent() {
+    // Apply hero background image from config
+    const heroSection = document.querySelector('.hero');
+    if (heroSection && WEDDING_CONFIG.images && WEDDING_CONFIG.images.heroBackground) {
+        heroSection.style.backgroundImage = `url('${WEDDING_CONFIG.images.heroBackground}')`;
+    }
+    
     // Update nav logo
     const navLogo = document.querySelector('.nav-logo');
     if (WEDDING_CONFIG.navLogo && WEDDING_CONFIG.navLogo.custom) {
@@ -78,17 +85,42 @@ function updateDynamicContent() {
     // Dress code
     document.getElementById('dressCodeTitle').textContent = WEDDING_CONFIG.dressCode.title;
     document.getElementById('dressCodeDescription').textContent = WEDDING_CONFIG.dressCode.description;
-    document.getElementById('dressCodeNote').textContent = WEDDING_CONFIG.dressCode.note;
     
-    // Itinerary
+    // Only show dress code note if it has content
+    const dressCodeNoteElement = document.getElementById('dressCodeNote');
+    if (WEDDING_CONFIG.dressCode.note && WEDDING_CONFIG.dressCode.note.trim() !== '') {
+        dressCodeNoteElement.textContent = WEDDING_CONFIG.dressCode.note;
+        dressCodeNoteElement.style.display = 'block';
+    } else {
+        dressCodeNoteElement.style.display = 'none';
+    }
+    
+    // Show no children note if configured
+    const noChildrenNote = document.getElementById('noChildrenNote');
+    const noChildrenMessage = document.getElementById('noChildrenMessage');
+    
+    if (noChildrenNote && noChildrenMessage && WEDDING_CONFIG.guests) {
+        // Show only if: children not allowed AND showNoChildrenNote is true
+        if (WEDDING_CONFIG.guests.allowChildren === false && 
+            WEDDING_CONFIG.guests.showNoChildrenNote === true) {
+            noChildrenMessage.textContent = WEDDING_CONFIG.guests.noChildrenMessage || 
+                "Esperamos contar con su comprensión para que este sea un evento solo para adultos";
+            noChildrenNote.style.display = 'flex';
+        } else {
+            noChildrenNote.style.display = 'none';
+        }
+    }
+    
+    // Itinerary - Diseño minimalista
     const itineraryTimeline = document.getElementById('itineraryTimeline');
     itineraryTimeline.innerHTML = '';
     WEDDING_CONFIG.schedule.forEach(item => {
         const div = document.createElement('div');
         div.className = 'itinerary-item';
         div.innerHTML = `
-            <div class="itinerary-time">${item.time}</div>
+            <div class="itinerary-dot"></div>
             <div class="itinerary-content">
+                <div class="itinerary-time">${item.time}</div>
                 <h4>${item.title}</h4>
                 <p>${item.description}</p>
             </div>
@@ -107,11 +139,75 @@ function updateDynamicContent() {
     document.getElementById('rsvpTitle').textContent = WEDDING_CONFIG.messages.rsvpTitle;
     document.getElementById('rsvpSubtitle').textContent = `${WEDDING_CONFIG.messages.rsvpSubtitle} ${WEDDING_CONFIG.event.confirmationDeadline}`;
     
-    // Photo section
-    document.getElementById('photoSectionTitle').textContent = WEDDING_CONFIG.messages.photoSectionTitle;
+    // Carousel Section - Check if enabled
+    const carouselSection = document.getElementById('carousel');
+    if (WEDDING_CONFIG.carouselSection && WEDDING_CONFIG.carouselSection.enabled) {
+        // Update carousel section content
+        const carouselTitle = document.getElementById('carouselSectionTitle');
+        if (carouselTitle) {
+            carouselTitle.textContent = WEDDING_CONFIG.carouselSection.title;
+        }
+        
+        const carouselSubtitle = document.getElementById('carouselSectionSubtitle');
+        if (carouselSubtitle) {
+            carouselSubtitle.textContent = WEDDING_CONFIG.carouselSection.subtitle;
+        }
+    } else {
+        // Remove carousel section if not enabled
+        if (carouselSection) {
+            carouselSection.remove();
+        }
+        // Also remove the navigation link
+        const carouselNavLink = document.querySelector('a[href="#carousel"]');
+        if (carouselNavLink && carouselNavLink.parentElement) {
+            carouselNavLink.parentElement.remove();
+        }
+    }
     
-    // Instagram hashtag
-    document.getElementById('instagramHashtag').textContent = WEDDING_CONFIG.couple.hashtag;
+    // Photo/Hashtag Section - Check if enabled
+    const photoSection = document.getElementById('fotos');
+    if (WEDDING_CONFIG.photoSection && WEDDING_CONFIG.photoSection.enabled) {
+        // Update photo section content
+        const photoTitle = document.getElementById('photoSectionTitle');
+        if (photoTitle) {
+            photoTitle.textContent = WEDDING_CONFIG.photoSection.title;
+        }
+        
+        const photoSubtitle = document.getElementById('photoSectionSubtitle');
+        if (photoSubtitle) {
+            photoSubtitle.textContent = WEDDING_CONFIG.photoSection.subtitle;
+        }
+        
+        // Update hashtag if enabled
+        if (WEDDING_CONFIG.photoSection.showHashtag) {
+            const instagramHashtag = document.getElementById('instagramHashtag');
+            if (instagramHashtag) {
+                instagramHashtag.textContent = WEDDING_CONFIG.couple.hashtag;
+            }
+            
+            const hashtagDescription = document.getElementById('hashtagDescription');
+            if (hashtagDescription && WEDDING_CONFIG.photoSection.hashtagDescription) {
+                hashtagDescription.textContent = WEDDING_CONFIG.photoSection.hashtagDescription;
+            }
+        } else {
+            // Remove hashtag container if not enabled
+            const hashtagContainer = document.querySelector('.hashtag-container');
+            if (hashtagContainer) {
+                hashtagContainer.remove();
+            }
+        }
+    } else {
+        // Remove photo section if not enabled
+        if (photoSection) {
+            photoSection.remove();
+        }
+        
+        // Also remove the navigation link to photos
+        const photoNavLink = document.querySelector('a[href="#fotos"]');
+        if (photoNavLink && photoNavLink.parentElement) {
+            photoNavLink.parentElement.remove();
+        }
+    }
     
     // Footer
     document.getElementById('footerNames').textContent = WEDDING_CONFIG.couple.displayName;
@@ -128,9 +224,16 @@ function updateDynamicContent() {
 // Initialize Gift Registry
 function initGiftRegistry() {
     if (!WEDDING_CONFIG.giftRegistry || !WEDDING_CONFIG.giftRegistry.enabled) {
-        // Hide gift registry section if not enabled
+        // Remove gift registry section if not enabled
         const giftSection = document.getElementById('mesa-regalos');
-        if (giftSection) giftSection.style.display = 'none';
+        if (giftSection) {
+            giftSection.remove();
+        }
+        // Also remove the navigation link
+        const giftNavLink = document.querySelector('a[href="#mesa-regalos"]');
+        if (giftNavLink && giftNavLink.parentElement) {
+            giftNavLink.parentElement.remove();
+        }
         return;
     }
     
@@ -304,17 +407,112 @@ function hideLoader() {
 function initNavigation() {
     // Mobile menu toggle
     navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
+        const isActive = navToggle.classList.contains('active');
+        
+        if (!isActive) {
+            // Opening menu
+            navToggle.classList.add('active');
+            navMenu.classList.add('active');
+            document.body.classList.add('menu-open');
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Closing menu
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
     });
 
-    // Close menu on link click
+    // Close menu when clicking on a link
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
             navToggle.classList.remove('active');
             navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
         });
     });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('active') && 
+            !navMenu.contains(e.target) && 
+            !navToggle.contains(e.target)) {
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Close menu when clicking on overlay
+    document.body.addEventListener('click', (e) => {
+        if (e.target === document.body && document.body.classList.contains('menu-open')) {
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Add scroll effect to navbar
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Highlight active section in navigation
+    const sections = document.querySelectorAll('section[id]');
+    const navItems = document.querySelectorAll('.nav-link');
+
+    function highlightNavigation() {
+        const scrollY = window.pageYOffset;
+        const navbar = document.getElementById('navbar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 80;
+        
+        // Add buffer for better detection
+        const buffer = 20;
+
+        sections.forEach(section => {
+            const sectionHeight = section.offsetHeight;
+            const sectionTop = section.offsetTop - navbarHeight - buffer;
+            const sectionBottom = sectionTop + sectionHeight;
+            const sectionId = section.getAttribute('id');
+
+            // More tolerant detection: check if scroll position is within section bounds
+            if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${sectionId}`) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
+        
+        // Special case for the last section
+        const lastSection = sections[sections.length - 1];
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // If we're at the bottom of the page, activate the last section
+        if (scrollY + windowHeight >= documentHeight - 10) {
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${lastSection.getAttribute('id')}`) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    }
+
+    window.addEventListener('scroll', highlightNavigation);
+    highlightNavigation(); // Call on load
 
     // Navbar scroll effect
     let lastScroll = 0;
@@ -365,11 +563,42 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                const offsetTop = target.offsetTop - 80;
+                // Immediately activate the clicked nav link
+                if (this.classList.contains('nav-link')) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+                
+                // Get the actual navbar height dynamically
+                const navbar = document.getElementById('navbar');
+                const navbarHeight = navbar ? navbar.offsetHeight : 80;
+                
+                // Calculate the target position
+                // For sections other than hero, we need to account for the fixed navbar
+                const targetId = target.getAttribute('id');
+                let offsetTop;
+                
+                if (targetId === 'inicio') {
+                    // For hero section, scroll to top
+                    offsetTop = 0;
+                } else {
+                    // For other sections, account for navbar height
+                    offsetTop = target.offsetTop - navbarHeight;
+                }
+                
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
                 });
+                
+                // After scroll completes, ensure the correct item is highlighted
+                // This handles edge cases where the scroll position might be slightly off
+                setTimeout(() => {
+                    const event = new Event('scroll');
+                    window.dispatchEvent(event);
+                }, 1000);
             }
         });
     });
@@ -684,13 +913,288 @@ function initAnimations() {
         });
     }, observerOptions);
 
-    // Observe elements
-    document.querySelectorAll('.timeline-item, .event-card, .itinerary-item').forEach(el => {
+    // Special observer for itinerary items with staggered animation
+    const itineraryObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add animate-in class for CSS animations
+                entry.target.classList.add('animate-in');
+                
+                // Remove observer after animation
+                itineraryObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observe timeline and event cards
+    document.querySelectorAll('.timeline-item, .event-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'all 0.6s ease';
         observer.observe(el);
     });
+
+    // Observe itinerary items with special animation
+    document.querySelectorAll('.itinerary-item').forEach((el, index) => {
+        // Set staggered animation delay
+        el.style.transitionDelay = `${index * 0.1}s`;
+        itineraryObserver.observe(el);
+    });
+
+    // Nuevo observer para activar animación del itinerario con scroll
+    const itineraryScrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Agregar clase animate-in cuando el elemento entra en vista
+                entry.target.classList.add('animate-in');
+            } else {
+                // Remover clase cuando sale de vista para que se pueda re-animar
+                entry.target.classList.remove('animate-in');
+            }
+        });
+    }, {
+        threshold: 0.3, // Se activa cuando el 30% del elemento es visible
+        rootMargin: '0px 0px -100px 0px' // Margen inferior para activar antes
+    });
+
+    // Aplicar el observer a todos los elementos del itinerario
+    document.querySelectorAll('.itinerary-item').forEach(item => {
+        itineraryScrollObserver.observe(item);
+    });
+
+    // Minimal itinerary focus effect
+    const itineraryItems = document.querySelectorAll('.itinerary-item');
+    if (itineraryItems.length > 0) {
+        const itineraryObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-focus');
+                } else {
+                    entry.target.classList.remove('in-focus');
+                }
+            });
+        }, {
+            threshold: 0.5,
+            rootMargin: '0px'
+        });
+        
+        itineraryItems.forEach(item => {
+            itineraryObserver.observe(item);
+        });
+    }
+
+    // Add parallax effect to hero section
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxSpeed = 0.5;
+            hero.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+        });
+    }
+
+    // Animate section titles on scroll
+    const sectionTitles = document.querySelectorAll('.section-title');
+    const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                
+                // Animate the decorative line after title
+                const afterElement = entry.target.querySelector('::after');
+                if (afterElement) {
+                    setTimeout(() => {
+                        entry.target.classList.add('animated');
+                    }, 300);
+                }
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+
+    sectionTitles.forEach(title => {
+        title.style.opacity = '0';
+        title.style.transform = 'translateY(30px)';
+        title.style.transition = 'all 0.8s ease';
+        titleObserver.observe(title);
+    });
+}
+
+// Photo Carousel
+function initPhotoCarousel() {
+    const track = document.getElementById('carouselTrack');
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+    const indicatorsContainer = document.getElementById('carouselIndicators');
+    
+    if (!track) return;
+    
+    // Load photos from configuration
+    if (WEDDING_CONFIG.carouselSection && WEDDING_CONFIG.carouselSection.photos) {
+        track.innerHTML = ''; // Clear existing content
+        
+        WEDDING_CONFIG.carouselSection.photos.forEach((photo, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <img src="${photo.url}" alt="${photo.alt || `Foto ${index + 1}`}">
+                <div class="slide-caption">${photo.caption || ''}</div>
+            `;
+            track.appendChild(slide);
+        });
+    }
+    
+    const slides = track.querySelectorAll('.carousel-slide');
+    let currentSlide = 0;
+    
+    // Get carousel configuration from the correct section
+    const carouselConfig = WEDDING_CONFIG.carouselSection?.carousel || {};
+    const showNavigationButtons = carouselConfig.showNavigationButtons !== false;
+    const showIndicators = carouselConfig.showIndicators !== false;
+    const autoPlayDelay = carouselConfig.autoPlayDelay || 5000;
+    const enableAutoPlay = carouselConfig.enableAutoPlay !== false;
+    const enableSwipe = carouselConfig.enableSwipe !== false;
+    const enableKeyboard = carouselConfig.enableKeyboard !== false;
+    
+    // Show/hide navigation buttons based on config
+    if (prevBtn && nextBtn) {
+        if (!showNavigationButtons) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        }
+    }
+    
+    // Create indicators if enabled
+    if (showIndicators && indicatorsContainer) {
+        slides.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.classList.add('carousel-indicator');
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => goToSlide(index));
+            indicatorsContainer.appendChild(indicator);
+        });
+    } else if (indicatorsContainer) {
+        indicatorsContainer.style.display = 'none';
+    }
+    
+    const indicators = indicatorsContainer?.querySelectorAll('.carousel-indicator') || [];
+    
+    function updateCarousel() {
+        // Move track
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Update button states if navigation buttons are shown
+        if (showNavigationButtons && prevBtn && nextBtn) {
+            prevBtn.style.opacity = currentSlide === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = currentSlide === slides.length - 1 ? '0.5' : '1';
+        }
+    }
+    
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+    }
+    
+    function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateCarousel();
+        }
+    }
+    
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateCarousel();
+        }
+    }
+    
+    // Event listeners
+    if (prevBtn && nextBtn && showNavigationButtons) {
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+    }
+    
+    // Touch support for mobile
+    if (enableSwipe) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        track.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        track.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+    }
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+    }
+    
+    // Keyboard navigation
+    if (enableKeyboard) {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+        });
+    }
+    
+    // Auto-play (optional)
+    let autoPlayInterval;
+    
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(() => {
+            if (currentSlide < slides.length - 1) {
+                nextSlide();
+            } else {
+                goToSlide(0);
+            }
+        }, autoPlayDelay);
+    }
+    
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+    
+    // Start auto-play if enabled
+    if (enableAutoPlay) {
+        startAutoPlay();
+        
+        // Pause on hover
+        track.addEventListener('mouseenter', stopAutoPlay);
+        track.addEventListener('mouseleave', startAutoPlay);
+        
+        // Pause on touch
+        track.addEventListener('touchstart', stopAutoPlay);
+        track.addEventListener('touchend', () => {
+            setTimeout(startAutoPlay, 2000);
+        });
+    }
 }
 
 // Service Worker for offline functionality

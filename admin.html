@@ -4,9 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestión de Invitaciones</title>
-    <link rel="stylesheet" href="admin-styles-dark.css">
+    <link rel="stylesheet" href="admin/css/admin-styles-dark.css">
+    <link rel="stylesheet" href="admin/css/admin-inline-styles.css">
+    <link rel="stylesheet" href="admin/css/admin-table-alignment-fix.css?v=3">
+    <link rel="stylesheet" href="admin/css/admin-invitations-table.css">
+    <link rel="stylesheet" href="admin/css/admin-invitations-alignment-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-stats-homologation.css">
+    <link rel="stylesheet" href="admin/css/admin-stats-badge-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-csv-modal-styles.css">
+    <link rel="stylesheet" href="admin/css/admin-file-selected-styles.css">
+    <link rel="stylesheet" href="admin/css/admin-modal-overlay-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-modal-scroll-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-stats-mobile-height.css">
+    <link rel="stylesheet" href="admin/css/admin-charts-mobile-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-search-filter-size.css">
+    <link rel="stylesheet" href="admin/css/admin-mobile-invitations-modal.css">
+    <link rel="stylesheet" href="admin/css/admin-pagination-selector.css">
+    <link rel="stylesheet" href="admin/css/admin-create-modal-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-duplicate-ids-fix.css">
+    <link rel="stylesheet" href="admin/css/admin-create-invitation-modal.css">
+    <link rel="stylesheet" href="admin/css/admin-guest-name-fields.css">
+    <link rel="stylesheet" href="admin/css/admin-guest-fields.css">
+    <link rel="stylesheet" href="admin/css/admin-edit-invitation.css">
+    <link rel="stylesheet" href="admin/css/admin-view-invitation.css">
+    <link rel="stylesheet" href="admin/css/admin-button-text-center.css">
+    <link rel="stylesheet" href="admin/css/admin-cancel-invitation-modal.css">
+    <link rel="stylesheet" href="admin/css/admin-inactive-badge.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="config.js"></script>
 </head>
 <body>
@@ -17,14 +43,41 @@
                 <div class="mobile-profile-pic"></div>
                 <span class="mobile-couple-name">Sofia & Mateo</span>
             </div>
-            <button class="mobile-menu-btn" id="mobileMenuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="mobile-header-right">
+                <button class="notification-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
     </header>
     
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <h3>Notificaciones</h3>
+            <div class="notification-header-actions">
+                <button class="notification-clear-btn" onclick="window.notificationService.markAllAsSeen()">
+                    Marcar todas como leídas
+                </button>
+                <button class="notification-close-btn" onclick="window.notificationService.closePanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="notification-panel-body" id="notificationList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+    
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Notification Panel Overlay (for mobile) -->
+    <div class="notification-overlay" id="notificationOverlay"></div>
     
     <div class="admin-container">
         <!-- Sidebar -->
@@ -37,10 +90,6 @@
                 <a href="#dashboard" class="nav-item active">
                     <i class="fas fa-chart-line"></i>
                     <span>Resumen</span>
-                </a>
-                <a href="#create" class="nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Crear Invitación</span>
                 </a>
                 <a href="#invitations" class="nav-item">
                     <i class="fas fa-envelope"></i>
@@ -62,6 +111,13 @@
                             <p class="subtitle">PANEL DE CONTROL</p>
                             <h2 id="welcomeMessage">Bienvenida</h2>
                             <p id="welcomeSubtext">Aquí tienes el resumen de tu boda.</p>
+                            <div class="period-selector">
+                                <select id="confirmationPeriod" class="period-select">
+                                    <option value="today">Hoy</option>
+                                    <option value="last24hours">Últimas 24 horas</option>
+                                    <option value="lastWeek">Última semana</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     
@@ -97,13 +153,15 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-user-check"></i>
                             </div>
-                            <span class="stat-badge primary">100%</span>
                         </div>
                         <div class="stat-content">
-                            <p>Invitaciones</p>
+                            <p>Total Pases</p>
                             <h3 id="totalInvitations">0</h3>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                                Meta: <span id="targetInvitations">250</span>
+                            </p>
                         </div>
                     </div>
                     
@@ -115,8 +173,11 @@
                             <span class="stat-badge success" id="confirmedChange">+0</span>
                         </div>
                         <div class="stat-content">
-                            <p>Confirmados</p>
+                            <p>Pases Confirmados</p>
                             <h3 id="confirmedPasses">0</h3>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                                Faltan <span id="remainingGuests">0</span> pases
+                            </p>
                         </div>
                     </div>
                     
@@ -127,7 +188,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Pendientes</p>
+                            <p>Pases Pendientes</p>
                             <h3 id="pendingInvitations">0</h3>
                         </div>
                     </div>
@@ -139,7 +200,7 @@
                             </div>
                         </div>
                         <div class="stat-content">
-                            <p>Rechazados</p>
+                            <p>Pases Cancelados</p>
                             <h3 id="cancelledPasses">0</h3>
                         </div>
                     </div>
@@ -162,8 +223,8 @@
                     <div class="chart-container">
                         <div class="chart-header">
                             <div>
-                                <h3>Desglose de Pases</h3>
-                                <p>Distribución por tipo</p>
+                                <h3>Desglose de Pases Activos</h3>
+                                <p>Distribución por tipo (no incluye cancelaciones)</p>
                             </div>
                             <span class="chart-value"><span id="totalPassesChart">0</span> <small style="font-size: 0.875rem; font-weight: 400; color: var(--text-muted);">Pases</small></span>
                         </div>
@@ -174,7 +235,7 @@
                                     <span class="progress-value text-primary" id="adultPasses">0 (0%)</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill primary" id="adultProgress" style="width: 0%"></div>
+                                    <div class="progress-fill primary" id="adultProgress"></div>
                                 </div>
                             </div>
                             
@@ -184,17 +245,17 @@
                                     <span class="progress-value text-warning" id="childPasses">0 (0%)</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill warning" id="childProgress" style="width: 0%"></div>
+                                    <div class="progress-fill warning" id="childProgress"></div>
                                 </div>
                             </div>
                             
                             <div class="progress-item" style="margin-bottom: 0;">
                                 <div class="progress-header">
                                     <span class="progress-label">Staff/Proveedores</span>
-                                    <span class="progress-value text-muted" id="staffPasses">0 (0%)</span>
+                                    <span class="progress-value text" id="staffPasses">0 (0%)</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill muted" id="staffProgress" style="width: 0%"></div>
+                                    <div class="progress-fill muted" id="staffProgress"></div>
                                 </div>
                             </div>
                         </div>
@@ -202,130 +263,162 @@
                 </div>
 
                 <!-- Recent Activity Table -->
-                <div class="table-container">
+                <div class="table-container" id="recentConfirmationsTable">
                     <div class="table-header">
                         <h3>Últimas Confirmaciones</h3>
-                        <button class="btn btn-primary" onclick="showCreateForm()">
-                            <i class="fas fa-plus"></i> Añadir Invitado
-                        </button>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Invitado</th>
-                                <th>Estado</th>
-                                <th>Pases</th>
-                                <th>Mesa</th>
-                                <th>Mensaje</th>
-                                <th style="text-align: right;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentConfirmations">
-                            <!-- Recent confirmations will be loaded here -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="recent-confirmations-table">
+                            <thead>
+                                <tr>
+                                    <th>Invitado</th>
+                                    <th>Estado</th>
+                                    <th>Pases</th>
+                                    <th>Mesa</th>
+                                    <th class="message-column">Mensaje</th>
+                                    <th style="text-align: right;">Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentConfirmations">
+                                <!-- Recent confirmations will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                     <div style="padding: 16px; text-align: center; border-top: 1px solid var(--border-color);">
-                        <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Ver todos los invitados</a>
+                        <a href="#invitations" class="text-primary" style="font-size: 0.875rem; font-weight: 500; text-decoration: none;">Gestionar invitaciones</a>
                     </div>
                 </div>
             </section>
 
             <!-- Invitations Section -->
             <section id="invitations" class="content-section">
-                <h1>Gestión de Invitaciones</h1>
-                <div class="actions-bar">
-                    <input type="text" id="searchInput" placeholder="Buscar invitación..." class="search-input">
-                    <button class="btn btn-primary" onclick="showCreateForm()">
-                        <i class="fas fa-plus"></i> Nueva Invitación
-                    </button>
-                    <button class="btn btn-secondary" onclick="exportAllInvitations()">
-                        <i class="fas fa-file-excel"></i> Exportar Todo
-                    </button>
+                <div class="section-header">
+                    <div>
+                        <h1>Gestión de Invitaciones</h1>
+                        <p class="section-subtitle">Gestiona las invitaciones, confirma asistencias y organiza las mesas para el gran día.</p>
+                    </div>
                 </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Total Invitaciones</p>
+                            <h3 id="totalInvitationsStats">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <span class="stat-badge success" id="confirmedChangeStats">+0%</span>
+                        </div>
+                        <div class="stat-content">
+                            <p>Invitaciones Confirmadas</p>
+                            <h3 id="confirmedPassesStats">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Invitaciones Pendientes</p>
+                            <h3 id="pendingInvitationsStats">0</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <p>Invitaciones Canceladas</p>
+                            <h3 id="cancelledPassesStats">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions Bar -->
+                <div class="actions-bar">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="Buscar invitado..." class="search-input">
+                        <button class="btn-icon" title="Filtros" onclick="toggleFilters()">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                    <div class="actions-group">
+                        <button class="btn btn-secondary" onclick="showImportModal()">
+                            <i class="fas fa-file-upload"></i> Importar CSV
+                        </button>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="fas fa-plus"></i> Añadir Invitado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Invitations Table -->
                 <div class="table-container">
-                    <table class="invitations-table">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Invitados</th>
-                                <th>Pases</th>
-                                <th>Estado</th>
-                                <th>Confirmados</th>
-                                <th>Cancelados</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invitationsTableBody">
-                            <!-- Las invitaciones se cargarán aquí -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="recent-confirmations-table">
+                            <thead>
+                                <tr>
+                                    <th>Invitado</th>
+                                    <th>Estado</th>
+                                    <th>Pases</th>
+                                    <th>Mesa</th>
+                                    <th class="message-column">Mensaje</th>
+                                    <th style="text-align: right;">Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invitationsTableBody">
+                                <!-- Las invitaciones se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="table-pagination">
+                        <div class="pagination-left">
+                            <p class="pagination-info">Mostrando <span id="showingFrom">1</span>-<span id="showingTo">20</span> de <span id="totalCount">0</span> invitados</p>
+                            <div class="items-per-page">
+                                <label for="itemsPerPage">Mostrar:</label>
+                                <select id="itemsPerPage" class="items-per-page-select">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="30">30</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="prevPage" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="pagination-numbers" id="paginationNumbers">
+                                <button class="pagination-number active">1</button>
+                            </div>
+                            <button class="pagination-btn" id="nextPage">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-        <!-- Create Invitation Section -->
-        <section id="create" class="content-section">
-            <h2>Crear Nueva Invitación</h2>
-            
-            <!-- CSV Upload Section -->
-            <div class="csv-upload-section">
-                <h3><i class="fas fa-file-csv"></i> Cargar desde CSV</h3>
-                <p>Carga múltiples invitaciones desde un archivo CSV</p>
-                
-                <div class="csv-format">
-                    <h4>Formato del CSV:</h4>
-                    <pre>Nombres,Pases,Telefono
-Juan Pérez y María García,2,+521234567890
-Pedro López,1,+521234567891
-Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
-                    <small>
-                        <strong>Importante:</strong> 
-                        • Usa "y" para separar múltiples nombres
-                        • El teléfono es opcional
-                        • Guarda el archivo con codificación UTF-8
-                    </small>
-                </div>
-                
-                <div class="file-upload">
-                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
-                    <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">
-                        <i class="fas fa-upload"></i> Seleccionar archivo CSV
-                    </button>
-                    <span id="fileName" style="margin-left: 10px;"></span>
-                </div>
-                
-                <button id="uploadCsvBtn" class="btn btn-primary" style="display: none; margin-top: 10px;">
-                    <i class="fas fa-file-import"></i> Cargar Invitaciones
-                </button>
-                
-                <div id="csvResults" style="margin-top: 20px;"></div>
-            </div>
-            
-            <hr style="margin: 30px 0;">
-            
-            <!-- Individual Creation Form -->
-            <h3><i class="fas fa-user-plus"></i> Crear Invitación Individual</h3>
-            <form id="createInvitationForm" class="create-form">
-                <div class="form-group">
-                    <label for="guestNames">Nombres de Invitados</label>
-                    <input type="text" id="guestNames" name="guestNames" required 
-                           placeholder="Ej: Juan Pérez, María García">
-                    <small>Separa los nombres con comas si son varios invitados</small>
-                </div>
-                <div class="form-group">
-                    <label for="numberOfPasses">Número de Pases</label>
-                    <input type="number" id="numberOfPasses" name="numberOfPasses" 
-                           min="1" max="10" required placeholder="2">
-                </div>
-                <div class="form-group">
-                    <label for="phone">Teléfono (opcional)</label>
-                    <input type="tel" id="phone" name="phone" 
-                           placeholder="+521234567890">
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Crear Invitación
-                </button>
-            </form>
-        </section>
 
         </main>
     </div>
@@ -339,8 +432,12 @@ Ana Martínez y Carlos Ruiz,2,+521234567892</pre>
         </div>
     </div>
 
+    <!-- Modal for Create Invitation will be created dynamically -->
+
+    <!-- Modal for Import CSV will be created dynamically -->
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="admin.js"></script>
+    <script type="module" src="admin.js"></script>
 </body>
 </html>

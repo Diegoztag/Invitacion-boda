@@ -1,0 +1,30 @@
+/* Estilos para el badge de estado inactivo */
+
+/* Badge de estado inactivo - mismo estilo que otros badges */
+.status-badge.inactive {
+    background: rgba(158, 158, 158, 0.1);  /* Fondo gris semi-transparente */
+    color: #9e9e9e;  /* Texto gris */
+    border-color: rgba(158, 158, 158, 0.2);  /* Borde gris semi-transparente */
+}
+
+/* Badge grande con icono para modales */
+.status-badge-large.inactive {
+    background: rgba(158, 158, 158, 0.1);  /* Mismo fondo semi-transparente */
+    color: #9e9e9e;  /* Mismo color de texto */
+    border-color: rgba(158, 158, 158, 0.2);  /* Mismo borde semi-transparente */
+}
+
+.status-badge-large.inactive i {
+    color: #9e9e9e;  /* Icono del mismo color */
+}
+
+/* Hover effect para badges inactivos */
+.status-badge.inactive:hover {
+    background: rgba(158, 158, 158, 0.15);  /* Fondo ligeramente más opaco al hover */
+    border-color: rgba(158, 158, 158, 0.3);  /* Borde ligeramente más opaco */
+}
+
+/* Para mantener consistencia con otros badges */
+.status-badge.inactive .status-dot {
+    background-color: #9e9e9e;
+}
