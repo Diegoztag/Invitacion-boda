@@ -117,7 +117,10 @@ const WEDDING_CONFIG = {
     
     // Configuración del backend
     api: {
-        backendUrl: "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com/api",
+        // Detección automática del entorno
+        backendUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? "http://localhost:3000/api"  // Desarrollo local
+            : "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com/api", // Producción (Seenode)
         googleMapsApiKey: "YOUR_API_KEY"
     },
     
