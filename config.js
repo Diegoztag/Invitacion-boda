@@ -247,7 +247,7 @@ const WEDDING_CONFIG = {
     
     // Configuración de la sección de Instagram/Hashtag
     photoSection: {
-        enabled: true, // true = mostrar sección de hashtag, false = ocultar
+        enabled: false, // true = mostrar sección de hashtag, false = ocultar
         title: "Comparte tus Fotos",
         subtitle: "Captura y comparte los momentos especiales de nuestro día",
         showHashtag: true, // true = mostrar hashtag de Instagram, false = ocultar

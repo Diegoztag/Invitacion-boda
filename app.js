@@ -146,15 +146,15 @@ function updateDynamicContent() {
         if (carouselSubtitle) {
             carouselSubtitle.textContent = WEDDING_CONFIG.carouselSection.subtitle;
         }
-        
-        // Show the section
-        if (carouselSection) {
-            carouselSection.style.display = 'block';
-        }
     } else {
-        // Hide carousel section if not enabled
+        // Remove carousel section if not enabled
         if (carouselSection) {
-            carouselSection.style.display = 'none';
+            carouselSection.remove();
+        }
+        // Also remove the navigation link
+        const carouselNavLink = document.querySelector('a[href="#carousel"]');
+        if (carouselNavLink && carouselNavLink.parentElement) {
+            carouselNavLink.parentElement.remove();
         }
     }
     
@@ -184,27 +184,22 @@ function updateDynamicContent() {
                 hashtagDescription.textContent = WEDDING_CONFIG.photoSection.hashtagDescription;
             }
         } else {
-            // Hide hashtag container if not enabled
+            // Remove hashtag container if not enabled
             const hashtagContainer = document.querySelector('.hashtag-container');
             if (hashtagContainer) {
-                hashtagContainer.style.display = 'none';
+                hashtagContainer.remove();
             }
         }
-        
-        // Show the section
-        if (photoSection) {
-            photoSection.style.display = 'block';
-        }
     } else {
-        // Hide photo section if not enabled
+        // Remove photo section if not enabled
         if (photoSection) {
-            photoSection.style.display = 'none';
+            photoSection.remove();
         }
         
-        // Also hide the navigation link to photos
+        // Also remove the navigation link to photos
         const photoNavLink = document.querySelector('a[href="#fotos"]');
         if (photoNavLink && photoNavLink.parentElement) {
-            photoNavLink.parentElement.style.display = 'none';
+            photoNavLink.parentElement.remove();
         }
     }
     
@@ -223,9 +218,16 @@ function updateDynamicContent() {
 // Initialize Gift Registry
 function initGiftRegistry() {
     if (!WEDDING_CONFIG.giftRegistry || !WEDDING_CONFIG.giftRegistry.enabled) {
-        // Hide gift registry section if not enabled
+        // Remove gift registry section if not enabled
         const giftSection = document.getElementById('mesa-regalos');
-        if (giftSection) giftSection.style.display = 'none';
+        if (giftSection) {
+            giftSection.remove();
+        }
+        // Also remove the navigation link
+        const giftNavLink = document.querySelector('a[href="#mesa-regalos"]');
+        if (giftNavLink && giftNavLink.parentElement) {
+            giftNavLink.parentElement.remove();
+        }
         return;
     }
     
@@ -566,8 +568,19 @@ function initSmoothScroll() {
                 // Get the actual navbar height dynamically
                 const navbar = document.getElementById('navbar');
                 const navbarHeight = navbar ? navbar.offsetHeight : 80;
-                // Calculate the exact position without extra buffer that might show hero
-                const offsetTop = target.offsetTop - navbarHeight;
+                
+                // Calculate the target position
+                // For sections other than hero, we need to account for the fixed navbar
+                const targetId = target.getAttribute('id');
+                let offsetTop;
+                
+                if (targetId === 'inicio') {
+                    // For hero section, scroll to top
+                    offsetTop = 0;
+                } else {
+                    // For other sections, account for navbar height
+                    offsetTop = target.offsetTop - navbarHeight;
+                }
                 
                 window.scrollTo({
                     top: offsetTop,
