@@ -11,8 +11,11 @@ const invitationService = require('./services/invitationService');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurar trust proxy para servicios como Seenode
-app.set('trust proxy', true);
+// Configurar trust proxy solo en producción para servicios como Seenode
+// En desarrollo esto puede permitir bypass del rate limiting
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', true);
+}
 
 // Live reload setup (only in development)
 let liveReloadServer;

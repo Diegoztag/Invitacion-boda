@@ -314,11 +314,27 @@ export class ModalFactory {
                     <div class="format-info-content">
                         <div class="format-info-item">
                             <span class="format-label">Columnas requeridas</span>
-                            <code class="format-code primary">Nombres,Pases,Teléfono</code>
+                            <code class="format-code primary">Nombres,Pases</code>
                         </div>
                         <div class="format-info-item">
-                            <span class="format-label">Ejemplo de fila</span>
-                            <code class="format-code secondary">Juan y María,2,+521234567890</code>
+                            <span class="format-label">Columnas opcionales</span>
+                            <code class="format-code">Mesa,Telefono,Adultos,Niños,Staff</code>
+                        </div>
+                        <div class="format-info-item">
+                            <span class="format-label">Orden completo</span>
+                            <code class="format-code">Nombres,Pases,Mesa,Telefono,Adultos,Niños,Staff</code>
+                        </div>
+                        <div class="format-info-item">
+                            <span class="format-label">Ejemplo completo</span>
+                            <code class="format-code secondary">Juan y María,2,5,+521234567890,2,0,0</code>
+                        </div>
+                        <div class="format-info-item">
+                            <span class="format-label">Ejemplo mínimo</span>
+                            <code class="format-code secondary">Pedro García,1</code>
+                        </div>
+                        <div class="format-info-item" style="margin-top: 10px;">
+                            <span class="format-label">⚠️ Nota importante</span>
+                            <span style="font-size: 0.875rem; color: var(--text-muted);">Si incluyes Adultos, Niños y Staff, la suma debe ser igual al total de Pases</span>
                         </div>
                     </div>
                 </div>

@@ -945,6 +945,9 @@ function viewInvitation(code) {
                     <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
                         <i class="fas fa-link"></i> Copiar Link
                     </button>
+                    <button class="btn btn-secondary" onclick="window.open('${invitationUrl}', '_blank')">
+                        <i class="fas fa-external-link-alt"></i> Ver Invitación
+                    </button>
                     ${invitation.status === 'inactive' ? `
                         <button class="btn btn-primary" onclick="activateInvitation('${code}')">
                             <i class="fas fa-check-circle"></i> Activar
@@ -954,7 +957,7 @@ function viewInvitation(code) {
                             <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn btn-danger" onclick="deactivateInvitation('${code}')">
-                            <i class="fas fa-power-off"></i> Desactivar Invitación
+                            <i class="fas fa-power-off"></i> Desactivar
                         </button>
                     `}
                 </div>
