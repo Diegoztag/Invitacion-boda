@@ -117,7 +117,7 @@ const WEDDING_CONFIG = {
     
     // Configuración del backend
     api: {
-        backendUrl: "http://localhost:3000/api",
+        backendUrl: "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com/api",
         googleMapsApiKey: "YOUR_API_KEY"
     },
     
