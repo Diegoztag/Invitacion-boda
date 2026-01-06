@@ -55,27 +55,27 @@ const WEDDING_CONFIG = {
         {
             time: "5:00 p.m",
             title: "Ceremonia Civil",
-            description: "Momento íntimo donde sellaremos nuestro amor ante la ley"
+            description: ""
         },
         {
             time: "7:00 p.m",
             title: "Recepción de Invitados",
-            description: "Bienvenida con bebidas y aperitivos mientras esperamos a los novios"
+            description: ""
         },
         {
             time: "7:00 p.m",
             title: "Entrada de los novios",
-            description: "Gran entrada de los recién casados para dar inicio a la celebración"
+            description: ""
         },
         {
             time: "7:30 p.m",
             title: "Cena",
-            description: "Delicioso banquete para compartir y brindar por los novios"
+            description: ""
         },
         {
             time: "8:30 PM",
             title: "Fiesta",
-            description: "¡Música, baile y diversión hasta el amanecer!"
+            description: ""
         }
     ],
     

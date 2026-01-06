@@ -925,6 +925,27 @@ function initAnimations() {
         itineraryObserver.observe(el);
     });
 
+    // Nuevo observer para activar animación del itinerario con scroll
+    const itineraryScrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Agregar clase animate-in cuando el elemento entra en vista
+                entry.target.classList.add('animate-in');
+            } else {
+                // Remover clase cuando sale de vista para que se pueda re-animar
+                entry.target.classList.remove('animate-in');
+            }
+        });
+    }, {
+        threshold: 0.3, // Se activa cuando el 30% del elemento es visible
+        rootMargin: '0px 0px -100px 0px' // Margen inferior para activar antes
+    });
+
+    // Aplicar el observer a todos los elementos del itinerario
+    document.querySelectorAll('.itinerary-item').forEach(item => {
+        itineraryScrollObserver.observe(item);
+    });
+
     // Minimal itinerary focus effect
     const itineraryItems = document.querySelectorAll('.itinerary-item');
     if (itineraryItems.length > 0) {
