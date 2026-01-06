@@ -109,7 +109,8 @@ const WEDDING_CONFIG = {
     
     // URLs de imágenes
     images: {
-        heroBackground: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3",
+        // Imagen de fondo del hero - puedes usar una URL o una ruta local
+        heroBackground: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
         ceremonyIcon: "fas fa-heart",
         receptionIcon: "fas fa-champagne-glasses"
     },
@@ -204,8 +205,8 @@ const WEDDING_CONFIG = {
     // Configuración del Carrusel (Nuestra Historia)
     carouselSection: {
         enabled: true, // true = mostrar carrusel, false = ocultar
-        title: "Nuestra Historia",
-        subtitle: "Un viaje de amor que comenzó hace años",
+        title: "Galería",
+        subtitle: "",
         carousel: {
             showNavigationButtons: false, // true = mostrar botones de navegación (flechas), false = ocultar
             showIndicators: false, // true = mostrar indicadores (puntos), false = ocultar
@@ -217,24 +218,24 @@ const WEDDING_CONFIG = {
         // Fotos del carrusel - puedes agregar, quitar o modificar las fotos
         photos: [
             {
-                url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
-                caption: "Nuestro primer encuentro",
-                alt: "Nuestra historia 1"
+                url: "https://i.ibb.co/hFctrJw4/62e95a3a-801c-41e3-ab9c-559717091f48.jpg",
+                caption: "",
+                alt: ""
             },
             {
-                url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
-                caption: "La propuesta",
-                alt: "Nuestra historia 2"
+                url: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+                caption: "",
+                alt: ""
             },
             {
                 url: "https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
-                caption: "Nuestras aventuras juntos",
-                alt: "Nuestra historia 3"
+                caption: "",
+                alt: ""
             },
             {
                 url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
-                caption: "Momentos especiales",
-                alt: "Nuestra historia 4"
+                caption: "",
+                alt: ""
             }
             // Puedes agregar más fotos aquí siguiendo el mismo formato:
             // {

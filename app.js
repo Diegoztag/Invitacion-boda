@@ -49,6 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Update all dynamic content from configuration
 function updateDynamicContent() {
+    // Apply hero background image from config
+    const heroSection = document.querySelector('.hero');
+    if (heroSection && WEDDING_CONFIG.images && WEDDING_CONFIG.images.heroBackground) {
+        heroSection.style.backgroundImage = `url('${WEDDING_CONFIG.images.heroBackground}')`;
+    }
+    
     // Update nav logo
     const navLogo = document.querySelector('.nav-logo');
     if (WEDDING_CONFIG.navLogo && WEDDING_CONFIG.navLogo.custom) {
