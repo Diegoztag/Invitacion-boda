@@ -4,8 +4,9 @@
   "description": "Wedding invitation SPA with integrated live reload",
   "main": "index.js",
   "scripts": {
-    "start": "cd backend && npm run dev",
-    "dev": "cd backend && npm run dev"
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install-backend": "cd backend && npm install"
   },
   "keywords": [
     "wedding",
