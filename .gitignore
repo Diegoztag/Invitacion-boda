@@ -12,9 +12,9 @@ yarn-error.log*
 .env.production.local
 
 # Data files (CSV database)
-data/
-*.csv
+data/*.csv
 !invitaciones-ejemplo.csv
+!data/.gitkeep
 
 # Logs
 logs/
