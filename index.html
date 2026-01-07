@@ -43,10 +43,6 @@
         <div class="hero-content">
             <h1 class="hero-title animate-fade-in" id="heroTitle">Diego & Fernanda</h1>
             <p class="hero-subtitle animate-fade-in-delay" id="heroSubtitle">Nos casamos</p>
-            <div class="invitation-info" id="invitationInfo" style="display: none;">
-                <p class="guest-names">Invitación para: <span id="guestNames"></span></p>
-                <p class="guest-passes"><span id="numberOfPasses"></span> pases disponibles</p>
-            </div>
             <div class="hero-date animate-fade-in-delay-2">
                 <span class="date-day" id="dateDay">28</span>
                 <span class="date-month" id="dateMonth">Febrero</span>
@@ -103,10 +99,6 @@
                 <p class="dress-code-note" id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
                 <div class="dress-code-image">
                     <img src="img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
-                </div>
-                <div id="noChildrenNote" class="no-children-note" style="display: none;">
-                    <i class="fas fa-info-circle"></i>
-                    <p id="noChildrenMessage"></p>
                 </div>
             </div>
         </div>
@@ -194,6 +186,19 @@
         <div class="container">
             <h2 class="section-title" id="rsvpTitle">Confirma tu Asistencia</h2>
             <p class="section-subtitle" id="rsvpSubtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
+            
+            <!-- Nota de no niños -->
+            <div id="noChildrenNote" class="no-children-note-rsvp" style="display: none;">
+                <div class="no-children-content">
+                    <p id="noChildrenMessage"></p>
+                </div>
+            </div>
+            
+            <!-- Información de la invitación -->
+            <div class="invitation-info" id="invitationInfo" style="display: none;">
+                <p class="guest-names">Invitación para: <span id="guestNames"></span></p>
+                <p class="guest-passes"><span id="numberOfPasses"></span> pases disponibles</p>
+            </div>
             
             <!-- Mensaje de invitación ya confirmada -->
             <div id="alreadyConfirmed" class="already-confirmed" style="display: none;">
@@ -355,8 +360,6 @@
                     <p>Creado por Diego Zazueta</p>
                     <p class="footer-contact">
                         <a href="mailto:diego.zazueta@example.com"><i class="fas fa-envelope"></i> diegoztag@gmail.com</a>
-                        <span class="separator">|</span>
-                        <a href="tel:+52 6677894583"><i class="fas fa-phone"></i> +52 6677894583</a>
                     </p>
                 </div>
             </div>

@@ -986,15 +986,7 @@ function initAnimations() {
         });
     }
 
-    // Add parallax effect to hero section
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallaxSpeed = 0.5;
-            hero.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
-        });
-    }
+    // Parallax effect removed for better mobile performance
 
     // Animate section titles on scroll
     const sectionTitles = document.querySelectorAll('.section-title');

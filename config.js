@@ -110,7 +110,7 @@ const WEDDING_CONFIG = {
     // URLs de imágenes
     images: {
         // Imagen de fondo del hero - puedes usar una URL o una ruta local
-        heroBackground: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+        heroBackground: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
         ceremonyIcon: "fas fa-heart",
         receptionIcon: "fas fa-champagne-glasses"
     },
@@ -129,7 +129,7 @@ const WEDDING_CONFIG = {
         targetTotal: 130, // Número total de invitados esperados (personas)
         targetInvitations: 150, // Número estimado de invitaciones a enviar
         allowChildren: false, // true = se permiten niños, false = solo adultos
-        showNoChildrenNote: false, // true = mostrar nota de "no niños", false = ocultar
+        showNoChildrenNote: true,//true = mostrar nota de "no niños", false = ocultar
         noChildrenMessage: "Esperamos contar con su comprensión para que este sea un evento solo para adultos"
     },
     
@@ -226,17 +226,32 @@ const WEDDING_CONFIG = {
                 alt: ""
             },
             {
-                url: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+                url: "https://i.ibb.co/hFZwc1WM/IMG-6263.jpg",
                 caption: "",
                 alt: ""
             },
             {
-                url: "https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                url: "https://i.ibb.co/5WVhkgSX/IMG-6262.jpg",
                 caption: "",
                 alt: ""
             },
             {
-                url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+                url: "https://i.ibb.co/8Dt4Ldq7/IMG-6264.jpg",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://i.ibb.co/MDPBccjG/IMG-6254.jpg",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://i.ibb.co/yFGD5PMT/IMG-6258.jpg",
+                caption: "",
+                alt: ""
+            },
+            {
+                url: "https://i.ibb.co/67V3SbQF/IMG-6251.jpg",
                 caption: "",
                 alt: ""
             }
