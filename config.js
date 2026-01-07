@@ -221,11 +221,6 @@ const WEDDING_CONFIG = {
         // Fotos del carrusel - puedes agregar, quitar o modificar las fotos
         photos: [
             {
-                url: "https://i.ibb.co/hFctrJw4/62e95a3a-801c-41e3-ab9c-559717091f48.jpg",
-                caption: "",
-                alt: ""
-            },
-            {
                 url: "https://i.ibb.co/hFZwc1WM/IMG-6263.jpg",
                 caption: "",
                 alt: ""
@@ -242,11 +237,6 @@ const WEDDING_CONFIG = {
             },
             {
                 url: "https://i.ibb.co/MDPBccjG/IMG-6254.jpg",
-                caption: "",
-                alt: ""
-            },
-            {
-                url: "https://i.ibb.co/yFGD5PMT/IMG-6258.jpg",
                 caption: "",
                 alt: ""
             },
