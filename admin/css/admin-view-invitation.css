@@ -88,6 +88,33 @@
 }
 
 /* Responsive Design */
+
+/* Large screens - reduce button width to prevent overflow */
+@media (min-width: 1024px) {
+    .invitation-detail .modal-actions .btn {
+        max-width: 160px;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Extra large screens - further reduce button width */
+@media (min-width: 1200px) {
+    .invitation-detail .modal-actions .btn {
+        max-width: 140px;
+        font-size: 0.813rem;
+        padding: 0.5rem 0.875rem;
+    }
+    
+    /* If there are 4 buttons, make them even smaller */
+    .invitation-detail .modal-actions:has(.btn:nth-child(4)) .btn {
+        max-width: 120px;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Mobile screens */
 @media (max-width: 480px) {
     .guest-info-section {
         padding: 0.75rem;

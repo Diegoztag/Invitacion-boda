@@ -1068,7 +1068,6 @@ h1, h2, h3, h4, h5, h6 {
     background-size: cover;
     background-repeat: no-repeat;
     overflow: hidden; /* Prevent any overflow issues */
-    background-attachment: fixed; /* Parallax effect */
 }
 
 /* Decorative frame for hero */
@@ -1143,6 +1142,85 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 15px;
     margin-bottom: var(--spacing-xl);
     border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Invitation Info in RSVP Section */
+.rsvp .invitation-info {
+    background: linear-gradient(135deg, rgba(248, 244, 230, 0.8) 0%, rgba(212, 165, 116, 0.1) 100%);
+    backdrop-filter: none;
+    padding: 25px 30px;
+    border-radius: 20px;
+    margin: 30px auto 40px;
+    border: 2px solid rgba(212, 165, 116, 0.3);
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(212, 165, 116, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative element for RSVP invitation info */
+.rsvp .invitation-info::before {
+    content: '✉';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    font-size: 80px;
+    color: rgba(212, 165, 116, 0.1);
+    transform: rotate(15deg);
+}
+
+.rsvp .invitation-info .guest-names {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    font-weight: 400;
+    color: var(--text-dark);
+    font-family: 'Playfair Display', serif;
+}
+
+.rsvp .invitation-info .guest-names span {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.4rem;
+}
+
+.rsvp .invitation-info .guest-passes {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.rsvp .invitation-info .guest-passes span {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-style: normal;
+}
+
+/* Mobile adjustments for RSVP invitation info */
+@media (max-width: 768px) {
+    .rsvp .invitation-info {
+        padding: 20px 25px;
+        margin: 20px auto 30px;
+    }
+    
+    .rsvp .invitation-info::before {
+        font-size: 60px;
+        top: -15px;
+        right: -15px;
+    }
+    
+    .rsvp .invitation-info .guest-names {
+        font-size: 1.1rem;
+    }
+    
+    .rsvp .invitation-info .guest-names span {
+        font-size: 1.2rem;
+    }
+    
+    .rsvp .invitation-info .guest-passes {
+        font-size: 1rem;
+    }
 }
 
 .guest-names {
@@ -1462,28 +1540,95 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* No Children Note */
-.no-children-note {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(212, 165, 116, 0.2);
-    border-radius: 10px;
-    border: 1px solid var(--primary-color);
+/* No Children Note - RSVP Section - Estilo nota sutil */
+.no-children-note-rsvp {
+    max-width: 500px;
+    margin: 20px auto 30px;
+    background: rgba(255, 251, 235, 0.6);
+    border-radius: 8px;
+    padding: 15px 20px;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Icono de nota */
+.no-children-note-rsvp::before {
+    content: '📌';
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    font-size: 1.2rem;
+    transform: rotate(-15deg);
+}
+
+.no-children-content {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-.no-children-note i {
+.no-children-note-rsvp i {
+    font-size: 1.3rem;
     color: var(--primary-color);
-    font-size: var(--no-children-icon-size-md);
+    opacity: 0.7;
+    flex-shrink: 0;
 }
 
-.no-children-note p {
+.no-children-note-rsvp p {
     margin: 0;
-    color: var(--text-dark);
-    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 400;
+    line-height: 1.5;
+    font-style: normal;
+    text-align: left;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .no-children-note-rsvp {
+        margin: 15px auto 25px;
+        padding: 12px 18px;
+        max-width: 90%;
+    }
+    
+    .no-children-note-rsvp::before {
+        font-size: 1rem;
+        top: -8px;
+    }
+    
+    .no-children-content {
+        gap: 10px;
+    }
+    
+    .no-children-note-rsvp i {
+        font-size: 1.2rem;
+    }
+    
+    .no-children-note-rsvp p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .no-children-note-rsvp {
+        padding: 10px 15px;
+        margin: 12px auto 20px;
+    }
+    
+    .no-children-note-rsvp::before {
+        font-size: 0.9rem;
+    }
+    
+    .no-children-note-rsvp i {
+        font-size: 1.1rem;
+    }
+    
+    .no-children-note-rsvp p {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
 }
 
 /* Itinerary Section - Diseño Premium y Refinado */
@@ -2336,22 +2481,7 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
 }
 
-/* Decorative floating hearts background */
-.carousel-section::before {
-    content: '♥ ♥ ♥ ♥ ♥';
-    position: absolute;
-    top: 10%;
-    left: -100px;
-    font-size: 2rem;
-    color: rgba(212, 165, 116, 0.1);
-    animation: floatHearts 20s linear infinite;
-}
-
-@keyframes floatHearts {
-    to {
-        transform: translateX(calc(100vw + 200px));
-    }
-}
+/* Decorative floating hearts background - REMOVED */
 
 /* Instagram Hashtag Section */
 .instagram-section {
