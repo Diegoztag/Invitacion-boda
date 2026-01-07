@@ -13,68 +13,35 @@ const CONFIG = {
 
 // Initialize Meta Tags from config
 function initializeMetaTags() {
+    // Las meta etiquetas ahora son estáticas en el HTML para mejor compatibilidad con WhatsApp
+    // Solo actualizamos el título de la página dinámicamente
     const metaConfig = WEDDING_CONFIG.metaTags;
-    
-    // Update basic meta tags
-    document.querySelector('meta[name="description"]').content = metaConfig.description;
-    
-    // Update Open Graph tags
-    document.querySelector('meta[property="og:title"]').content = metaConfig.title;
-    document.querySelector('meta[property="og:description"]').content = metaConfig.description;
-    document.querySelector('meta[property="og:image"]').content = metaConfig.image;
-    document.querySelector('meta[property="og:url"]').content = metaConfig.siteUrl;
-    document.querySelector('meta[property="og:site_name"]').content = metaConfig.siteName;
-    
-    // Update Twitter Card tags
-    document.querySelector('meta[name="twitter:title"]').content = metaConfig.title;
-    document.querySelector('meta[name="twitter:description"]').content = metaConfig.description;
-    document.querySelector('meta[name="twitter:image"]').content = metaConfig.image;
-    
-    // Update favicon
-    document.querySelector('link[rel="icon"]').href = metaConfig.image;
     
     // Update page title
     document.title = metaConfig.title;
     
-    // Check if we have an invitation code for personalized meta tags
+    // Check if we have an invitation code for personalized title
     const urlParams = new URLSearchParams(window.location.search);
     const invitationCode = urlParams.get('invitation');
     
     if (invitationCode && metaConfig.personalized && metaConfig.personalized.enabled) {
-        // We'll update these after loading the invitation data
-        // Store the original values to update later
-        window.originalMetaTags = {
-            title: metaConfig.title,
-            description: metaConfig.description,
-            url: metaConfig.siteUrl
-        };
+        // Store the original title to update later
+        window.originalTitle = metaConfig.title;
     }
 }
 
-// Update meta tags for personalized invitations
+// Update page title for personalized invitations
 function updateMetaTagsForInvitation(invitation) {
     const metaConfig = WEDDING_CONFIG.metaTags;
     
     if (!metaConfig.personalized || !metaConfig.personalized.enabled) return;
     
     const guestNames = invitation.guestNames.join(' y ');
-    const passes = invitation.numberOfPasses;
     
-    // Generate personalized title and description
+    // Generate personalized title
     const personalizedTitle = metaConfig.personalized.titleTemplate(guestNames);
-    const personalizedDescription = metaConfig.personalized.descriptionTemplate(guestNames, passes);
     
-    // Update meta tags
-    document.querySelector('meta[property="og:title"]').content = personalizedTitle;
-    document.querySelector('meta[property="og:description"]').content = personalizedDescription;
-    document.querySelector('meta[name="twitter:title"]').content = personalizedTitle;
-    document.querySelector('meta[name="twitter:description"]').content = personalizedDescription;
-    
-    // Update URL with invitation code
-    const personalizedUrl = `${metaConfig.siteUrl}?invitation=${invitationCode}`;
-    document.querySelector('meta[property="og:url"]').content = personalizedUrl;
-    
-    // Update page title
+    // Update only the page title (meta tags remain static for WhatsApp compatibility)
     document.title = personalizedTitle;
 }
 
