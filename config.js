@@ -205,6 +205,37 @@ const WEDDING_CONFIG = {
         // bride.name[0] & groom.name[0] = "F & D"
     },
     
+    // Configuración de Meta Etiquetas (SEO y Redes Sociales)
+    metaTags: {
+        // URL base del sitio (actualizar con el dominio real)
+        siteUrl: window.location.origin || "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+        
+        // Título principal para compartir
+        title: "Boda Fernanda & Diego - 28 de Febrero 2026",
+        
+        // Descripción para compartir
+        description: "Están cordialmente invitados a celebrar nuestra boda. Sábado 28 de Febrero 2026 en Campestre los Reyes, Sinaloa.",
+        
+        // Imagen principal para compartir (mínimo 1200x630px para mejor visualización)
+        image: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+        
+        // Nombre del sitio
+        siteName: "Boda Fernanda & Diego",
+        
+        // Configuración para invitaciones personalizadas
+        personalized: {
+            // Si es true, intentará personalizar las meta etiquetas con info de la invitación
+            enabled: true,
+            
+            // Plantilla para el título personalizado
+            titleTemplate: (guestNames) => `Invitación de Boda - ${guestNames}`,
+            
+            // Plantilla para la descripción personalizada
+            descriptionTemplate: (guestNames, passes) => 
+                `${guestNames}, están cordialmente invitados a la boda de Fernanda & Diego. ${passes} pases disponibles.`
+        }
+    },
+    
     // Configuración del Carrusel (Nuestra Historia)
     carouselSection: {
         enabled: true, // true = mostrar carrusel, false = ocultar
