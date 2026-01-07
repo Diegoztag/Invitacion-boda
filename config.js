@@ -211,10 +211,10 @@ const WEDDING_CONFIG = {
         siteUrl: window.location.origin || "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com",
         
         // Título principal para compartir
-        title: "Boda Fernanda & Diego - 28 de Febrero 2026",
+        title: "Boda Fernanda & Diego",
         
         // Descripción para compartir
-        description: "Están cordialmente invitados a celebrar nuestra boda. Sábado 28 de Febrero 2026 en Campestre los Reyes, Sinaloa.",
+        description: "28 de Febrero 2026",
         
         // Imagen principal para compartir (mínimo 1200x630px para mejor visualización)
         image: "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
