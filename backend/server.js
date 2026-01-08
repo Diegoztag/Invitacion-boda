@@ -49,12 +49,12 @@ app.use('/api/', limiter);
 
 // Serve admin panel at root - MUST BE BEFORE static files
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'admin.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'admin', 'index.html'));
 });
 
 // Serve invitation page at /invitacion
 app.get('/invitacion', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'public', 'index.html'));
 });
 
 // Serve static files AFTER specific routes

@@ -1,6 +1,5 @@
 // notification-service.js - Servicio para manejar notificaciones de nuevas confirmaciones
 
-import { store } from '../store.js';
 import { getTimeAgo } from '../admin-utils.js';
 
 class NotificationService {
@@ -30,13 +29,7 @@ class NotificationService {
         this.lastCheckTime = new Date();
         
         // Marcar todas las confirmaciones actuales como vistas
-        const currentConfirmations = store.getState().invitations
-            .filter(inv => inv.confirmed);
-        
-        currentConfirmations.forEach(inv => {
-            this.seenConfirmations.add(inv.code);
-        });
-        
+        // Se inicializará cuando se carguen las invitaciones
         this.saveSeenConfirmations();
         
         // Configurar eventos del panel
@@ -252,8 +245,7 @@ class NotificationService {
             const data = await response.json();
             const invitations = data.invitations || [];
             
-            // Actualizar el store
-            store.updateInvitations(invitations);
+            // Las invitaciones se actualizan a través de los controladores
             
             // Buscar nuevas confirmaciones
             const newConfirmations = invitations.filter(inv => {
@@ -524,17 +516,13 @@ class NotificationService {
      * Marca todas las confirmaciones como vistas
      */
     markAllAsSeen() {
-        const confirmations = store.getState().invitations
-            .filter(inv => inv.confirmed);
-        
-        confirmations.forEach(inv => {
-            this.seenConfirmations.add(inv.code);
+        // Marcar todas las notificaciones como leídas
+        this.notifications.forEach(n => {
+            n.read = true;
+            this.seenConfirmations.add(n.code);
         });
         
         this.saveSeenConfirmations();
-        
-        // Marcar todas las notificaciones como leídas
-        this.notifications.forEach(n => n.read = true);
         this.updateNotificationCount();
         
         // Re-renderizar si el panel está abierto
@@ -552,9 +540,10 @@ class NotificationService {
     
     /**
      * Carga las notificaciones iniciales
+     * @param {Array} invitations - Array de invitaciones para inicializar
      */
-    loadInitialNotifications() {
-        const confirmations = store.getState().invitations
+    loadInitialNotifications(invitations = []) {
+        const confirmations = invitations
             .filter(inv => inv.confirmed)
             .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
             .slice(0, 20);

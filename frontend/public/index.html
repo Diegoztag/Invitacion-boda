@@ -33,10 +33,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
     
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/frontend/public/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="config.js"></script>
+    <script src="/frontend/public/config.js"></script>
 </head>
 <body>
     <!-- Loader -->
@@ -77,7 +77,7 @@
                 <span class="date-month" id="dateMonth">Febrero</span>
                 <span class="date-year" id="dateYear">2026</span>
             </div>
-            <div class="countdown" id="countdown">
+            <div class="countdown" id="countdown" data-countdown="2026-02-28T17:30:00">
                 <div class="countdown-item">
                     <span class="countdown-value" id="days">00</span>
                     <span class="countdown-label">Días</span>
@@ -127,7 +127,7 @@
                 <p class="dress-code-main" id="dressCodeDescription">Formal - Evitar colores pasteles</p>
                 <p class="dress-code-note" id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
                 <div class="dress-code-image">
-                    <img src="img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
+                    <img src="/frontend/public/img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
                 </div>
             </div>
         </div>
@@ -211,7 +211,7 @@
     </section>
 
     <!-- RSVP Section -->
-    <section id="confirmacion" class="rsvp section">
+    <section id="confirmacion" class="rsvp section" data-rsvp-container>
         <div class="container">
             <h2 class="section-title" id="rsvpTitle">Confirma tu Asistencia</h2>
             <p class="section-subtitle" id="rsvpSubtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
@@ -297,81 +297,7 @@
         </div>
     </section>
 
-    <!-- Gift Registry Section -->
-    <section id="mesa-regalos" class="gift-registry section">
-        <div class="container">
-            <h2 class="section-title" id="giftRegistryTitle">Mesa de Regalos</h2>
-            <p class="section-subtitle" id="giftRegistrySubtitle">Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo, aquí están nuestras opciones</p>
-            
-            <div class="gift-options">
-                <!-- Enlaces a tiendas -->
-                <div class="gift-stores" id="giftStores">
-                    <!-- Se llenará dinámicamente desde config.js -->
-                </div>
-                
-                <!-- Información bancaria -->
-                <div class="bank-info" id="bankInfo" style="display: none;">
-                    <div class="bank-card">
-                        <div class="bank-icon">
-                            <i class="fas fa-university"></i>
-                        </div>
-                        <h3 id="bankTitle">Transferencia Bancaria</h3>
-                        <p id="bankDescription">Si prefieres hacer una transferencia</p>
-                        <div class="bank-details" id="bankDetails">
-                            <!-- Se llenará dinámicamente desde config.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Carousel Section -->
-    <section id="carousel" class="carousel-section section">
-        <div class="container">
-            <h2 class="section-title" id="carouselSectionTitle">Galería</h2>
-            <p class="section-subtitle" id="carouselSectionSubtitle">Un viaje de amor que comenzó hace años</p>
-            
-            <!-- Photo Carousel -->
-            <div class="photo-carousel-container">
-                <div class="photo-carousel">
-                    <div class="carousel-track" id="carouselTrack">
-                        <!-- Photos will be dynamically loaded from config.js -->
-                    </div>
-                </div>
-                
-                <!-- Carousel Controls -->
-                <button class="carousel-control carousel-prev" id="carouselPrev">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="carousel-control carousel-next" id="carouselNext">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                
-                <!-- Carousel Indicators -->
-                <div class="carousel-indicators" id="carouselIndicators">
-                    <!-- Indicators will be dynamically generated -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Instagram Hashtag Section -->
-    <section id="fotos" class="instagram-section section">
-        <div class="container">
-            <h2 class="section-title" id="photoSectionTitle">Comparte tus Fotos</h2>
-            <p class="section-subtitle" id="photoSectionSubtitle">Captura y comparte los momentos especiales de nuestro día</p>
-            
-            <!-- Instagram Hashtag -->
-            <div class="hashtag-container">
-                <div class="hashtag-icon">
-                    <i class="fab fa-instagram"></i>
-                </div>
-                <h3 class="hashtag-text" id="instagramHashtag">#FerYDiegoSeCasan</h3>
-                <p class="hashtag-description" id="hashtagDescription">¡Usa este hashtag en Instagram para compartir tus fotos, videos y stories!</p>
-            </div>
-        </div>
-    </section>
+    <!-- Las secciones dinámicas (mesa-regalos, carousel, fotos) se generarán automáticamente según la configuración -->
 
     <!-- Footer -->
     <footer class="footer">
@@ -408,6 +334,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js"></script>
+    <script type="module" src="/frontend/public/js/app.js"></script>
 </body>
 </html>

@@ -4,36 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestión de Invitaciones</title>
-    <link rel="stylesheet" href="admin/css/admin-styles-dark.css">
-    <link rel="stylesheet" href="admin/css/admin-inline-styles.css">
-    <link rel="stylesheet" href="admin/css/admin-table-alignment-fix.css?v=3">
-    <link rel="stylesheet" href="admin/css/admin-invitations-table.css">
-    <link rel="stylesheet" href="admin/css/admin-invitations-alignment-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-stats-homologation.css">
-    <link rel="stylesheet" href="admin/css/admin-stats-badge-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-csv-modal-styles.css">
-    <link rel="stylesheet" href="admin/css/admin-file-selected-styles.css">
-    <link rel="stylesheet" href="admin/css/admin-modal-overlay-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-modal-scroll-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-stats-mobile-height.css">
-    <link rel="stylesheet" href="admin/css/admin-charts-mobile-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-search-filter-size.css">
-    <link rel="stylesheet" href="admin/css/admin-mobile-invitations-modal.css">
-    <link rel="stylesheet" href="admin/css/admin-pagination-selector.css">
-    <link rel="stylesheet" href="admin/css/admin-create-modal-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-duplicate-ids-fix.css">
-    <link rel="stylesheet" href="admin/css/admin-create-invitation-modal.css">
-    <link rel="stylesheet" href="admin/css/admin-guest-name-fields.css">
-    <link rel="stylesheet" href="admin/css/admin-guest-fields.css">
-    <link rel="stylesheet" href="admin/css/admin-edit-invitation.css">
-    <link rel="stylesheet" href="admin/css/admin-view-invitation.css">
-    <link rel="stylesheet" href="admin/css/admin-button-text-center.css">
-    <link rel="stylesheet" href="admin/css/admin-cancel-invitation-modal.css">
-    <link rel="stylesheet" href="admin/css/admin-inactive-badge.css">
+    <!-- Admin CSS Consolidado - Una sola petición HTTP para mejor performance -->
+    <link rel="stylesheet" href="/frontend/admin/css/admin.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <script src="config.js"></script>
+    <script src="/frontend/public/config.js"></script>
 </head>
 <body>
     <!-- Mobile Header -->
@@ -438,6 +414,50 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="admin.js"></script>
+    
+    <!-- Load refactored admin system -->
+    <script type="module" src="/frontend/admin/js/admin-main-refactored.js"></script>
+    
+    <!-- Fallback to original system if refactored fails -->
+    <script>
+        // Fallback mechanism
+        window.addEventListener('error', function(e) {
+            if (e.filename && e.filename.includes('admin-main-refactored.js')) {
+                console.warn('⚠️ Refactored system failed, loading original admin.js as fallback');
+                
+                // Remove any partially loaded refactored modules
+                if (window.adminApp) {
+                    window.adminApp.cleanup();
+                }
+                
+                // Load original admin.js
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = '/frontend/admin/admin.js';
+                script.onload = function() {
+                    console.log('✅ Original admin.js loaded successfully as fallback');
+                };
+                script.onerror = function() {
+                    console.error('❌ Both refactored and original admin systems failed to load');
+                };
+                document.head.appendChild(script);
+            }
+        });
+        
+        // Check if refactored system loaded successfully after 3 seconds
+        setTimeout(function() {
+            if (!window.adminApp || !window.adminApp.isReady()) {
+                console.warn('⚠️ Refactored system did not initialize properly, loading fallback');
+                
+                // Load original admin.js as fallback
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = '/frontend/admin/admin.js';
+                document.head.appendChild(script);
+            } else {
+                console.log('✅ Refactored admin system loaded successfully');
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

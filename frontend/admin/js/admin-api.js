@@ -346,6 +346,12 @@ export function createAdminAPI(backendUrl) {
 }
 
 /**
+ * Instancia global de AdminAPI
+ * Se inicializa con la configuración del backend
+ */
+export const adminAPI = new AdminAPI(WEDDING_CONFIG?.api?.backendUrl || 'http://localhost:3000');
+
+/**
  * Funciones helper para manejo de respuestas
  */
 export const APIHelpers = {

@@ -242,9 +242,9 @@ const WEDDING_CONFIG = {
         title: "Galería",
         subtitle: "",
         carousel: {
-            showNavigationButtons: false, // true = mostrar botones de navegación (flechas), false = ocultar
+            showNavigationButtons: true, // true = mostrar botones de navegación (flechas), false = ocultar
             showIndicators: false, // true = mostrar indicadores (puntos), false = ocultar
-            autoPlayDelay: 8000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
+            autoPlayDelay: 1000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
             enableAutoPlay: true, // true = activar reproducción automática, false = desactivar
             enableSwipe: true, // true = permitir navegación táctil (swipe), false = desactivar
             enableKeyboard: false // true = permitir navegación con teclado, false = desactivar
@@ -298,4 +298,9 @@ const WEDDING_CONFIG = {
 // Exportar para Node.js (backend)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = WEDDING_CONFIG;
+}
+
+// Exportar para el navegador (frontend)
+if (typeof window !== 'undefined') {
+    window.WEDDING_CONFIG = WEDDING_CONFIG;
 }

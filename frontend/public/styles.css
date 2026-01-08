@@ -1374,23 +1374,11 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 10px;
 }
 
-/* Event Section - Fix for hero overlap */
+/* Event Section */
 .event {
     background: var(--white);
     position: relative;
     z-index: 1;
-}
-
-/* Fix for any gap between hero and event section */
-.event::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--white);
-    z-index: 2;
 }
 
 /* Event Cards */
@@ -2764,8 +2752,288 @@ h1, h2, h3, h4, h5, h6 {
 .gift-stores {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+/* Gift Store Card - Nueva estructura generada dinámicamente */
+.gift-store {
+    background: linear-gradient(135deg, var(--white) 0%, var(--accent-color) 100%);
+    border: 2px solid rgba(212, 165, 116, 0.2);
+    border-radius: 20px;
+    padding: 35px 30px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(212, 165, 116, 0.1);
+    display: block;
+}
+
+/* Gift Store Link - Tarjeta clickeable */
+.gift-store-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.gift-store-link:hover,
+.gift-store-link:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+.gift-store::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+
+.gift-store:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(212, 165, 116, 0.25);
+    border-color: var(--primary-color);
+}
+
+.gift-store:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translateX(100%);
+}
+
+.store-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
+}
+
+.gift-store:hover .store-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
+}
+
+.store-icon i {
+    font-size: 2.2rem;
+    color: var(--white);
+    transition: all 0.3s ease;
+}
+
+.gift-store:hover .store-icon i {
+    transform: scale(1.1);
+}
+
+.store-info {
+    position: relative;
+    z-index: 1;
+}
+
+.store-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.store-description {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.store-note {
+    display: inline-block;
+    background: rgba(212, 165, 116, 0.1);
+    color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-style: italic;
+    border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+/* Indicador visual sutil para tarjetas clickeables */
+.gift-store-link::after {
+    content: '↗';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    opacity: 0;
+    transition: all 0.3s ease;
+    transform: translateY(5px);
+}
+
+.gift-store-link:hover::after {
+    opacity: 0.6;
+    transform: translateY(0);
+}
+
+/* Mejorar el cursor para indicar que es clickeable */
+.gift-store-link {
+    cursor: pointer;
+}
+
+.gift-store-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Bank Details */
+.bank-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+    transition: all 0.3s ease;
+}
+
+.bank-detail:last-child {
+    border-bottom: none;
+}
+
+.bank-detail:hover {
+    background: rgba(212, 165, 116, 0.05);
+    margin: 0 -15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.detail-value {
+    color: var(--text-light);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: rgba(248, 244, 230, 0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(212, 165, 116, 0.1);
+}
+
+/* Mobile adjustments for gift stores */
+@media (max-width: 768px) {
+    .gift-stores {
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .gift-store {
+        padding: 25px 20px;
+        border-radius: 15px;
+    }
+    
+    .store-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
+    }
+    
+    .store-icon i {
+        font-size: 1.8rem;
+    }
+    
+    .store-name {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+    
+    .store-description {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .store-note {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+    
+    .bank-detail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 10px 0;
+    }
+    
+    .detail-value {
+        font-size: 0.85rem;
+        word-break: break-all;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .gift-stores {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    
+    .gift-store {
+        padding: 30px 25px;
+    }
+    
+    .store-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .store-icon i {
+        font-size: 2rem;
+    }
+}
+
+/* Desktop adjustments */
+@media (min-width: 1025px) {
+    .gift-stores {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+    
+    .gift-store {
+        padding: 40px 35px;
+    }
+    
+    .store-icon {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 25px;
+    }
+    
+    .store-icon i {
+        font-size: 2.5rem;
+    }
+    
+    .store-name {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+    
+    .store-description {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
 }
 
 .gift-store-card {
