@@ -1374,23 +1374,12 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 10px;
 }
 
-/* Event Section - Fix for hero overlap */
+/* Event Section - Clean transition from hero */
 .event {
     background: var(--white);
     position: relative;
     z-index: 1;
-}
-
-/* Fix for any gap between hero and event section */
-.event::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--white);
-    z-index: 2;
+    margin-top: -1px; /* Elimina cualquier gap microscópico */
 }
 
 /* Event Cards */

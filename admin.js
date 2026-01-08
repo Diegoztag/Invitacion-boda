@@ -942,8 +942,8 @@ function viewInvitation(code) {
                 
                 <!-- Action Buttons -->
                 <div class="modal-actions">
-                    <button class="btn btn-secondary" onclick="copyToClipboard('${invitationUrl}')">
-                        <i class="fas fa-link"></i> Copiar Link
+                    <button class="btn btn-secondary" onclick="copyInvitationLink('${code}')">
+                        <i class="fas fa-share"></i> Copiar Invitación
                     </button>
                     <button class="btn btn-secondary" onclick="window.open('${invitationUrl}', '_blank')">
                         <i class="fas fa-external-link-alt"></i> Ver Invitación
@@ -1568,16 +1568,31 @@ function closeAllInvitationsModal() {
     }
 }
 
-// Copy Invitation Link
+// Copy Invitation Link - Always copies complete WhatsApp invitation message
 function copyInvitationLink(code) {
+    const invitation = allInvitations.find(inv => inv.code === code);
+    
+    // Generate the complete invitation message using the template from config.js
     const invitationUrl = `${window.location.origin}/invitacion?invitation=${code}`;
-    copyToClipboard(invitationUrl);
+    const guestNames = invitation ? invitation.guestNames : ['Invitado'];
+    const numberOfPasses = invitation ? invitation.numberOfPasses : 1;
+    
+    // Always use the WhatsApp message template from config.js
+    const completeMessage = WEDDING_CONFIG.whatsapp.invitationMessage(guestNames, numberOfPasses, invitationUrl);
+    
+    // Copy the complete WhatsApp message
+    copyToClipboard(completeMessage);
 }
 
 // Copy to Clipboard
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        showNotification('Enlace copiado al portapapeles');
+        // Check if it's a URL or a complete message
+        if (text.startsWith('http')) {
+            showNotification('Enlace copiado al portapapeles');
+        } else {
+            showNotification('Invitación completa copiada al portapapeles');
+        }
     }).catch(err => {
         console.error('Error al copiar:', err);
     });

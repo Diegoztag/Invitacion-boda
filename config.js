@@ -142,11 +142,51 @@ const WEDDING_CONFIG = {
         directionsUrl: "https://maps.app.goo.gl/Ss1WbQUuMR9o7VF38"
     },
     
-    // TODO: Futura mejora - Configuración de WhatsApp
-    // whatsapp: {
-    //     invitationMessage: (names, passes, url) => 
-    //         `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
-    // },
+    // Configuración de WhatsApp - Plantilla de mensaje completo
+    whatsapp: {
+        // Plantilla del mensaje completo de invitación
+        invitationMessage: (names, passes, url) => {
+            const passesText = passes === 1 ? 'pase' : 'pases';
+            
+            // Función para formatear nombres correctamente
+            const formatNames = (nameArray) => {
+                if (!Array.isArray(nameArray)) {
+                    return nameArray; // Si no es array, devolver como está
+                }
+                
+                if (nameArray.length === 1) {
+                    return nameArray[0];
+                } else if (nameArray.length === 2) {
+                    return nameArray.join(' y ');
+                } else {
+                    // Para 3 o más nombres: "Juan, María, Pedro y Ana"
+                    const lastIndex = nameArray.length - 1;
+                    const allButLast = nameArray.slice(0, lastIndex).join(', ');
+                    return `${allButLast} y ${nameArray[lastIndex]}`;
+                }
+            };
+            
+            const formattedNames = formatNames(names);
+            
+        return `¡Nos casamos!💍✨
+        Hay momentos en la vida que son especiales por sí solos, pero
+        compartirlos con las personas que mas queremos los hace inolvidables.
+        ❤️🙌
+        Despues de tantos momentos compartidos, hemos decidido dar el siguiente paso,
+        y estamos muy felices de invitarte a nuestra boda el próximo 
+        ${WEDDING_CONFIG.event.dateDisplay.day} de ${WEDDING_CONFIG.event.dateDisplay.month} del ${WEDDING_CONFIG.event.dateDisplay.year}🥂
+        Nota:📝 Nuestra ceremonia y recepción se llevará a cabo en un lugar al aire libre. Debido a la 
+        temporada, les sugerimos traer una prenda de abrigo para disfrutar comodamente de la velada.
+        Favor de confirmar antes del ${WEDDING_CONFIG.event.confirmationDeadline} del 2026 ✅📲
+
+        Con cariño, ${WEDDING_CONFIG.couple.displayName}✨
+
+        ${url}
+
+        Los siguientes pases estan reservados para: ${formattedNames}
+        -Favor de confirmar solo una persona por pase.`;
+        }
+    },
     
     // Configuración del formulario RSVP
     rsvpForm: {
