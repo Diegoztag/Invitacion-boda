@@ -15,7 +15,6 @@
     "format": "prettier --write src/**/*.js",
     "build": "echo 'No build step required for Node.js'",
     "clean": "rm -rf coverage test-results node_modules",
-    "prestart": "npm run lint",
     "postinstall": "echo 'Backend dependencies installed successfully'"
   },
   "keywords": [
