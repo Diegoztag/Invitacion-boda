@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "src/**/*"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "node_modules/**/*",
+    "data/**/*",
+    "tests/**/*",
+    "coverage/**/*"
+  ],
+  "delay": 1000,
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "verbose": true,
+  "restartable": "rs",
+  "colours": true,
+  "legacyWatch": false
+}

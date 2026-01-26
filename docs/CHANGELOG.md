@@ -7,6 +7,116 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## [Unreleased]
 
+### 🔧 CORRECCIÓN DE IMPORTACIONES - Enero 14, 2026
+
+#### ✅ CORREGIDO - Error de Módulos ES6
+- **🐛 Problema**: Errores de importación en `dashboard-controller.js`
+  - `getSafeValue` no exportada
+  - `updateTargetElements` no exportada
+- **✅ Solución**: Exportación de funciones faltantes en `dashboard-utils.js`
+  - `getSafeValue()` - Función para valores seguros con fallback
+  - `getInvitationStatus()` - Función para obtener estado de invitación
+  - `updateTargetElements()` - Función para actualizar elementos con valores objetivo
+- **📈 Beneficios**:
+  - Dashboard funciona sin errores de consola
+  - Importaciones ES6 correctas en toda la aplicación
+  - Modularización mantenida sin romper funcionalidad
+  - Elementos objetivo se actualizan correctamente
+
+### 🎯 CENTRALIZACIÓN DE ESTADOS DE INVITACIONES - Enero 14, 2026
+
+#### ✅ AGREGADO - Sistema de Estados Centralizado
+- **🔧 Campo `status` como fuente única de verdad**
+  - Estados directos: `pending`, `confirmed`, `cancelled`, `partial`, `inactive`
+  - Default automático: `pending` para nuevas invitaciones
+  - Eliminación de cálculos complejos en frontend
+- **📊 Lógica simplificada en toda la aplicación**
+  - Backend: Estados directos en entidad y repositorio
+  - Frontend: Uso directo del campo `status` sin transformaciones
+  - Dashboard: Filtros y badges actualizados para usar estados centralizados
+
+#### ✅ CAMBIADO - Arquitectura de Estados Simplificada
+- **🏗️ Entidad Invitation refactorizada**
+  - Método `getStatus()` que retorna estado directo o 'pending' como default
+  - Eliminación de lógica de cálculo de estados basada en `confirmed`
+  - Consistencia entre backend y frontend
+- **🎮 Controllers actualizados**
+  - InvitationsController: Filtros usando estados directos
+  - Dashboard: Badges y estadísticas simplificadas
+  - Eliminación de función `calculateInvitationStatus()`
+
+#### ✅ CORREGIDO - Inconsistencias de Estados
+- **🐛 Problema**: Estados calculados diferente en backend vs frontend
+- **✅ Solución**: Campo `status` como única fuente de verdad
+- **📈 Beneficios**:
+  - Consistencia total entre capas
+  - Performance mejorada (sin cálculos)
+  - Mantenibilidad aumentada
+  - Debugging simplificado
+
+### 🗂️ UNIFICACIÓN Y LIMPIEZA DE DATOS CSV - Enero 14, 2026
+
+#### ✅ AGREGADO - Sistema de Datos Unificado
+- **🔧 Estructura CSV mejorada** con campos adicionales para restricciones alimentarias
+  - `attendingNames`: Nombres específicos de quienes asisten
+  - `dietaryRestrictionsNames`: Nombres de personas con restricciones
+  - `dietaryRestrictionsDetails`: Detalles específicos de restricciones
+  - `generalMessage`: Mensaje general de la confirmación
+- **📊 Datos de ejemplo completos** con 20 registros que cubren todos los escenarios
+  - Invitaciones confirmadas y pendientes
+  - Diferentes tipos de invitados (adultos, niños, staff)
+  - Restricciones alimentarias variadas
+  - Estados activos e inactivos
+  - Mensajes personalizados
+
+#### ✅ CAMBIADO - Arquitectura de Almacenamiento Simplificada
+- **🗂️ Unificación en archivo único**: Todos los datos ahora en `invitations.csv`
+- **🧹 Limpieza de archivos obsoletos**: Eliminados archivos CSV duplicados
+  - `confirmations.csv` (vacío, no utilizado)
+  - `ejemplo-invitados.csv` (archivo de ejemplo obsoleto)
+  - `invitaciones-ejemplo.csv` (archivo de ejemplo obsoleto)
+  - `invitations_unified.csv` (archivo temporal)
+
+#### ✅ CORREGIDO - Entidad y Repositorio Actualizados
+- **🏗️ Entidad Invitation** actualizada con nuevos campos
+  - Getters para `attendingNames`, `dietaryRestrictionsNames`, etc.
+  - Métodos de dominio para manejo de restricciones
+  - Método `toObject()` actualizado con todos los campos
+- **📁 Repositorio CSV** actualizado para manejar nueva estructura
+  - Headers actualizados con orden correcto de campos
+  - Métodos `csvRowToInvitationData` y `invitationToCsvData` refactorizados
+  - Parsing mejorado para arrays y campos especiales
+
+### 🔧 CORRECCIÓN CRÍTICA - Estadísticas del Dashboard - Enero 14, 2026
+
+#### ✅ CORREGIDO - Sistema de Estadísticas Unificado
+- **🐛 Problema identificado**: Dashboard mostraba estadísticas incorrectas o vacías
+- **🔍 Root cause**: Arquitectura dual confusa entre `invitations.csv` y `confirmations.csv`
+- **✅ Solución implementada**: Unificación de estadísticas usando solo `invitations.csv`
+
+#### **📊 Cambios Técnicos Realizados**
+- **🔧 Endpoint `/api/stats` refactorizado**
+  - Eliminada dependencia de `confirmations.csv` (archivo vacío)
+  - Estadísticas calculadas desde campos `confirmed`, `confirmedPasses` en invitaciones
+  - Respuesta estructurada compatible con dashboard existente
+  - Tasas calculadas como porcentajes con 2 decimales
+
+- **📝 Documentación actualizada**
+  - `API.md` actualizado con nuevo comportamiento del endpoint
+  - Ejemplos de respuesta con datos reales del sistema
+  - Notas técnicas sobre el cambio de arquitectura
+
+#### **🎯 Beneficios Obtenidos**
+- ✅ **Dashboard funcional**: Estadísticas ahora se muestran correctamente
+- ✅ **Arquitectura simplificada**: Una sola fuente de verdad para datos
+- ✅ **Performance mejorada**: Sin consultas a archivos vacíos
+- ✅ **Mantenibilidad**: Lógica de estadísticas centralizada
+
+#### **📋 Estado Actual de Datos**
+- **Invitaciones**: 4 invitaciones activas, 0 confirmadas
+- **Pases totales**: 6 pases asignados, 0 confirmados
+- **Tasa de confirmación**: 0.00% (esperado con datos de prueba)
+
 ### 🚀 TRANSFORMACIÓN ARQUITECTÓNICA COMPLETA - Enero 7, 2026
 
 #### ✅ AGREGADO - CLEAN ARCHITECTURE FRONTEND

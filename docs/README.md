@@ -46,11 +46,12 @@ Esta carpeta contiene toda la documentación técnica del sistema después de la
 ## 🔧 DOCUMENTACIÓN TÉCNICA
 
 ### 📡 **API y Backend**
-- **[API.md](./API.md)** - Documentación de la API REST
-  - Endpoints disponibles
-  - Esquemas de request/response
-  - Códigos de error
-  - Ejemplos de uso
+- **[API.md](./API.md)** - Documentación completa de la API REST
+  - Endpoints disponibles con filtros y paginación
+  - Esquemas de request/response actualizados
+  - Autenticación y seguridad
+  - Importación/exportación de datos
+  - Códigos de error y ejemplos de uso
 
 ### 🧪 **Testing y Calidad**
 - **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Guía de testing

@@ -1,0 +1,689 @@
+/* Modal Components */
+
+/* ==========================================================================
+   BASE MODAL STYLES
+   ========================================================================== */
+
+.modal {
+    /* --- Local Configuration --- */
+    --bg-overlay: rgba(0, 0, 0, 0.75);
+    --z-index: 2000;
+    --backdrop-blur: 4px;
+    
+    /* --- Styles --- */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-overlay);
+    z-index: var(--z-index);
+    backdrop-filter: blur(var(--backdrop-blur));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* State classes used by JS */
+.modal-hidden {
+    display: none !important;
+}
+
+.modal-visible {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+/* Body scroll lock */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   MODAL CONTENT (Mobile First)
+   ========================================================================== */
+
+.modal-content {
+    /* --- Local Configuration --- */
+    --bg: var(--surface);
+    --radius: var(--border-radius-lg); /* Slightly reduced radius for mobile */
+    --border-color: var(--border-color);
+    --shadow: var(--shadow-lg);
+    
+    /* Dimensions (Mobile Default) */
+    --width: 85%;
+    --max-width: 600px;
+    --max-height: 90vh; /* Slightly reduced to ensure it fits */
+    --margin: var(--spacing-sm); /* Reduced margin for mobile */
+    
+    /* Animation */
+    --transform-hidden: translateY(20px);
+    --transform-visible: translateY(0);
+    
+    /* --- Styles --- */
+    background: var(--bg);
+    border-radius: var(--radius);
+    width: var(--width);
+    max-width: var(--max-width);
+    max-height: var(--max-height);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    transform: var(--transform-hidden);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin: var(--margin);
+}
+
+.modal-visible .modal-content {
+    transform: var(--transform-visible);
+}
+
+/* Modal Sizes (Variants) */
+.modal-content.modal-small,
+.modal-sm .modal-content { --max-width: 400px; }
+
+.modal-content.modal-medium,
+.modal-md .modal-content { --max-width: 600px; }
+
+.modal-content.modal-large,
+.modal-lg .modal-content { --max-width: 800px; }
+
+.modal-content.modal-xl,
+.modal-xl .modal-content { --max-width: 1000px; }
+
+/* ==========================================================================
+   MODAL SECTIONS
+   ========================================================================== */
+
+/* Header */
+.modal-header {
+    /* --- Local Configuration --- */
+    --padding: var(--spacing-md) var(--spacing-md); /* Compact padding for mobile */
+    --bg: var(--surface);
+    
+    /* --- Styles --- */
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--bg);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: var(--padding);
+}
+
+.modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.modal-icon-wrapper {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+    border-radius: var(--border-radius-md);
+    background: var(--primary-light-alpha);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.modal-icon {
+    font-size: var(--text-xl);
+}
+
+.modal-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: var(--icon-xl); /* Larger touch target */
+    height: var(--icon-xl);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--text-xl); /* Larger icon */
+    flex-shrink: 0; /* Prevent shrinking */
+    margin-left: var(--spacing-xs);
+    z-index: 10;
+}
+
+.modal-close:hover, .modal-close:active {
+    background: var(--bg-white-10);
+    color: var(--text-primary);
+}
+
+/* Body */
+.modal-body {
+    /* --- Local Configuration --- */
+    --padding: var(--spacing-md); /* Compact padding for mobile */
+    --bg: transparent;
+    
+    /* --- Styles --- */
+    padding: var(--padding);
+    background: var(--bg);
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Custom Scrollbar for modal body */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--bg-white-5);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--bg-white-20);
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-white-30);
+}
+
+/* Footer (Mobile First) */
+.modal-footer {
+    /* --- Local Configuration --- */
+    --padding: var(--spacing-sm) var(--spacing-md); /* Compact padding for mobile */
+    --bg: var(--surface);
+    
+    /* --- Styles --- */
+    padding: var(--padding);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm); /* Reduced gap */
+    flex-shrink: 0;
+    background: var(--bg);
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.modal-footer .btn {
+    width: 100%; /* Mobile default: Full width */
+    justify-content: center;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column-reverse; /* Mobile default: Stacked reverse */
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-xs);
+    border-top: 1px solid var(--border-color);
+}
+
+.modal-actions .btn {
+    width: 100%; /* Mobile default: Full width */
+}
+
+/* ==========================================================================
+   SPECIFIC MODAL VARIANTS
+   ========================================================================== */
+
+/* Invitation Detail */
+#invitationModal .modal-content {
+    --max-width: 600px;
+}
+
+/* Create/Edit Invitation */
+#createInvitationModal .modal-content,
+#editInvitationModal .modal-content {
+    --max-width: 600px;
+}
+
+/* Edit Invitation Specific - Compact for Mobile */
+#editInvitationModal .modal-body {
+    --padding: var(--spacing-md); /* Compact padding */
+    padding-top: var(--spacing-xs); /* Extra compact top */
+    padding-bottom: var(--spacing-xs); /* Extra compact bottom */
+}
+
+#editInvitationModal .form-group {
+    margin-bottom: var(--spacing-sm); /* Reduced gap between groups */
+    gap: 0px; /* Tighter label-input gap */
+}
+
+#editInvitationModal .form-row {
+    margin-bottom: var(--spacing-xs);
+}
+
+#editInvitationModal .modal-header {
+    --padding: var(--spacing-md);
+    padding: var(--padding); /* Reduce header bottom padding */
+    border-bottom: none; /* Optional: remove border for cleaner look if desired, or keep it */
+}
+
+#editInvitationModal .modal-footer {
+    --padding: var(--spacing-sm);
+    padding-top: var(--spacing-xs); /* Reduce footer top padding */
+}
+
+#editInvitationModal .modal-actions {
+    margin-top: 0;
+    padding-top: var(--spacing-sm);
+}
+
+/* CSV Import Modal (Dark Theme Variant) */
+#importCsvModal .modal-content {
+    /* Override Local Vars for Dark Theme */
+    --bg: var(--surface-dark, #2d1b29);
+    --border-color: var(--border-color-dark, #4a2b40);
+    --max-width: 700px;
+}
+
+#importCsvModal .modal-header {
+    --bg: linear-gradient(to right, var(--surface-dark, #2d1b29), var(--surface-dark-alt, #3d2236));
+}
+
+#importCsvModal .modal-footer {
+    --bg: var(--surface-darker, #251622);
+}
+
+/* Deactivate Modal */
+#deactivateInvitationModal .modal-content {
+    --max-width: 500px;
+}
+
+/* Critical/Destructive Modal Variant */
+.modal-content.modal-critical {
+    --footer-justify: center;
+}
+
+.modal-content.modal-critical .modal-close {
+    display: none;
+}
+
+.modal-content.modal-critical .modal-footer {
+    padding: var(--spacing-xl);
+}
+
+.modal-content.modal-critical .btn-cancel {
+    min-width: 140px;
+}
+
+.modal-content.modal-critical .btn-destructive {
+    min-width: 140px;
+    background: var(--danger);
+    color: white;
+    border: none;
+}
+
+.modal-content.modal-critical .btn-destructive:hover {
+    background: #d32f2f;
+}
+
+/* ==========================================================================
+   FORM ELEMENTS (Inside Modals) - Mobile First
+   ========================================================================== */
+
+.form-row {
+    display: flex;
+    flex-direction: column; /* Mobile default: Stacked */
+    gap: 0; /* Mobile default */
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-xs); /* Compact spacing */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs); /* Reduced gap */
+}
+
+.form-group label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: var(--bg-white-5);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    transition: all 0.2s;
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light-alpha);
+}
+
+.form-hint {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.guest-field-row {
+    position: relative;
+}
+
+.guest-name-input {
+    width: 100%;
+}
+
+/* ==========================================================================
+   CSV IMPORT SPECIFIC STYLES
+   ========================================================================== */
+
+#importCsvModal .modal-title { color: var(--text-primary); }
+#importCsvModal .modal-subtitle { color: var(--text-muted); font-size: 0.9rem; margin: 4px 0 0 0; }
+
+/* Format Info */
+.format-info-wrapper {
+    background: rgba(33, 17, 28, 0.8);
+    border: 1px solid rgba(101, 52, 85, 0.5);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.format-info-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.format-info-icon { color: var(--primary); }
+
+.format-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.format-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.format-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.format-code {
+    font-family: 'Courier New', monospace;
+    padding: 4px 0px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    width: 100%;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.format-code.primary {
+    color: var(--primary);
+    background: var(--primary-light-alpha);
+    border: 1px solid var(--primary-light-alpha);
+}
+
+.format-code.secondary {
+    color: var(--text-primary);
+    background: var(--bg-white-5);
+    border: 1px solid var(--bg-white-10);
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 160px;
+    border-radius: var(--border-radius-lg);
+    border: 2px dashed var(--border-color-dark, #653455);
+    background: rgba(33, 17, 28, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: var(--spacing-md);
+}
+
+.file-upload-wrapper:hover,
+.file-upload-wrapper.drag-over {
+    border-color: var(--primary);
+    background: var(--primary-light-alpha-xs);
+}
+
+.file-input { display: none; }
+
+.file-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.upload-icon { font-size: var(--text-2xl); color: var(--text-muted); }
+.file-upload-wrapper:hover .upload-icon { color: var(--primary); }
+
+.upload-text { color: var(--text-primary); font-weight: 600; margin-bottom: 4px; }
+.upload-subtext { color: var(--text-muted); font-size: 0.85rem; }
+
+/* File Selected */
+#importCsvModal .file-selected {
+    background: var(--primary-light-alpha-xs);
+    border: 2px solid var(--primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    display: none; /* Controlled by JS */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 160px; /* Match file-upload-wrapper height */
+    margin-bottom: var(--spacing-md);
+    position: relative;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.1);
+}
+
+#importCsvModal .file-selected.show { display: flex; }
+
+#importCsvModal .file-selected-icon { 
+    color: var(--primary); 
+    font-size: var(--text-4xl); /* Larger icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-xs);
+}
+
+#importCsvModal .file-selected-name { 
+    color: var(--text-primary); 
+    font-weight: 600; 
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+#importCsvModal .file-selected-remove { 
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    color: var(--text-muted); 
+    cursor: pointer; 
+    font-size: var(--text-xl); 
+    transition: all 0.2s; 
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+#importCsvModal .file-selected-remove:hover { 
+    color: var(--danger); 
+    background: rgba(220, 53, 69, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* CSV Results */
+.csv-results {
+    display: none;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.csv-results.show { display: block; }
+
+.csv-results.success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.csv-results.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.csv-success, .csv-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-xs);
+}
+
+.csv-success i { color: var(--success); font-size: var(--text-2xl); }
+.csv-error i { color: var(--danger); font-size: var(--text-2xl); }
+
+.csv-success h4, .csv-error h4 { margin: 0; color: var(--text-primary); }
+.csv-success p, .csv-error p { margin: 0; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
+
+
+/* ==========================================================================
+   DEACTIVATE MODAL SPECIFIC
+   ========================================================================== */
+
+.cancel-invitation-modal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.warning-icon { text-align: center; }
+.warning-icon i { font-size: var(--text-4xl); color: var(--warning); }
+
+.cancel-question {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.invitation-info {
+    background: var(--bg-white-3);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+}
+
+.info-item {
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.info-item:last-child { margin-bottom: 0; }
+.info-item strong { color: var(--text-primary); }
+
+.warning-message {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+}
+
+.warning-message p { margin: 0 0 var(--spacing-xs) 0; color: var(--warning); }
+.warning-message ul { margin: 0; padding-left: var(--spacing-md); color: var(--text-secondary); font-size: 0.85rem; }
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+    .modal-content {
+        --width: 90%;
+        --margin: var(--spacing-md);
+        --max-height: 90vh;
+    }
+
+    .modal-footer {
+        flex-direction: row;
+    }
+
+    .modal-footer .btn {
+        width: auto;
+    }
+
+    .modal-actions {
+        flex-direction: row;
+    }
+
+    .modal-actions .btn {
+        width: auto;
+    }
+
+    .form-row {
+        flex-direction: row;
+        gap: var(--spacing-md);
+    }
+
+    .invitation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

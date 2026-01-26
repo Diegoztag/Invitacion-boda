@@ -1,8 +1,57 @@
-# Guía de Testing - Clean Architecture Frontend
+# Guía de Testing - Sistema de Invitaciones de Boda
 
 ## Resumen
 
-Esta guía describe cómo realizar testing funcional de la nueva arquitectura Clean Architecture implementada para la aplicación de invitación de boda.
+Esta guía describe el estado actual del testing en el sistema de invitaciones de boda, incluyendo los tests unitarios ya implementados en el backend y las estrategias para testing del frontend Clean Architecture.
+
+## 🧪 Estado Actual del Testing
+
+### ✅ Backend - Tests Implementados
+
+El backend ya cuenta con una suite de tests unitarios implementada usando Jest:
+
+#### Estructura de Tests Backend
+```
+backend/src/tests/
+├── setup.js                    # Configuración global de tests
+├── env.js                      # Variables de entorno para testing
+└── unit/
+    ├── entities/
+    │   └── Invitation.test.js   # Tests de entidad Invitation
+    └── usecases/
+        └── CreateInvitationUseCase.test.js  # Tests de caso de uso
+```
+
+#### Tests de Entidades
+- **Invitation.test.js**: Tests completos para la entidad Invitation
+  - Validación de datos de entrada
+  - Métodos de negocio
+  - Estados de confirmación
+  - Manejo de errores
+
+#### Tests de Casos de Uso
+- **CreateInvitationUseCase.test.js**: Tests del caso de uso de creación
+  - Flujo completo de creación
+  - Validaciones de negocio
+  - Manejo de errores
+  - Mocking de dependencias
+
+#### Configuración Jest
+```javascript
+// jest.config.js
+module.exports = {
+  testEnvironment: 'node',
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  testMatch: ['**/tests/**/*.test.js'],
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js']
+};
+```
+
+### 🔄 Frontend - Testing Pendiente
+
+El frontend con Clean Architecture está preparado para testing pero aún no implementado.
 
 ## Estructura de Testing
 

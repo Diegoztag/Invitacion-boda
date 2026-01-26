@@ -1,0 +1,174 @@
+/* Loading & Skeleton Components */
+
+/* ==========================================================================
+   SKELETON LOADING
+   ========================================================================== */
+
+.skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--background) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    pointer-events: none;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Skeleton Elements */
+.skeleton-text {
+    height: 16px;
+    background: var(--background);
+    border-radius: var(--border-radius-sm);
+    margin: 4px 0;
+}
+
+.skeleton-text-xs { height: 12px; width: 60%; }
+.skeleton-text-sm { height: 14px; width: 80%; }
+.skeleton-text-lg { height: 24px; width: 40%; margin: 8px 0; }
+
+/* Component Specific Skeletons */
+.stat-card.skeleton .stat-icon,
+.stat-card.skeleton .skeleton-icon {
+    background: var(--background);
+    border-radius: var(--border-radius-md);
+}
+
+.skeleton-row td {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.skeleton-row .skeleton-text {
+    height: 14px;
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   STATES (EMPTY & ERROR) - Mobile First
+   ========================================================================== */
+
+.state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-md); /* Mobile padding */
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.state-icon {
+    font-size: 36px; /* Mobile size */
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.state-title {
+    font-size: var(--text-lg); /* Mobile size */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.state-message {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin: 0 0 var(--spacing-lg) 0;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* Empty State Specifics */
+.empty-state {
+    /* @extend .state-container; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Error State Specifics */
+.error-state .state-icon {
+    color: var(--danger);
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   LOADING SPINNERS & OVERLAYS
+   ========================================================================== */
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-white-80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: inherit;
+    backdrop-filter: blur(2px);
+}
+
+[data-theme="dark"] .loading-overlay {
+    background: var(--bg-black-80);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+.pulse { animation: pulse 2s infinite; }
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+    .state-container,
+    .empty-state {
+        padding: var(--spacing-2xl) var(--spacing-md);
+    }
+    
+    .state-icon {
+        font-size: 48px;
+    }
+    
+    .state-title {
+        font-size: var(--text-xl);
+    }
+}

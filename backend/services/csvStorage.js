@@ -4,9 +4,8 @@ const crypto = require('crypto');
 
 class CSVStorageService {
     constructor() {
-        this.dataDir = path.join(__dirname, '../../data');
+        this.dataDir = path.join(__dirname, '../data');
         this.invitationsFile = path.join(this.dataDir, 'invitations.csv');
-        this.confirmationsFile = path.join(this.dataDir, 'confirmations.csv');
         this.initializeStorage();
     }
 
@@ -21,14 +20,6 @@ class CSVStorageService {
             } catch {
                 const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
                 await fs.writeFile(this.invitationsFile, headers);
-            }
-            
-            // Initialize confirmations file if it doesn't exist
-            try {
-                await fs.access(this.confirmationsFile);
-            } catch {
-                const headers = 'code,willAttend,attendingGuests,attendingNames,phone,dietaryRestrictions,message,confirmedAt\n';
-                await fs.writeFile(this.confirmationsFile, headers);
             }
             
             console.log('✅ CSV Storage initialized successfully');
@@ -143,9 +134,19 @@ class CSVStorageService {
                 
                 const parts = this.parseCSVLine(line);
                 if (parts.length >= 8) {
+                    // Parse guest names - handle both pipe (|) and ' y ' separators
+                    let guestNames = [];
+                    if (parts[1].includes('|')) {
+                        guestNames = parts[1].split('|').map(n => n.trim()).filter(n => n);
+                    } else if (parts[1].includes(' y ')) {
+                        guestNames = parts[1].split(' y ').map(n => n.trim()).filter(n => n);
+                    } else {
+                        guestNames = [parts[1].trim()].filter(n => n);
+                    }
+                    
                     const invitation = {
                         code: parts[0],
-                        guestNames: parts[1].split(' y ').map(n => n.trim()),
+                        guestNames: guestNames,
                         numberOfPasses: parseInt(parts[2]),
                         phone: parts[3],
                         createdAt: parts[4],
@@ -205,55 +206,6 @@ class CSVStorageService {
             
             invitations[invitationIndex] = updatedInvitation;
             
-            // If updating confirmation status and it includes confirmation details
-            if (updateData.confirmed && updateData.confirmationDetails) {
-                // Save or update confirmation details
-                const confirmationRow = [
-                    code,
-                    updateData.confirmationDetails.willAttend ? 'true' : 'false',
-                    updateData.confirmationDetails.numberOfGuests || updateData.confirmedPasses || 0,
-                    this.formatCSVValue(updateData.confirmationDetails.attendingNames?.join(', ') || ''),
-                    this.formatCSVValue(updateData.phone || ''),
-                    this.formatCSVValue(updateData.confirmationDetails.dietaryRestrictions || ''),
-                    this.formatCSVValue(updateData.confirmationDetails.message || ''),
-                    updateData.confirmationDate || new Date().toISOString()
-                ].join(',') + '\n';
-                
-                // Check if confirmation already exists
-                const confirmations = await this.getAllConfirmations();
-                const existingConfirmation = confirmations.find(conf => conf.code === code);
-                
-                if (!existingConfirmation) {
-                    // Add new confirmation
-                    await fs.appendFile(this.confirmationsFile, confirmationRow);
-                } else {
-                    // Update existing confirmations file
-                    let confirmationContent = 'code,willAttend,attendingGuests,attendingNames,phone,dietaryRestrictions,message,confirmedAt\n';
-                    
-                    for (const conf of confirmations) {
-                        if (conf.code === code) {
-                            // Use updated data
-                            confirmationContent += confirmationRow;
-                        } else {
-                            // Keep existing data
-                            const row = [
-                                conf.code,
-                                conf.willAttend ? 'true' : 'false',
-                                conf.attendingGuests,
-                                this.formatCSVValue(conf.attendingNames?.join(', ') || ''),
-                                this.formatCSVValue(conf.phone || ''),
-                                this.formatCSVValue(conf.dietaryRestrictions || ''),
-                                this.formatCSVValue(conf.message || ''),
-                                conf.confirmedAt
-                            ].join(',') + '\n';
-                            confirmationContent += row;
-                        }
-                    }
-                    
-                    await fs.writeFile(this.confirmationsFile, confirmationContent);
-                }
-            }
-            
             // Rewrite invitations file using helper method
             await this.rewriteInvitationsFile(invitations);
             
@@ -288,20 +240,6 @@ class CSVStorageService {
             invitations[invitationIndex].confirmedPasses = confirmationData.attendingGuests;
             invitations[invitationIndex].confirmationDate = new Date().toISOString();
             
-            // Save confirmation details
-            const confirmationRow = [
-                code,
-                confirmationData.willAttend ? 'true' : 'false',
-                confirmationData.attendingGuests,
-                this.formatCSVValue(confirmationData.attendingNames?.join(', ') || ''),
-                this.formatCSVValue(confirmationData.phone || ''),
-                this.formatCSVValue(confirmationData.dietaryRestrictions || ''),
-                this.formatCSVValue(confirmationData.message || ''),
-                new Date().toISOString()
-            ].join(',') + '\n';
-            
-            await fs.appendFile(this.confirmationsFile, confirmationRow);
-            
             // Rewrite invitations file using helper method
             await this.rewriteInvitationsFile(invitations);
             
@@ -319,36 +257,8 @@ class CSVStorageService {
 
     // Get all confirmations
     async getAllConfirmations() {
-        try {
-            const content = await fs.readFile(this.confirmationsFile, 'utf-8');
-            const lines = content.trim().split('\n');
-            const confirmations = [];
-            
-            // Skip header
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                
-                const parts = this.parseCSVLine(line);
-                if (parts.length >= 8) {
-                    confirmations.push({
-                        code: parts[0],
-                        willAttend: parts[1] === 'true',
-                        attendingGuests: parseInt(parts[2]),
-                        attendingNames: parts[3] ? parts[3].split(',').map(n => n.trim()) : [],
-                        phone: parts[4],
-                        dietaryRestrictions: parts[5],
-                        message: parts[6],
-                        confirmedAt: parts[7]
-                    });
-                }
-            }
-            
-            return confirmations;
-        } catch (error) {
-            console.error('Error reading confirmations:', error);
-            return [];
-        }
+        // DEPRECATED: confirmations.csv is no longer used
+        return [];
     }
 
     // Get statistics

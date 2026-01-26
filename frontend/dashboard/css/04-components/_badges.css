@@ -1,0 +1,193 @@
+/* Badge Components */
+
+/* ==========================================================================
+   BASE BADGE STYLES (Mobile Default)
+   ========================================================================== */
+
+.status-badge,
+.stat-badge,
+.status-badge-large {
+    /* --- Local Configuration --- */
+    /* Padding */
+    --badge-padding-mobile: var(--spacing-xs) var(--spacing-sm);
+    --badge-padding-tablet: var(--spacing-xs) var(--spacing-sm);
+    --badge-padding-desktop: var(--spacing-xs) var(--spacing-md);
+
+    /* Typography */
+    --badge-font-size-mobile: var(--text-2xs);
+    --badge-font-size-tablet: var(--text-xs);
+    --badge-font-size-desktop: var(--text-sm);
+
+    /* Active Values (Default to Mobile) */
+    --bg: var(--bg-white-5);
+    --color: var(--text-muted);
+    --border: 1px solid transparent;
+    --padding: var(--badge-padding-mobile);
+    --radius: var(--border-radius-full);
+    --font-size: var(--badge-font-size-mobile);
+    --gap: var(--spacing-xs);
+    
+    /* --- Styles --- */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap);
+    padding: var(--padding);
+    background: var(--bg);
+    color: var(--color);
+    border: var(--border);
+    border-radius: var(--radius);
+    font-size: var(--font-size);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+/* ==========================================================================
+   VARIANTS (TYPE)
+   ========================================================================== */
+
+/* Stat Badge (Compact) */
+.stat-badge {
+    --padding: 2px var(--spacing-xs); /* Mobile default */
+    --radius: var(--border-radius-full);
+    --gap: var(--spacing-xs);
+}
+
+/* Status Badge (Standard) */
+.status-badge {
+    --padding: var(--spacing-xs) var(--spacing-md); /* Mobile default */
+}
+
+/* Large Badge */
+.status-badge-large {
+    --padding: var(--spacing-sm) var(--spacing-md);
+    --font-size: var(--text-md);
+    --gap: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   VARIANTS (COLOR)
+   ========================================================================== */
+
+/* Success / Confirmed */
+.status-badge.confirmed,
+.status-badge-large.confirmed,
+.stat-badge.success {
+    --bg: var(--success-light-alpha);
+    --color: var(--success);
+    --border: 1px solid transparent;
+}
+
+.status-badge-large.confirmed {
+    --border: 1px solid var(--success-alpha);
+}
+
+/* Warning / Pending */
+.status-badge.pending,
+.status-badge-large.pending,
+.stat-badge.warning {
+    --bg: var(--warning-light-alpha);
+    --color: var(--warning);
+}
+
+.status-badge-large.pending {
+    --border: 1px solid var(--warning-alpha);
+}
+
+/* Danger / Cancelled / Rejected */
+.status-badge.cancelled,
+.status-badge.rejected,
+.status-badge-large.cancelled,
+.status-badge-large.rejected,
+.stat-badge.danger {
+    --bg: var(--danger-light-alpha);
+    --color: var(--danger);
+}
+
+.status-badge-large.cancelled,
+.status-badge-large.rejected {
+    --border: 1px solid var(--danger-alpha);
+}
+
+/* Info / Partial */
+.status-badge.partial,
+.status-badge-large.partial,
+.stat-badge.primary {
+    --bg: var(--info-light-alpha);
+    --color: var(--info);
+}
+
+.stat-badge.primary {
+    --bg: var(--primary-light-alpha);
+    --color: var(--primary);
+}
+
+.status-badge-large.partial {
+    --border: 1px solid var(--info-alpha);
+}
+
+/* Inactive */
+.status-badge.inactive,
+.status-badge-large.inactive {
+    --bg: var(--bg-white-5);
+    --color: var(--text-muted);
+    --border: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   ELEMENTS & ANIMATIONS
+   ========================================================================== */
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.status-dot-animated {
+    animation: pulse 2s infinite;
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .status-badge,
+    .stat-badge,
+    .status-badge-large {
+        --font-size: var(--badge-font-size-tablet);
+        --padding: var(--badge-padding-tablet);
+    }
+    
+    .stat-badge {
+        --padding: 4px var(--spacing-sm);
+    }
+    
+    .status-badge-large {
+        --font-size: var(--text-sm);
+        --gap: var(--spacing-sm);
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .status-badge,
+    .stat-badge,
+    .status-badge-large {
+        --font-size: var(--badge-font-size-desktop);
+        --padding: var(--badge-padding-desktop);
+    }
+}

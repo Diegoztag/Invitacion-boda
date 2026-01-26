@@ -6,7 +6,7 @@ Este directorio contiene todo el código del frontend del sistema, organizado en
 
 ```
 frontend/
-├── public/              🎨 Invitación Pública
+├── invitation/          🎨 Invitación Pública
 │   ├── index.html          → Página principal de la invitación
 │   ├── styles.css          → Estilos CSS principales
 │   ├── config.js           → Configuración de la boda
@@ -58,10 +58,10 @@ frontend/
 ### **Invitación Pública**
 ```bash
 # Abrir directamente en navegador
-open frontend/public/index.html
+open frontend/invitation/index.html
 
 # O servir con servidor local
-cd frontend/public
+cd frontend/invitation
 python -m http.server 8000
 # Visitar: http://localhost:8000
 ```
@@ -122,7 +122,7 @@ python -m http.server 8001
 
 ### **Optimizaciones Pendientes**
 1. **Build System** - Webpack/Vite para optimización
-2. **Shared Components** - Componentes compartidos entre public/admin
+2. **Shared Components** - Componentes compartidos entre invitation/admin
 3. **Shared Services** - Servicios API compartidos
 4. **Testing Suite** - Tests unitarios e integración
 
@@ -135,7 +135,7 @@ python -m http.server 8001
 ## 📝 Notas de Desarrollo
 
 ### **Convenciones**
-- **public/**: Todo relacionado con la invitación pública
+- **invitation/**: Todo relacionado con la invitación pública
 - **admin/**: Todo relacionado con el panel administrativo
 - **Nombres descriptivos** para archivos y carpetas
 - **Documentación inline** en código JavaScript
@@ -148,6 +148,6 @@ python -m http.server 8001
 ---
 
 **📅 Última actualización**: Enero 7, 2026  
-**👤 Estructura**: Frontend unificado con public/ y admin/  
+**👤 Estructura**: Frontend unificado con invitation/ y admin/
 **🎯 Estado**: Reorganización completada  
 **📊 Progreso**: Estructura optimizada y documentada

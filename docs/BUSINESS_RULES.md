@@ -100,10 +100,86 @@ Cada invitación puede tener múltiples invitados, y cada uno tiene:
 - No se pueden crear invitaciones que excedan la capacidad
 - Advertencias al acercarse al límite
 
-### Cálculos
-- Total de pases = Suma de todos los pases asignados
-- Total confirmados = Suma de personas que confirmaron asistencia
-- Disponibles = Capacidad total - Total confirmados
+### Estados de Invitación y su Impacto en Capacidad
+
+#### Estados Principales
+- **`confirmed`**: Invitación completamente confirmada
+- **`partial`**: Confirmación parcial (solo algunos invitados asistirán)
+- **`pending`**: Sin respuesta del invitado
+- **`cancelled`**: Cancelada por el invitado
+- **`inactive`**: Desactivada por el administrador
+
+#### Reglas de Capacidad por Estado
+
+**Estados que cuentan como ACTIVAS:**
+- **`confirmed`**: Invitación completamente confirmada
+- **`partial`**: Confirmación parcial (solo algunos invitados asistirán)
+- **`pending`**: Sin respuesta del invitado
+
+**Estados que NO cuentan como ACTIVAS:**
+- **`cancelled`**: Cancelada por el invitado (libera pases)
+- **`inactive`**: Desactivada por el administrador (libera pases)
+
+**Pases que OCUPAN capacidad:**
+- **`confirmed`**: `confirmedPasses` (todos los confirmados)
+- **`partial`**: `confirmedPasses` (solo los que SÍ van)
+- **`pending`**: `numberOfPasses` (asumimos que todos van hasta que confirmen)
+
+**Pases que LIBERAN capacidad:**
+- **`cancelled`**: `numberOfPasses` (toda la invitación libera pases)
+- **`inactive`**: `numberOfPasses` (toda la invitación libera pases)
+- **`partial`**: `numberOfPasses - confirmedPasses` (los no confirmados liberan pases)
+
+### Cálculos Optimizados
+
+#### Fórmulas Principales
+```
+Pases Ocupados = 
+  Σ(confirmed.confirmedPasses) + 
+  Σ(partial.confirmedPasses) + 
+  Σ(pending.numberOfPasses)
+
+Pases Disponibles = Capacidad Total - Pases Ocupados
+
+Pases Liberados por Cancelación = Σ(cancelled.numberOfPasses)
+Pases Liberados por Inactivación = Σ(inactive.numberOfPasses)
+Pases Liberados por Confirmación Parcial = Σ(partial.numberOfPasses - partial.confirmedPasses)
+```
+
+#### Ejemplo Práctico
+```
+Capacidad Total: 100 pases
+
+Invitación A: 4 pases, status=confirmed, confirmedPasses=4
+→ Ocupan: 4 pases
+
+Invitación B: 6 pases, status=partial, confirmedPasses=3
+→ Ocupan: 3 pases, Liberan: 3 pases
+
+Invitación C: 2 pases, status=pending
+→ Ocupan: 2 pases (estimado)
+
+Invitación D: 5 pases, status=cancelled
+→ Liberan: 5 pases
+
+Total Ocupados: 4 + 3 + 2 = 9 pases
+Total Disponibles: 100 - 9 = 91 pases
+```
+
+### Métricas de Dashboard
+
+#### Estadísticas Principales
+- **Capacidad Total**: Límite máximo del evento
+- **Pases Asignados**: Total de pases en invitaciones activas (excluye inactive)
+- **Pases Ocupados**: Pases realmente ocupados según fórmula
+- **Pases Disponibles**: Capacidad - Pases Ocupados
+- **Pases Confirmados**: Solo los confirmados realmente
+- **Pases Pendientes**: Los que aún no confirman
+
+#### Tasas de Conversión
+- **Tasa de Confirmación**: `Confirmados / Invitaciones Activas * 100`
+- **Tasa de Ocupación**: `Pases Ocupados / Capacidad Total * 100`
+- **Tasa de Cancelación**: `Cancelados / Total Asignados * 100`
 
 ## Importación CSV
 

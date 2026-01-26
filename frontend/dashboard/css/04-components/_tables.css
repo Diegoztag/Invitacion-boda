@@ -1,0 +1,527 @@
+/* Table Components */
+
+/* ==========================================================================
+   CONTAINER & BASE STYLES
+   ========================================================================== */
+
+.table-container {
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+    box-shadow: var(--shadow-sm);
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Table Header (Title Area) */
+.table-header {
+    display: flex;
+    flex-direction: column; /* Stack on mobile */
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-header h3 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.table-header-detail {
+    text-align: left; /* Align left on mobile */
+}
+
+.table-footer-link {
+    padding: var(--spacing-md);
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.table-footer-link a {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--primary);
+    transition: var(--transition);
+}
+
+.table-footer-link a:hover {
+    color: var(--primary-light);
+}
+
+/* ==========================================================================
+   TABLE STRUCTURE (Mobile Default - Card View)
+   ========================================================================== */
+
+.recent-confirmations-table {
+    /* --- Local Configuration --- */
+    --table-layout: auto;
+    --header-bg: var(--bg-white-2);
+    --header-color: var(--text-muted);
+    --header-height: 50px;
+    --row-height: auto;
+    --cell-padding: var(--spacing-sm) var(--spacing-md);
+    --border-color: var(--border-color);
+    
+    /* Mobile Row View Variables */
+    --display-table: block;
+    --display-thead: none;
+    --display-tbody: block;
+    --display-tr: flex;
+    --display-td: flex;
+    
+    --td-width: auto;
+    --td-border: 1px solid var(--border-color);
+    
+    /* --- Styles --- */
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: var(--table-layout);
+    display: var(--display-table);
+}
+
+.recent-confirmations-table thead {
+    display: var(--display-thead);
+}
+
+.recent-confirmations-table tbody {
+    display: var(--display-tbody);
+}
+
+.recent-confirmations-table tr {
+    display: var(--display-tr);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--surface);
+    gap: var(--spacing-sm);
+}
+
+.recent-confirmations-table tr:last-child {
+    border-bottom: none;
+}
+
+.recent-confirmations-table th,
+.recent-confirmations-table td {
+    padding: 0;
+    text-align: left;
+    border: none;
+    display: var(--display-td);
+    background: transparent;
+}
+
+/* Header Cells (Hidden on Mobile) */
+.recent-confirmations-table th {
+    display: none;
+}
+
+/* Body Cells */
+.recent-confirmations-table td {
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    align-items: center;
+}
+
+/* --- Mobile Row Specifics --- */
+
+/* 1. Guest Name (Main Content) */
+.recent-confirmations-table td:nth-child(1) {
+    flex: 1;
+    min-width: 0; /* Allow truncation */
+    margin-right: var(--spacing-sm);
+}
+
+/* 2. Status (Compact) */
+.recent-confirmations-table td:nth-child(2) { 
+    width: auto;
+    flex-shrink: 0;
+}
+
+/* 3. Passes (Hidden) */
+.recent-confirmations-table td:nth-child(3) {
+    display: none;
+}
+
+/* 4. Table Number (Hidden) */
+.recent-confirmations-table td:nth-child(4) {
+    display: none;
+}
+
+/* 5. Message (Hidden) */
+.recent-confirmations-table td:nth-child(5) {
+    display: none;
+}
+
+/* 6. Actions (Right Aligned) */
+.recent-confirmations-table td:last-child {
+    width: auto;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+/* Hide labels from previous card view */
+.recent-confirmations-table td::before {
+    display: none !important;
+}
+
+/* ==========================================================================
+   CELL COMPONENTS
+   ========================================================================== */
+
+/* Guest Cell */
+.guest-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%; /* Full width on mobile */
+}
+
+.guest-avatar {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.guest-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.guest-name-cell {
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+}
+
+.guest-name-item {
+    font-weight: 600; /* Bolder on mobile */
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--text-sm);
+}
+
+.guest-name-item:not(:first-child) {
+    font-size: var(--text-xs); /* Smaller secondary names */
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.guest-time {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Compact Badge on Mobile */
+.recent-confirmations-table .status-badge {
+    font-size: var(--text-xs);
+    height: auto;
+    min-height: 0;
+}
+
+/* Compact Button on Mobile */
+.recent-confirmations-table .btn-icon-only {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Circular button */
+}
+
+/* Avatar Gradients */
+.gradient-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.gradient-blue { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); }
+.gradient-primary { background: linear-gradient(135deg, #e619a1 0%, #c2185b 100%); }
+.gradient-green { background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); }
+.gradient-orange { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); }
+.gradient-teal { background: linear-gradient(135deg, #009688 0%, #00796B 100%); }
+.gradient-indigo { background: linear-gradient(135deg, #3F51B5 0%, #303F9F 100%); }
+.gradient-pink { background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); }
+
+/* Message Column */
+.message-column {
+    width: auto;
+    min-width: 0;
+}
+
+.message-cell {
+    max-width: 70%;
+    text-align: right;
+}
+
+.message-text {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+    width: 100%;
+}
+
+/* Numbers & Counts */
+.table-number-display,
+.table-number {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.pass-count,
+.passes-count {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pass-type-label {
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    margin-left: 4px;
+}
+
+.cancelled-count {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+/* Actions */
+.actions-cell {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.btn-icon {
+    width: var(--icon-xl); /* Larger touch target */
+    height: var(--icon-xl);
+    background: var(--bg-white-2);
+    color: var(--text-muted);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-icon:hover {
+    background: var(--bg-white-10);
+    color: var(--text-primary);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop - min-width: 768px */
+@media (min-width: 768px) {
+    .table-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .table-header-detail {
+        text-align: right;
+    }
+
+    /* Switch to Table View */
+    .recent-confirmations-table {
+        --table-layout: fixed;
+        --row-height: 85px;
+        --cell-padding: var(--spacing-md) var(--spacing-lg);
+        
+        --display-table: table;
+        --display-thead: table-header-group;
+        --display-tbody: table-row-group;
+        --display-tr: table-row;
+        --display-td: table-cell;
+        
+        --td-width: auto;
+        --td-border: 1px solid var(--border-color);
+        --td-justify: flex-start;
+        --td-align: center; /* Vertical align for flex, but here it's table-cell */
+    }
+    
+    .recent-confirmations-table tr {
+        display: table-row; /* Reset grid */
+        margin-bottom: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        gap: 0;
+        transition: background-color 0.2s ease;
+    }
+    
+    .recent-confirmations-table tr:hover {
+        background: var(--bg-white-2);
+    }
+    
+    .recent-confirmations-table td {
+        min-height: auto;
+        border-bottom: var(--td-border);
+        background: transparent;
+        display: table-cell; /* Reset flex */
+        vertical-align: middle;
+    }
+
+    /* Show headers on desktop */
+    .recent-confirmations-table th {
+        display: table-cell;
+        padding: var(--cell-padding);
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Column Widths */
+    .recent-confirmations-table th:nth-child(1) { width: 30%; } /* Guest */
+    .recent-confirmations-table th:nth-child(2) { width: 15%; } /* Status */
+    .recent-confirmations-table th:nth-child(3) { width: 10%; } /* Passes */
+    .recent-confirmations-table th:nth-child(4) { width: 10%; } /* Table */
+    .recent-confirmations-table th:nth-child(5) { width: 25%; } /* Message */
+    .recent-confirmations-table th:nth-child(6) { width: 10%; } /* Actions */
+
+    /* Ensure hidden mobile columns are visible on desktop */
+    .recent-confirmations-table td:nth-child(3),
+    .recent-confirmations-table td:nth-child(4),
+    .recent-confirmations-table td:nth-child(5) {
+        display: table-cell;
+    }
+    
+    /* Reset Mobile Specifics */
+    .recent-confirmations-table td:nth-child(1) {
+        background: transparent;
+        border-bottom: var(--td-border);
+        padding: var(--cell-padding);
+    }
+    
+    .recent-confirmations-table td:nth-child(n+2) {
+        margin-top: 0;
+        padding: var(--cell-padding);
+    }
+    
+    .recent-confirmations-table td:nth-child(n+2)::before {
+        content: none; /* Hide labels */
+        display: none;
+    }
+    
+    .recent-confirmations-table td:last-child {
+        border-top: none;
+        margin-top: 0;
+        background: transparent;
+        justify-content: flex-end; /* Keep actions right aligned */
+        text-align: right;
+    }
+    
+    /* Cell Components Adjustments */
+    .guest-cell {
+        width: auto;
+    }
+    
+    .guest-name-item {
+        font-weight: 500;
+        font-size: var(--text-base); /* Larger size on desktop */
+    }
+
+    .recent-confirmations-table .status-badge {
+        padding: 6px 12px; /* Restore badge padding */
+        font-size: var(--text-xs); /* Restore badge font size */
+    }
+    
+    /* .btn-icon-only keeps mobile styles (compact circle) on desktop */
+    
+    .message-column {
+        width: 25%;
+        min-width: 200px;
+    }
+    
+    .message-cell {
+        max-width: 200px;
+        text-align: left;
+    }
+    
+    .message-text {
+        -webkit-line-clamp: 2;
+        text-align: left;
+    }
+    
+    .actions-cell {
+        width: auto;
+        justify-content: flex-end;
+    }
+    
+    .btn-icon {
+        width: 36px; /* Standard size */
+        height: 36px;
+        background: transparent;
+    }
+    
+    .btn-icon:hover {
+        background: var(--bg-white-5);
+    }
+}
+
+/* Large Desktop - min-width: 1200px */
+@media (min-width: 1200px) {
+    /* Optional refinements */
+    .recent-confirmations-table th:nth-child(1) { width: 25%; } /* Guest */
+    .recent-confirmations-table th:nth-child(5) { width: 30%; } /* Message */
+}

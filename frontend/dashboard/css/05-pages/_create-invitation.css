@@ -1,0 +1,110 @@
+/* Create Invitation Page Styles */
+
+/* ==========================================================================
+   COMPONENTS (Mobile First)
+   ========================================================================== */
+
+/* Celebration Message Box */
+.celebration-message {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md); /* Mobile padding */
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    flex-direction: column; /* Mobile default: Stacked */
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.celebration-message::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary);
+}
+
+.celebration-message p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+
+.celebration-message strong {
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+/* Total Passes Counter */
+.total-passes-counter {
+    background: var(--bg-white-5);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md); /* Mobile padding */
+    margin: var(--spacing-xl) 0;
+    display: flex;
+    flex-direction: column; /* Mobile default: Stacked */
+    justify-content: center; /* Mobile default: Centered */
+    align-items: center; /* Mobile default: Centered */
+    gap: var(--spacing-sm);
+    text-align: center; /* Mobile default: Centered text */
+}
+
+.total-passes-counter span {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+    font-weight: 500;
+}
+
+.total-passes-counter strong {
+    color: var(--primary);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+}
+
+/* Large Number Input Override */
+.input-number-large {
+    text-align: center;
+    font-weight: 600;
+    font-size: var(--text-lg) !important;
+    background: var(--bg-white-5) !important;
+    border: 2px solid var(--border-color) !important;
+    height: 50px !important;
+}
+
+.input-number-large:focus {
+    border-color: var(--primary) !important;
+    background: var(--bg-white-10) !important;
+}
+
+/* Modal Header Decoration */
+.modal-header-celebration::before {
+    content: '✨';
+    font-size: var(--text-xl);
+    margin-right: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+    .celebration-message {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        flex-direction: row;
+    }
+
+    .total-passes-counter {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+}

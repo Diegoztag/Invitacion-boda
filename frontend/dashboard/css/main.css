@@ -1,0 +1,41 @@
+/* Main CSS File - Imports all partials */
+
+/* 1. Settings */
+@import '01-settings/_variables.css';
+
+/* 2. Generic */
+@import '02-generic/_reset.css';
+@import '02-generic/_base.css';
+
+/* 3. Objects */
+@import '03-objects/_layout.css';
+@import '03-objects/_grid.css';
+
+/* 4. Components */
+@import '04-components/_buttons.css';
+@import '04-components/_badges.css';
+@import '04-components/_cards.css';
+@import '04-components/_welcome-card.css';
+@import '04-components/_timer-card.css';
+@import '04-components/_sidebar.css';
+@import '04-components/_header.css';
+@import '04-components/_tables.css';
+@import '04-components/_modals.css';
+@import '04-components/_forms.css';
+@import '04-components/_filters.css';
+@import '04-components/_search.css';
+@import '04-components/_guest-fields.css';
+@import '04-components/_pagination.css';
+@import '04-components/_loading.css';
+@import '04-components/_toasts.css';
+@import '04-components/_charts.css';
+
+/* 5. Pages */
+@import '05-pages/_dashboard.css';
+@import '05-pages/_view-invitation.css';
+@import '05-pages/_create-invitation.css';
+@import '05-pages/_edit-invitation.css';
+@import '05-pages/_cancel-invitation.css';
+
+/* 6. Utilities */
+@import '06-utilities/_utilities.css';

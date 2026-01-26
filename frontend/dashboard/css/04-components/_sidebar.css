@@ -1,0 +1,242 @@
+/* Sidebar Component */
+
+/* ==========================================================================
+   STYLES & LOCAL VARIABLES
+   ========================================================================== */
+
+.sidebar {
+    /* --- Local Configuration --- */
+    /* Dimensions */
+    --sidebar-width-mobile: 280px;
+    --sidebar-width-tablet: 300px;
+    --sidebar-width-desktop: var(--sidebar-width); /* From global vars */
+
+    /* Positioning */
+    --sidebar-top-mobile: 0;
+    --sidebar-top-desktop: var(--header-height);
+    
+    --sidebar-height-mobile: 100dvh;
+    --sidebar-height-desktop: calc(100vh - var(--header-height));
+
+    --sidebar-transform-mobile: translateX(-100%);
+    --sidebar-transform-desktop: none;
+
+    --sidebar-shadow-mobile: 2px 0 10px rgba(0, 0, 0, 0.3);
+    --sidebar-shadow-desktop: none;
+
+    --sidebar-border-mobile: none;
+    --sidebar-border-desktop: 1px solid var(--border-color);
+
+    /* Active Values (Default to Mobile) */
+    --width: var(--sidebar-width-mobile);
+    --top: var(--sidebar-top-mobile);
+    --height: var(--sidebar-height-mobile);
+    --transform: var(--sidebar-transform-mobile);
+    --shadow: var(--sidebar-shadow-mobile);
+    --border-right: var(--sidebar-border-mobile);
+    --z-index: 1003;
+
+    /* --- Styles --- */
+    width: var(--width);
+    background: var(--background-dark);
+    position: fixed;
+    top: var(--top);
+    left: 0;
+    height: var(--height);
+    overflow-y: auto;
+    z-index: var(--z-index);
+    display: flex;
+    flex-direction: column;
+    transform: var(--transform);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+    border-right: var(--border-right);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+/* Header Section */
+.sidebar-header {
+    /* Local Vars */
+    --padding-mobile: var(--spacing-lg);
+    --padding-tablet: var(--spacing-xl);
+    --padding: var(--padding-mobile);
+
+    --title-size-mobile: var(--text-lg);
+    --title-size-tablet: var(--text-xl);
+    --title-size: var(--title-size-mobile);
+
+    --subtitle-size-mobile: var(--text-xs);
+    --subtitle-size-tablet: var(--text-sm);
+    --subtitle-size: var(--subtitle-size-mobile);
+
+    padding: var(--padding);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.sidebar-brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header h2 {
+    font-size: var(--title-size);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.sidebar-header p {
+    font-size: var(--subtitle-size);
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
+.sidebar-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: var(--text-xl);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    display: flex; /* Visible on mobile */
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+    transition: var(--transition);
+}
+
+.sidebar-close-btn:hover {
+    background: var(--bg-white-5);
+    color: var(--text-primary);
+}
+
+/* Navigation Section */
+.sidebar-nav {
+    /* Local Vars */
+    --padding-mobile: var(--spacing-sm);
+    --padding-tablet: var(--spacing-md);
+    --padding: var(--padding-mobile);
+
+    padding: var(--padding);
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Nav Item */
+.nav-item {
+    /* Local Vars */
+    --padding-mobile: var(--spacing-md);
+    --padding: var(--padding-mobile);
+
+    --icon-size-mobile: var(--icon-md);
+    --icon-size-tablet: var(--icon-lg);
+    --icon-size: var(--icon-size-mobile);
+
+    --font-size-mobile: var(--text-base);
+    --font-size: var(--font-size-mobile);
+
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--padding);
+    margin-bottom: var(--spacing-xs);
+    border-radius: var(--border-radius-lg);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 500;
+    font-size: var(--font-size);
+}
+
+.nav-item:hover {
+    background: var(--bg-white-5);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: var(--bg-primary-20);
+    color: var(--primary);
+}
+
+.nav-item i {
+    font-size: var(--icon-size);
+    width: var(--icon-size);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Overlay for Mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1002;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .sidebar {
+        --width: var(--sidebar-width-tablet);
+    }
+
+    .sidebar-header {
+        --padding: var(--padding-tablet);
+        --title-size: var(--title-size-tablet);
+        --subtitle-size: var(--subtitle-size-tablet);
+    }
+
+    .sidebar-nav {
+        --padding: var(--padding-tablet);
+    }
+
+    .nav-item {
+        --icon-size: var(--icon-size-tablet);
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .sidebar {
+        --width: var(--sidebar-width-desktop);
+        --top: var(--sidebar-top-desktop);
+        --height: var(--sidebar-height-desktop);
+        --transform: var(--sidebar-transform-desktop);
+        --shadow: var(--sidebar-shadow-desktop);
+        --border-right: var(--sidebar-border-desktop);
+        --z-index: 100;
+    }
+
+    /* Hide overlay on desktop */
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    /* Hide close button on desktop */
+    .sidebar-close-btn {
+        display: none;
+    }
+}

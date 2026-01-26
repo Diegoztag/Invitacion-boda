@@ -1,0 +1,231 @@
+/* Chart Components */
+
+/* ==========================================================================
+   CHART CONTAINER
+   ========================================================================== */
+
+.chart-container {
+    /* --- Local Configuration --- */
+    /* Heights */
+    --chart-min-height-mobile: auto;
+    --chart-min-height-tablet: 280px;
+    --chart-min-height-desktop: 320px;
+
+    /* Padding */
+    --chart-padding-mobile: var(--spacing-md);
+    --chart-padding-tablet: var(--spacing-lg);
+    --chart-padding-desktop: var(--spacing-lg);
+
+    /* Active Values (Default to Mobile) */
+    --chart-bg: var(--surface);
+    --chart-padding: var(--chart-padding-mobile);
+    --chart-radius: var(--border-radius-xl);
+    --chart-shadow: var(--shadow-lg);
+    --chart-min-height: var(--chart-min-height-mobile);
+    
+    /* --- Styles --- */
+    background: var(--chart-bg);
+    border-radius: var(--chart-radius);
+    padding: var(--chart-padding);
+    box-shadow: var(--chart-shadow);
+    border: 1px solid var(--border-color);
+    
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: var(--chart-min-height);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header Section */
+.chart-header {
+    display: flex;
+    flex-direction: column; /* Mobile Default */
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-sm);
+}
+
+.chart-title-group {
+    flex: 1;
+}
+
+.chart-header h3 {
+    font-size: var(--text-base); /* Mobile Default */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.chart-header p {
+    font-size: var(--text-xs); /* Mobile Default */
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.chart-value {
+    font-size: var(--text-xl); /* Mobile Default */
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+    text-align: left; /* Mobile Default */
+    margin-top: var(--spacing-xs);
+}
+
+.chart-value small {
+    display: inline-block; /* Mobile Default */
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: var(--spacing-sm);
+    margin-top: 0;
+}
+
+/* Canvas Area */
+.chart-canvas-wrapper {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    min-height: 180px; /* Mobile Default */
+    margin-top: var(--spacing-md);
+}
+
+.chart-canvas-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-canvas {
+    max-height: 250px;
+}
+
+/* ==========================================================================
+   PROGRESS BARS (Distribution Chart Alternative)
+   ========================================================================== */
+
+.progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: auto; /* Push to bottom if space allows */
+}
+
+.progress-item {
+    width: 100%;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--text-sm);
+}
+
+.progress-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.progress-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-white-10);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: var(--border-radius-full);
+    transition: width 1s ease-in-out;
+}
+
+/* Contextual Colors */
+.progress-bar.bg-primary { background-color: var(--primary); }
+.progress-bar.bg-success { background-color: var(--success); }
+.progress-bar.bg-warning { background-color: var(--warning); }
+.progress-bar.bg-danger { background-color: var(--danger); }
+.progress-bar.bg-info { background-color: var(--info); }
+.progress-bar.bg-muted { background-color: var(--text-muted); }
+
+/* Text Colors matching bars */
+.text-primary { color: var(--primary) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-info { color: var(--info) !important; }
+.text-muted { color: var(--text-muted) !important; }
+
+/* ==========================================================================
+   CHARTS GRID
+   ========================================================================== */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile Default */
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .chart-container {
+        --chart-padding: var(--chart-padding-tablet);
+        --chart-min-height: var(--chart-min-height-tablet);
+    }
+    
+    .chart-header {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .chart-header h3 {
+        font-size: var(--text-lg);
+    }
+
+    .chart-header p {
+        font-size: var(--text-sm);
+    }
+    
+    .chart-value {
+        text-align: right;
+        font-size: var(--text-2xl);
+        margin-top: 0;
+    }
+    
+    .chart-value small {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+    
+    .chart-canvas-wrapper {
+        min-height: 200px;
+        margin-top: 0;
+    }
+    
+    .charts-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--spacing-lg);
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .chart-container {
+        --chart-padding: var(--chart-padding-desktop);
+        --chart-min-height: var(--chart-min-height-desktop);
+    }
+}

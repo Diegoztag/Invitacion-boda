@@ -1,362 +1,539 @@
-# Arquitectura del Sistema - Post Clean Architecture
+# Arquitectura del Sistema - Wedding Invitation
 
-## 📋 Visión General
+## 📋 Resumen Ejecutivo
 
-El sistema de invitaciones de boda es una aplicación web full-stack que ha evolucionado de una arquitectura monolítica a **Clean Architecture** con separación de capas y Dependency Injection. **Actualizado en Enero 7, 2026** después de la transformación arquitectónica completa.
+Este documento describe la arquitectura completa del sistema de invitaciones de boda, que ha sido refactorizado siguiendo los principios de **Clean Architecture** y **SOLID** para garantizar mantenibilidad, escalabilidad y testabilidad.
+
+## 🏗️ Arquitectura General
+
+### Principios Arquitectónicos
+
+1. **Clean Architecture**: Separación clara de responsabilidades en capas
+2. **SOLID Principles**: Diseño orientado a objetos robusto
+3. **Dependency Injection**: Inversión de dependencias para flexibilidad
+4. **Domain-Driven Design**: Modelado centrado en el dominio de negocio
+5. **Test-Driven Development**: Cobertura de tests unitarios
+
+### Estructura del Proyecto
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    FRONTEND PRINCIPAL                   │
-│              (Clean Architecture + DI)                  │
-├─────────────────┬───────────────────┬───────────────────┤
-│   Presentation  │   Core/Domain     │  Infrastructure   │
-│   (Controllers, │   (Services,      │   (API Client,    │
-│    Components)  │    Models)        │    Storage)       │
-└─────────────────┴───────────────────┴───────────────────┘
-                           │
-┌─────────────────────────────────────────────────────────┐
-│                   FRONTEND ADMIN                        │
-│                (Arquitectura Modular)                   │
-├─────────────────┬───────────────────┬───────────────────┤
-│   Controllers   │    Services       │    Components     │
-│   (Dashboard,   │  (Notifications,  │    (Modals,       │
-│   Invitations)  │   API Client)     │     Utils)        │
-└─────────────────┴───────────────────┴───────────────────┘
-                           │
-              ┌─────────────▼─────────────┐
-              │         BACKEND           │
-              │       (Express.js)        │
-              └─────────────┬─────────────┘
-                           │
-              ┌─────────────▼─────────────┐
-              │       CSV STORAGE         │
-              │        (Local FS)         │
-              └───────────────────────────┘
+Invitacion-boda/
+├── frontend/
+│   ├── invitation/          # Frontend de invitaciones (renombrado de public)
+│   │   ├── index.html
+│   │   ├── styles.css
+│   │   └── js/             # Arquitectura Clean en frontend
+│   │       ├── core/       # Entidades y servicios de dominio
+│   │       ├── infrastructure/ # Adaptadores externos
+│   │       └── presentation/   # Controladores y vistas
+│   └── admin/              # Panel administrativo
+│       ├── index.html
+│       ├── admin.js
+│       └── css/
+├── backend/                # Backend con Clean Architecture ✅ IMPLEMENTADA
+│   ├── src/
+│   │   ├── core/          # Capa de Dominio ✅
+│   │   │   ├── entities/     → Invitation.js, Confirmation.js
+│   │   │   ├── repositories/ → IInvitationRepository.js, IConfirmationRepository.js
+│   │   │   ├── services/     → Servicios de dominio
+│   │   │   └── exceptions/   → Excepciones de negocio
+│   │   ├── application/   # Capa de Aplicación ✅
+│   │   │   ├── usecases/     → CreateInvitationUseCase.js, ConfirmAttendanceUseCase.js
+│   │   │   ├── dto/          → Data Transfer Objects
+│   │   │   └── services/     → Servicios de aplicación
+│   │   ├── infrastructure/ # Capa de Infraestructura ✅
+│   │   │   ├── repositories/ → CsvInvitationRepository.js, CsvConfirmationRepository.js
+│   │   │   ├── services/     → CsvStorage.js
+│   │   │   ├── middleware/   → Middleware de seguridad
+│   │   │   ├── external/     → Servicios externos
+│   │   │   └── storage/      → Almacenamiento
+│   │   ├── presentation/  # Capa de Presentación ✅
+│   │   │   ├── controllers/  → InvitationController.js, ConfirmationController.js
+│   │   │   ├── routes/       → Configuración de rutas
+│   │   │   ├── middleware/   → authMiddleware.js, securityMiddleware.js
+│   │   │   └── serializers/  → Serialización de respuestas
+│   │   ├── shared/        # Servicios compartidos ✅
+│   │   │   ├── utils/        → Logger.js, ValidationService.js, DIContainer.js
+│   │   │   ├── constants/    → Constantes globales
+│   │   │   ├── container/    → Dependency Injection
+│   │   │   └── exceptions/   → Excepciones compartidas
+│   │   └── tests/         # Tests unitarios ✅
+│   │       ├── unit/         → Tests de entidades y casos de uso
+│   │       ├── integration/  → Tests de integración
+│   │       └── e2e/          → Tests end-to-end
+│   ├── jest.config.js     # Configuración de testing ✅
+│   ├── package.json
+│   └── README.md
+├── data/                  # Archivos de datos CSV
+├── docs/                  # Documentación del proyecto
+└── README.md
 ```
 
----
+## 🎯 Backend - Clean Architecture
 
-## 🏗️ TRANSFORMACIÓN ARQUITECTÓNICA COMPLETADA
+### Capa de Dominio (Core)
 
-### **ANTES: Arquitectura Monolítica**
-```
-├── index.html
-├── app.js                 ❌ 1,200+ líneas monolíticas
-├── admin.html
-├── admin.js               ❌ 800+ líneas monolíticas
-└── styles.css
-```
+**Responsabilidad**: Contiene la lógica de negocio pura, independiente de frameworks y tecnologías externas.
 
-### **DESPUÉS: Clean Architecture + Modular**
-```
-├── frontend/js/           ✅ Clean Architecture
-│   ├── config/               → DI Container + Configuración
-│   ├── core/                 → Dominio + Servicios de negocio
-│   ├── infrastructure/       → API + Storage + Externos
-│   ├── presentation/         → Controllers + Components + Views
-│   └── shared/               → Utilidades + Constantes
-├── admin/js/              ✅ Arquitectura Modular
-│   ├── controllers/          → Controladores especializados
-│   ├── services/             → Servicios independientes
-│   ├── components/           → Componentes reutilizables
-│   └── [archivos base]       → API, Utils, Constants
-└── backend/               ✅ Sin cambios (ya modular)
-    ├── services/
-    └── server.js
-```
+#### Entidades
 
----
-
-## 🎯 COMPONENTES PRINCIPALES
-
-### 1. **Frontend Principal - Clean Architecture** ✅ **REVOLUCIONADO**
-
-#### **📁 Estructura de Capas**
-```
-frontend/js/
-├── config/                    🔧 Configuración y DI
-│   ├── di-container.js           → Dependency Injection Container
-│   ├── dependencies.js           → Registro de servicios
-│   └── app-config.js            → Configuración centralizada
-├── core/                      🧠 Capa de Dominio/Negocio
-│   ├── models/
-│   │   └── invitation.js         → Modelo de invitación
-│   ├── services/                 → Lógica de negocio pura
-│   │   ├── configuration-service.js → Configuración dinámica
-│   │   ├── invitation-service.js    → Lógica de invitaciones
-│   │   ├── meta-service.js          → Gestión de meta tags
-│   │   ├── section-generator-service.js → Generación de secciones
-│   │   └── validation-service.js    → Validaciones centralizadas
-│   └── interfaces/               → Contratos y abstracciones
-├── infrastructure/            🔌 Capa de Infraestructura
-│   ├── api/
-│   │   └── api-client.js         → Cliente HTTP profesional
-│   ├── storage/                  → Almacenamiento local
-│   └── external/                 → Servicios externos
-├── presentation/              🎨 Capa de Presentación
-│   ├── controllers/              → Controladores especializados
-│   │   ├── app-controller.js        → Orquestador principal (500+ líneas)
-│   │   ├── navigation-controller.js → Navegación inteligente
-│   │   ├── content-controller.js    → Contenido dinámico
-│   │   ├── rsvp-controller.js       → Formularios RSVP
-│   │   └── carousel-controller.js   → Carruseles configurables
-│   ├── components/               → Componentes UI reutilizables
-│   │   ├── ui/
-│   │   │   ├── countdown.js         → Timer con lifecycle
-│   │   │   ├── modal.js             → Sistema de modales
-│   │   │   ├── loader.js            → Loaders configurables
-│   │   │   ├── mobile-menu.js       → Menú móvil responsive
-│   │   │   ├── form-validator.js    → Validación de formularios
-│   │   │   └── itinerary-animations.js → Animaciones restauradas
-│   │   └── sections/             → Componentes de sección
-│   └── views/                    → Vistas y templates
-└── shared/                    🔗 Utilidades Compartidas
-    ├── utils/
-    │   └── dom-utils.js          → Utilidades DOM
-    ├── helpers/
-    │   └── debounce.js           → Función debounce
-    └── constants/
-        ├── events.js             → Eventos de la aplicación
-        └── selectors.js          → Selectores CSS
-```
-
-#### **🎮 Controladores Especializados**
-- **AppController**: Orquestador principal con inicialización robusta
-- **NavigationController**: Navegación y scroll inteligente
-- **ContentController**: Gestión de contenido dinámico y meta tags
-- **RSVPController**: Formulario de confirmación con validación
-- **CarouselController**: Carruseles configurables con autoplay
-
-#### **🔧 Servicios Core**
-- **MetaService**: Gestión avanzada de meta tags para WhatsApp/SEO
-- **ValidationService**: Validaciones centralizadas con sanitización
-- **ConfigurationService**: Configuración dinámica desde WEDDING_CONFIG
-- **InvitationService**: Lógica de negocio de invitaciones
-- **SectionGeneratorService**: Generación automática de secciones
-
-#### **🎨 Componentes UI Modulares**
-- **CountdownComponent**: Timer con gestión de lifecycle automática
-- **ModalComponent**: Sistema de modales reutilizable con accessibility
-- **LoaderComponent**: Loaders configurables con animaciones
-- **MobileMenuComponent**: Menú móvil responsive con gestos
-- **FormValidator**: Validación de formularios en tiempo real
-
-### 2. **Frontend Admin - Arquitectura Modular** ✅ **COMPLETADA**
-
-#### **📁 Estructura Modular**
-```
-admin/js/
-├── controllers/               🎮 Controladores Especializados
-│   ├── dashboard-controller.js   → Manejo completo del dashboard
-│   ├── invitations-controller.js → Gestión de invitaciones
-│   └── navigation-controller.js  → Navegación entre secciones
-├── services/                  🔧 Servicios Independientes
-│   └── notification-service.js   → Notificaciones en tiempo real
-├── components/                🎨 Componentes Reutilizables
-│   └── admin-modal.js            → Sistema de modales
-├── admin-api.js              📡 API centralizada
-├── admin-constants.js        📋 Constantes globales
-├── admin-utils.js           🛠️ Utilidades reutilizables
-├── store.js                 💾 Estado global
-├── main.js                  🚀 Punto de entrada
-└── performance.js           📊 Monitoreo de rendimiento
-```
-
-### 3. **Backend - Node.js + Express** ✅ **SIN CAMBIOS**
-
-**Estructura ya modular:**
-```
-backend/
-├── server.js              # Servidor principal
-├── services/
-│   ├── csvStorage.js      # Capa de persistencia
-│   └── invitationService.js # Lógica de negocio
-└── package.json
-```
-
----
-
-## 🏗️ PATRONES DE DISEÑO IMPLEMENTADOS
-
-### 1. **Dependency Injection Pattern** ✅ **NUEVO**
 ```javascript
-// DIContainer profesional
-export class DIContainer {
+// core/entities/Invitation.js
+class Invitation {
+    constructor(data) {
+        this.validateData(data);
+        // Lógica de negocio pura
+    }
+    
+    confirm(confirmationData) {
+        // Reglas de negocio para confirmación
+    }
+    
+    cancel(reason, cancelledBy) {
+        // Reglas de negocio para cancelación
+    }
+}
+
+// core/entities/Confirmation.js
+class Confirmation {
+    constructor(data) {
+        this.validateData(data);
+        // Lógica de confirmación
+    }
+}
+```
+
+#### Interfaces de Repositorios
+
+```javascript
+// core/repositories/IInvitationRepository.js
+class IInvitationRepository {
+    async save(invitation) { throw new Error('Not implemented'); }
+    async findByCode(code) { throw new Error('Not implemented'); }
+    async findAll(filters) { throw new Error('Not implemented'); }
+    // ... más métodos
+}
+```
+
+### Capa de Aplicación
+
+**Responsabilidad**: Orquesta las operaciones de negocio y coordina entre entidades.
+
+#### Casos de Uso
+
+```javascript
+// application/usecases/CreateInvitationUseCase.js
+class CreateInvitationUseCase {
+    constructor(invitationRepository, validationService, logger) {
+        this.invitationRepository = invitationRepository;
+        this.validationService = validationService;
+        this.logger = logger;
+    }
+    
+    async execute(invitationData) {
+        // 1. Validar datos
+        // 2. Crear entidad
+        // 3. Generar código único
+        // 4. Persistir
+        // 5. Retornar resultado
+    }
+}
+```
+
+### Capa de Infraestructura
+
+**Responsabilidad**: Implementa las interfaces definidas en el dominio usando tecnologías específicas.
+
+#### Repositorios
+
+```javascript
+// infrastructure/repositories/CsvInvitationRepository.js
+class CsvInvitationRepository extends IInvitationRepository {
+    constructor(csvStorage, logger) {
+        super();
+        this.csvStorage = csvStorage;
+        this.logger = logger;
+    }
+    
+    async save(invitation) {
+        // Implementación específica para CSV
+    }
+}
+```
+
+#### Servicios
+
+```javascript
+// infrastructure/services/ValidationService.js
+class ValidationService {
+    validateInvitationData(data) {
+        // Validaciones específicas
+    }
+    
+    generateInvitationCode() {
+        // Generación de códigos únicos
+    }
+}
+```
+
+### Capa de Presentación
+
+**Responsabilidad**: Maneja la comunicación HTTP y coordina las respuestas.
+
+#### Controladores
+
+```javascript
+// presentation/controllers/InvitationController.js
+class InvitationController {
+    constructor(createInvitationUseCase, getInvitationUseCase, logger) {
+        this.createInvitationUseCase = createInvitationUseCase;
+        this.getInvitationUseCase = getInvitationUseCase;
+        this.logger = logger;
+    }
+    
+    async createInvitation(req, res) {
+        // 1. Extraer datos del request
+        // 2. Ejecutar caso de uso
+        // 3. Formatear respuesta
+    }
+}
+```
+
+#### Rutas
+
+```javascript
+// presentation/routes/invitationRoutes.js
+function configureInvitationRoutes(invitationController, middleware) {
+    const router = express.Router();
+    
+    // Rutas públicas
+    router.get('/:code', 
+        middleware.validateParams,
+        invitationController.getInvitation.bind(invitationController)
+    );
+    
+    // Rutas administrativas
+    router.use(middleware.authenticate);
+    router.post('/', 
+        middleware.validateBody,
+        invitationController.createInvitation.bind(invitationController)
+    );
+    
+    return router;
+}
+```
+
+#### Middleware
+
+```javascript
+// presentation/middleware/securityMiddleware.js
+class SecurityMiddleware {
+    get rateLimit() {
+        return rateLimit({
+            windowMs: 15 * 60 * 1000,
+            max: 100
+        });
+    }
+    
+    get validateParams() {
+        return (req, res, next) => {
+            // Validación de parámetros
+        };
+    }
+}
+```
+
+## 🎨 Frontend - Arquitectura Limpia
+
+### Estructura Organizada
+
+```
+frontend/invitation/js/
+├── core/                   # Capa de Dominio
+│   ├── models/            # Modelos de datos
+│   └── services/          # Servicios de dominio
+├── infrastructure/        # Capa de Infraestructura
+│   ├── api/              # Clientes API
+│   ├── storage/          # Almacenamiento local
+│   └── external/         # Servicios externos
+├── presentation/          # Capa de Presentación
+│   ├── controllers/      # Controladores de vista
+│   ├── components/       # Componentes UI
+│   └── views/           # Vistas
+├── shared/               # Código compartido
+│   ├── utils/           # Utilidades
+│   ├── constants/       # Constantes
+│   └── helpers/         # Helpers
+└── config/              # Configuración
+    ├── app-config.js
+    ├── dependencies.js
+    └── di-container.js
+```
+
+### Dependency Injection
+
+```javascript
+// config/di-container.js
+class DIContainer {
     constructor() {
-        this.services = new Map();
+        this.dependencies = new Map();
         this.singletons = new Map();
     }
     
     register(name, factory, options = {}) {
-        this.services.set(name, { factory, options });
+        this.dependencies.set(name, { factory, options });
     }
     
     resolve(name) {
-        // Singleton pattern + Factory pattern
-        if (options.singleton && this.singletons.has(name)) {
-            return this.singletons.get(name);
+        // Resolución de dependencias
+    }
+}
+```
+
+## 🔧 Patrones de Diseño Implementados
+
+### 1. Repository Pattern
+- Abstrae el acceso a datos
+- Permite cambiar implementaciones sin afectar la lógica de negocio
+
+### 2. Use Case Pattern
+- Encapsula la lógica de aplicación
+- Facilita testing y reutilización
+
+### 3. Dependency Injection
+- Inversión de control
+- Facilita testing con mocks
+
+### 4. Factory Pattern
+- Creación de objetos complejos
+- Centraliza la lógica de construcción
+
+### 5. Observer Pattern
+- Comunicación entre componentes
+- Desacoplamiento de eventos
+
+### 6. Strategy Pattern
+- Algoritmos intercambiables
+- Flexibilidad en validaciones
+
+## 🛡️ Seguridad
+
+### Medidas Implementadas
+
+1. **Autenticación y Autorización**
+   - JWT tokens para sesiones
+   - Basic Auth para compatibilidad
+   - Middleware de autenticación
+
+2. **Validación y Sanitización**
+   - Validación de entrada en todas las capas
+   - Sanitización contra XSS
+   - Validación de tipos de datos
+
+3. **Rate Limiting**
+   - Protección contra ataques de fuerza bruta
+   - Límites diferenciados por endpoint
+
+4. **Headers de Seguridad**
+   - Helmet.js para headers HTTP seguros
+   - CORS configurado apropiadamente
+   - CSP (Content Security Policy)
+
+5. **Logging y Monitoreo**
+   - Logs estructurados
+   - Tracking de requests
+   - Detección de anomalías
+
+## 🧪 Testing
+
+### Estrategia de Testing
+
+1. **Tests Unitarios**
+   - Cobertura mínima del 70%
+   - Tests para entidades, casos de uso y servicios
+   - Mocking de dependencias externas
+
+2. **Tests de Integración**
+   - Pruebas de endpoints completos
+   - Validación de flujos de datos
+
+3. **Tests de Contrato**
+   - Validación de interfaces
+   - Compatibilidad entre capas
+
+### Configuración
+
+```javascript
+// jest.config.js
+module.exports = {
+    testEnvironment: 'node',
+    collectCoverage: true,
+    coverageThreshold: {
+        global: {
+            branches: 70,
+            functions: 70,
+            lines: 70,
+            statements: 70
         }
-        
-        const instance = factory();
-        if (options.singleton) {
-            this.singletons.set(name, instance);
-        }
-        return instance;
     }
-}
+};
 ```
 
-### 2. **Observer Pattern** ✅ **AVANZADO**
-```javascript
-// Sistema de eventos robusto
-export class EventEmitter {
-    on(event, callback) { /* ... */ }
-    emit(event, data) { /* ... */ }
-    off(event, callback) { /* ... */ }
-}
+## 📊 Monitoreo y Observabilidad
 
-// Uso en controladores
-this.on(EVENTS.RSVP.SUBMITTED, (data) => {
-    this.handleRSVPSubmitted(data);
-});
-```
+### Logging Estructurado
 
-### 3. **Factory Pattern** ✅ **IMPLEMENTADO**
 ```javascript
-// ComponentFactory para crear componentes UI
-export class ComponentFactory {
-    static createCountdown(config) {
-        return new CountdownComponent(config);
+// shared/utils/Logger.js
+class Logger {
+    info(message, metadata = {}) {
+        console.log(JSON.stringify({
+            level: 'info',
+            message,
+            timestamp: new Date().toISOString(),
+            ...metadata
+        }));
     }
     
-    static createModal(config) {
-        return new ModalComponent(config);
-    }
-}
-```
-
-### 4. **Singleton Pattern** ✅ **IMPLEMENTADO**
-```javascript
-// Servicios singleton a través del DI Container
-container.register('metaService', () => new MetaService(), { singleton: true });
-container.register('validationService', () => new ValidationService(), { singleton: true });
-```
-
-### 5. **Module Pattern** ✅ **MEJORADO**
-```javascript
-// Cada módulo es independiente y exportable
-export class NavigationController {
-    constructor(container) {
-        this.container = container;
-        this.metaService = container.resolve('metaService');
-    }
-    
-    async init() { /* ... */ }
-    destroy() { /* ... */ }
-}
-```
-
----
-
-## 🚀 FUNCIONALIDADES AVANZADAS IMPLEMENTADAS
-
-### 1. **Sistema de Animaciones Restaurado** ✅
-- **Itinerary animations** con Intersection Observer
-- **Scroll-triggered animations** suaves y performantes
-- **Component-based animations** cada componente maneja las suyas
-
-### 2. **Mesa de Regalos Mejorada** ✅
-- **Tarjetas completamente clickeables** sin botones visibles
-- **UX mejorada** con indicadores sutiles
-- **Responsive design** optimizado para móviles
-
-### 3. **Meta Tags Dinámicos** ✅
-- **WhatsApp preview** optimizado para compartir
-- **SEO mejorado** con meta tags dinámicos por sección
-- **Open Graph** integración completa para redes sociales
-
-### 4. **Generación Dinámica de Secciones** ✅
-- **Configuration-driven UI** secciones según configuración
-- **Conditional rendering** solo secciones habilitadas
-- **Template system** flexible y extensible
-
----
-
-## 📊 MÉTRICAS DE ARQUITECTURA
-
-### **Comparación Arquitectónica**
-
-| **Aspecto** | **Antes** | **Después** | **Mejora** |
-|-------------|-----------|-------------|------------|
-| **Archivos de código** | 2 monolíticos | 25+ modulares | **+1150%** |
-| **Líneas por archivo** | 1,200+ | 50-150 | **-90%** |
-| **Cyclomatic Complexity** | 45+ | 5-8 por módulo | **-85%** |
-| **Coupling** | Alto | Bajo (DI) | **-90%** |
-| **Testabilidad** | 0% | 100% | **+∞** |
-| **Mantenibilidad Index** | 35 | 85+ | **+143%** |
-
-### **Principios SOLID Implementados**
-
-| **Principio** | **Implementación** | **Estado** |
-|---------------|-------------------|------------|
-| **Single Responsibility** | Cada clase/módulo una responsabilidad | ✅ **100%** |
-| **Open/Closed** | Extensible sin modificar código existente | ✅ **100%** |
-| **Liskov Substitution** | Interfaces y contratos bien definidos | ✅ **90%** |
-| **Interface Segregation** | Interfaces específicas, no genéricas | ✅ **85%** |
-| **Dependency Inversion** | DI Container + abstracciones | ✅ **100%** |
-
----
-
-## 🔒 SEGURIDAD
-
-### **✅ Implementada**
-- Autenticación HTTP Basic para admin
-- Códigos de invitación únicos y aleatorios
-- Validación centralizada con sanitización
-- Error handling robusto sin exposición de stack traces
-- CORS configurado correctamente
-
-### **🔴 Por Implementar (Crítico)**
-- **HTTPS obligatorio** en producción
-- **JWT tokens** para sesiones admin
-- **Rate limiting avanzado** por IP y endpoint
-- **CSRF tokens** en formularios
-- **Security headers** completos (CSP, HSTS, etc.)
-
----
-
-## ⚡ RENDIMIENTO
-
-### **✅ Optimizaciones Implementadas**
-- **Lazy loading** de servicios con DI Container
-- **Component lifecycle management** con auto-cleanup
-- **Event listener cleanup** automático
-- **Memory leak prevention** en componentes
-- **Performance monitoring** integrado opcional
-
-### **📋 Optimizaciones Planificadas**
-- **Bundle optimization** con Webpack
-- **Code splitting** por componentes
-- **Service Worker** para caching
-- **Tree shaking** para eliminar código no usado
-- **Gzip compression** en servidor
-
----
-
-## 🧪 TESTING
-
-### **🟢 Ventajas para Testing (100% Testeable)**
-```javascript
-// Ejemplo de test con DI
-describe('RSVPController', () => {
-    let controller;
-    let mockContainer;
-    
-    beforeEach(() => {
-        mockContainer = {
-            resolve: jest.fn()
+    startOperation(operation, metadata = {}) {
+        const startTime = Date.now();
+        return (result = {}, level = 'info') => {
+            this[level](`Operation completed: ${operation}`, {
+                ...metadata,
+                ...result,
+                duration: Date.now() - startTime
+            });
         };
-        
-        // Mock de servicios
-        mockContainer.resolve
-            .mockReturnValueOnce
+    }
+}
+```
+
+### Métricas
+
+- Tiempo de respuesta de endpoints
+- Tasa de errores
+- Número de invitaciones creadas
+- Tasa de confirmación
+- Uso de recursos
+
+## 🚀 Escalabilidad
+
+### Consideraciones de Diseño
+
+1. **Separación de Responsabilidades**
+   - Cada capa tiene una responsabilidad específica
+   - Facilita el escalado horizontal
+
+2. **Interfaces Bien Definidas**
+   - Contratos claros entre capas
+   - Permite reemplazar implementaciones
+
+3. **Configuración Externalizada**
+   - Variables de entorno
+   - Configuración por ambiente
+
+4. **Stateless Design**
+   - No estado en el servidor
+   - Facilita la replicación
+
+## 🔄 Flujo de Datos
+
+### Creación de Invitación
+
+```mermaid
+graph TD
+    A[HTTP Request] --> B[Router]
+    B --> C[Middleware de Validación]
+    C --> D[Controller]
+    D --> E[Use Case]
+    E --> F[Validation Service]
+    E --> G[Repository]
+    G --> H[CSV Storage]
+    E --> I[Logger]
+    E --> D
+    D --> J[HTTP Response]
+```
+
+### Confirmación de Asistencia
+
+```mermaid
+graph TD
+    A[Frontend] --> B[API Client]
+    B --> C[Backend Router]
+    C --> D[Validation Middleware]
+    D --> E[Confirmation Controller]
+    E --> F[Confirm Attendance Use Case]
+    F --> G[Invitation Repository]
+    F --> H[Confirmation Repository]
+    F --> I[Validation Service]
+    F --> E
+    E --> J[Response]
+    J --> A
+```
+
+## 📈 Métricas de Calidad
+
+### Código
+
+- **Complejidad Ciclomática**: < 10 por función
+- **Cobertura de Tests**: > 70%
+- **Duplicación de Código**: < 5%
+- **Deuda Técnica**: Monitoreada y controlada
+
+### Performance
+
+- **Tiempo de Respuesta**: < 200ms para operaciones simples
+- **Throughput**: > 100 requests/segundo
+- **Disponibilidad**: > 99.9%
+
+## 🔮 Roadmap Técnico
+
+### Próximas Mejoras
+
+1. **Base de Datos**
+   - Migración de CSV a base de datos relacional
+   - Implementación de Repository para SQL
+
+2. **Caching**
+   - Redis para cache de sesiones
+   - Cache de consultas frecuentes
+
+3. **Microservicios**
+   - Separación en servicios independientes
+   - API Gateway
+
+4. **Containerización**
+   - Docker para desarrollo y producción
+   - Kubernetes para orquestación
+
+5. **CI/CD**
+   - Pipeline automatizado
+   - Despliegue continuo
+
+## 📚 Referencias
+
+- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+- [Dependency Injection](https://martinfowler.com/articles/injection.html)
+
+---
+
+**Última actualización**: Enero 2026  
+**Versión**: 2.0  
+**Autor**: Equipo de Desarrollo
+
+---- TODO
+Cosas por revisar
+Refinar bien el filtrado y el popup
+El boton de importar csv, no aparece el archivo cuando se carga
+Revisar el modal de creacion de invitaciones
+revisar el funcionamiento de modal detalles en invitaciones
+afinar la talba de invitaciones
+dejar de usar metodo de csv y pasarnos a base de datos
+
+-----
+
+cosas por meter
+
+una opcion nueva de configuraciones donde se pueda configurar visualmente el archivo config.js dinamicamente desde el dashboard

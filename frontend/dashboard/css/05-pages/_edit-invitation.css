@@ -1,0 +1,128 @@
+/* Edit Invitation Page Styles */
+
+/* ==========================================================================
+   INVITATION DETAIL CONTAINER
+   ========================================================================== */
+
+.invitation-detail {
+    /* --- Local Configuration --- */
+    --detail-padding: var(--spacing-lg);
+    --header-border: 1px solid var(--primary-light); /* Using primary-light instead of alpha for better visibility */
+    
+    padding: var(--detail-padding);
+}
+
+/* Header Section */
+.edit-header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: var(--header-border);
+}
+
+.edit-header h3 {
+    margin: 0;
+    color: var(--primary);
+    font-size: var(--text-2xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.edit-header i {
+    font-size: var(--text-xl);
+}
+
+/* ==========================================================================
+   MODAL ACTIONS (Mobile First)
+   ========================================================================== */
+
+.modal-actions {
+    display: flex;
+    flex-direction: column; /* Mobile default: Stacked */
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Edit Mode Specifics */
+.invitation-detail[data-mode="edit"] .modal-actions button {
+    width: 100%; /* Mobile default: Full width */
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--text-base);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+/* View Mode Specifics */
+.invitation-detail[data-mode="view"] .modal-actions {
+    margin-top: var(--spacing-lg);
+}
+
+.invitation-detail[data-mode="view"] .modal-actions button {
+    width: 100%; /* Mobile default: Full width */
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--text-sm);
+}
+
+/* ==========================================================================
+   CONFIRMATION SECTION
+   ========================================================================== */
+
+.confirmation-section {
+    background: var(--bg-white-5);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    border: 1px solid var(--border-color);
+}
+
+.confirmation-section h5 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--primary);
+    font-size: var(--text-lg);
+    font-weight: 600;
+}
+
+.confirmation-section p {
+    margin: var(--spacing-sm) 0;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.confirmation-section strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Animation & State */
+#confirmedPassesGroup {
+    transition: var(--transition);
+    opacity: 1;
+}
+
+#confirmedPassesGroup[style*="display: none"] {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+    .modal-actions {
+        flex-direction: row;
+    }
+    
+    .invitation-detail[data-mode="edit"] .modal-actions button,
+    .invitation-detail[data-mode="view"] .modal-actions button {
+        width: auto;
+        flex: 1;
+    }
+}

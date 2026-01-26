@@ -1,0 +1,148 @@
+/* Guest Fields Component */
+
+/* ==========================================================================
+   CONTAINERS
+   ========================================================================== */
+
+#guestFieldsContainer,
+#guestNamesContainer {
+    margin-top: var(--spacing-xs);
+}
+
+#guestFields {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+#guestNameFields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); /* Mobile gap */
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Custom Scrollbar */
+#guestFields::-webkit-scrollbar {
+    width: 6px;
+}
+
+#guestFields::-webkit-scrollbar-track {
+    background: var(--bg-white-5);
+    border-radius: 3px;
+}
+
+#guestFields::-webkit-scrollbar-thumb {
+    background: var(--primary-light-alpha);
+    border-radius: 3px;
+}
+
+#guestFields::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-alpha);
+}
+
+/* ==========================================================================
+   FIELD ROWS (Mobile First)
+   ========================================================================== */
+
+.guest-field-row {
+    display: flex;
+    flex-direction: row; /* Mobile default: Stacked */
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    align-items: center;
+}
+
+.guest-name-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+    width: 100%; /* Mobile width */
+}
+
+/* ==========================================================================
+   INPUTS & SELECTS (Mobile First)
+   ========================================================================== */
+
+.guest-name-input {
+    width: 100%;
+    padding: var(--spacing-md); /* Mobile padding */
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: 16px; /* Mobile: Prevent iOS zoom */
+    transition: all 0.3s ease;
+    
+    -webkit-text-size-adjust: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.guest-name-input:focus {
+    background: var(--input-focus-bg);
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-light-alpha);
+}
+
+.guest-name-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   INDICATORS & HINTS
+   ========================================================================== */
+
+.form-hint {
+    display: block;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+    .guest-field-row {
+        flex-direction: row;
+        gap: var(--spacing-sm);
+    }
+
+    #guestNameFields {
+        gap: var(--spacing-md);
+    }
+
+    .guest-name-field {
+        width: auto;
+        flex: 1;
+    }
+
+    .guest-name-input {
+        font-size: var(--text-sm);
+        padding: 10px 15px;
+    }
+}

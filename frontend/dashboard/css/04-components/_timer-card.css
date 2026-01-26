@@ -1,0 +1,112 @@
+/* Timer Card Component */
+
+/* ==========================================================================
+   STYLES & LOCAL VARIABLES (Mobile First)
+   ========================================================================== */
+
+.timer-card {
+    /* --- Local Variables (Configuration) --- */
+    --padding: var(--spacing-md); /* Mobile padding */
+    --value-size: var(--spacing-xl); /* Mobile value size */
+    --value-font-size: var(--text-2xl);
+
+    /* --- Styles --- */
+    width: 100%; /* Mobile default: Full width */
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--padding);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timer-header h3 {
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.timer-header i {
+    color: var(--primary);
+    font-size: var(--text-2xl);
+}
+
+.timer-display {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+}
+
+.timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.timer-value {
+    width: var(--value-size);
+    height: var(--value-size);
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--value-font-size);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.timer-label {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+}
+
+/* Timer Finished State */
+.timer-finished {
+    grid-column: 1 / -1;
+    text-align: center;
+    width: 100%;
+}
+
+.timer-finished-value {
+    font-size: var(--text-2xl);
+    width: auto;
+    height: auto;
+    padding: var(--spacing-sm);
+    background: transparent;
+    border: none;
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 480px) */
+@media (min-width: 480px) {
+    .timer-card {
+        --value-size: var(--spacing-2xl);
+    }
+}
+
+/* Desktop (min-width: 1024px) */
+@media (min-width: 1024px) {
+    .timer-card {
+        flex: 1;
+        --padding: var(--spacing-xl);
+        --value-size: var(--spacing-3xl);
+    }
+}

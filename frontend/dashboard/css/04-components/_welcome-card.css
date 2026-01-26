@@ -1,0 +1,190 @@
+/* Welcome Card Component */
+
+/* ==========================================================================
+   STYLES & LOCAL VARIABLES
+   ========================================================================== */
+
+.welcome-card {
+    /* --- Local Variables (Configuration) --- */
+    /* Heights */
+    --min-height-mobile: 210px;
+    --min-height-tablet: 250px;
+    --min-height-desktop: 300px;
+
+    /* Padding */
+    --padding-mobile: var(--spacing-md);
+    --padding-tablet: var(--spacing-lg);
+    --padding-desktop: var(--spacing-xl);
+
+    /* Typography */
+    --title-size-mobile: var(--text-xl);
+    --title-size-tablet: var(--text-2xl);
+    --title-size-desktop: var(--text-3xl);
+
+    --subtitle-size-mobile: var(--text-2xs);
+    --subtitle-size-tablet: var(--text-xs);
+    --subtitle-size-desktop: var(--text-sm);
+
+    --text-size-mobile: var(--text-xs);
+    --text-size-tablet: var(--text-sm);
+    --text-size-desktop: var(--text-base);
+
+    /* Active Values (Default to Mobile) */
+    --min-height: var(--min-height-mobile);
+    --padding: var(--padding-mobile);
+    --title-size: var(--title-size-mobile);
+    --subtitle-size: var(--subtitle-size-mobile);
+    --text-size: var(--text-size-mobile);
+    --text-line-clamp: 3;
+    --text-display: -webkit-box;
+
+
+    /* --- Styles --- */
+    flex: 2;
+    position: relative;
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    min-height: var(--min-height);
+    box-shadow: var(--shadow-md);
+    background-size: cover;
+    background-position: center;
+    transition: var(--transition);
+}
+
+.welcome-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.7s ease;
+}
+
+.welcome-card:hover::before {
+    transform: scale(1.05);
+}
+
+.welcome-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+    z-index: 1;
+}
+
+.welcome-content {
+    position: absolute;
+    inset: 0;
+    padding: var(--padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+}
+
+.welcome-content .subtitle {
+    color: var(--primary-light);
+    font-size: var(--subtitle-size);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--spacing-sm);
+}
+
+.welcome-content h2 {
+    font-size: var(--title-size);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.2;
+    color: white;
+}
+
+.welcome-content p {
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 500px;
+    font-size: var(--text-size);
+    line-height: 1.5;
+    
+    /* Line Clamping Logic */
+    display: var(--text-display);
+    -webkit-line-clamp: var(--text-line-clamp);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/* Period Selector */
+.period-selector {
+    /* Local Vars */
+    --margin-top: var(--spacing-sm);
+    margin-top: var(--margin-top);
+}
+
+.period-select {
+    /* Local Vars */
+
+    /* Padding */
+    --padding-mobile: var(--spacing-xs);
+    --padding-tablet: var(--spacing-lg);
+    --padding-desktop: var(--spacing-xl);
+
+    --padding-right: var(--spacing-xs);
+    --font-size: var(--text-xs);
+    --icon-size: var(--icon-xs);
+
+    --text-size-mobile: var(--text-xs);
+    --text-size-tablet: var(--text-sm);
+    --text-size-desktop: var(--text-base);
+
+    background: var(--bg-white-10);
+    border: 1px solid var(--bg-white-20);
+    color: white;
+    padding: var(--padding-mobile);
+    border-radius: var(--border-radius-md);
+    font-size: var(--text-size-mobile) !important;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    padding-right: var(--padding-right);
+}
+
+.period-select:hover {
+    background: var(--bg-white-20);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.period-select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: var(--primary-light);
+}
+
+.period-select option {
+    background: var(--surface-dark);
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .welcome-card {
+        --min-height: var(--min-height-tablet);
+        --padding: var(--padding-tablet);
+        --title-size: var(--title-size-tablet);
+        --subtitle-size: var(--subtitle-size-tablet);
+        --text-size: var(--text-size-tablet);
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .welcome-card {
+        --min-height: var(--min-height-desktop);
+        --padding: var(--padding-desktop);
+        --title-size: var(--title-size-desktop);
+        --subtitle-size: var(--subtitle-size-desktop);
+        --text-size: var(--text-size-desktop);
+    }
+}

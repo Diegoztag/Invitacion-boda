@@ -15,29 +15,52 @@ Authorization: Basic base64(username:password)
 
 ## Endpoints
 
-### Invitaciones
+### 🔐 Autenticación
+- **Tipo**: Basic Auth
+- **Credenciales**: `admin:admin123`
+- **Header**: `Authorization: Basic YWRtaW46YWRtaW4xMjM=`
+
+### 📨 Invitaciones
 
 #### GET /api/invitations
-Obtiene la lista de todas las invitaciones.
+Obtiene todas las invitaciones con filtros y paginación.
+
+**Parámetros de consulta:**
+- `page` (opcional): Número de página (default: 1)
+- `limit` (opcional): Elementos por página (default: 10, max: 100)
+- `status` (opcional): Filtrar por estado
+- `confirmed` (opcional): true/false para filtrar confirmadas
+- `search` (opcional): Buscar por nombre de invitado
+- `sortBy` (opcional): Campo para ordenar (default: createdAt)
+- `sortOrder` (opcional): asc/desc (default: desc)
 
 **Response:**
 ```json
-[
-  {
-    "code": "ABC123",
-    "guestNames": ["Juan García", "María López"],
-    "guestTypes": ["Adulto", "Adulto"],
-    "numberOfPasses": 2,
-    "tableNumber": 5,
-    "email": "juan@email.com",
-    "phone": "+521234567890",
-    "createdAt": "2024-01-01T10:00:00Z",
-    "confirmed": true,
-    "confirmedPasses": 2,
-    "confirmationDate": "2024-01-15T14:30:00Z",
-    "status": ""
+{
+  "success": true,
+  "data": [
+    {
+      "code": "ABC123",
+      "guestNames": ["Juan García", "María López"],
+      "guestTypes": ["Adulto", "Adulto"],
+      "numberOfPasses": 2,
+      "tableNumber": 5,
+      "email": "juan@email.com",
+      "phone": "+521234567890",
+      "createdAt": "2024-01-01T10:00:00Z",
+      "confirmed": true,
+      "confirmedPasses": 2,
+      "confirmationDate": "2024-01-15T14:30:00Z",
+      "status": ""
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 50,
+    "pages": 5
   }
-]
+}
 ```
 
 #### GET /api/invitation/:code
@@ -221,22 +244,66 @@ Actualiza la confirmación de una invitación (solo admin).
 ### Estadísticas
 
 #### GET /api/stats
-Obtiene estadísticas generales del evento.
+Obtiene estadísticas generales del evento con estructura optimizada sin duplicaciones.
+
+**Autenticación requerida**: Sí
 
 **Response:**
 ```json
 {
-  "totalInvitations": 50,
-  "totalPasses": 150,
-  "confirmedInvitations": 30,
-  "pendingInvitations": 15,
-  "cancelledInvitations": 5,
-  "totalAttending": 85,
-  "confirmationRate": 60,
-  "activeInvitations": 48,
-  "inactiveInvitations": 2
+  "success": true,
+  "stats": {
+    "invitations": {
+      "total": 4,
+      "confirmed": 0,
+      "pending": 4,
+      "cancelled": 0,
+      "inactive": 0,
+      "totalPasses": 6
+    },
+    "confirmations": {
+      "totalConfirmedGuests": 0,
+      "pendingPasses": 6,
+      "withDietaryRestrictions": 0,
+      "withMessages": 0,
+      "withPhone": 0,
+      "byType": {
+        "adult": 0,
+        "child": 0,
+        "staff": 0
+      }
+    },
+    "rates": {
+      "confirmationRate": "0.00",
+      "attendanceRate": "0.00"
+    },
+    "passDistribution": {
+      "activeAdultPasses": 4,
+      "activeChildPasses": 2,
+      "activeStaffPasses": 0,
+      "totalActivePasses": 6,
+      "confirmedAdultPasses": 0,
+      "confirmedChildPasses": 0,
+      "confirmedStaffPasses": 0,
+      "totalAdultPasses": 4,
+      "totalChildPasses": 2,
+      "totalStaffPasses": 0
+    }
+  }
 }
 ```
+
+**Estructura optimizada:**
+- **invitations**: Datos sobre invitaciones (total, estados, pases)
+- **confirmations**: Datos sobre confirmaciones y tipos de invitados
+- **rates**: Tasas calculadas como porcentajes
+
+**Notas importantes:**
+- Estructura sin duplicaciones para mejor rendimiento
+- Las estadísticas se calculan únicamente desde el archivo `invitations.csv`
+- Los campos `confirmed`, `confirmedPasses` en invitaciones determinan el estado
+- Las tasas se calculan como porcentajes con 2 decimales
+- Eliminadas redundancias de la estructura anterior
 
 ### Importación/Exportación
 
@@ -286,12 +353,63 @@ Invitado1,Tipo1,Invitado2,Tipo2,Pases,Mesa,Email,Telefono
 }
 ```
 
-#### GET /api/export
-Exporta todas las invitaciones a CSV.
+#### POST /api/invitations/import ⭐
+Importa invitaciones en lote.
+
+**Request Body:**
+```json
+{
+  "invitations": [
+    {
+      "guestNames": ["Juan Pérez"],
+      "numberOfPasses": 2,
+      "tableNumber": 5,
+      "phone": "+521234567890"
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "result": {
+    "success": [...], 
+    "errors": [...]   
+  },
+  "message": "Importación completada: 5 exitosas, 2 fallidas"
+}
+```
+
+#### GET /api/invitations/export
+Exporta todas las invitaciones.
+
+**Parámetros de consulta:**
+- `format` (opcional): json/csv (default: json)
 
 **Response:**
 - Content-Type: `text/csv`
 - Content-Disposition: `attachment; filename="invitaciones_export.csv"`
+
+#### GET /api/invitations/stats
+Obtiene estadísticas de invitaciones.
+
+#### GET /api/invitations/search/:name
+Busca invitaciones por nombre de invitado.
+
+#### DELETE /api/invitations/:code
+Elimina una invitación (soft delete).
+
+**Parameters:**
+- `code` (string): Código de la invitación
+
+**Request Body:**
+```json
+{
+  "reason": "Motivo de eliminación"
+}
+```
 
 ### Utilidades
 

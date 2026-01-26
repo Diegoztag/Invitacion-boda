@@ -22,7 +22,7 @@ const WEDDING_CONFIG = {
             month: "Febrero",
             year: "2026"
         },
-        confirmationDeadline: "20 de Enero",
+        confirmationDeadline: "15 de Febrero",
         type: "Nuestra Boda" // Puede ser "Nuestra Boda", "Nuestro Matrimonio", etc.
     },
     
@@ -118,16 +118,26 @@ const WEDDING_CONFIG = {
     // Configuración del backend
     api: {
         // Detección automática del entorno
-        backendUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? "http://localhost:3000/api"  // Desarrollo local
+        backendUrl: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+            ? "/api"  // Desarrollo local (ruta relativa para usar el mismo puerto)
             : "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com/api", // Producción (Seenode)
-        googleMapsApiKey: "YOUR_API_KEY"
+        googleMapsApiKey: "YOUR_API_KEY",
+        
+        // Configuración de autenticación para el dashboard
+        dashboard: {
+            requireAuth: true, // true = requiere autenticación, false = sin autenticación (desarrollo)
+            authType: 'basic', // 'basic' o 'jwt'
+            credentials: {
+                username: 'admin',
+                password: 'password'
+            }
+        }
     },
     
     // Configuración de invitados
     guests: {
-        targetTotal: 130, // Número total de invitados esperados (personas)
-        targetInvitations: 150, // Número estimado de invitaciones a enviar
+        targetTotal: 150, // Número total de invitados esperados (personas)
+        maxGuestsPerInvitation: 5, // Límite máximo de invitados por invitación
         allowChildren: false, // true = se permiten niños, false = solo adultos
         showNoChildrenNote: true,//true = mostrar nota de "no niños", false = ocultar
         noChildrenMessage: "Esperamos contar con su comprensión para que este sea un evento solo para adultos"
@@ -142,17 +152,25 @@ const WEDDING_CONFIG = {
         directionsUrl: "https://maps.app.goo.gl/Ss1WbQUuMR9o7VF38"
     },
     
-    // TODO: Futura mejora - Configuración de WhatsApp
-    // whatsapp: {
-    //     invitationMessage: (names, passes, url) => 
-    //         `¡Hola ${names}! 🎉\n\nEstán cordialmente invitados a nuestra boda.\n\nPor favor confirmen su asistencia en el siguiente enlace:\n${url}\n\nTienen ${passes} pases disponibles.\n\n¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName}`
-    // },
+    // Configuración de WhatsApp
+    whatsapp: {
+        invitationMessage: (names, passes, url) => 
+        `¡Nos casamos 💍✨!\n
+Hay momentos en la vida que son especiales por sí solos, pero compartirlos con las personas que más queremos los hace inolvidables.❤️🙌\n
+Después de tantos momentos compartidos, hemos  decidido dar el siguiente paso, y estamos muy felices de invitar con mucho cariño a ${names} a nuestra boda el próximo 28 de Febrero del 2026 🥂\n
+Nota:📝 Nuestra ceremonia se llevará a cabo en un lugar al aire libre.🍂 Debido a la temprada, les sugerimos traer una prenda de abrigo para disfrutar comodamente de la velada.🎊\n
+Los siguientes son ${passes} pases disponibles para ${names} favor de confirmar en el link.🔗\n
+${url}\n
+Favor de confirmar antes del ${WEDDING_CONFIG.event.confirmationDeadline}📅.\n
+¡Los esperamos con mucho cariño!\n${WEDDING_CONFIG.couple.displayName} ✨`
+    },
     
     // Configuración del formulario RSVP
     rsvpForm: {
         showDietaryRestrictions: false, // true = mostrar campo de restricciones alimentarias, false = ocultar
         showPhoneField: false, // true = mostrar campo de teléfono/WhatsApp, false = ocultar
-        requirePhone: false // true = campo obligatorio, false = opcional
+        requirePhone: false, // true = campo obligatorio, false = opcional
+        allowReconfirmation: false // true = permitir modificar confirmación, false = bloquear si ya confirmó
     },
     
     // Mesa de Regalos
@@ -208,7 +226,7 @@ const WEDDING_CONFIG = {
     // Configuración de Meta Etiquetas (SEO y Redes Sociales)
     metaTags: {
         // URL base del sitio (actualizar con el dominio real)
-        siteUrl: window.location.origin || "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+        siteUrl: (typeof window !== 'undefined' && window.location.origin) || "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com",
         
         // Título principal para compartir
         title: "Boda Fernanda & Diego",
@@ -242,9 +260,10 @@ const WEDDING_CONFIG = {
         title: "Galería",
         subtitle: "",
         carousel: {
-            showNavigationButtons: true, // true = mostrar botones de navegación (flechas), false = ocultar
+            showNavigationButtons: false, // true = mostrar botones de navegación (flechas), false = ocultar
             showIndicators: false, // true = mostrar indicadores (puntos), false = ocultar
-            autoPlayDelay: 1000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
+            autoPlayDelay: 5000, // Tiempo en milisegundos entre transiciones automáticas (5000 = 5 segundos)
+            animationDuration: 600, // Duración de la animación de transición en milisegundos
             enableAutoPlay: true, // true = activar reproducción automática, false = desactivar
             enableSwipe: true, // true = permitir navegación táctil (swipe), false = desactivar
             enableKeyboard: false // true = permitir navegación con teclado, false = desactivar

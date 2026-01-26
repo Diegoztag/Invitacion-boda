@@ -1,0 +1,336 @@
+/* Button Components */
+
+/* ==========================================================================
+   BASE BUTTON STYLES
+   ========================================================================== */
+
+.btn {
+    /* --- Local Configuration --- */
+    /* Padding */
+    --btn-padding-mobile: var(--spacing-sm) var(--spacing-md);
+    --btn-padding-tablet: 12px 24px;
+    --btn-padding-desktop: var(--spacing-md) var(--spacing-lg);
+
+    /* Dimensions */
+    --btn-height-mobile: 25px; /* Touch target */
+    --btn-height-tablet: 44px;
+    --btn-height-desktop: 48px;
+
+    /* Active Values (Default to Mobile) */
+    --bg: transparent;
+    --color: var(--text-primary);
+    --border: 1px solid transparent;
+    --padding: var(--btn-padding-mobile);
+    --radius: var(--border-radius-md);
+    --font-size: var(--text-sm);
+    --gap: var(--spacing-sm);
+    --min-height: var(--btn-height-mobile);
+    
+    /* Hover State Defaults */
+    --hover-bg: var(--bg);
+    --hover-color: var(--color);
+    --hover-border: var(--border);
+    --hover-transform: none;
+    --hover-shadow: none;
+    
+    /* --- Styles --- */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap);
+    padding: var(--padding);
+    background: var(--bg);
+    color: var(--color);
+    border: var(--border);
+    border-radius: var(--radius);
+    font-size: var(--font-size);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    min-height: var(--min-height);
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--hover-bg);
+    color: var(--hover-color);
+    border: var(--hover-border);
+    transform: var(--hover-transform);
+    box-shadow: var(--hover-shadow);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   VARIANTS
+   ========================================================================== */
+
+/* Primary */
+.btn-primary {
+    --bg: var(--primary);
+    --color: white;
+    --hover-bg: var(--primary-dark);
+}
+
+/* Secondary */
+.btn-secondary {
+    --bg: var(--bg-white-10);
+    --color: var(--text-primary);
+    --border: 1px solid var(--border-color);
+    
+    --hover-bg: var(--bg-white-15);
+    --hover-border: 1px solid var(--bg-white-10);
+}
+
+/* Danger */
+.btn-danger {
+    --bg: var(--danger);
+    --color: white;
+    
+    --hover-bg: #d32f2f;
+    --hover-transform: translateY(-1px);
+    --hover-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:active {
+    --hover-transform: translateY(0);
+}
+
+/* Success */
+.btn-success {
+    --bg: var(--success);
+    --color: white;
+    
+    --hover-bg: #d32f2f;
+    --hover-transform: translateY(-1px);
+    --hover-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+/* Soft Primary */
+.btn-primary-soft {
+    --bg: rgba(230, 25, 161, 0.15);
+    --color: var(--primary);
+    --border: 1px solid rgba(230, 25, 161, 0.3);
+    
+    --hover-bg: rgba(230, 25, 161, 0.25);
+    --hover-border: 1px solid var(--primary);
+}
+
+/* Soft Secondary */
+.btn-secondary-soft {
+    --bg: var(--bg-white-5);
+    --color: var(--text-secondary);
+    --border: 1px solid var(--border-color);
+    
+    --hover-bg: var(--bg-white-10);
+    --hover-color: var(--text-primary);
+    --hover-border: 1px solid var(--text-muted);
+}
+
+/* Soft Success */
+.btn-success-soft {
+    --bg: var(--success);
+    --color: var(--success);
+    --border: 1px solid var(--success-alpha);
+    
+    --hover-bg: var(--success-alpha);
+    --hover-border: 1px solid var(--success);
+}
+
+/* Ghost (Generic) */
+.btn-ghost {
+    --bg: transparent;
+    --color: var(--text-muted);
+    
+    --hover-bg: var(--bg-white-5);
+    --hover-color: var(--text-primary);
+}
+
+/* Danger Ghost */
+.btn-danger-ghost {
+    --bg: transparent;
+    --color: var(--danger);
+    
+    --hover-bg: rgba(244, 67, 54, 0.1);
+    --hover-border: 1px solid var(--danger);
+}
+
+/* Icon Button */
+.btn-icon {
+    --bg: transparent;
+    --color: var(--text-primary);
+    --padding: var(--spacing-sm);
+    --min-height: 44px;
+    --min-width: 44px;
+    
+    --hover-bg: var(--bg-white-5);
+    --hover-color: var(--text-primary);
+    
+    min-width: var(--min-width);
+}
+
+/* Action Button (Generic) */
+.action-btn {
+    /* Inherits base .btn styles but can be customized */
+    --radius: var(--border-radius-sm);
+}
+
+/* Copy Button Small */
+.copy-btn-small {
+    --bg: var(--bg-white-5);
+    --color: var(--text-muted);
+    --border: 1px solid var(--border-color);
+    --padding: 4px 8px;
+    --font-size: var(--text-xs);
+    --gap: 6px;
+    --min-height: auto;
+    --radius: var(--border-radius-sm);
+    
+    --hover-bg: var(--bg-white-10);
+    --hover-color: var(--text-primary);
+    --hover-border: 1px solid var(--text-muted);
+    
+    /* Apply styles manually since it might not have .btn class */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap);
+    padding: var(--padding);
+    background: var(--bg);
+    border: var(--border);
+    border-radius: var(--radius);
+    color: var(--color);
+    font-size: var(--font-size);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.copy-btn-small:hover {
+    background: var(--hover-bg);
+    color: var(--hover-color);
+    border: var(--hover-border);
+}
+
+/* ==========================================================================
+   SIZES
+   ========================================================================== */
+
+.btn-sm {
+    --padding: 6px 12px;
+    --font-size: var(--text-xs);
+    --min-height: 36px; /* Improved touch target */
+}
+
+/* ==========================================================================
+   PAGINATION BUTTONS
+   ========================================================================== */
+
+.pagination-btn {
+    --bg: transparent;
+    --color: var(--text-muted);
+    --padding: var(--spacing-sm);
+    --min-height: 44px;
+    --min-width: 44px;
+    
+    --hover-bg: var(--bg-white-5);
+    --hover-color: var(--text-primary);
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: none;
+    color: var(--color);
+    padding: var(--padding);
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    transition: var(--transition);
+    min-width: var(--min-width);
+    min-height: var(--min-height);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--hover-bg);
+    color: var(--hover-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-number {
+    --bg: transparent;
+    --color: var(--text-muted);
+    --padding: 6px 10px; /* Mobile default */
+    --min-height: 44px;
+    --min-width: 44px;
+    
+    --hover-bg: var(--bg-white-5);
+    --hover-color: var(--text-primary);
+    
+    background: var(--bg);
+    border: none;
+    color: var(--color);
+    padding: var(--padding);
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: var(--transition);
+    min-width: var(--min-width);
+    min-height: var(--min-height);
+}
+
+.pagination-number:hover {
+    background: var(--hover-bg);
+    color: var(--hover-color);
+}
+
+.pagination-number.active {
+    --bg: var(--primary);
+    --color: white;
+    background: var(--bg);
+    color: var(--color);
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .btn-primary,
+    .btn-secondary {
+        --padding: var(--btn-padding-tablet);
+        --min-height: var(--btn-height-tablet);
+    }
+    
+    .pagination-number {
+        --padding: var(--spacing-sm) 12px;
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .btn-primary,
+    .btn-secondary {
+        --padding: var(--btn-padding-desktop);
+        --min-height: var(--btn-height-desktop);
+    }
+}
+
+/* ==========================================================================
+   SPECIFIC FIXES
+   ========================================================================== */
+
+/* Fix para alineación del icono en botón de importar CSV */
+.btn-csv i {
+    color: white !important;
+    padding: inherit;
+}

@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "cd backend && npm start",
-    "dev": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run browser-sync\"",
+    "dev-old": "cd backend && npm run dev",
+    "server": "cd backend && npm run dev",
+    "browser-sync": "browser-sync start --proxy localhost:3000 --files \"frontend/**/*.html\" \"frontend/**/*.css\" \"frontend/**/*.js\" --port 3001 --no-open --reload-delay 200 --logLevel info --logPrefix BS",
     "install-backend": "cd backend && npm install"
   },
   "keywords": [
@@ -14,5 +17,23 @@
     "spa"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
+    "csv-stringify": "^6.6.0",
+    "dotenv": "^17.2.3",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "uuid": "^13.0.0"
+  }
 }

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gestión de Invitaciones</title>
+    <!-- CSS Consolidado -->
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="/config.js"></script>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header" id="mobileHeader">
+        <div class="mobile-header-content">
+            <div class="mobile-header-left">
+                <div class="mobile-profile-pic"></div>
+                <span class="mobile-couple-name" id="mobileCoupleNames"><!-- Se carga dinámicamente --></span>
+            </div>
+            <div class="mobile-header-right">
+                <button class="notification-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count d-none" id="notificationCount">0</span>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <h3>Notificaciones</h3>
+                <div class="notification-header-actions">
+                    <button class="btn btn-sm btn-primary-soft notification-clear-btn" id="notificationClearBtn">
+                        Marcar todas como leídas
+                    </button>
+                <button class="notification-close-btn" id="notificationCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="notification-panel-body" id="notificationList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Overlays -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="notification-overlay" id="notificationOverlay"></div>
+    
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Resumen</span>
+                </a>
+                <a href="#invitations" class="nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Invitaciones</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <!-- Hero Section with Welcome and Timer -->
+                <div class="hero-section">
+                    <!-- Welcome Card -->
+                    <div class="welcome-card" id="welcomeCard">
+                        <div class="welcome-overlay"></div>
+                        <div class="welcome-content">
+                            <p class="subtitle">PANEL DE CONTROL</p>
+                            <h2 id="welcomeMessage"><!-- Se carga dinámicamente --></h2>
+                            <p id="welcomeSubtext"><!-- Se carga dinámicamente --></p>
+                            <div class="period-selector">
+                                <select id="confirmationPeriod" class="period-select">
+                                    <option value="today">Hoy</option>
+                                    <option value="last24hours">Últimas 24 horas</option>
+                                    <option value="lastWeek">Última semana</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timer Card -->
+                    <div class="timer-card">
+                        <div class="timer-header">
+                            <h3>Cuenta regresiva</h3>
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="timer-display" id="countdownTimer">
+                            <!-- Se carga dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid - Se generará dinámicamente -->
+                <div class="stats-grid" id="dashboardStatsGrid">
+                    <!-- Stats cards will be rendered here -->
+                </div>
+
+                <!-- Charts Section - Se generará dinámicamente -->
+                <div class="charts-grid" id="chartsSection">
+                    <!-- Charts will be rendered here -->
+                </div>
+
+                <!-- Recent Activity Table - Se generará dinámicamente -->
+                <!-- Table will be rendered here -->
+            </section>
+
+            <!-- Invitations Section -->
+            <section id="invitations" class="content-section">
+                <div class="section-header">
+                    <div>
+                        <h1>Gestión de Invitaciones</h1>
+                        <p class="section-subtitle">Gestiona las invitaciones, confirma asistencias y organiza las mesas para el gran día.</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards - Se generarán dinámicamente -->
+                <div class="stats-grid" id="invitationsStatsGrid">
+                    <!-- Stats cards will be rendered here -->
+                </div>
+
+                <!-- Actions Bar y Tabla - Se generarán dinámicamente -->
+                <!-- Actions bar and table will be rendered here -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Containers - Se generarán dinámicamente -->
+    <div id="modalContainer">
+        <!-- Modals will be created dynamically -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Load admin system -->
+    <script type="module" src="js/dashboard-main.js"></script>
+</body>
+</html>

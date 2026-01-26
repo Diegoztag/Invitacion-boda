@@ -1,0 +1,96 @@
+/* Cancel Invitation Modal Specific Styles */
+.cancel-invitation-modal .warning-icon {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.cancel-invitation-modal .warning-icon i {
+    font-size: var(--text-3xl); /* Mobile font size */
+    color: var(--warning);
+}
+
+.cancel-invitation-modal .cancel-question {
+    font-size: var(--text-base); /* Mobile font size */
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-primary);
+}
+
+.cancel-invitation-modal .invitation-info {
+    background: var(--bg-white-2);
+    border: 1px solid var(--bg-white-5);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cancel-invitation-modal .invitation-info .info-item {
+    display: flex;
+    flex-direction: column; /* Mobile default: Stacked */
+    align-items: flex-start; /* Mobile default */
+    gap: var(--spacing-xs); /* Mobile gap */
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-muted);
+    font-size: var(--text-base);
+}
+
+.cancel-invitation-modal .invitation-info .info-item:last-child {
+    margin-bottom: 0;
+}
+
+.cancel-invitation-modal .invitation-info .info-item strong {
+    color: var(--text-primary);
+    font-weight: 500;
+    min-width: auto; /* Mobile default */
+}
+
+.cancel-invitation-modal .warning-message {
+    background: var(--warning-light-alpha);
+    border: 1px solid var(--warning-alpha);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cancel-invitation-modal .warning-message p {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--text-primary);
+}
+
+.cancel-invitation-modal .warning-message ul {
+    margin: 0;
+    padding-left: var(--spacing-xl);
+    list-style-type: disc;
+}
+
+.cancel-invitation-modal .warning-message li {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--text-sm);
+}
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tablet/Desktop (min-width: 480px) */
+@media (min-width: 480px) {
+    .cancel-invitation-modal .warning-icon i {
+        font-size: var(--text-4xl);
+    }
+    
+    .cancel-invitation-modal .cancel-question {
+        font-size: var(--text-lg);
+    }
+    
+    .cancel-invitation-modal .invitation-info .info-item {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .cancel-invitation-modal .invitation-info .info-item strong {
+        min-width: 120px;
+    }
+}

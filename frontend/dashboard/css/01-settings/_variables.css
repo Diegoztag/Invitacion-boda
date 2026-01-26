@@ -1,0 +1,286 @@
+:root {
+    /* ==========================================================================
+       1. THEME COLORS (Global)
+       ========================================================================== */
+    
+    /* Primary Brand Colors */
+    --primary: #e619a1;
+    --primary-rgb: 230, 25, 161;
+    --primary-dark: #b0137a;
+    --primary-light: #ff4db8;
+    
+    /* Background & Surface Colors (Dark Theme) */
+    --background-dark: #21111c;
+    --background-darker: #1a0d16;
+    --surface-dark: #2d1b27;
+    --surface-darker: #47243b;
+    
+    /* Semantic Mappings */
+    --background: var(--background-darker);
+    --surface: var(--surface-dark);
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-focus-bg: rgba(255, 255, 255, 0.08);
+
+    /* Opacity Helpers */
+    --bg-white-2: rgba(255, 255, 255, 0.02);
+    --bg-white-5: rgba(255, 255, 255, 0.05);
+    --bg-white-10: rgba(255, 255, 255, 0.1);
+    --bg-white-20: rgba(255, 255, 255, 0.2);
+    --bg-primary-20: rgba(230, 25, 161, 0.2);
+    --primary-light-alpha: rgba(230, 25, 161, 0.1);
+    --primary-light-alpha-xs: rgba(230, 25, 161, 0.05);
+    
+    /* Status Opacities */
+    --warning-alpha: rgba(245, 158, 11, 0.2);
+    --warning-light-alpha: rgba(245, 158, 11, 0.1);
+    --danger-alpha: rgba(239, 68, 68, 0.2);
+    --danger-light-alpha: rgba(239, 68, 68, 0.1);
+    --success-alpha: rgba(16, 185, 129, 0.2);
+    --success-light-alpha: rgba(16, 185, 129, 0.1);
+    --info-alpha: rgba(59, 130, 246, 0.2);
+    --info-light-alpha: rgba(59, 130, 246, 0.1);
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.05);
+    --border-hover: rgba(230, 25, 161, 0.3);
+    
+    /* Status Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    
+    /* Transitions */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* ==========================================================================
+       2. RAW VALUES DEFINITION (By Breakpoint)
+       ========================================================================== */
+
+    /* --- Typography Sizes (Raw) --- */
+    /* Mobile (XS) */
+    --raw-text-2xs-xs: 0.75rem;   /* 12px */
+    --raw-text-xs-xs: 0.8125rem;  /* 13px - Slightly smaller for tight spots */
+    --raw-text-sm-xs: 0.875rem;   /* 14px */
+    --raw-text-base-xs: 1rem;     /* 16px */
+    --raw-text-lg-xs: 1.125rem;   /* 18px */
+    --raw-text-xl-xs: 1.25rem;    /* 20px */
+    --raw-text-2xl-xs: 1.5rem;    /* 24px */
+    --raw-text-3xl-xs: 1.75rem;   /* 28px */
+    --raw-text-4xl-xs: 2rem;      /* 32px */
+
+    /* Tablet (MD) */
+    --raw-text-base-md: 1rem;     /* 16px */
+    --raw-text-lg-md: 1.125rem;   /* 18px */
+    --raw-text-xl-md: 1.5rem;     /* 24px */
+    --raw-text-2xl-md: 2rem;      /* 32px */
+    --raw-text-3xl-md: 2.5rem;    /* 40px */
+    --raw-text-4xl-md: 3rem;      /* 48px */
+
+    /* Desktop (LG) */
+    --raw-text-base-lg: 1rem;     /* 16px */
+    --raw-text-lg-lg: 1.25rem;    /* 20px */
+    --raw-text-xl-lg: 1.75rem;    /* 28px */
+    --raw-text-2xl-lg: 2.25rem;   /* 36px */
+    --raw-text-3xl-lg: 3rem;      /* 48px */
+    --raw-text-4xl-lg: 3.75rem;   /* 60px */
+
+    /* --- Spacing Scale (Raw) --- */
+    /* Mobile (XS) */
+    --raw-spacing-xs-xs: 0.25rem;  /* 4px */
+    --raw-spacing-sm-xs: 0.5rem;   /* 8px */
+    --raw-spacing-md-xs: 1rem;     /* 16px */
+    --raw-spacing-lg-xs: 1.5rem;   /* 24px */
+    --raw-spacing-xl-xs: 2rem;     /* 32px */
+    --raw-spacing-2xl-xs: 3rem;    /* 48px */
+
+    /* Tablet (MD) */
+    --raw-spacing-sm-md: 0.75rem;  /* 12px */
+    --raw-spacing-md-md: 1.25rem;  /* 20px */
+    --raw-spacing-lg-md: 2rem;     /* 32px */
+    --raw-spacing-xl-md: 3rem;     /* 48px */
+    --raw-spacing-2xl-md: 4rem;    /* 64px */
+
+    /* Desktop (LG) */
+    --raw-spacing-md-lg: 1.5rem;   /* 24px */
+    --raw-spacing-lg-lg: 2.5rem;   /* 40px */
+    --raw-spacing-xl-lg: 4rem;     /* 64px */
+    --raw-spacing-2xl-lg: 6rem;    /* 96px */
+
+    /* --- Layout Dimensions (Raw) --- */
+    --raw-container-max-width: 1400px; /* Increased max width */
+
+    /* Mobile (XS) */
+    --raw-container-padding-xs: 1rem;    /* 16px */
+    --raw-header-height-xs: 60px;        /* Compact header */
+    --raw-sidebar-width-xs: 260px;
+    --raw-input-height-xs: 44px;         /* Standard touch target */
+
+    /* Tablet (MD) */
+    --raw-container-padding-md: 1.5rem;
+    --raw-header-height-md: 70px;
+    --raw-input-height-md: 46px;
+
+    /* Desktop (LG) */
+    --raw-container-padding-lg: 2rem;
+    --raw-header-height-lg: 80px;
+    --raw-sidebar-width-lg: 280px;
+
+    /* --- Icon Sizes (Raw) --- */
+    --raw-icon-sm: 16px;
+    --raw-icon-md: 20px;
+    --raw-icon-lg: 24px;
+    --raw-icon-xl: 32px;
+
+    /* --- Avatar Sizes (Raw) --- */
+    --raw-avatar-size-xs: 32px;
+    --raw-avatar-size-md: 40px;
+    --raw-avatar-size-lg: 48px;
+
+    /* --- Border Radius (Raw) --- */
+    --raw-radius-sm: 6px;
+    --raw-radius-md: 10px;
+    --raw-radius-lg: 16px;
+    --raw-radius-xl: 24px;
+    --raw-radius-pill: 9999px;
+
+    /* --- Component Specific (Raw) --- */
+    /* Stat Card Min Height */
+    --raw-card-min-height-stat-xs: 120px; /* More compact on mobile */
+    --raw-card-min-height-stat-md: 140px;
+    --raw-card-min-height-stat-lg: 160px;
+
+    /* Stat Icon Size */
+    --raw-icon-stat-size-xs: 36px; /* Adjusted for balance */
+    --raw-icon-stat-size-md: 42px;
+    --raw-icon-stat-size-lg: 56px;
+
+    /* Progress Bars (Usually constant, but good to have ready) */
+    --raw-progress-height-sm: 4px;
+    --raw-progress-height-md: 8px;
+}
+
+/* ==========================================================================
+   3. RESPONSIVE ASSIGNMENTS
+   ========================================================================== */
+
+/* --- MOBILE (Default / XS) --- */
+:root {
+    /* Typography */
+    --text-2xs: var(--raw-text-2xs-xs);
+    --text-xs: var(--raw-text-xs-xs);
+    --text-sm: var(--raw-text-sm-xs);
+    --text-base: var(--raw-text-base-xs);
+    --text-lg: var(--raw-text-lg-xs);
+    --text-xl: var(--raw-text-xl-xs);
+    --text-2xl: var(--raw-text-2xl-xs);
+    --text-3xl: var(--raw-text-3xl-xs);
+    --text-4xl: var(--raw-text-4xl-xs);
+
+    /* Spacing */
+    --spacing-xs: var(--raw-spacing-xs-xs);
+    --spacing-sm: var(--raw-spacing-sm-xs);
+    --spacing-md: var(--raw-spacing-md-xs);
+    --spacing-lg: var(--raw-spacing-lg-xs);
+    --spacing-xl: var(--raw-spacing-xl-xs);
+    --spacing-2xl: var(--raw-spacing-2xl-xs);
+
+    /* Layout */
+    --container-max-width: var(--raw-container-max-width);
+    --container-padding: var(--raw-container-padding-xs);
+    --header-height: var(--raw-header-height-xs);
+    --sidebar-width: var(--raw-sidebar-width-xs);
+    --input-height: var(--raw-input-height-xs);
+
+    /* Components (Static for now) */
+    --icon-sm: var(--raw-icon-sm);
+    --icon-md: var(--raw-icon-md);
+    --icon-lg: var(--raw-icon-lg);
+    --icon-xl: var(--raw-icon-xl);
+
+    --border-radius-sm: var(--raw-radius-sm);
+    --border-radius-md: var(--raw-radius-md);
+    --border-radius-lg: var(--raw-radius-lg);
+    --border-radius-xl: var(--raw-radius-xl);
+    --border-radius-pill: var(--raw-radius-pill);
+    --border-radius-full: var(--raw-radius-pill);
+
+    /* Component Specific */
+    --card-min-height-stat: var(--raw-card-min-height-stat-xs);
+    --progress-height-sm: var(--raw-progress-height-sm);
+    --progress-height-md: var(--raw-progress-height-md);
+    --icon-stat-size: var(--raw-icon-stat-size-xs);
+    --avatar-size: var(--raw-avatar-size-xs);
+}
+
+/* --- TABLET (MD - min-width: 768px) --- */
+@media (min-width: 768px) {
+    :root {
+        /* Typography Scale Up */
+        --text-base: var(--raw-text-base-md);
+        --text-lg: var(--raw-text-lg-md);
+        --text-xl: var(--raw-text-xl-md);
+        --text-2xl: var(--raw-text-2xl-md);
+        --text-3xl: var(--raw-text-3xl-md);
+        --text-4xl: var(--raw-text-4xl-md);
+        
+        /* Spacing Scale Up */
+        --spacing-sm: var(--raw-spacing-sm-md);
+        --spacing-md: var(--raw-spacing-md-md);
+        --spacing-lg: var(--raw-spacing-lg-md);
+        --spacing-xl: var(--raw-spacing-xl-md);
+        --spacing-2xl: var(--raw-spacing-2xl-md);
+        
+        /* Layout Adjustments */
+        --container-padding: var(--raw-container-padding-md);
+        --header-height: var(--raw-header-height-md);
+        --input-height: var(--raw-input-height-md);
+
+        /* Component Adjustments */
+        --card-min-height-stat: var(--raw-card-min-height-stat-md);
+        --icon-stat-size: var(--raw-icon-stat-size-md);
+        --avatar-size: var(--raw-avatar-size-md);
+    }
+}
+
+/* --- DESKTOP (LG - min-width: 1200px) --- */
+@media (min-width: 1200px) {
+    :root {
+        /* Typography Scale Up */
+        --text-base: var(--raw-text-base-lg);
+        --text-lg: var(--raw-text-lg-lg);
+        --text-xl: var(--raw-text-xl-lg);
+        --text-2xl: var(--raw-text-2xl-lg);
+        --text-3xl: var(--raw-text-3xl-lg);
+        --text-4xl: var(--raw-text-4xl-lg);
+        
+        /* Spacing Scale Up */
+        --spacing-md: var(--raw-spacing-md-lg);
+        --spacing-lg: var(--raw-spacing-lg-lg);
+        --spacing-xl: var(--raw-spacing-xl-lg);
+        --spacing-2xl: var(--raw-spacing-2xl-lg);
+        
+        /* Layout Adjustments */
+        --container-padding: var(--raw-container-padding-lg);
+        --header-height: var(--raw-header-height-lg);
+        --sidebar-width: var(--raw-sidebar-width-lg);
+
+        /* Component Adjustments */
+        --card-min-height-stat: var(--raw-card-min-height-stat-lg);
+        --icon-stat-size: var(--raw-icon-stat-size-lg);
+        --avatar-size: var(--raw-avatar-size-lg);
+    }
+}

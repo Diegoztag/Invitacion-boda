@@ -1,0 +1,95 @@
+/* Grid Objects - Mobile First Architecture */
+
+/* ==========================================================================
+   BASE STYLES (Mobile Default)
+   ========================================================================== */
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    position: relative;
+    z-index: 2;
+}
+
+/* Clear floats */
+.stats-grid::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Hero Section Grid */
+.hero-section {
+    display: flex;
+    flex-direction: column; /* Stack vertically on mobile */
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    width: 100%;
+}
+
+/* CSV Column Grid */
+.csv-column-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Smaller min-width for mobile */
+    gap: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   RESPONSIVE ENHANCEMENTS (min-width)
+   ========================================================================== */
+
+/* Tablet (Portrait & Small Landscape) - min-width: 768px */
+@media (min-width: 768px) {
+    .stats-grid {
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .hero-section {
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .csv-column-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--spacing-md);
+    }
+}
+
+/* Desktop - min-width: 1024px */
+@media (min-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .hero-section {
+        flex-direction: row; /* Horizontal layout on desktop */
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .csv-column-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/* Large Desktop - min-width: 1200px */
+@media (min-width: 1200px) {
+    /* Optional: Adjustments for very large screens if needed */
+}
+
+/* ==========================================================================
+   SPECIAL CASES / OVERRIDES
+   ========================================================================== */
+
+/* Very Small Mobile (e.g. iPhone SE) */
+@media (max-width: 360px) {
+    .stats-grid {
+        gap: var(--spacing-xs);
+    }
+}

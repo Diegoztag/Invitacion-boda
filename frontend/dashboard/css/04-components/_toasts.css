@@ -1,0 +1,189 @@
+/* Toast Notifications */
+
+/* ==========================================================================
+   STYLES & LOCAL VARIABLES
+   ========================================================================== */
+
+.toast {
+    /* --- Local Configuration --- */
+    /* Dimensions */
+    --toast-width-min-mobile: auto;
+    --toast-width-min-tablet: 400px;
+    --toast-width-min-desktop: 450px;
+
+    --toast-width-max-mobile: none;
+    --toast-width-max-tablet: 500px;
+    --toast-width-max-desktop: 550px;
+
+    /* Padding */
+    --toast-padding-mobile: var(--spacing-md) var(--spacing-lg);
+    --toast-padding-tablet: var(--spacing-xl) var(--spacing-2xl);
+    --toast-padding-desktop: var(--spacing-lg) var(--spacing-xl); /* Revert to smaller padding on desktop? Or keep large? Original had smaller on desktop than tablet? No, original had lg xl on desktop. */
+    /* Let's standardize */
+    /* Mobile: md lg */
+    /* Tablet: lg xl */
+    /* Desktop: lg xl */
+
+    /* Positioning */
+    --pos-top-mobile: auto;
+    --pos-top-tablet: calc(var(--header-height) + var(--spacing-lg));
+    --pos-top-desktop: calc(var(--header-height) + var(--spacing-xl));
+
+    --pos-bottom-mobile: var(--spacing-md);
+    --pos-bottom-tablet: auto;
+
+    --pos-right-mobile: var(--spacing-md);
+    --pos-right-tablet: var(--spacing-xl);
+    --pos-right-desktop: var(--spacing-2xl);
+
+    --pos-left-mobile: var(--spacing-md);
+    --pos-left-tablet: auto;
+
+    /* Typography */
+    --icon-size-mobile: var(--text-xl);
+    --icon-size-desktop: var(--text-3xl);
+
+    --text-size-mobile: var(--text-sm);
+    --text-size-tablet: var(--text-lg);
+    --text-size-desktop: var(--text-xl);
+
+    /* Animation */
+    --transform-hidden-mobile: translateY(100px);
+    --transform-hidden-tablet: translateX(400px);
+    
+    --transform-show-mobile: translateY(0);
+    --transform-show-tablet: translateX(0);
+
+    /* Active Values (Default to Mobile) */
+    --toast-bg: var(--surface);
+    --toast-border: 1px solid var(--border-color);
+    --toast-shadow: var(--shadow-xl);
+    --toast-radius: var(--border-radius-lg);
+    --toast-z-index: var(--z-toast);
+    
+    --width-min: var(--toast-width-min-mobile);
+    --width-max: var(--toast-width-max-mobile);
+    --padding: var(--toast-padding-mobile);
+    
+    --top: var(--pos-top-mobile);
+    --bottom: var(--pos-bottom-mobile);
+    --right: var(--pos-right-mobile);
+    --left: var(--pos-left-mobile);
+    
+    --icon-size: var(--icon-size-mobile);
+    --text-size: var(--text-size-mobile);
+    
+    --transform-hidden: var(--transform-hidden-mobile);
+    --transform-show: var(--transform-show-mobile);
+    
+    /* --- Styles --- */
+    position: fixed;
+    top: var(--top);
+    bottom: var(--bottom);
+    right: var(--right);
+    left: var(--left);
+    
+    background: var(--toast-bg);
+    border: var(--toast-border);
+    border-radius: var(--toast-radius);
+    padding: var(--padding);
+    box-shadow: var(--toast-shadow);
+    
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    
+    min-width: var(--width-min);
+    max-width: var(--width-max);
+    z-index: var(--toast-z-index) !important;
+    
+    transform: var(--transform-hidden);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast.show {
+    transform: var(--transform-show);
+}
+
+/* Content */
+.toast i {
+    font-size: var(--icon-size);
+    flex-shrink: 0;
+}
+
+.toast span {
+    flex: 1;
+    font-size: var(--text-size);
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   VARIANTS
+   ========================================================================== */
+
+.toast.toast-success {
+    border-left: 5px solid var(--success);
+}
+.toast.toast-success i { color: var(--success); }
+
+.toast.toast-error {
+    border-left: 5px solid var(--danger);
+}
+.toast.toast-error i { color: var(--danger); }
+
+.toast.toast-warning {
+    border-left: 5px solid var(--warning);
+}
+.toast.toast-warning i { color: var(--warning); }
+
+/* ==========================================================================
+   RESPONSIVE CONFIGURATION (Mobile First)
+   ========================================================================== */
+
+/* Tiny Phones */
+@media (max-width: 480px) {
+    .toast {
+        --pos-bottom: var(--spacing-sm);
+        --pos-right: var(--spacing-sm);
+        --pos-left: var(--spacing-sm);
+        --padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .toast i { font-size: var(--text-lg); }
+}
+
+/* Tablet (min-width: 768px) */
+@media (min-width: 768px) {
+    .toast {
+        --width-min: var(--toast-width-min-tablet);
+        --width-max: var(--toast-width-max-tablet);
+        --padding: var(--toast-padding-tablet);
+        
+        --top: var(--pos-top-tablet);
+        --bottom: var(--pos-bottom-tablet);
+        --right: var(--pos-right-tablet);
+        --left: var(--pos-left-tablet);
+        
+        --text-size: var(--text-size-tablet);
+        
+        --transform-hidden: var(--transform-hidden-tablet);
+        --transform-show: var(--transform-show-tablet);
+    }
+}
+
+/* Desktop (min-width: 1200px) */
+@media (min-width: 1200px) {
+    .toast {
+        --width-min: var(--toast-width-min-desktop);
+        --width-max: var(--toast-width-max-desktop);
+        --padding: var(--toast-padding-desktop);
+        
+        --top: var(--pos-top-desktop);
+        --right: var(--pos-right-desktop);
+        
+        --icon-size: var(--icon-size-desktop);
+        --text-size: var(--text-size-desktop);
+    }
+}
