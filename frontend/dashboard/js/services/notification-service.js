@@ -10,7 +10,7 @@ class NotificationService {
         this.notificationSound = null;
         this.notifications = [];
         this.panelOpen = false;
-        this.backendUrl = 'http://localhost:3000/api';
+        this.backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
         
         this.init();
     }
