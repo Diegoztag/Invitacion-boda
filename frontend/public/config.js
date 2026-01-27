@@ -120,7 +120,7 @@ const WEDDING_CONFIG = {
         // Detección automática del entorno
         backendUrl: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
             ? "/api"  // Desarrollo local (ruta relativa para usar el mismo puerto)
-            : "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com/api", // Producción (Seenode)
+            : "https://web-gqbxdo8fjh1g.up-de-fra1-k8s-1.apps.run-on-seenode.com/", // Producción (Seenode)
         googleMapsApiKey: "YOUR_API_KEY",
         
         // Configuración de autenticación para el dashboard
@@ -226,7 +226,7 @@ Favor de confirmar antes del ${WEDDING_CONFIG.event.confirmationDeadline}📅.\n
     // Configuración de Meta Etiquetas (SEO y Redes Sociales)
     metaTags: {
         // URL base del sitio (actualizar con el dominio real)
-        siteUrl: (typeof window !== 'undefined' && window.location.origin) || "https://web-9q6sij8k1r0n.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+        siteUrl: (typeof window !== 'undefined' && window.location.origin) || "https://web-gqbxdo8fjh1g.up-de-fra1-k8s-1.apps.run-on-seenode.com/",
         
         // Título principal para compartir
         title: "Boda Fernanda & Diego",
