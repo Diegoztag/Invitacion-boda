@@ -39,7 +39,7 @@
 
 .modal-actions {
     display: flex;
-    flex-direction: column; /* Mobile default: Stacked */
+    flex-direction: row; /* Mobile default: Stacked */
     gap: var(--spacing-sm);
     margin-top: var(--spacing-xs);
     padding-top: var(--spacing-xs);

@@ -68,12 +68,12 @@ export class Modal {
                         ${this.content}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-action="cancel" tabindex="0">
-                            Cancelar
-                        </button>
                         <button type="button" class="btn btn-primary btn-csv" id="uploadCsvBtn" data-action="confirm" disabled tabindex="0">
                             <i class="fas fa-upload btn-icon"></i>
                             Importar
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-action="cancel" tabindex="0">
+                            Cancelar
                         </button>
                     </div>
                 </div>
@@ -459,11 +459,11 @@ export class ModalFactory {
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" data-action="cancel">
-                        Cancelar
-                    </button>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Crear Invitación
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-action="cancel">
+                        Cancelar
                     </button>
                 </div>
             </form>

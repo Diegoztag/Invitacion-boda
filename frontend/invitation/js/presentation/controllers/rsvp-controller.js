@@ -972,23 +972,28 @@ export class RSVPController {
     async showConfirmation(result) {
         // Determinar mensaje basado en la asistencia
         const isAttending = this.getAttendingValue();
-        const config = window.WEDDING_CONFIG?.messages || {};
         
-        let message = result.message;
-        if (!message) {
-            message = isAttending 
-                ? (config.confirmationThanks || 'Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.')
-                : (config.cannotAttend || 'Gracias por avisarnos. Te echaremos de menos en nuestro día especial.');
+        // Ocultar formulario
+        if (this.form) {
+            this.form.style.display = 'none';
+            this.form.style.setProperty('display', 'none', 'important');
         }
-        
-        const title = config.confirmationReceived || '¡Confirmación Recibida!';
 
-        // Mostrar en modal si existe
-        if (this.modal) {
-            await this.showModalMessage(message, 'success', title);
+        // Mostrar el div correspondiente
+        if (isAttending) {
+            const alreadyConfirmedDiv = this.container.querySelector('#alreadyConfirmed') || document.getElementById('alreadyConfirmed');
+            if (alreadyConfirmedDiv) {
+                alreadyConfirmedDiv.style.display = 'block';
+                // Scroll hacia el mensaje para asegurar que el usuario lo vea
+                alreadyConfirmedDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         } else {
-            // Fallback a alert
-            alert(`${title}\n\n${message}`);
+            const alreadyCancelledDiv = this.container.querySelector('#alreadyCancelled') || document.getElementById('alreadyCancelled');
+            if (alreadyCancelledDiv) {
+                alreadyCancelledDiv.style.display = 'block';
+                // Scroll hacia el mensaje para asegurar que el usuario lo vea
+                alreadyCancelledDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
     }
     

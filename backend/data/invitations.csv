@@ -1,2 +1,3 @@
 code,guestNames,numberOfPasses,phone,createdAt,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason,attendingNames,dietaryRestrictionsNames,dietaryRestrictionsDetails,generalMessage
-
+87c99ba0,fdfsdfd,1,,2026-01-27T15:31:09.398Z,1,2026-01-27T15:31:37.022Z,1,0,0,0,confirmed,,,,fdfsdfd,,,hoola
+b642396b,hhfghgh,1,,2026-01-27T15:32:09.665Z,0,2026-01-27T15:33:10.220Z,1,0,0,0,cancelled,,,,,,,no

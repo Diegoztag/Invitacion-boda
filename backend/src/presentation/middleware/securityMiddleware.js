@@ -113,7 +113,7 @@ class SecurityMiddleware {
     get rateLimit() {
         return rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutos
-            max: 100, // máximo 100 requests por ventana
+            max: 1000, // máximo 1000 requests por ventana
             message: {
                 success: false,
                 error: 'Demasiadas solicitudes, intenta de nuevo más tarde'
@@ -141,7 +141,7 @@ class SecurityMiddleware {
     get authRateLimit() {
         return rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutos
-            max: 5, // máximo 5 intentos de login por ventana
+            max: 20, // máximo 20 intentos de login por ventana
             message: {
                 success: false,
                 error: 'Demasiados intentos de login, intenta de nuevo más tarde'

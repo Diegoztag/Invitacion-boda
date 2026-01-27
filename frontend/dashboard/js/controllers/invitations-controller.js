@@ -507,6 +507,15 @@ export class InvitationsController {
                     <i class="fas fa-times-circle status-icon-large status-icon-cancelled"></i>
                     Han declinado la invitación
                 </div>
+                ${invitation.generalMessage ? `
+                <div class="info-list mt-3" style="margin-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1rem;">
+                    <div class="info-row">
+                        <div class="info-icon"><i class="far fa-comment-alt"></i></div>
+                        <div class="info-content">
+                            <span class="info-value message-text-detail">"${invitation.generalMessage}"</span>
+                        </div>
+                    </div>
+                </div>` : ''}
             `;
         } else {
             cardClass = 'confirmed';

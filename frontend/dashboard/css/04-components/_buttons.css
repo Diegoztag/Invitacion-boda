@@ -8,7 +8,7 @@
     /* --- Local Configuration --- */
     /* Padding */
     --btn-padding-mobile: var(--spacing-sm) var(--spacing-md);
-    --btn-padding-tablet: 12px 24px;
+    --btn-padding-tablet: 12px 24px;btn-csv
     --btn-padding-desktop: var(--spacing-md) var(--spacing-lg);
 
     /* Dimensions */
@@ -106,7 +106,6 @@
 .btn-success {
     --bg: var(--success);
     --color: white;
-    
     --hover-bg: #d32f2f;
     --hover-transform: translateY(-1px);
     --hover-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);

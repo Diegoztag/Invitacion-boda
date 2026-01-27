@@ -2322,14 +2322,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 14px 35px;
+    padding: 7px 20px;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: var(--white);
     text-decoration: none;
     border: none;
-    border-radius: 30px;
-    font-size: var(--button-size-md);
-    font-weight: 600;
+    border-radius: 10px;
+    font-size: var(--button-size-xs);
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.4s ease;
     position: relative;
@@ -2975,6 +2975,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .gift-store-card p {
     color: var(--text-light);
+    margin-bottom: 0.5rem;
 }
 
 .bank-info {
