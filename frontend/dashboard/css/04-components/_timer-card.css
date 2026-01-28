@@ -7,8 +7,8 @@
 .timer-card {
     /* --- Local Variables (Configuration) --- */
     --padding: var(--spacing-md); /* Mobile padding */
-    --value-size: var(--spacing-xl); /* Mobile value size */
-    --value-font-size: var(--text-2xl);
+    --value-size: var(--spacing-2xl); /* Mobile value size */
+    --value-font-size: var(--text-md);
 
     /* --- Styles --- */
     width: 100%; /* Mobile default: Full width */

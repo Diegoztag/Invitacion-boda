@@ -7,7 +7,7 @@
 .welcome-card {
     /* --- Local Variables (Configuration) --- */
     /* Heights */
-    --min-height-mobile: 210px;
+    --min-height-mobile: 180px;
     --min-height-tablet: 250px;
     --min-height-desktop: 300px;
 
