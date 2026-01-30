@@ -5,6 +5,7 @@
  */
 
 const Invitation = require('../../core/entities/Invitation');
+const WEDDING_CONFIG = require('../../../../frontend/public/config');
 
 class CreateInvitationUseCase {
     constructor(invitationRepository, validationService, logger) {
@@ -107,8 +108,9 @@ class CreateInvitationUseCase {
             throw new Error('El número de pases debe ser un entero positivo');
         }
 
-        if (numberOfPasses > 20) {
-            throw new Error('El número máximo de pases por invitación es 20');
+        const maxPasses = WEDDING_CONFIG.guests.maxGuestsPerInvitation;
+        if (numberOfPasses > maxPasses) {
+            throw new Error(`El número máximo de pases por invitación es ${maxPasses}`);
         }
 
         // Validar teléfono si se proporciona
@@ -215,7 +217,17 @@ class CreateInvitationUseCase {
             
             const maxPassesPerTable = 10; // Configurable
             if (totalPassesInTable + normalizedData.numberOfPasses > maxPassesPerTable) {
-                throw new Error(`La mesa ${normalizedData.tableNumber} no tiene suficiente espacio. Capacidad restante: ${maxPassesPerTable - totalPassesInTable} pases`);
+                this.logger.error('Table capacity exceeded', {
+                    tableNumber: normalizedData.tableNumber,
+                    currentPasses: totalPassesInTable,
+                    newPasses: normalizedData.numberOfPasses,
+                    maxPasses: maxPassesPerTable,
+                    existingInvitations: activeTableInvitations.map(inv => ({
+                        code: inv.code,
+                        passes: inv.numberOfPasses
+                    }))
+                });
+                throw new Error(`La mesa ${normalizedData.tableNumber} no tiene suficiente espacio. Capacidad restante: ${maxPassesPerTable - totalPassesInTable} pases. Ocupado: ${totalPassesInTable}`);
             }
         }
     }
