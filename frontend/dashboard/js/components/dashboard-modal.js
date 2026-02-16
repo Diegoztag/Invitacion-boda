@@ -420,7 +420,13 @@ export class ModalFactory {
             title: 'Detalles de Invitación',
             type: 'info',
             size: 'medium',
-            content: '<div id="invitationDetails"></div>'
+            content: '<div id="invitationDetails"></div>',
+            onClose: () => {
+                const detailsContainer = document.getElementById('invitationDetails');
+                if (detailsContainer) {
+                    detailsContainer.innerHTML = '';
+                }
+            }
         });
     }
     
@@ -549,7 +555,18 @@ export class ModalFactory {
             title: 'Editar Invitación',
             type: 'form',
             size: 'medium',
-            content: content
+            content: content,
+            onClose: () => {
+                const form = document.getElementById('editInvitationForm');
+                if (form) {
+                    form.reset();
+                    // Limpiar campos de invitados dinámicos
+                    const guestFieldsContainer = document.getElementById('editGuestFields');
+                    if (guestFieldsContainer) {
+                        guestFieldsContainer.innerHTML = '';
+                    }
+                }
+            }
         });
     }
     
@@ -683,7 +700,11 @@ export class ModalFactory {
             title: options.title || 'Confirmar acción',
             type: 'confirmation',
             size: 'small',
-            content: content
+            content: content,
+            onClose: (modalInstance) => {
+                // Destruir el modal al cerrar para evitar acumulación en el DOM
+                setTimeout(() => modalInstance.destroy(), 300);
+            }
         });
         
         modal.confirmAction = () => {
@@ -730,7 +751,11 @@ export class ModalFactory {
             title: 'Mensaje para WhatsApp',
             type: 'info',
             size: 'medium',
-            content: content
+            content: content,
+            onClose: (modalInstance) => {
+                // Destruir el modal al cerrar para evitar conflictos de ID y acumulación
+                setTimeout(() => modalInstance.destroy(), 300);
+            }
         });
 
         // Agregar listener al botón de copiar
@@ -817,7 +842,11 @@ export class ModalFactory {
             title: 'Confirmar Desactivación',
             type: 'critical',
             size: 'medium',
-            content: content
+            content: content,
+            onClose: (modalInstance) => {
+                // Destruir el modal al cerrar para evitar conflictos de ID y acumulación
+                setTimeout(() => modalInstance.destroy(), 300);
+            }
         });
         
         // Guardar referencia a la invitación
