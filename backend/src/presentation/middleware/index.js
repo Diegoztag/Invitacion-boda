@@ -13,11 +13,11 @@ const SecurityMiddleware = require('./securityMiddleware');
  * @returns {Object} Objeto con todos los middlewares configurados
  */
 function configureMiddleware(dependencies) {
-    const { validationService, logger } = dependencies;
+    const { validationService, logger, config } = dependencies;
 
     // Instanciar middlewares
     const authMiddleware = new AuthMiddleware(logger);
-    const securityMiddleware = new SecurityMiddleware(validationService, logger);
+    const securityMiddleware = new SecurityMiddleware(validationService, logger, config);
 
     return {
         // Middleware de seguridad

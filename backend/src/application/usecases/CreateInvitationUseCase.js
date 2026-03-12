@@ -5,7 +5,8 @@
  */
 
 const Invitation = require('../../core/entities/Invitation');
-const WEDDING_CONFIG = require('../../../../frontend/public/config');
+// importar configuración del backend en lugar de frontend
+const config = require('../../../config');
 
 class CreateInvitationUseCase {
     constructor(invitationRepository, validationService, logger) {
@@ -85,44 +86,21 @@ class CreateInvitationUseCase {
             throw new Error('Los datos de la invitación son requeridos');
         }
 
-        const { guestNames, numberOfPasses } = invitationData;
-
-        // Validar nombres de invitados
-        if (!guestNames || (Array.isArray(guestNames) && guestNames.length === 0)) {
-            throw new Error('Los nombres de los invitados son requeridos');
+        // Usar ValidationService para las reglas básicas
+        const validation = this.validationService.validateInvitationData(invitationData);
+        if (!validation.isValid) {
+            // devolver el primer error para simplicidad
+            const firstError = Object.values(validation.errors)[0];
+            throw new Error(firstError);
         }
 
-        if (Array.isArray(guestNames)) {
-            const invalidNames = guestNames.filter(name => 
-                !name || typeof name !== 'string' || name.trim().length === 0
-            );
-            if (invalidNames.length > 0) {
-                throw new Error('Todos los nombres de invitados deben ser strings válidos');
-            }
-        } else if (typeof guestNames !== 'string' || guestNames.trim().length === 0) {
-            throw new Error('Los nombres de invitados deben ser un string válido');
-        }
+        // Fusionar valores sanitizados en el objeto original para que normalizar trabaje con ellos
+        Object.assign(invitationData, validation.sanitized);
 
-        // Validar número de pases
-        if (!numberOfPasses || !Number.isInteger(numberOfPasses) || numberOfPasses <= 0) {
-            throw new Error('El número de pases debe ser un entero positivo');
-        }
-
-        const maxPasses = WEDDING_CONFIG.guests.maxGuestsPerInvitation;
-        if (numberOfPasses > maxPasses) {
+        // Reglas adicionales que no cubre el servicio
+        const maxPasses = config.guests.maxGuestsPerInvitation;
+        if (invitationData.numberOfPasses > maxPasses) {
             throw new Error(`El número máximo de pases por invitación es ${maxPasses}`);
-        }
-
-        // Validar teléfono si se proporciona
-        if (invitationData.phone && !this.validationService.validatePhone(invitationData.phone)) {
-            throw new Error('El formato del teléfono no es válido');
-        }
-
-        // Validar número de mesa si se proporciona
-        if (invitationData.tableNumber !== undefined && invitationData.tableNumber !== null) {
-            if (!Number.isInteger(invitationData.tableNumber) || invitationData.tableNumber <= 0) {
-                throw new Error('El número de mesa debe ser un entero positivo');
-            }
         }
     }
 
@@ -215,7 +193,7 @@ class CreateInvitationUseCase {
             const activeTableInvitations = tableInvitations.filter(inv => inv.isActive());
             const totalPassesInTable = activeTableInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
             
-            const maxPassesPerTable = 10; // Configurable
+            const maxPassesPerTable = config.tables.maxPassesPerTable;
             if (totalPassesInTable + normalizedData.numberOfPasses > maxPassesPerTable) {
                 this.logger.error('Table capacity exceeded', {
                     tableNumber: normalizedData.tableNumber,

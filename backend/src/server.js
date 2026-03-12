@@ -9,7 +9,10 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
-// Importar configuraciones y dependencias
+// Cargar configuración centralizada
+const config = require('./config');
+
+// Importar dependencias
 const DIContainer = require('./shared/utils/DIContainer');
 const Logger = require('./shared/utils/Logger');
 const ValidationService = require('./shared/utils/ValidationService');
@@ -40,7 +43,7 @@ const NotificationController = require('./presentation/controllers/NotificationC
 class Server {
     constructor() {
         this.app = express();
-        this.port = process.env.PORT || 3000;
+        this.port = config.port; // definido en config/index.js
         this.container = new DIContainer();
         
         this.setupDependencies();
@@ -155,7 +158,7 @@ class Server {
         this.app.use(express.urlencoded({ extended: true }));
         
         // Configurar middleware personalizado
-        const middleware = configureMiddleware({ validationService, logger });
+        const middleware = configureMiddleware({ validationService, logger, config });
         
         // Aplicar middleware global
         this.app.use(middleware.helmet);
@@ -198,7 +201,7 @@ class Server {
         };
         
         // Configurar middleware
-        const middleware = configureMiddleware({ validationService, logger });
+        const middleware = configureMiddleware({ validationService, logger, config });
         
         // Redirección de la raíz a landing (debe ir ANTES de las rutas principales)
         this.app.get('/', (req, res) => {

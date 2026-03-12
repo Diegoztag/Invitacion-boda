@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="22" failures="18" errors="0" time="1.468">
+  <testsuite name="Invitation Entity" errors="0" failures="18" skipped="0" timestamp="2026-03-12T20:30:24" time="0.685" tests="22">
+    <testcase classname="Invitation Entity Constructor should create invitation with valid data" name="Invitation Entity Constructor should create invitation with valid data" time="0.013">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: undefined
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:24:42)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with invalid code" name="Invitation Entity Constructor should throw error with invalid code" time="0.001">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Código de invitación es requerido&quot;
+
+Received function did not throw
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:36:48)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with empty guest names" name="Invitation Entity Constructor should throw error with empty guest names" time="0.001">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Al menos un nombre de invitado es requerido&quot;
+
+Received function did not throw
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:46:48)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with invalid number of passes" name="Invitation Entity Constructor should throw error with invalid number of passes" time="0.031">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Número de pases debe ser mayor a 0&quot;
+Received message:   &quot;numberOfPasses debe ser un entero positivo&quot;
+
+      450 |
+      451 |         if (!Number.isInteger(numberOfPasses) || numberOfPasses &lt;= 0) {
+    &gt; 452 |             throw new Error(&apos;numberOfPasses debe ser un entero positivo&apos;);
+          |                   ^
+      453 |         }
+      454 |
+      455 |         if (phone &amp;&amp; typeof phone !== &apos;string&apos;) {
+
+      at Invitation.validateConstructorParams (src/core/entities/Invitation.js:452:19)
+      at new validateConstructorParams (src/core/entities/Invitation.js:31:14)
+      at src/tests/unit/entities/Invitation.test.js:56:26
+      at Object.&lt;anonymous&gt; (node_modules/expect/build/toThrowMatchers.js:74:11)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:320:21)
+      at Object.toThrow (src/tests/unit/entities/Invitation.test.js:56:48)
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:56:48)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirm should set confirmation data" name="Invitation Entity Methods confirm should set confirmation data" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: undefined
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:82:42)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods cancel should set cancellation data" name="Invitation Entity Methods cancel should set cancellation data" time="0.001">
+      <failure>TypeError: invitation.cancel is not a function
+    at Object.cancel (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:93:24)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods deactivate should set status to inactive" name="Invitation Entity Methods deactivate should set status to inactive" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods activate should set status to active" name="Invitation Entity Methods activate should set status to active" time="0.003">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;active&quot;
+Received: &quot;pending&quot;
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:119:38)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods isActive should return correct status" name="Invitation Entity Methods isActive should return correct status" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:129:43)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods isConfirmed should return confirmation status" name="Invitation Entity Methods isConfirmed should return confirmation status" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:136:46)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods getPendingPasses should calculate correctly" name="Invitation Entity Methods getPendingPasses should calculate correctly" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: 2
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:143:51)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods getGuestNamesString should join names" name="Invitation Entity Methods getGuestNamesString should join names" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;Juan Pérez, María García&quot;
+Received: &quot;Juan Pérez y María García&quot;
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:147:54)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods hasPhone should check phone presence" name="Invitation Entity Methods hasPhone should check phone presence" time="0">
+      <failure>TypeError: invitation.hasPhone is not a function
+    at Object.hasPhone (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:151:31)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Methods clone should create deep copy" name="Invitation Entity Methods clone should create deep copy" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods toObject should return plain object" name="Invitation Entity Methods toObject should return plain object" time="0.004">
+      <failure>Error: expect(received).toEqual(expected) // deep equality
+
+- Expected  - 2
++ Received  + 5
+
+  Object {
+    &quot;adultPasses&quot;: 0,
++   &quot;attendingNames&quot;: Array [],
+    &quot;cancellationReason&quot;: null,
+    &quot;cancelledAt&quot;: null,
+    &quot;cancelledBy&quot;: null,
+    &quot;childPasses&quot;: 0,
+    &quot;code&quot;: &quot;INV001&quot;,
+    &quot;confirmationDate&quot;: null,
+-   &quot;confirmed&quot;: false,
+    &quot;confirmedPasses&quot;: 0,
+    &quot;createdAt&quot;: &quot;2024-01-01T00:00:00.000Z&quot;,
++   &quot;dietaryRestrictionsDetails&quot;: &quot;&quot;,
++   &quot;dietaryRestrictionsNames&quot;: &quot;&quot;,
++   &quot;generalMessage&quot;: &quot;&quot;,
+    &quot;guestNames&quot;: Array [
+      &quot;Juan Pérez&quot;,
+      &quot;María García&quot;,
+    ],
+    &quot;numberOfPasses&quot;: 2,
+    &quot;phone&quot;: &quot;+1234567890&quot;,
+    &quot;staffPasses&quot;: 0,
+-   &quot;status&quot;: &quot;active&quot;,
++   &quot;status&quot;: &quot;pending&quot;,
+    &quot;tableNumber&quot;: null,
+  }
+    at Object.toEqual (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:169:25)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate guest names format" name="Invitation Entity Validation should validate guest names format" time="0.002">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Nombres de invitados no pueden estar vacíos&quot;
+
+Received function did not throw
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:198:48)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate phone format if provided" name="Invitation Entity Validation should validate phone format if provided" time="0.001">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Formato de teléfono inválido&quot;
+
+Received function did not throw
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:209:48)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Validation should accept valid phone formats" name="Invitation Entity Validation should accept valid phone formats" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate confirmation data" name="Invitation Entity Validation should validate confirmation data" time="0">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Pases confirmados no pueden exceder el número total de pases&quot;
+
+Received function did not throw
+    at Object.toThrow (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:235:18)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should handle null/undefined values gracefully" name="Invitation Entity Edge Cases should handle null/undefined values gracefully" time="0">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;&quot;
+Received: null
+    at Object.toBe (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:251:38)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should trim whitespace from guest names" name="Invitation Entity Edge Cases should trim whitespace from guest names" time="0.001">
+      <failure>Error: expect(received).toEqual(expected) // deep equality
+
+- Expected  - 2
++ Received  + 2
+
+  Array [
+-   &quot;Juan Pérez&quot;,
+-   &quot;María García&quot;,
++   &quot;  Juan Pérez  &quot;,
++   &quot;  María García  &quot;,
+  ]
+    at Object.toEqual (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\src\tests\unit\entities\Invitation.test.js:264:43)
+    at Promise.then.completed (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at _runTestsForDescribeBlock (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:121:9)
+    at run (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Users\diego.zazueta\Desktop\Invitacion-boda\backend\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should handle large number of guests" name="Invitation Entity Edge Cases should handle large number of guests" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -10,9 +10,10 @@ const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
 
 class SecurityMiddleware {
-    constructor(validationService, logger) {
+    constructor(validationService, logger, config = {}) {
         this.validationService = validationService;
         this.logger = logger;
+        this.config = config;
     }
 
     /**
@@ -78,20 +79,22 @@ class SecurityMiddleware {
      */
     get cors() {
         return (req, res, next) => {
-            const allowedOrigins = [
+            // obtener orígenes desde la configuración, si no existe se usa un conjunto seguro por defecto
+            const defaultOrigins = [
                 'http://localhost:3000',
                 'http://localhost:3001', // Browser-sync
                 'http://localhost:8080',
                 'https://localhost:3000',
                 'https://localhost:3001', // Browser-sync HTTPS
-                'https://localhost:8080',
-                process.env.FRONTEND_URL
-            ].filter(Boolean);
+                'https://localhost:8080'
+            ];
+
+            const allowedOrigins = (this.config && this.config.cors && Array.isArray(this.config.cors.allowedOrigins) && this.config.cors.allowedOrigins.length > 0)
+                ? this.config.cors.allowedOrigins
+                : defaultOrigins;
 
             const origin = req.headers.origin;
-            
-            if (allowedOrigins.includes(origin) || !origin) {
-                res.setHeader('Access-Control-Allow-Origin', origin || '*');
+
             }
 
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

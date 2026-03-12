@@ -6,7 +6,7 @@
 
 const path = require('path');
 // Importar configuración para validación de límites
-const WEDDING_CONFIG = require('../../../../frontend/public/config.js');
+const config = require('../../../config');
 
 class InvitationController {
     constructor(createInvitationUseCase, invitationRepository, validationService, logger) {
@@ -392,7 +392,7 @@ class InvitationController {
             // 2. Validar cupo
             const stats = await this.invitationRepository.getStats();
             const currentOccupied = stats.occupiedPasses;
-            const targetTotal = WEDDING_CONFIG.guests.targetTotal;
+            const targetTotal = config.guests.targetTotal;
             const invitationPasses = invitation.numberOfPasses;
 
             if (currentOccupied + invitationPasses > targetTotal) {
