@@ -32,7 +32,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] Añadir tests de integración para flujos clave (`create` + `confirm`).
 - [ ] Implementar suite e2e (Cypress o similar) que cubra frontend público y dashboard.
 - [ ] Automatizar ejecución de tests, lint y audit en CI; bloquear merges si fallan.
-- [ ] Configurar ESLint y Prettier como hooks (`husky` + `lint-staged`).
+- [x] Configurar ESLint y Prettier como hooks (`husky` + `lint-staged`).
 
 ## 🧩 UX y Accesibilidad
 
@@ -56,8 +56,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 - [ ] Completar README con instalación, despliegue y pruebas.
 - [ ] Documentar API con Swagger/OpenAPI.
-- [ ] Añadir `CHANGELOG.md` semántico.
-- [ ] Crear `SECURITY.md` para reporte de vulnerabilidades.
+- [x] Añadir `CHANGELOG.md` semántico.
+- [x] Crear `SECURITY.md` para reporte de vulnerabilidades.
 - [ ] Configurar CI/CD para build, lint, test y deploy.
 - [ ] Definir entorno de staging y gestionar variables sensibles.
 

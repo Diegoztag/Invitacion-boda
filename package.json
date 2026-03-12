@@ -10,7 +10,11 @@
     "server": "cd backend && npm run dev",
     "browser-sync": "browser-sync start --proxy localhost:3000 --files \"frontend/**/*.html\" \"frontend/**/*.css\" \"frontend/**/*.js\" --port 3001 --no-open --reload-delay 200 --logLevel info --logPrefix BS",
     "install-backend": "cd backend && npm install",
-    "postinstall": "npm run install-backend"
+    "postinstall": "npm run install-backend",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\""
   },
   "keywords": [
     "wedding",
