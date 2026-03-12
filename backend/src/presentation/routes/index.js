@@ -8,6 +8,7 @@ const express = require('express');
 const configureInvitationRoutes = require('./invitationRoutes');
 const configureConfirmationRoutes = require('./confirmationRoutes');
 const configureNotificationRoutes = require('./notificationRoutes');
+const configureAuthRoutes = require('./authRoutes');
 
 /**
  * Configura todas las rutas de la aplicación
@@ -35,6 +36,10 @@ function configureRoutes(controllers, middleware) {
 
     // API versioning
     const apiV1 = express.Router();
+
+    // Configurar rutas de autenticación (acceso público para login)
+    const authRoutes = configureAuthRoutes(middleware);
+    apiV1.use('/auth', authRoutes);
 
     // Configurar rutas de invitaciones
     const invitationRoutes = configureInvitationRoutes(

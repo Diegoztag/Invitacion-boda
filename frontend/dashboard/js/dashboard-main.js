@@ -23,6 +23,9 @@ class AdminApp {
         try {
             console.log('🚀 Iniciando Admin App...');
 
+            // Verificar autenticación primero
+            await this.checkAuthentication();
+
             this.initializeDynamicContent();
             await this.initializeControllers();
             this.setupGlobalEventListeners();
@@ -33,6 +36,40 @@ class AdminApp {
         } catch (error) {
             console.error('❌ Error inicializando Admin App:', error);
             showToast('Error al cargar el sistema', 'error');
+        }
+    }
+
+    async checkAuthentication() {
+        const token = localStorage.getItem('dashboardToken');
+
+        if (!token) {
+            console.warn('⚠️ No hay token guardado, redirigiendo a login');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const API_URL =
+                (window.WEDDING_CONFIG?.api?.backendUrl || 'http://localhost:3000') + '/api/v1';
+
+            const response = await fetch(`${API_URL}/auth/verify`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                console.warn('⚠️ Token inválido o expirado');
+                localStorage.removeItem('dashboardToken');
+                localStorage.removeItem('dashboardUser');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✅ Autenticación verificada');
+        } catch (error) {
+            console.error('❌ Error verificando autenticación:', error);
+            window.location.href = 'login.html';
         }
     }
 

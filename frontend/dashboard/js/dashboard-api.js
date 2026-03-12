@@ -21,7 +21,15 @@ export class AdminAPI {
      * Configura la autenticación basada en la configuración
      */
     setupAuthentication() {
-        // Intentar obtener la configuración desde window.WEDDING_CONFIG
+        // Intentar obtener token JWT guardado (nueva forma)
+        const token = localStorage.getItem('dashboardToken');
+        if (token) {
+            this.headers['Authorization'] = `Bearer ${token}`;
+            console.log('🔐 Autenticación JWT configurada desde localStorage');
+            return;
+        }
+
+        // Fallback a configuración básica si no hay token
         const config =
             (typeof window !== 'undefined' && window.WEDDING_CONFIG?.api?.dashboard) || null;
 
