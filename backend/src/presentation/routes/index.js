@@ -51,13 +51,12 @@ function configureRoutes(controllers, middleware) {
     apiV1.use('/confirmations', confirmationRoutes);
 
     // Configurar rutas de notificaciones (SSE)
-    const notificationRoutes = configureNotificationRoutes(
-        controllers.notificationController
-    );
+    const notificationRoutes = configureNotificationRoutes(controllers.notificationController);
     apiV1.use('/notifications', notificationRoutes);
 
     // Rutas adicionales para estadísticas generales (optimizada sin duplicaciones)
-    apiV1.get('/stats', 
+    apiV1.get(
+        '/stats',
         middleware.authenticate,
         controllers.invitationController.getStats.bind(controllers.invitationController)
     );

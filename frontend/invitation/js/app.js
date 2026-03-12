@@ -26,10 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('🏗️ Arquitectura: Clean Architecture + Dependency Injection');
             console.log('📊 Módulos cargados:', appController.getLoadedModules?.() || 'N/A');
         }
-
     } catch (error) {
         console.error('❌ Error al inicializar la aplicación:', error);
-        
+
         // Mostrar mensaje de error al usuario
         showErrorMessage();
     }
@@ -54,7 +53,7 @@ function showErrorMessage() {
         text-align: center;
         font-family: Arial, sans-serif;
     `;
-    
+
     errorDiv.innerHTML = `
         <h3>⚠️ Error de Carga</h3>
         <p>Hubo un problema al cargar la aplicación.</p>
@@ -69,17 +68,17 @@ function showErrorMessage() {
             margin-top: 10px;
         ">Recargar Página</button>
     `;
-    
+
     document.body.appendChild(errorDiv);
 }
 
 /**
  * Manejo global de errores no capturados
  */
-window.addEventListener('error', (event) => {
+window.addEventListener('error', event => {
     console.error('❌ Error global capturado:', event.error);
 });
 
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', event => {
     console.error('❌ Promise rechazada no manejada:', event.reason);
 });

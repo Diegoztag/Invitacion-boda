@@ -39,7 +39,7 @@ class InvitationController {
 
             // Buscar invitación
             const invitation = await this.invitationRepository.findByCode(code);
-            
+
             if (!invitation) {
                 return res.status(404).json({
                     success: false,
@@ -53,10 +53,9 @@ class InvitationController {
                 success: true,
                 invitation: invitation.toObject()
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting invitation', {
                 code: req.params.code,
                 error: error.message,
@@ -83,7 +82,7 @@ class InvitationController {
         try {
             // Validar datos de entrada
             const validation = this.validationService.validateInvitationData(req.body);
-            
+
             if (!validation.isValid) {
                 return res.status(400).json({
                     success: false,
@@ -99,16 +98,15 @@ class InvitationController {
                 return res.status(400).json(result);
             }
 
-            endOperation({ 
-                created: true, 
-                code: result.invitation.code 
+            endOperation({
+                created: true,
+                code: result.invitation.code
             });
 
             res.status(201).json(result);
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error creating invitation', {
                 body: req.body,
                 error: error.message,
@@ -167,12 +165,24 @@ class InvitationController {
 
             // Construir filtros
             const filters = {};
-            if (status) filters.status = status;
-            if (confirmed !== undefined) filters.confirmed = confirmed === 'true';
-            if (search) filters.search = search;
-            if (passes) filters.passes = passes;
-            if (table) filters.table = table;
-            if (phone) filters.phone = phone;
+            if (status) {
+                filters.status = status;
+            }
+            if (confirmed !== undefined) {
+                filters.confirmed = confirmed === 'true';
+            }
+            if (search) {
+                filters.search = search;
+            }
+            if (passes) {
+                filters.passes = passes;
+            }
+            if (table) {
+                filters.table = table;
+            }
+            if (phone) {
+                filters.phone = phone;
+            }
 
             // Construir opciones de ordenamiento
             const sort = {
@@ -181,17 +191,17 @@ class InvitationController {
             };
 
             // Obtener invitaciones paginadas
-            let result = await this.invitationRepository.findPaginated(
-                pageNum, 
-                limitNum, 
-                filters, 
+            const result = await this.invitationRepository.findPaginated(
+                pageNum,
+                limitNum,
+                filters,
                 sort,
                 includeInactive === 'true'
             );
 
-            endOperation({ 
+            endOperation({
                 count: result.data.length,
-                total: result.pagination.total 
+                total: result.pagination.total
             });
 
             // Convertir entidades a objetos planos
@@ -202,10 +212,9 @@ class InvitationController {
                 data: serializedData,
                 pagination: result.pagination
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting invitations', {
                 query: req.query,
                 error: error.message,
@@ -277,10 +286,9 @@ class InvitationController {
                 invitation: result.toObject(),
                 message: 'Invitación actualizada exitosamente'
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error updating invitation', {
                 code: req.params.code,
                 body: req.body,
@@ -333,10 +341,9 @@ class InvitationController {
                 success: true,
                 message: 'Invitación eliminada exitosamente'
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error deleting invitation', {
                 code: req.params.code,
                 error: error.message,
@@ -373,7 +380,7 @@ class InvitationController {
 
             // 1. Buscar la invitación (incluso si está inactiva)
             const invitation = await this.invitationRepository.findByCode(code);
-            
+
             if (!invitation) {
                 return res.status(404).json({
                     success: false,
@@ -412,10 +419,9 @@ class InvitationController {
                 invitation: result.toObject(),
                 message: 'Invitación activada exitosamente'
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error restoring invitation', {
                 code: req.params.code,
                 error: error.message,
@@ -443,13 +449,18 @@ class InvitationController {
             const invitationStats = await this.invitationRepository.getStats();
 
             // Calcular tasas de confirmación y asistencia
-            const confirmationRate = invitationStats.active > 0 
-                ? (invitationStats.confirmed / invitationStats.active * 100).toFixed(2)
-                : "0.00";
+            const confirmationRate =
+                invitationStats.active > 0
+                    ? ((invitationStats.confirmed / invitationStats.active) * 100).toFixed(2)
+                    : '0.00';
 
-            const attendanceRate = invitationStats.totalIssuedPasses > 0
-                ? (invitationStats.confirmedPasses / invitationStats.totalIssuedPasses * 100).toFixed(2)
-                : "0.00";
+            const attendanceRate =
+                invitationStats.totalIssuedPasses > 0
+                    ? (
+                          (invitationStats.confirmedPasses / invitationStats.totalIssuedPasses) *
+                          100
+                      ).toFixed(2)
+                    : '0.00';
 
             endOperation({ statsGenerated: true });
 
@@ -475,9 +486,12 @@ class InvitationController {
                         negative: invitationStats.cancelled,
                         totalConfirmedGuests: invitationStats.confirmedPasses,
                         pendingPasses: invitationStats.pendingPasses,
-                        averageGuestsPerConfirmation: invitationStats.confirmed > 0 
-                            ? (invitationStats.confirmedPasses / invitationStats.confirmed).toFixed(2)
-                            : "0.00"
+                        averageGuestsPerConfirmation:
+                            invitationStats.confirmed > 0
+                                ? (
+                                      invitationStats.confirmedPasses / invitationStats.confirmed
+                                  ).toFixed(2)
+                                : '0.00'
                     },
                     passDistribution: {
                         // Desglose de pases activos
@@ -485,14 +499,14 @@ class InvitationController {
                         activeChildPasses: invitationStats.activeChildPasses || 0,
                         activeStaffPasses: invitationStats.activeStaffPasses || 0,
                         totalActivePasses: invitationStats.totalActivePasses || 0,
-                        
+
                         // Porcentajes de distribución
                         distributionPercentages: invitationStats.distributionPercentages || {
                             adults: 0,
                             children: 0,
                             staff: 0
                         },
-                        
+
                         // Desglose de pases confirmados
                         confirmedAdultPasses: invitationStats.confirmedAdultPasses || 0,
                         confirmedChildPasses: invitationStats.confirmedChildPasses || 0,
@@ -505,10 +519,9 @@ class InvitationController {
                     }
                 }
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting invitation stats', {
                 error: error.message,
                 stack: error.stack
@@ -543,9 +556,9 @@ class InvitationController {
             // Ejecutar importación en lote
             const result = await this.createInvitationUseCase.executeBatch(invitations);
 
-            endOperation({ 
+            endOperation({
                 imported: result.success.length,
-                failed: result.errors.length 
+                failed: result.errors.length
             });
 
             res.json({
@@ -553,10 +566,9 @@ class InvitationController {
                 result,
                 message: `Importación completada: ${result.success.length} exitosas, ${result.errors.length} fallidas`
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error importing invitations', {
                 error: error.message,
                 stack: error.stack
@@ -583,15 +595,15 @@ class InvitationController {
 
             const result = await this.invitationRepository.exportAll();
 
-            endOperation({ 
+            endOperation({
                 exported: result.count,
-                format 
+                format
             });
 
             if (format === 'csv') {
                 res.setHeader('Content-Type', 'text/csv');
                 res.setHeader('Content-Disposition', 'attachment; filename=invitations.csv');
-                
+
                 // Convertir a CSV (implementación simplificada)
                 const csvData = this.convertToCSV(result.data);
                 res.send(csvData);
@@ -601,10 +613,9 @@ class InvitationController {
                     ...result
                 });
             }
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error exporting invitations', {
                 error: error.message,
                 stack: error.stack
@@ -646,10 +657,9 @@ class InvitationController {
                 invitations: invitations.map(inv => inv.toObject()),
                 count: invitations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error searching invitations by name', {
                 name: req.params.name,
                 error: error.message,
@@ -670,7 +680,9 @@ class InvitationController {
      * @private
      */
     convertToCSV(data) {
-        if (!data || data.length === 0) return '';
+        if (!data || data.length === 0) {
+            return '';
+        }
 
         const headers = Object.keys(data[0]);
         const csvRows = [headers.join(',')];

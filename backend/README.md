@@ -51,22 +51,25 @@ backend/src/
 
 ### Prerrequisitos
 
-- Node.js 16+ 
+- Node.js 16+
 - npm o yarn
 
 ### Configuración
 
 1. **Instalar dependencias**:
+
 ```bash
 npm install
 ```
 
 2. **Configurar variables de entorno**:
+
 ```bash
 cp .env.example .env
 ```
 
 3. **Variables de entorno disponibles**:
+
 ```env
 # Servidor
 PORT=3001
@@ -168,11 +171,13 @@ GET    /api/dashboard/stats           # Estadísticas generales (admin)
 ### Autenticación
 
 #### JWT Token
+
 ```http
 Authorization: Bearer <token>
 ```
 
 #### Basic Auth
+
 ```http
 Authorization: Basic <base64(username:password)>
 ```
@@ -180,6 +185,7 @@ Authorization: Basic <base64(username:password)>
 ### Ejemplos de Uso
 
 #### Crear Invitación
+
 ```bash
 curl -X POST http://localhost:3001/api/invitations \
   -H "Authorization: Bearer <token>" \
@@ -192,6 +198,7 @@ curl -X POST http://localhost:3001/api/invitations \
 ```
 
 #### Confirmar Asistencia
+
 ```bash
 curl -X POST http://localhost:3001/api/confirmations/INV001 \
   -H "Content-Type: application/json" \
@@ -240,6 +247,7 @@ npm run test:watch
 ### Cobertura de Código
 
 El proyecto mantiene un mínimo de 70% de cobertura en:
+
 - Líneas de código
 - Funciones
 - Ramas

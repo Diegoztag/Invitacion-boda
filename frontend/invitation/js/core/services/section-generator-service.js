@@ -9,7 +9,7 @@ export class SectionGeneratorService {
         this.isInitialized = false;
         this.generatedSections = new Set();
     }
-    
+
     /**
      * Inicializa el servicio
      */
@@ -17,20 +17,20 @@ export class SectionGeneratorService {
         if (this.isInitialized) {
             return;
         }
-        
+
         console.log('🏗️ Initializing SectionGeneratorService...');
-        
+
         this.config = window.WEDDING_CONFIG;
-        
+
         if (!this.config) {
             console.warn('WEDDING_CONFIG not found, no sections will be generated');
             return;
         }
-        
+
         this.isInitialized = true;
         console.log('✅ SectionGeneratorService initialized');
     }
-    
+
     /**
      * Genera las secciones habilitadas
      */
@@ -39,9 +39,9 @@ export class SectionGeneratorService {
             console.warn('Config not available, cannot generate sections');
             return;
         }
-        
+
         const sectionsConfig = this.getSectionsConfiguration();
-        
+
         // Generar secciones habilitadas
         Object.entries(sectionsConfig).forEach(([sectionId, config]) => {
             if (config.enabled) {
@@ -50,21 +50,21 @@ export class SectionGeneratorService {
                 console.log(`🚫 Section skipped: ${sectionId} (disabled)`);
             }
         });
-        
+
         // Generar navegación solo para secciones habilitadas
         this.generateNavigation(sectionsConfig);
     }
-    
+
     /**
      * Obtiene la configuración de las secciones
      */
     getSectionsConfiguration() {
         return {
-            'fotos': {
+            fotos: {
                 enabled: this.config.photoSection?.enabled === true,
                 generator: () => this.generatePhotoSection()
             },
-            'carousel': {
+            carousel: {
                 enabled: this.config.carouselSection?.enabled !== false,
                 generator: () => this.generateCarouselSection()
             },
@@ -74,7 +74,7 @@ export class SectionGeneratorService {
             }
         };
     }
-    
+
     /**
      * Genera una sección específica
      */
@@ -83,7 +83,7 @@ export class SectionGeneratorService {
             console.log(`⚠️ Section ${sectionId} already generated`);
             return;
         }
-        
+
         try {
             config.generator();
             this.generatedSections.add(sectionId);
@@ -92,7 +92,7 @@ export class SectionGeneratorService {
             console.error(`❌ Error generating section ${sectionId}:`, error);
         }
     }
-    
+
     /**
      * Genera la sección de fotos/Instagram
      */
@@ -101,11 +101,11 @@ export class SectionGeneratorService {
         if (existingSection) {
             return; // Ya existe
         }
-        
+
         const section = document.createElement('section');
         section.id = 'fotos';
         section.className = 'instagram-section section';
-        
+
         section.innerHTML = `
             <div class="container">
                 <h2 class="section-title" id="photoSectionTitle">${this.config.messages.photoSectionTitle}</h2>
@@ -121,7 +121,7 @@ export class SectionGeneratorService {
                 </div>
             </div>
         `;
-        
+
         // Insertar antes del footer
         const footer = document.querySelector('.footer');
         if (footer) {
@@ -130,7 +130,7 @@ export class SectionGeneratorService {
             document.body.appendChild(section);
         }
     }
-    
+
     /**
      * Genera la sección del carrusel
      */
@@ -139,11 +139,11 @@ export class SectionGeneratorService {
         if (existingSection) {
             return; // Ya existe
         }
-        
+
         const section = document.createElement('section');
         section.id = 'carousel';
         section.className = 'carousel-section section';
-        
+
         section.innerHTML = `
             <div class="container">
                 <h2 class="section-title" id="carouselSectionTitle">${this.config.carouselSection.title}</h2>
@@ -158,25 +158,33 @@ export class SectionGeneratorService {
                     </div>
                     
                     <!-- Carousel Controls -->
-                    ${this.config.carouselSection.carousel.showNavigationButtons ? `
+                    ${
+                        this.config.carouselSection.carousel.showNavigationButtons
+                            ? `
                     <button class="carousel-control carousel-prev" id="carouselPrev">
                         <i class="fas fa-chevron-left"></i>
                     </button>
                     <button class="carousel-control carousel-next" id="carouselNext">
                         <i class="fas fa-chevron-right"></i>
                     </button>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     
                     <!-- Carousel Indicators -->
-                    ${this.config.carouselSection.carousel.showIndicators ? `
+                    ${
+                        this.config.carouselSection.carousel.showIndicators
+                            ? `
                     <div class="carousel-indicators" id="carouselIndicators">
                         <!-- Indicators will be dynamically generated -->
                     </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                 </div>
             </div>
         `;
-        
+
         // Insertar antes del footer
         const footer = document.querySelector('.footer');
         if (footer) {
@@ -185,7 +193,7 @@ export class SectionGeneratorService {
             document.body.appendChild(section);
         }
     }
-    
+
     /**
      * Genera la sección de mesa de regalos
      */
@@ -194,14 +202,14 @@ export class SectionGeneratorService {
         if (existingSection) {
             return; // Ya existe
         }
-        
+
         const section = document.createElement('section');
         section.id = 'mesa-regalos';
         section.className = 'gift-registry section';
-        
+
         // Generar HTML de las tiendas
         const storesHTML = this.generateGiftStoresHTML();
-        
+
         section.innerHTML = `
             <div class="container">
                 <h2 class="section-title" id="giftRegistryTitle">${this.config.giftRegistry.title}</h2>
@@ -214,7 +222,9 @@ export class SectionGeneratorService {
                     </div>
                     
                     <!-- Información bancaria -->
-                    ${this.config.giftRegistry.bankAccount?.enabled ? `
+                    ${
+                        this.config.giftRegistry.bankAccount?.enabled
+                            ? `
                     <div class="bank-info" id="bankInfo">
                         <div class="bank-card">
                             <div class="bank-icon">
@@ -227,11 +237,13 @@ export class SectionGeneratorService {
                             </div>
                         </div>
                     </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                 </div>
             </div>
         `;
-        
+
         // Insertar antes del footer
         const footer = document.querySelector('.footer');
         if (footer) {
@@ -239,10 +251,10 @@ export class SectionGeneratorService {
         } else {
             document.body.appendChild(section);
         }
-        
+
         console.log(`🎁 Generated ${this.config.giftRegistry.stores?.length || 0} gift stores`);
     }
-    
+
     /**
      * Genera el HTML de las tiendas de regalos
      */
@@ -250,11 +262,12 @@ export class SectionGeneratorService {
         if (!this.config.giftRegistry.stores || this.config.giftRegistry.stores.length === 0) {
             return '<p>No hay tiendas configuradas</p>';
         }
-        
-        return this.config.giftRegistry.stores.map(store => {
-            if (store.url && store.url !== '#') {
-                // Tarjeta clickeable para tiendas con URL - Sin botón visible
-                return `
+
+        return this.config.giftRegistry.stores
+            .map(store => {
+                if (store.url && store.url !== '#') {
+                    // Tarjeta clickeable para tiendas con URL - Sin botón visible
+                    return `
                     <a href="${store.url}" target="_blank" rel="noopener noreferrer" class="gift-store gift-store-link">
                         <div class="store-icon">
                             <i class="${store.icon}"></i>
@@ -265,9 +278,9 @@ export class SectionGeneratorService {
                         </div>
                     </a>
                 `;
-            } else {
-                // Tarjeta no clickeable para opciones sin URL
-                return `
+                } else {
+                    // Tarjeta no clickeable para opciones sin URL
+                    return `
                     <div class="gift-store">
                         <div class="store-icon">
                             <i class="${store.icon}"></i>
@@ -278,10 +291,11 @@ export class SectionGeneratorService {
                         </div>
                     </div>
                 `;
-            }
-        }).join('');
+                }
+            })
+            .join('');
     }
-    
+
     /**
      * Genera el HTML de los detalles bancarios
      */
@@ -289,16 +303,20 @@ export class SectionGeneratorService {
         if (!this.config.giftRegistry.bankAccount?.details) {
             return '';
         }
-        
+
         const details = this.config.giftRegistry.bankAccount.details;
-        return Object.entries(details).map(([key, value]) => `
+        return Object.entries(details)
+            .map(
+                ([key, value]) => `
             <div class="bank-detail">
                 <span class="detail-label">${key}:</span>
                 <span class="detail-value">${value}</span>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     }
-    
+
     /**
      * Genera la navegación solo para secciones habilitadas
      */
@@ -308,16 +326,16 @@ export class SectionGeneratorService {
             console.warn('Navigation menu not found');
             return;
         }
-        
+
         // Obtener enlaces existentes
         const existingLinks = navMenu.querySelectorAll('.nav-link');
-        
+
         // Filtrar enlaces según configuración
         existingLinks.forEach(link => {
             const href = link.getAttribute('href');
             if (href && href.startsWith('#')) {
                 const sectionId = href.substring(1);
-                
+
                 // Verificar si la sección debe estar oculta
                 if (sectionsConfig[sectionId] && !sectionsConfig[sectionId].enabled) {
                     const listItem = link.closest('li');
@@ -328,10 +346,10 @@ export class SectionGeneratorService {
                 }
             }
         });
-        
+
         console.log('✅ Navigation updated for enabled sections');
     }
-    
+
     /**
      * Verifica si una sección está habilitada
      */
@@ -339,7 +357,7 @@ export class SectionGeneratorService {
         const sectionsConfig = this.getSectionsConfiguration();
         return sectionsConfig[sectionId]?.enabled || false;
     }
-    
+
     /**
      * Obtiene todas las secciones habilitadas
      */
@@ -349,7 +367,7 @@ export class SectionGeneratorService {
             .filter(([_, config]) => config.enabled)
             .map(([sectionId, _]) => sectionId);
     }
-    
+
     /**
      * Obtiene todas las secciones deshabilitadas
      */
@@ -359,16 +377,16 @@ export class SectionGeneratorService {
             .filter(([_, config]) => !config.enabled)
             .map(([sectionId, _]) => sectionId);
     }
-    
+
     /**
      * Regenera todas las secciones
      */
     regenerateAllSections() {
         console.log('🔄 Regenerating all sections...');
-        
+
         // Limpiar secciones generadas
         this.generatedSections.clear();
-        
+
         // Remover secciones existentes generadas dinámicamente
         const sectionsToRemove = ['fotos', 'carousel', 'mesa-regalos'];
         sectionsToRemove.forEach(sectionId => {
@@ -377,13 +395,13 @@ export class SectionGeneratorService {
                 section.remove();
             }
         });
-        
+
         // Regenerar secciones
         this.generateEnabledSections();
-        
+
         console.log('✅ All sections regenerated');
     }
-    
+
     /**
      * Actualiza la configuración y regenera secciones
      */
@@ -392,7 +410,7 @@ export class SectionGeneratorService {
         this.regenerateAllSections();
         console.log('🔄 Configuration updated and sections regenerated');
     }
-    
+
     /**
      * Destruye el servicio
      */

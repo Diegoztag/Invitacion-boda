@@ -8,27 +8,15 @@ module.exports = {
     testEnvironment: 'node',
 
     // Directorios de tests
-    testMatch: [
-        '**/src/tests/**/*.test.js',
-        '**/src/tests/**/*.spec.js'
-    ],
+    testMatch: ['**/src/tests/**/*.test.js', '**/src/tests/**/*.spec.js'],
 
     // Directorios a ignorar
-    testPathIgnorePatterns: [
-        '/node_modules/',
-        '/dist/',
-        '/build/'
-    ],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/'],
 
     // Configuración de cobertura
     collectCoverage: true,
     coverageDirectory: 'coverage',
-    coverageReporters: [
-        'text',
-        'lcov',
-        'html',
-        'json'
-    ],
+    coverageReporters: ['text', 'lcov', 'html', 'json'],
 
     // Archivos a incluir en cobertura
     collectCoverageFrom: [
@@ -51,15 +39,10 @@ module.exports = {
     },
 
     // Setup files
-    setupFilesAfterEnv: [
-        '<rootDir>/src/tests/setup.js'
-    ],
+    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
 
     // Module paths
-    moduleDirectories: [
-        'node_modules',
-        'src'
-    ],
+    moduleDirectories: ['node_modules', 'src'],
 
     // Transformaciones
     transform: {
@@ -90,7 +73,5 @@ module.exports = {
     ],
 
     // Variables de entorno para tests
-    setupFiles: [
-        '<rootDir>/src/tests/env.js'
-    ]
+    setupFiles: ['<rootDir>/src/tests/env.js']
 };

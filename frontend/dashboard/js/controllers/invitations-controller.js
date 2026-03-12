@@ -4,7 +4,7 @@
  */
 
 import { adminAPI, APIHelpers } from '../dashboard-api.js';
-import { 
+import {
     calculatePaginationInfo,
     updateTablePagination,
     renderTableRow,
@@ -34,19 +34,19 @@ export class InvitationsController {
                 hasPrev: false
             }
         };
-        
+
         this.currentInvitations = []; // Invitaciones de la página actual
 
         this.CONFIG = {
             backendUrl: WEDDING_CONFIG.api.backendUrl
         };
-        
+
         // Modal instances
         this.invitationDetailModal = null;
         this.createInvitationModal = null;
         this.editInvitationModal = null;
         this.importCsvModal = null;
-        
+
         this.currentViewingCode = null; // Código de la invitación que se está viendo en detalles
     }
 
@@ -77,10 +77,12 @@ export class InvitationsController {
      */
     setupEventListeners() {
         // Handle "Ver todos los invitados" link
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (e.target && e.target.matches('a[href="#invitations"]')) {
                 e.preventDefault();
-                const invitacionesNavItem = document.querySelector('.nav-item[href="#invitations"]');
+                const invitacionesNavItem = document.querySelector(
+                    '.nav-item[href="#invitations"]'
+                );
                 if (invitacionesNavItem) {
                     invitacionesNavItem.click();
                 }
@@ -96,7 +98,7 @@ export class InvitationsController {
      */
     setupButtonEventListeners() {
         // Usar delegación de eventos para botones que se crean dinámicamente
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             // Export CSV button
             if (e.target && (e.target.id === 'exportCsvBtn' || e.target.closest('#exportCsvBtn'))) {
                 e.preventDefault();
@@ -110,9 +112,12 @@ export class InvitationsController {
                 this.showImportModal();
                 return;
             }
-            
+
             // Create invitation button
-            if (e.target && (e.target.id === 'createInvitationBtn' || e.target.closest('#createInvitationBtn'))) {
+            if (
+                e.target &&
+                (e.target.id === 'createInvitationBtn' || e.target.closest('#createInvitationBtn'))
+            ) {
                 e.preventDefault();
                 this.showCreateModal();
                 return;
@@ -127,22 +132,34 @@ export class InvitationsController {
 
                 switch (action) {
                     case 'copy-link':
-                        if (url) this.copyToClipboard(url);
+                        if (url) {
+                            this.copyToClipboard(url);
+                        }
                         break;
                     case 'open-link':
-                        if (url) window.open(url, '_blank');
+                        if (url) {
+                            window.open(url, '_blank');
+                        }
                         break;
                     case 'activate-invitation':
-                        if (code) this.activateInvitation(code);
+                        if (code) {
+                            this.activateInvitation(code);
+                        }
                         break;
                     case 'edit-invitation':
-                        if (code) this.editInvitation(code);
+                        if (code) {
+                            this.editInvitation(code);
+                        }
                         break;
                     case 'deactivate-invitation':
-                        if (code) this.deactivateInvitation(code);
+                        if (code) {
+                            this.deactivateInvitation(code);
+                        }
                         break;
                     case 'generate-whatsapp':
-                        if (code) this.generateWhatsAppMessage(code);
+                        if (code) {
+                            this.generateWhatsAppMessage(code);
+                        }
                         break;
                     case 'apply-filters':
                         this.applyFilters();
@@ -172,11 +189,11 @@ export class InvitationsController {
 
             // Pedir invitaciones paginadas al backend
             const result = await adminAPI.fetchInvitations(params);
-            
+
             if (APIHelpers.isSuccess(result)) {
                 const invitations = result.invitations || [];
                 this.currentInvitations = invitations; // Guardar referencia
-                
+
                 this.state.pagination = result.pagination || {
                     page: 1,
                     limit: this.state.limit,
@@ -203,11 +220,19 @@ export class InvitationsController {
         const { status, passes, table, phone } = this.state.filters;
 
         // Mapeo de todos los filtros
-        if (status) params.status = status;
-        if (passes) params.passes = passes;
-        if (table) params.table = table;
-        if (phone) params.phone = phone;
-        
+        if (status) {
+            params.status = status;
+        }
+        if (passes) {
+            params.passes = passes;
+        }
+        if (table) {
+            params.table = table;
+        }
+        if (phone) {
+            params.phone = phone;
+        }
+
         return params;
     }
 
@@ -221,16 +246,22 @@ export class InvitationsController {
             if (APIHelpers.isSuccess(result)) {
                 const stats = result.data;
                 const invitations = stats.invitations || {};
-                
+
                 // Usar datos directos del backend (estructura anidada)
                 const totalInvitations = invitations.total;
                 const confirmedInvitations = invitations.confirmed;
                 const pendingInvitations = invitations.pending;
                 const rejectedInvitations = invitations.cancelled;
-                
+
                 // Update stats cards in invitations section
                 const confirmationRate = stats.rates?.confirmationRate;
-                this.updateInvitationStats(totalInvitations, confirmedInvitations, pendingInvitations, rejectedInvitations, confirmationRate);
+                this.updateInvitationStats(
+                    totalInvitations,
+                    confirmedInvitations,
+                    pendingInvitations,
+                    rejectedInvitations,
+                    confirmationRate
+                );
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }
@@ -239,7 +270,7 @@ export class InvitationsController {
             // Show empty state
             this.updateInvitationStats(0, 0, 0, 0);
         }
-        
+
         // Load invitations for the table
         await this.loadInvitations();
     }
@@ -252,16 +283,17 @@ export class InvitationsController {
         const safeConfirmed = getSafeValue(confirmed, 0);
         const safePending = getSafeValue(pending, 0);
         const safeRejected = getSafeValue(rejected, 0);
-        
+
         // Use backend provided rate if available, otherwise calculate
         let safePercentage = 0;
         if (confirmationRate !== undefined && confirmationRate !== null) {
             safePercentage = parseFloat(confirmationRate);
         } else {
-            const confirmedPercentage = safeTotal > 0 ? Math.round((safeConfirmed / safeTotal) * 100) : 0;
+            const confirmedPercentage =
+                safeTotal > 0 ? Math.round((safeConfirmed / safeTotal) * 100) : 0;
             safePercentage = getSafeValue(confirmedPercentage, 0);
         }
-        
+
         // Prepare data for render service
         const statsData = {
             totalInvitations: safeTotal,
@@ -270,7 +302,7 @@ export class InvitationsController {
             cancelledInvitations: safeRejected,
             confirmedChangePercentage: safePercentage
         };
-        
+
         // Use render service to update stats
         if (window.renderService) {
             window.renderService.renderInvitationsStats(statsData);
@@ -282,25 +314,33 @@ export class InvitationsController {
      */
     displayInvitations(invitations) {
         const tbody = document.getElementById('invitationsTableBody');
-        if (!tbody) return;
-        
+        if (!tbody) {
+            return;
+        }
+
         tbody.innerHTML = '';
-        
+
         const { page, limit, total, totalPages } = this.state.pagination;
-        
+
         // Calcular índices para mostrar "Mostrando X-Y de Z"
         const start = total === 0 ? 0 : (page - 1) * limit + 1;
         const end = Math.min(page * limit, total);
-        
+
         // Update pagination info display
         const showingFromEl = document.getElementById('showingFrom');
         const showingToEl = document.getElementById('showingTo');
         const totalCountEl = document.getElementById('totalCount');
 
-        if (showingFromEl) showingFromEl.textContent = start;
-        if (showingToEl) showingToEl.textContent = end;
-        if (totalCountEl) totalCountEl.textContent = total;
-        
+        if (showingFromEl) {
+            showingFromEl.textContent = start;
+        }
+        if (showingToEl) {
+            showingToEl.textContent = end;
+        }
+        if (totalCountEl) {
+            totalCountEl.textContent = total;
+        }
+
         // Render table rows
         if (invitations.length === 0) {
             tbody.innerHTML = `
@@ -322,7 +362,7 @@ export class InvitationsController {
                 tbody.appendChild(row);
             });
         }
-        
+
         // Update pagination controls
         updateTablePagination({
             currentPage: page,
@@ -330,7 +370,7 @@ export class InvitationsController {
             prevBtnId: 'prevPage',
             nextBtnId: 'nextPage',
             numbersContainerId: 'paginationNumbers',
-            onPageChange: (newPage) => this.changePage(newPage)
+            onPageChange: newPage => this.changePage(newPage)
         });
     }
 
@@ -338,7 +378,9 @@ export class InvitationsController {
      * Cambia de página
      */
     async changePage(newPage) {
-        if (newPage < 1 || newPage > this.state.pagination.totalPages) return;
+        if (newPage < 1 || newPage > this.state.pagination.totalPages) {
+            return;
+        }
         this.state.page = newPage;
         await this.loadInvitations();
     }
@@ -352,11 +394,11 @@ export class InvitationsController {
             const savedItemsPerPage = localStorage.getItem('invitationsPerPage') || '10';
             itemsPerPageSelect.value = savedItemsPerPage;
             this.state.limit = parseInt(savedItemsPerPage);
-            
-            itemsPerPageSelect.addEventListener('change', async (e) => {
+
+            itemsPerPageSelect.addEventListener('change', async e => {
                 const newItemsPerPage = parseInt(e.target.value);
                 localStorage.setItem('invitationsPerPage', newItemsPerPage);
-                
+
                 this.state.limit = newItemsPerPage;
                 this.state.page = 1; // Reset a primera página al cambiar límite
                 await this.loadInvitations();
@@ -370,11 +412,11 @@ export class InvitationsController {
     initSearch() {
         const searchInput = document.getElementById('searchInput');
         let debounceTimer;
-        
+
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
+            searchInput.addEventListener('input', e => {
                 const searchTerm = e.target.value;
-                
+
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(async () => {
                     this.state.search = searchTerm;
@@ -394,7 +436,7 @@ export class InvitationsController {
      */
     async viewInvitation(code) {
         let invitation = this.currentInvitations.find(inv => inv.code === code);
-        
+
         // Si no está en la página actual, intentar buscarla en el backend
         if (!invitation) {
             try {
@@ -407,15 +449,17 @@ export class InvitationsController {
             }
         }
 
-        if (!invitation) return;
-        
+        if (!invitation) {
+            return;
+        }
+
         this.currentViewingCode = code; // Guardar referencia
-        
+
         const invitationUrl = `${window.location.origin}/invitation?invitation=${code}`;
-        
+
         // Store current invitation for editing
         window.currentEditingInvitation = invitation;
-        
+
         this.renderInvitationViewMode(invitation, invitationUrl);
         this.invitationDetailModal.open();
     }
@@ -425,7 +469,7 @@ export class InvitationsController {
      */
     renderInvitationViewMode(invitation, invitationUrl) {
         const statusBadgeInfo = getStatusBadge(invitation, { showIcon: false });
-        
+
         const detailsContent = `
             <div class="invitation-detail-container">
                 <div class="invitation-header">
@@ -478,7 +522,7 @@ export class InvitationsController {
                 </div>
             </div>
         `;
-        
+
         this.invitationDetailModal.setContent(detailsContent);
     }
 
@@ -489,10 +533,10 @@ export class InvitationsController {
         const isConfirmed = invitation.status === 'confirmed' || invitation.status === 'partial';
         const isCancelled = invitation.status === 'cancelled';
         const isPending = !isConfirmed && !isCancelled;
-        
+
         let cardClass = 'pending';
         let content = '';
-        
+
         if (isPending) {
             content = `
                 <div class="empty-state-text">
@@ -507,7 +551,9 @@ export class InvitationsController {
                     <i class="fas fa-times-circle status-icon-large status-icon-cancelled"></i>
                     Han declinado la invitación
                 </div>
-                ${invitation.generalMessage ? `
+                ${
+                    invitation.generalMessage
+                        ? `
                 <div class="info-list mt-3" style="margin-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1rem;">
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-comment-alt"></i></div>
@@ -515,7 +561,9 @@ export class InvitationsController {
                             <span class="info-value message-text-detail">"${invitation.generalMessage}"</span>
                         </div>
                     </div>
-                </div>` : ''}
+                </div>`
+                        : ''
+                }
             `;
         } else {
             cardClass = 'confirmed';
@@ -528,36 +576,53 @@ export class InvitationsController {
                         </div>
                     </div>
 
-                    ${invitation.confirmationDate ? `
+                    ${
+                        invitation.confirmationDate
+                            ? `
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-clock"></i></div>
                         <div class="info-content">
-                            <span class="info-value">${new Date(invitation.confirmationDate).toLocaleDateString('es-MX', { 
-                                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                            <span class="info-value">${new Date(
+                                invitation.confirmationDate
+                            ).toLocaleDateString('es-MX', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
                             })}</span>
                         </div>
-                    </div>` : ''}
+                    </div>`
+                            : ''
+                    }
 
-                    ${invitation.generalMessage ? `
+                    ${
+                        invitation.generalMessage
+                            ? `
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-comment-alt"></i></div>
                         <div class="info-content">
                             <span class="info-value message-text-detail">"${invitation.generalMessage}"</span>
                         </div>
-                    </div>` : ''}
+                    </div>`
+                            : ''
+                    }
                     
-                    ${invitation.dietaryRestrictionsNames ? `
+                    ${
+                        invitation.dietaryRestrictionsNames
+                            ? `
                     <div class="info-row">
                         <div class="info-icon status-icon-warning"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="info-content">
                             <span class="info-value">${invitation.dietaryRestrictionsNames}</span>
                             ${invitation.dietaryRestrictionsDetails ? `<span class="info-value dietary-details">(${invitation.dietaryRestrictionsDetails})</span>` : ''}
                         </div>
-                    </div>` : ''}
+                    </div>`
+                            : ''
+                    }
                 </div>
             `;
         }
-        
+
         return `
             <div class="detail-card confirmation-card ${cardClass}">
                 <div class="card-title">
@@ -598,9 +663,9 @@ export class InvitationsController {
      */
     async deactivateInvitation(code) {
         let invitation = this.currentInvitations.find(inv => inv.code === code);
-        
+
         if (!invitation) {
-             try {
+            try {
                 const result = await adminAPI.fetchInvitation(code);
                 if (result.success) {
                     invitation = result.invitation;
@@ -611,8 +676,10 @@ export class InvitationsController {
             }
         }
 
-        if (!invitation) return;
-        
+        if (!invitation) {
+            return;
+        }
+
         if (invitation.confirmed) {
             const confirmModal = ModalFactory.createConfirmModal({
                 title: 'Advertencia: Invitación Confirmada',
@@ -623,7 +690,7 @@ export class InvitationsController {
                     this.proceedWithDeactivation(code, invitation);
                 }
             });
-            
+
             window.activeModal = confirmModal;
             confirmModal.open();
         } else {
@@ -637,10 +704,10 @@ export class InvitationsController {
     async proceedWithDeactivation(code, invitation) {
         const deactivateModal = ModalFactory.createDeactivateInvitationModal(invitation);
         window.activeDeactivateModal = deactivateModal;
-        
+
         window.confirmDeactivateInvitation = async () => {
             const deactivationReason = document.getElementById('deactivationReason').value.trim();
-            
+
             try {
                 // Usar DELETE para desactivación (soft delete) a través de adminAPI para incluir autenticación
                 const result = await adminAPI.fetchWithErrorHandling(`/invitations/${code}`, {
@@ -649,25 +716,25 @@ export class InvitationsController {
                         reason: deactivationReason
                     })
                 });
-                
+
                 if (result.success) {
                     showToast('Invitación desactivada exitosamente', 'success');
-                    
+
                     // Update local data
                     invitation.status = 'inactive';
                     invitation.cancelledAt = new Date().toISOString();
                     invitation.cancelledBy = 'admin';
                     invitation.cancellationReason = deactivationReason;
-                    
+
                     // Close modals
                     deactivateModal.close();
                     if (this.invitationDetailModal) {
                         this.invitationDetailModal.close();
                     }
-                    
+
                     // Reload data
                     await this.loadInvitations();
-                    
+
                     // Notify other controllers if needed
                     this.notifyDataChange();
                 } else {
@@ -678,7 +745,7 @@ export class InvitationsController {
                 showToast(error.message || 'Error al desactivar la invitación', 'error');
             }
         };
-        
+
         deactivateModal.open();
     }
 
@@ -687,9 +754,9 @@ export class InvitationsController {
      */
     async activateInvitation(code) {
         let invitation = this.currentInvitations.find(inv => inv.code === code);
-        
+
         if (!invitation) {
-             try {
+            try {
                 const result = await adminAPI.fetchInvitation(code);
                 if (result.success) {
                     invitation = result.invitation;
@@ -700,8 +767,10 @@ export class InvitationsController {
             }
         }
 
-        if (!invitation) return;
-        
+        if (!invitation) {
+            return;
+        }
+
         const confirmModal = ModalFactory.createConfirmModal({
             title: 'Activar Invitación',
             message: `¿Estás seguro de activar la invitación de ${formatGuestNames(invitation.guestNames)}?`,
@@ -710,27 +779,30 @@ export class InvitationsController {
             onConfirm: async () => {
                 try {
                     // Usar adminAPI para incluir autenticación
-                    const result = await adminAPI.fetchWithErrorHandling(`/invitations/${code}/activate`, {
-                        method: 'PUT'
-                    });
-                    
+                    const result = await adminAPI.fetchWithErrorHandling(
+                        `/invitations/${code}/activate`,
+                        {
+                            method: 'PUT'
+                        }
+                    );
+
                     if (result.success) {
                         showToast('Invitación activada exitosamente', 'success');
-                        
+
                         // Update local data
                         invitation.status = '';
                         invitation.cancelledAt = null;
                         invitation.cancelledBy = null;
                         invitation.cancellationReason = null;
-                        
+
                         // Close modal if open
                         if (this.invitationDetailModal) {
                             this.invitationDetailModal.close();
                         }
-                        
+
                         // Reload data
                         await this.loadInvitations();
-                        
+
                         // Notify other controllers
                         this.notifyDataChange();
                     } else {
@@ -742,7 +814,7 @@ export class InvitationsController {
                 }
             }
         });
-        
+
         window.activeModal = confirmModal;
         confirmModal.open();
     }
@@ -752,9 +824,9 @@ export class InvitationsController {
      */
     async editInvitation(code) {
         let invitation = this.currentInvitations.find(inv => inv.code === code);
-        
+
         if (!invitation) {
-             try {
+            try {
                 const result = await adminAPI.fetchInvitation(code);
                 if (result.success) {
                     invitation = result.invitation;
@@ -765,8 +837,10 @@ export class InvitationsController {
             }
         }
 
-        if (!invitation) return;
-        
+        if (!invitation) {
+            return;
+        }
+
         // Fetch current stats to validate limits
         let baseTotalPasses = 0;
         try {
@@ -774,7 +848,7 @@ export class InvitationsController {
             if (APIHelpers.isSuccess(statsResult)) {
                 // Total passes currently allocated in the system
                 const currentTotal = statsResult.data.invitations.occupiedPasses || 0;
-                
+
                 // Calculate what this invitation is currently contributing to the occupied count
                 let currentInvitationOccupancy = 0;
                 const status = (invitation.status || '').toLowerCase();
@@ -793,12 +867,17 @@ export class InvitationsController {
                     currentInvitationOccupancy = invitation.numberOfPasses;
                 } else if (status === 'partial') {
                     currentInvitationOccupancy = invitation.confirmedPasses || 0;
-                } else if (status !== 'cancelled' && status !== 'inactive' && status !== 'rejected') {
+                } else if (
+                    status !== 'cancelled' &&
+                    status !== 'inactive' &&
+                    status !== 'rejected'
+                ) {
                     // Fallback seguro: si no es cancelada, asumimos que ocupa espacio
                     // Preferimos confirmedPasses si existe, sino numberOfPasses
-                    currentInvitationOccupancy = invitation.confirmedPasses || invitation.numberOfPasses || 0;
+                    currentInvitationOccupancy =
+                        invitation.confirmedPasses || invitation.numberOfPasses || 0;
                 }
-                
+
                 console.log('Ocupación calculada a restar:', currentInvitationOccupancy);
 
                 // Subtract current invitation occupancy because we are editing it
@@ -811,7 +890,7 @@ export class InvitationsController {
 
         window.activeModal = this.editInvitationModal;
         this.editInvitationModal.open();
-        
+
         setTimeout(() => {
             this.initEditFormInModal(invitation, baseTotalPasses);
         }, 100);
@@ -822,7 +901,7 @@ export class InvitationsController {
      */
     generateWhatsAppMessage(code) {
         let invitation = this.currentInvitations.find(inv => inv.code === code);
-        
+
         // Si no está en la lista actual (ej. búsqueda), intentar usar la que se está editando/viendo
         if (!invitation && this.currentViewingCode === code) {
             // Recuperar del modal si es posible, o usar window.currentEditingInvitation
@@ -837,10 +916,13 @@ export class InvitationsController {
         const names = formatGuestNames(invitation.guestNames);
         const passes = invitation.numberOfPasses;
         const url = `${window.location.origin}/invitation?invitation=${code}`;
-        
+
         // Usar la plantilla de configuración si existe
         let message = '';
-        if (WEDDING_CONFIG.whatsapp && typeof WEDDING_CONFIG.whatsapp.invitationMessage === 'function') {
+        if (
+            WEDDING_CONFIG.whatsapp &&
+            typeof WEDDING_CONFIG.whatsapp.invitationMessage === 'function'
+        ) {
             message = WEDDING_CONFIG.whatsapp.invitationMessage(names, passes, url);
         } else {
             // Fallback
@@ -880,7 +962,6 @@ export class InvitationsController {
         console.log('CSV upload system ready');
     }
 
-
     /**
      * Notifica cambios de datos a otros controladores
      */
@@ -907,7 +988,7 @@ export class InvitationsController {
     showCreateModal() {
         window.activeModal = this.createInvitationModal;
         this.createInvitationModal.open();
-        
+
         setTimeout(() => {
             this.initCreateFormInModal();
         }, 100);
@@ -930,7 +1011,7 @@ export class InvitationsController {
     showImportModal() {
         window.activeModal = this.importCsvModal;
         this.importCsvModal.open();
-        
+
         setTimeout(() => {
             this.initCsvUploadHandlers();
         }, 100);
@@ -941,7 +1022,7 @@ export class InvitationsController {
      */
     closeImportModal() {
         this.importCsvModal.close();
-        
+
         // Usar la función de limpieza centralizada si existe
         if (typeof window.clearFileSelection === 'function') {
             window.clearFileSelection();
@@ -953,10 +1034,14 @@ export class InvitationsController {
             const uploadBtn = document.getElementById('uploadCsvBtn');
             const csvResults = document.getElementById('csvResults');
             const fileUploadWrapper = document.querySelector('.file-upload-wrapper');
-            
-            if (csvFile) csvFile.value = '';
-            if (fileName) fileName.textContent = '';
-            
+
+            if (csvFile) {
+                csvFile.value = '';
+            }
+            if (fileName) {
+                fileName.textContent = '';
+            }
+
             if (fileUploadWrapper) {
                 fileUploadWrapper.style.display = 'flex';
                 fileUploadWrapper.classList.remove('drag-over');
@@ -966,18 +1051,19 @@ export class InvitationsController {
                 fileSelectedInfo.style.display = 'none';
                 fileSelectedInfo.classList.remove('show');
             }
-            
+
             if (uploadBtn) {
                 uploadBtn.disabled = true;
                 // Asegurar que el botón vuelva a su estado original si estaba cargando
-                uploadBtn.innerHTML = '<span class="material-symbols-outlined btn-icon">upload</span>Importar';
+                uploadBtn.innerHTML =
+                    '<span class="material-symbols-outlined btn-icon">upload</span>Importar';
             }
-            
+
             if (csvResults) {
                 csvResults.innerHTML = '';
                 csvResults.classList.remove('show', 'success', 'error');
             }
-            
+
             window.selectedCsvFile = null;
         }
     }
@@ -987,14 +1073,16 @@ export class InvitationsController {
      */
     initCreateFormInModal() {
         const form = document.getElementById('createInvitationForm');
-        if (!form) return;
-        
+        if (!form) {
+            return;
+        }
+
         // Setup guest fields logic
         this.setupGuestFieldsLogic('numberOfPasses', 'guestFields', 'guestFieldsContainer');
-        
+
         // Handle form submit
-        form.onsubmit = (e) => this.handleCreateSubmit(e);
-        
+        form.onsubmit = e => this.handleCreateSubmit(e);
+
         // Trigger initial guest fields generation
         const passesInput = document.getElementById('numberOfPasses');
         if (passesInput) {
@@ -1007,8 +1095,10 @@ export class InvitationsController {
      */
     initEditFormInModal(invitation, baseTotalPasses = 0) {
         const form = document.getElementById('editInvitationForm');
-        if (!form) return;
-        
+        if (!form) {
+            return;
+        }
+
         // Guardar baseTotalPasses para validación en submit
         form.dataset.baseTotalPasses = baseTotalPasses;
 
@@ -1017,27 +1107,31 @@ export class InvitationsController {
         document.getElementById('editNumberOfPasses').value = invitation.numberOfPasses;
         document.getElementById('editTableNumber').value = invitation.tableNumber || '';
         document.getElementById('editPhone').value = invitation.phone || '';
-        
+
         // Inicializar selector de estado
         const statusSelect = document.getElementById('editStatus');
         if (statusSelect) {
             // Mapear estado actual a opciones disponibles
             let currentStatus = invitation.status;
-            if (currentStatus === 'partial') currentStatus = 'confirmed'; // Simplificación para UI
-            if (!['pending', 'confirmed', 'cancelled'].includes(currentStatus)) currentStatus = 'pending';
-            
+            if (currentStatus === 'partial') {
+                currentStatus = 'confirmed';
+            } // Simplificación para UI
+            if (!['pending', 'confirmed', 'cancelled'].includes(currentStatus)) {
+                currentStatus = 'pending';
+            }
+
             statusSelect.value = currentStatus;
-            
+
             // Listener para cambios en el estado
-            statusSelect.addEventListener('change', (e) => {
+            statusSelect.addEventListener('change', e => {
                 const newStatus = e.target.value;
                 const checkboxes = document.querySelectorAll('.guest-attendance-check');
-                
+
                 if (newStatus === 'confirmed') {
-                    checkboxes.forEach(cb => cb.checked = true);
+                    checkboxes.forEach(cb => (cb.checked = true));
                 } else {
                     // Si es pending o cancelled, desmarcar todos
-                    checkboxes.forEach(cb => cb.checked = false);
+                    checkboxes.forEach(cb => (cb.checked = false));
                 }
             });
         }
@@ -1049,7 +1143,7 @@ export class InvitationsController {
         const childCount = invitation.childPasses || 0;
         const staffCount = invitation.staffPasses || 0;
         const confirmedPasses = invitation.confirmedPasses || 0;
-        
+
         // Asignar tipos y asistencia de la mejor manera posible
         guestNames.forEach((name, index) => {
             // Lógica simple de asignación de tipos: primeros N son adultos, siguientes M son niños, siguientes S son staff
@@ -1058,16 +1152,18 @@ export class InvitationsController {
             if (adultCount > 0 || childCount > 0 || staffCount > 0) {
                 if (index < adultCount) {
                     type = 'adult';
-                } else if (index < (adultCount + childCount)) {
+                } else if (index < adultCount + childCount) {
                     type = 'child';
-                } else if (index < (adultCount + childCount + staffCount)) {
+                } else if (index < adultCount + childCount + staffCount) {
                     type = 'staff';
                 }
             }
-            
+
             // Lógica de asistencia: si la invitación está confirmada, asumir los primeros N como asistentes
-            const isAttending = (invitation.status === 'confirmed' || invitation.status === 'partial') && index < confirmedPasses;
-            
+            const isAttending =
+                (invitation.status === 'confirmed' || invitation.status === 'partial') &&
+                index < confirmedPasses;
+
             initialGuests.push({
                 name: name,
                 type: type,
@@ -1076,18 +1172,25 @@ export class InvitationsController {
         });
 
         // Setup guest fields logic with initial guests
-        this.setupGuestFieldsLogic('editNumberOfPasses', 'editGuestFields', 'editGuestFieldsContainer', initialGuests, baseTotalPasses);
-        
+        this.setupGuestFieldsLogic(
+            'editNumberOfPasses',
+            'editGuestFields',
+            'editGuestFieldsContainer',
+            initialGuests,
+            baseTotalPasses
+        );
+
         // Listener para cambios en checkboxes de asistencia (delegación)
         const guestFieldsContainer = document.getElementById('editGuestFields');
         if (guestFieldsContainer) {
-            guestFieldsContainer.addEventListener('change', (e) => {
+            guestFieldsContainer.addEventListener('change', e => {
                 if (e.target.classList.contains('guest-attendance-check')) {
-                    const checkboxes = guestFieldsContainer.querySelectorAll('.guest-attendance-check');
+                    const checkboxes =
+                        guestFieldsContainer.querySelectorAll('.guest-attendance-check');
                     const total = checkboxes.length;
                     const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
                     const statusSelect = document.getElementById('editStatus');
-                    
+
                     if (statusSelect) {
                         if (checked === 0) {
                             // Si desmarcan todos, sugerir Cancelada (Rechazada)
@@ -1101,10 +1204,10 @@ export class InvitationsController {
                 }
             });
         }
-        
+
         // Handle form submit
-        form.onsubmit = (e) => this.handleEditSubmit(e);
-        
+        form.onsubmit = e => this.handleEditSubmit(e);
+
         // Trigger initial guest fields generation
         const passesInput = document.getElementById('editNumberOfPasses');
         if (passesInput) {
@@ -1115,13 +1218,21 @@ export class InvitationsController {
     /**
      * Configura la lógica de los campos de invitados
      */
-    setupGuestFieldsLogic(passesInputId, containerId, wrapperId, initialGuests = [], baseTotalPasses = 0) {
+    setupGuestFieldsLogic(
+        passesInputId,
+        containerId,
+        wrapperId,
+        initialGuests = [],
+        baseTotalPasses = 0
+    ) {
         const passesInput = document.getElementById(passesInputId);
         const container = document.getElementById(containerId);
         const legendContainer = document.getElementById('editPassesLegend');
-        
-        if (!passesInput || !container) return;
-        
+
+        if (!passesInput || !container) {
+            return;
+        }
+
         // Constantes de configuración
         const MAX_GUESTS_PER_INVITATION = WEDDING_CONFIG.guests?.maxGuestsPerInvitation || 10;
         const GLOBAL_TARGET_TOTAL = WEDDING_CONFIG.guests?.targetTotal || 100;
@@ -1132,38 +1243,46 @@ export class InvitationsController {
         // Preservar el valor actual ya que cloneNode no copia el valor dinámico
         newPassesInput.value = passesInput.value;
         passesInput.parentNode.replaceChild(newPassesInput, passesInput);
-        
+
         // Mantener estado de invitados conocidos
         // Si initialGuests es array de strings (caso legacy/create), convertir a objetos
-        let knownGuests = initialGuests.map(g => {
-            if (typeof g === 'string') return { name: g, type: 'adult', attending: false };
+        const knownGuests = initialGuests.map(g => {
+            if (typeof g === 'string') {
+                return { name: g, type: 'adult', attending: false };
+            }
             return g;
         });
-        
-        newPassesInput.addEventListener('input', (e) => {
+
+        newPassesInput.addEventListener('input', e => {
             const requestedCount = parseInt(e.target.value) || 0;
-            
+
             // 1. Actualizar estado con lo que hay actualmente en el DOM
             const currentNameInputs = container.querySelectorAll('.guest-name-input');
             const currentTypeSelects = container.querySelectorAll('.guest-type-select');
             const currentAttendChecks = container.querySelectorAll('.guest-attendance-check');
-            
+
             currentNameInputs.forEach((input, index) => {
-                if (!knownGuests[index]) knownGuests[index] = { name: '', type: 'adult', attending: false };
+                if (!knownGuests[index]) {
+                    knownGuests[index] = { name: '', type: 'adult', attending: false };
+                }
                 knownGuests[index].name = input.value;
-                if (currentTypeSelects[index]) knownGuests[index].type = currentTypeSelects[index].value;
-                if (currentAttendChecks[index]) knownGuests[index].attending = currentAttendChecks[index].checked;
+                if (currentTypeSelects[index]) {
+                    knownGuests[index].type = currentTypeSelects[index].value;
+                }
+                if (currentAttendChecks[index]) {
+                    knownGuests[index].attending = currentAttendChecks[index].checked;
+                }
             });
 
             // Cálculos de límites
             const remainingGlobalSlots = Math.max(0, GLOBAL_TARGET_TOTAL - baseTotalPasses);
             const effectiveLimit = Math.min(MAX_GUESTS_PER_INVITATION, remainingGlobalSlots);
-            
+
             // Validaciones
-            const exceedsGlobal = (baseTotalPasses + requestedCount) > GLOBAL_TARGET_TOTAL;
+            const exceedsGlobal = baseTotalPasses + requestedCount > GLOBAL_TARGET_TOTAL;
             const exceedsPerInvitation = requestedCount > MAX_GUESTS_PER_INVITATION;
             const isExceeded = exceedsGlobal || exceedsPerInvitation;
-            
+
             // Determinar cuántos inputs mostrar
             // Mostrar siempre lo que el usuario pide, aunque exceda el límite, para mejor UX
             const inputsToShow = requestedCount;
@@ -1173,7 +1292,8 @@ export class InvitationsController {
             let warningEl = document.getElementById(warningId);
 
             if (legendContainer) {
-                legendContainer.innerHTML = '<i class="fas fa-info-circle"></i> Cambiar el número de pases ajustará los campos de invitados';
+                legendContainer.innerHTML =
+                    '<i class="fas fa-info-circle"></i> Cambiar el número de pases ajustará los campos de invitados';
                 legendContainer.className = 'form-hint mt-1 text-info';
                 legendContainer.style.color = '#17a2b8';
             }
@@ -1195,38 +1315,41 @@ export class InvitationsController {
                     container.parentNode.appendChild(warningEl);
                 }
                 warningEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
-                
+
                 if (legendContainer) {
-                    legendContainer.innerHTML = '<i class="fas fa-exclamation-circle"> </i> Oh no! has excedido el límite de la meta de invitados';
+                    legendContainer.innerHTML =
+                        '<i class="fas fa-exclamation-circle"> </i> Oh no! has excedido el límite de la meta de invitados';
                     legendContainer.className = 'form-hint mt-1 text-danger font-weight-bold';
                     legendContainer.style.color = '#dc3545';
                 }
             } else {
-                if (warningEl) warningEl.remove();
+                if (warningEl) {
+                    warningEl.remove();
+                }
             }
 
             // Controlar botón de submit
             const form = newPassesInput.closest('form');
             const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
-            
+
             if (submitBtn) {
                 // NO deshabilitar por límites (isExceeded), permitir que el usuario intente guardar y reciba feedback
                 // Solo deshabilitar si hay inconsistencia técnica grave
-                submitBtn.disabled = false; 
+                submitBtn.disabled = false;
             }
 
             // Renderizar inputs
             container.innerHTML = '';
-            
+
             for (let i = 0; i < inputsToShow; i++) {
                 const guest = knownGuests[i] || { name: '', type: 'adult', attending: false };
-                
+
                 let typeFieldHtml = '';
                 // Siempre mostrar selector de tipo si allowChildren es true, o si es staff
                 // Si allowChildren es false, solo mostrar Adulto/Staff
-                
+
                 const showChildOption = ALLOW_CHILDREN;
-                
+
                 typeFieldHtml = `
                     <div class="col-3">
                         <select class="form-control guest-type-select" style="padding: 8px; height: 38px;">
@@ -1240,7 +1363,7 @@ export class InvitationsController {
                 // Solo mostrar checkbox de asistencia en modo edición (cuando hay wrapperId específico de edición)
                 const isEditMode = wrapperId === 'editGuestFieldsContainer';
                 let attendanceHtml = '';
-                
+
                 if (isEditMode) {
                     attendanceHtml = `
                         <div class="col-auto d-flex align-items-center justify-content-center" style="width: 40px;">
@@ -1272,44 +1395,48 @@ export class InvitationsController {
      */
     async handleCreateSubmit(e) {
         e.preventDefault();
-        
+
         const form = e.target;
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
-        
+
         try {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
-            
+
             // Gather data
             const numberOfPasses = parseInt(document.getElementById('numberOfPasses').value);
             const tableNumber = document.getElementById('tableNumber').value;
             const phone = document.getElementById('phone').value;
-            
+
             // Get guest data
             const guestNameInputs = form.querySelectorAll('.guest-name-input');
             const guestTypeSelects = form.querySelectorAll('.guest-type-select');
-            
+
             const guestNames = [];
             let adultPasses = 0;
             let childPasses = 0;
             let staffPasses = 0;
-            
+
             guestNameInputs.forEach((input, index) => {
                 const name = input.value.trim();
                 if (name) {
                     guestNames.push(name);
                     const type = guestTypeSelects[index] ? guestTypeSelects[index].value : 'adult';
-                    if (type === 'child') childPasses++;
-                    else if (type === 'staff') staffPasses++;
-                    else adultPasses++;
+                    if (type === 'child') {
+                        childPasses++;
+                    } else if (type === 'staff') {
+                        staffPasses++;
+                    } else {
+                        adultPasses++;
+                    }
                 }
             });
-            
+
             if (guestNames.length === 0) {
                 throw new Error('Debes ingresar al menos un nombre de invitado');
             }
-            
+
             const invitationData = {
                 guestNames,
                 numberOfPasses,
@@ -1319,9 +1446,9 @@ export class InvitationsController {
                 tableNumber: tableNumber ? parseInt(tableNumber) : null,
                 phone: phone || null
             };
-            
+
             const result = await adminAPI.createInvitation(invitationData);
-            
+
             if (result.success) {
                 showToast('Invitación creada exitosamente', 'success');
                 this.createInvitationModal.close();
@@ -1330,7 +1457,6 @@ export class InvitationsController {
             } else {
                 throw new Error(result.error || 'Error al crear la invitación');
             }
-            
         } catch (error) {
             console.error('Error creating invitation:', error);
             showToast(error.message, 'error');
@@ -1345,11 +1471,11 @@ export class InvitationsController {
      */
     async handleEditSubmit(e) {
         e.preventDefault();
-        
+
         const form = e.target;
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
-        
+
         try {
             // Gather data first to use in validation
             const numberOfPasses = parseInt(document.getElementById('editNumberOfPasses').value);
@@ -1362,24 +1488,28 @@ export class InvitationsController {
             const guestNameInputs = form.querySelectorAll('.guest-name-input');
             const guestTypeSelects = form.querySelectorAll('.guest-type-select');
             const guestAttendChecks = form.querySelectorAll('.guest-attendance-check');
-            
+
             const guestNames = [];
             let adultPasses = 0;
             let childPasses = 0;
             let staffPasses = 0;
             let confirmedPasses = 0;
-            
+
             guestNameInputs.forEach((input, index) => {
                 const name = input.value.trim();
                 if (name) {
                     guestNames.push(name);
-                    
+
                     // Contar tipos
                     const type = guestTypeSelects[index] ? guestTypeSelects[index].value : 'adult';
-                    if (type === 'child') childPasses++;
-                    else if (type === 'staff') staffPasses++;
-                    else adultPasses++;
-                    
+                    if (type === 'child') {
+                        childPasses++;
+                    } else if (type === 'staff') {
+                        staffPasses++;
+                    } else {
+                        adultPasses++;
+                    }
+
                     // Contar asistencia
                     if (guestAttendChecks[index] && guestAttendChecks[index].checked) {
                         confirmedPasses++;
@@ -1398,29 +1528,35 @@ export class InvitationsController {
             }
             // Si es 'pending', mantenemos numberOfPasses porque podrían confirmar todos
 
-            if ((baseTotalPasses + occupancyToValidate) > GLOBAL_TARGET_TOTAL) {
+            if (baseTotalPasses + occupancyToValidate > GLOBAL_TARGET_TOTAL) {
                 const remaining = Math.max(0, GLOBAL_TARGET_TOTAL - baseTotalPasses);
-                showToast(`No se puede guardar: Excedes el límite del evento. Solo quedan ${remaining} lugares disponibles (intentas ocupar ${occupancyToValidate}).`, 'error');
+                showToast(
+                    `No se puede guardar: Excedes el límite del evento. Solo quedan ${remaining} lugares disponibles (intentas ocupar ${occupancyToValidate}).`,
+                    'error'
+                );
                 return;
             }
 
             if (numberOfPasses > MAX_GUESTS_PER_INVITATION) {
-                showToast(`No se puede guardar: El límite es de ${MAX_GUESTS_PER_INVITATION} personas por invitación.`, 'error');
+                showToast(
+                    `No se puede guardar: El límite es de ${MAX_GUESTS_PER_INVITATION} personas por invitación.`,
+                    'error'
+                );
                 return;
             }
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-            
+
             const code = document.getElementById('editInvitationCode').value;
             const tableNumber = document.getElementById('editTableNumber').value;
             const phone = document.getElementById('editPhone').value;
             // status ya lo tenemos
-            
+
             if (guestNames.length === 0) {
                 throw new Error('Debes ingresar al menos un nombre de invitado');
             }
-            
+
             const updateData = {
                 guestNames,
                 numberOfPasses,
@@ -1437,18 +1573,20 @@ export class InvitationsController {
             if (status === 'confirmed' && confirmedPasses < numberOfPasses && confirmedPasses > 0) {
                 updateData.status = 'partial';
             }
-            
+
             const result = await adminAPI.updateInvitation(code, updateData);
-            
+
             if (result.success) {
                 showToast('Invitación actualizada exitosamente', 'success');
                 this.editInvitationModal.close();
                 await this.loadInvitations();
                 this.notifyDataChange();
-                
+
                 // Si estamos viendo los detalles de esta invitación, actualizar la vista
                 if (this.currentViewingCode === code) {
-                    const updatedInvitation = this.currentInvitations.find(inv => inv.code === code);
+                    const updatedInvitation = this.currentInvitations.find(
+                        inv => inv.code === code
+                    );
                     if (updatedInvitation) {
                         const invitationUrl = `${window.location.origin}/invitation?invitation=${code}`;
                         this.renderInvitationViewMode(updatedInvitation, invitationUrl);
@@ -1458,7 +1596,6 @@ export class InvitationsController {
             } else {
                 throw new Error(result.error || 'Error al actualizar la invitación');
             }
-            
         } catch (error) {
             console.error('Error updating invitation:', error);
             showToast(error.message, 'error');
@@ -1477,15 +1614,17 @@ export class InvitationsController {
         const fileName = document.getElementById('fileName');
         const uploadBtn = document.getElementById('uploadCsvBtn');
         const csvResults = document.getElementById('csvResults');
-        
-        if (!csvFile) return;
-        
+
+        if (!csvFile) {
+            return;
+        }
+
         // File input change handler
-        csvFile.addEventListener('change', (e) => {
+        csvFile.addEventListener('change', e => {
             const file = e.target.files[0];
             this.handleFileSelection(file);
         });
-        
+
         // Upload button click handler
         if (uploadBtn) {
             uploadBtn.addEventListener('click', () => {
@@ -1494,24 +1633,24 @@ export class InvitationsController {
                 }
             });
         }
-        
+
         // Drag and drop handlers
         const uploadWrapper = csvFile.closest('.file-upload-wrapper');
         if (uploadWrapper) {
-            uploadWrapper.addEventListener('dragover', (e) => {
+            uploadWrapper.addEventListener('dragover', e => {
                 e.preventDefault();
                 uploadWrapper.classList.add('drag-over');
             });
-            
-            uploadWrapper.addEventListener('dragleave', (e) => {
+
+            uploadWrapper.addEventListener('dragleave', e => {
                 e.preventDefault();
                 uploadWrapper.classList.remove('drag-over');
             });
-            
-            uploadWrapper.addEventListener('drop', (e) => {
+
+            uploadWrapper.addEventListener('drop', e => {
                 e.preventDefault();
                 uploadWrapper.classList.remove('drag-over');
-                
+
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
                     const file = files[0];
@@ -1524,12 +1663,14 @@ export class InvitationsController {
                 }
             });
         }
-        
+
         // Clear file selection function
         window.clearFileSelection = () => {
             csvFile.value = '';
-            if (fileName) fileName.textContent = '';
-            
+            if (fileName) {
+                fileName.textContent = '';
+            }
+
             const fileUploadWrapper = document.querySelector('.file-upload-wrapper');
             if (fileUploadWrapper) {
                 fileUploadWrapper.style.display = 'flex';
@@ -1539,14 +1680,16 @@ export class InvitationsController {
                 fileSelectedInfo.style.display = 'none';
                 fileSelectedInfo.classList.remove('show');
             }
-            if (uploadBtn) uploadBtn.disabled = true;
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+            }
             if (csvResults) {
                 csvResults.innerHTML = '';
                 csvResults.classList.remove('show', 'success', 'error');
             }
             window.selectedCsvFile = null;
         };
-        
+
         console.log('CSV upload handlers initialized');
     }
 
@@ -1554,20 +1697,24 @@ export class InvitationsController {
      * Maneja la selección de archivo
      */
     handleFileSelection(file) {
-        if (!file) return;
-        
+        if (!file) {
+            return;
+        }
+
         if (!file.name.endsWith('.csv')) {
             showToast('Por favor selecciona un archivo CSV válido', 'error');
             return;
         }
-        
+
         const fileName = document.getElementById('fileName');
         const fileSelectedInfo = document.getElementById('fileSelectedInfo');
         const uploadBtn = document.getElementById('uploadCsvBtn');
         const fileUploadWrapper = document.querySelector('.file-upload-wrapper');
-        
-        if (fileName) fileName.textContent = file.name;
-        
+
+        if (fileName) {
+            fileName.textContent = file.name;
+        }
+
         if (fileUploadWrapper) {
             fileUploadWrapper.style.display = 'none';
         }
@@ -1576,11 +1723,13 @@ export class InvitationsController {
             fileSelectedInfo.style.display = 'flex';
             fileSelectedInfo.classList.add('show');
         }
-        if (uploadBtn) uploadBtn.disabled = false;
-        
+        if (uploadBtn) {
+            uploadBtn.disabled = false;
+        }
+
         // Store file reference
         window.selectedCsvFile = file;
-        
+
         console.log('File selected:', file.name);
     }
 
@@ -1590,35 +1739,35 @@ export class InvitationsController {
     async processCsvFile(file) {
         const csvResults = document.getElementById('csvResults');
         const uploadBtn = document.getElementById('uploadCsvBtn');
-        
+
         if (uploadBtn) {
             uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<span class="material-symbols-outlined btn-icon">hourglass_empty</span>Procesando...';
+            uploadBtn.innerHTML =
+                '<span class="material-symbols-outlined btn-icon">hourglass_empty</span>Procesando...';
         }
-        
+
         try {
             const csvContent = await file.text();
-            
+
             if (!csvContent.trim()) {
                 throw new Error('El archivo CSV está vacío');
             }
-            
+
             // Use adminAPI to import CSV (sends to correct endpoint with proper format)
             const result = await adminAPI.importInvitations(csvContent);
-            
+
             if (result.success) {
                 // Cerrar modal y limpiar selección (esto también limpia los inputs)
                 this.closeImportModal();
-                
+
                 // Reload invitations
                 await this.loadInvitations();
                 this.notifyDataChange();
-                
+
                 showToast(`${result.created} invitaciones importadas exitosamente`, 'success');
             } else {
                 throw new Error(result.errors?.[0] || 'Error al procesar las invitaciones');
             }
-            
         } catch (error) {
             console.error('Error processing CSV:', error);
             this.showCsvResults({ error: error.message }, 'error');
@@ -1626,21 +1775,23 @@ export class InvitationsController {
         } finally {
             if (uploadBtn) {
                 uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<span class="material-symbols-outlined btn-icon">upload</span>Importar';
+                uploadBtn.innerHTML =
+                    '<span class="material-symbols-outlined btn-icon">upload</span>Importar';
             }
         }
     }
-
 
     /**
      * Muestra los resultados del CSV
      */
     showCsvResults(result, type) {
         const csvResults = document.getElementById('csvResults');
-        if (!csvResults) return;
-        
+        if (!csvResults) {
+            return;
+        }
+
         csvResults.classList.remove('show', 'success', 'error');
-        
+
         if (type === 'success') {
             csvResults.innerHTML = `
                 <div class="csv-success">
@@ -1670,11 +1821,13 @@ export class InvitationsController {
         const filtersPanel = document.getElementById('filtersPanel');
         const toggleBtn = document.getElementById('filtersToggleBtn');
         const backdrop = document.getElementById('filtersBackdrop');
-        
-        if (!filtersPanel || !toggleBtn) return;
-        
+
+        if (!filtersPanel || !toggleBtn) {
+            return;
+        }
+
         const isVisible = filtersPanel.classList.contains('show');
-        
+
         if (isVisible) {
             this.closeFiltersPopover();
         } else {
@@ -1689,27 +1842,29 @@ export class InvitationsController {
         const filtersPanel = document.getElementById('filtersPanel');
         const toggleBtn = document.getElementById('filtersToggleBtn');
         const backdrop = document.getElementById('filtersBackdrop');
-        
-        if (!filtersPanel || !toggleBtn) return;
-        
+
+        if (!filtersPanel || !toggleBtn) {
+            return;
+        }
+
         // Block body scroll
         document.body.style.overflow = 'hidden';
-        
+
         // Show backdrop
         if (backdrop) {
             backdrop.classList.add('show');
         }
-        
+
         // Show panel with animation
         filtersPanel.classList.add('show');
         toggleBtn.classList.add('active');
-        
+
         // Initialize filter event listeners if not already done
         this.initializeFilterListeners();
-        
+
         // Setup close handlers
         this.setupFiltersCloseHandlers();
-        
+
         // Focus first filter for accessibility
         setTimeout(() => {
             const firstFilter = filtersPanel.querySelector('.filter-select');
@@ -1726,21 +1881,23 @@ export class InvitationsController {
         const filtersPanel = document.getElementById('filtersPanel');
         const toggleBtn = document.getElementById('filtersToggleBtn');
         const backdrop = document.getElementById('filtersBackdrop');
-        
-        if (!filtersPanel || !toggleBtn) return;
-        
+
+        if (!filtersPanel || !toggleBtn) {
+            return;
+        }
+
         // Restore body scroll
         document.body.style.overflow = '';
-        
+
         // Hide panel with animation
         filtersPanel.classList.remove('show');
         toggleBtn.classList.remove('active');
-        
+
         // Hide backdrop
         if (backdrop) {
             backdrop.classList.remove('show');
         }
-        
+
         // Remove close handlers
         this.removeFiltersCloseHandlers();
     }
@@ -1750,35 +1907,39 @@ export class InvitationsController {
      */
     setupFiltersCloseHandlers() {
         // Avoid duplicate handlers
-        if (this.filtersCloseHandlersSetup) return;
+        if (this.filtersCloseHandlersSetup) {
+            return;
+        }
         this.filtersCloseHandlersSetup = true;
-        
+
         const backdrop = document.getElementById('filtersBackdrop');
         const filtersPanel = document.getElementById('filtersPanel');
-        
+
         // Close on backdrop click
-        this.backdropClickHandler = (e) => {
+        this.backdropClickHandler = e => {
             if (e.target === backdrop) {
                 this.closeFiltersPopover();
             }
         };
-        
+
         // Close on escape key
-        this.escapeKeyHandler = (e) => {
+        this.escapeKeyHandler = e => {
             if (e.key === 'Escape') {
                 this.closeFiltersPopover();
             }
         };
-        
+
         // Close on close button click
-        this.closeButtonHandler = (e) => {
-            if (e.target.matches('[data-action="close-filters"]') || 
-                e.target.closest('[data-action="close-filters"]')) {
+        this.closeButtonHandler = e => {
+            if (
+                e.target.matches('[data-action="close-filters"]') ||
+                e.target.closest('[data-action="close-filters"]')
+            ) {
                 e.preventDefault();
                 this.closeFiltersPopover();
             }
         };
-        
+
         // Add event listeners
         if (backdrop) {
             backdrop.addEventListener('click', this.backdropClickHandler);
@@ -1791,10 +1952,12 @@ export class InvitationsController {
      * Remueve los handlers de cierre del popover
      */
     removeFiltersCloseHandlers() {
-        if (!this.filtersCloseHandlersSetup) return;
-        
+        if (!this.filtersCloseHandlersSetup) {
+            return;
+        }
+
         const backdrop = document.getElementById('filtersBackdrop');
-        
+
         // Remove event listeners
         if (backdrop && this.backdropClickHandler) {
             backdrop.removeEventListener('click', this.backdropClickHandler);
@@ -1805,7 +1968,7 @@ export class InvitationsController {
         if (this.closeButtonHandler) {
             document.removeEventListener('click', this.closeButtonHandler);
         }
-        
+
         // Reset flag
         this.filtersCloseHandlersSetup = false;
     }
@@ -1815,9 +1978,11 @@ export class InvitationsController {
      */
     initializeFilterListeners() {
         // Avoid duplicate listeners
-        if (this.filtersInitialized) return;
+        if (this.filtersInitialized) {
+            return;
+        }
         this.filtersInitialized = true;
-        
+
         // Ya no aplicamos filtros automáticamente al cambiar (change event)
         // Ahora se requiere confirmación explícita con el botón "Aplicar Filtros"
     }
@@ -1830,7 +1995,7 @@ export class InvitationsController {
         const passesFilter = document.getElementById('passesFilter')?.value || '';
         const tableFilter = document.getElementById('tableFilter')?.value || '';
         const phoneFilter = document.getElementById('phoneFilter')?.value || '';
-        
+
         // Actualizar estado de filtros
         this.state.filters = {
             status: statusFilter,
@@ -1838,13 +2003,13 @@ export class InvitationsController {
             table: tableFilter,
             phone: phoneFilter
         };
-        
+
         this.state.page = 1; // Reset a primera página al filtrar
         await this.loadInvitations();
-        
+
         // Update filter button state
         this.updateFilterButtonState();
-        
+
         // Show filter results info
         this.showFilterResultsInfo(this.state.pagination.total);
     }
@@ -1857,19 +2022,27 @@ export class InvitationsController {
         const passesFilter = document.getElementById('passesFilter');
         const tableFilter = document.getElementById('tableFilter');
         const phoneFilter = document.getElementById('phoneFilter');
-        
+
         // Reset all filter values
-        if (statusFilter) statusFilter.value = '';
-        if (passesFilter) passesFilter.value = '';
-        if (tableFilter) tableFilter.value = '';
-        if (phoneFilter) phoneFilter.value = '';
-        
+        if (statusFilter) {
+            statusFilter.value = '';
+        }
+        if (passesFilter) {
+            passesFilter.value = '';
+        }
+        if (tableFilter) {
+            tableFilter.value = '';
+        }
+        if (phoneFilter) {
+            phoneFilter.value = '';
+        }
+
         // Apply filters (which will now show all invitations)
         await this.applyFilters();
-        
+
         // Hide filter results info
         this.hideFilterResultsInfo();
-        
+
         showToast('Filtros limpiados', 'success');
     }
 
@@ -1878,13 +2051,15 @@ export class InvitationsController {
      */
     updateFilterButtonState() {
         const toggleBtn = document.getElementById('filtersToggleBtn');
-        if (!toggleBtn) return;
-        
+        if (!toggleBtn) {
+            return;
+        }
+
         const hasActiveFilters = this.hasActiveFilters();
-        
+
         if (hasActiveFilters) {
             toggleBtn.classList.add('filters-active');
-            
+
             // Add filter count badge if not exists
             let badge = toggleBtn.querySelector('.filter-count-badge');
             if (!badge) {
@@ -1895,7 +2070,7 @@ export class InvitationsController {
             badge.textContent = this.getActiveFilterCount();
         } else {
             toggleBtn.classList.remove('filters-active');
-            
+
             // Remove badge
             const badge = toggleBtn.querySelector('.filter-count-badge');
             if (badge) {
@@ -1912,7 +2087,7 @@ export class InvitationsController {
         const passesFilter = document.getElementById('passesFilter')?.value || '';
         const tableFilter = document.getElementById('tableFilter')?.value || '';
         const phoneFilter = document.getElementById('phoneFilter')?.value || '';
-        
+
         return statusFilter || passesFilter || tableFilter || phoneFilter;
     }
 
@@ -1921,12 +2096,20 @@ export class InvitationsController {
      */
     getActiveFilterCount() {
         let count = 0;
-        
-        if (document.getElementById('statusFilter')?.value) count++;
-        if (document.getElementById('passesFilter')?.value) count++;
-        if (document.getElementById('tableFilter')?.value) count++;
-        if (document.getElementById('phoneFilter')?.value) count++;
-        
+
+        if (document.getElementById('statusFilter')?.value) {
+            count++;
+        }
+        if (document.getElementById('passesFilter')?.value) {
+            count++;
+        }
+        if (document.getElementById('tableFilter')?.value) {
+            count++;
+        }
+        if (document.getElementById('phoneFilter')?.value) {
+            count++;
+        }
+
         return count;
     }
 
@@ -1937,31 +2120,31 @@ export class InvitationsController {
         // En paginación server-side, resultCount es el total de resultados filtrados
         // Y totalCount sería el total absoluto de invitaciones (que podríamos guardar en el estado si el backend lo enviara)
         // Por ahora, simplificamos mostrando solo si hay filtros activos
-        
+
         if (!this.hasActiveFilters() && !this.state.search) {
             this.hideFilterResultsInfo();
             return;
         }
-        
+
         // Create or update results info
         let resultsInfo = document.querySelector('.filters-results-info');
         if (!resultsInfo) {
             resultsInfo = document.createElement('div');
             resultsInfo.className = 'filters-results-info';
-            
+
             // Insert after filters panel
             const filtersPanel = document.getElementById('filtersPanel');
             if (filtersPanel && filtersPanel.parentNode) {
                 filtersPanel.parentNode.insertBefore(resultsInfo, filtersPanel.nextSibling);
             }
         }
-        
+
         resultsInfo.innerHTML = `
             <i class="fas fa-filter"></i>
             Mostrando ${resultCount} de ${totalCount} invitaciones
             <span class="clear-filters-link" data-action="clear-filters">Limpiar filtros</span>
         `;
-        
+
         resultsInfo.style.display = 'flex';
     }
 

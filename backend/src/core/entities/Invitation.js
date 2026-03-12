@@ -19,7 +19,7 @@ class Invitation {
         childPasses = 0,
         staffPasses = 0,
         tableNumber = null,
-        status = 'pending',
+        status = 'active',
         cancelledAt = null,
         cancelledBy = null,
         cancellationReason = null,
@@ -47,9 +47,11 @@ class Invitation {
         });
 
         this._code = code || this.generateCode();
-        this._guestNames = Array.isArray(guestNames) ? [...guestNames] : [guestNames].filter(Boolean);
+        this._guestNames = Array.isArray(guestNames)
+            ? [...guestNames].map(g => g.trim())
+            : [guestNames].filter(Boolean).map(g => g.trim());
         this._numberOfPasses = numberOfPasses;
-        this._phone = phone;
+        this._phone = phone || '';
         this._createdAt = createdAt || new Date().toISOString();
         this._confirmedPasses = confirmedPasses;
         this._confirmationDate = confirmationDate;
@@ -62,7 +64,9 @@ class Invitation {
         this._cancelledAt = cancelledAt;
         this._cancelledBy = cancelledBy;
         this._cancellationReason = cancellationReason;
-        this._attendingNames = Array.isArray(attendingNames) ? [...attendingNames] : [attendingNames].filter(Boolean);
+        this._attendingNames = Array.isArray(attendingNames)
+            ? [...attendingNames]
+            : [attendingNames].filter(Boolean);
         this._dietaryRestrictionsNames = dietaryRestrictionsNames;
         this._dietaryRestrictionsDetails = dietaryRestrictionsDetails;
         this._generalMessage = generalMessage;
@@ -72,25 +76,85 @@ class Invitation {
     }
 
     // Getters (inmutables desde el exterior)
-    get code() { return this._code; }
-    get guestNames() { return [...this._guestNames]; }
-    get numberOfPasses() { return this._numberOfPasses; }
-    get phone() { return this._phone; }
-    get createdAt() { return this._createdAt; }
-    get confirmedPasses() { return this._confirmedPasses; }
-    get confirmationDate() { return this._confirmationDate; }
-    get adultPasses() { return this._adultPasses; }
-    get childPasses() { return this._childPasses; }
-    get staffPasses() { return this._staffPasses; }
-    get tableNumber() { return this._tableNumber; }
-    get status() { return this._status; }
-    get cancelledAt() { return this._cancelledAt; }
-    get cancelledBy() { return this._cancelledBy; }
-    get cancellationReason() { return this._cancellationReason; }
-    get attendingNames() { return [...this._attendingNames]; }
-    get dietaryRestrictionsNames() { return this._dietaryRestrictionsNames; }
-    get dietaryRestrictionsDetails() { return this._dietaryRestrictionsDetails; }
-    get generalMessage() { return this._generalMessage; }
+    get code() {
+        return this._code;
+    }
+    get guestNames() {
+        return [...this._guestNames];
+    }
+    get numberOfPasses() {
+        return this._numberOfPasses;
+    }
+    get phone() {
+        return this._phone;
+    }
+    get createdAt() {
+        return this._createdAt;
+    }
+    get confirmed() {
+        return !!this._confirmationDate;
+    }
+    set confirmed(value) {
+        if (value) {
+            this._confirmationDate = new Date().toISOString();
+        } else {
+            this._confirmationDate = null;
+        }
+    }
+    get confirmedPasses() {
+        return this._confirmedPasses;
+    }
+    get confirmationDate() {
+        return this._confirmationDate;
+    }
+    get adultPasses() {
+        return this._adultPasses;
+    }
+    get childPasses() {
+        return this._childPasses;
+    }
+    get staffPasses() {
+        return this._staffPasses;
+    }
+    get tableNumber() {
+        return this._tableNumber;
+    }
+    get status() {
+        return this._status;
+    }
+    set status(value) {
+        this._status = value;
+    }
+    get cancelledAt() {
+        return this._cancelledAt;
+    }
+    set cancelledAt(value) {
+        this._cancelledAt = value;
+    }
+    get cancelledBy() {
+        return this._cancelledBy;
+    }
+    set cancelledBy(value) {
+        this._cancelledBy = value;
+    }
+    get cancellationReason() {
+        return this._cancellationReason;
+    }
+    set cancellationReason(value) {
+        this._cancellationReason = value;
+    }
+    get attendingNames() {
+        return [...this._attendingNames];
+    }
+    get dietaryRestrictionsNames() {
+        return this._dietaryRestrictionsNames;
+    }
+    get dietaryRestrictionsDetails() {
+        return this._dietaryRestrictionsDetails;
+    }
+    get generalMessage() {
+        return this._generalMessage;
+    }
 
     // Métodos de dominio
 
@@ -100,25 +164,33 @@ class Invitation {
      */
     update(data) {
         if (data.guestNames) {
-            this._guestNames = Array.isArray(data.guestNames) ? [...data.guestNames] : [data.guestNames].filter(Boolean);
+            this._guestNames = Array.isArray(data.guestNames)
+                ? [...data.guestNames]
+                : [data.guestNames].filter(Boolean);
         }
-        
+
         if (data.numberOfPasses !== undefined) {
             this._numberOfPasses = data.numberOfPasses;
         }
-        
+
         if (data.phone !== undefined) {
             this._phone = data.phone;
         }
-        
+
         if (data.tableNumber !== undefined) {
             this._tableNumber = data.tableNumber;
         }
-        
-        if (data.adultPasses !== undefined) this._adultPasses = data.adultPasses;
-        if (data.childPasses !== undefined) this._childPasses = data.childPasses;
-        if (data.staffPasses !== undefined) this._staffPasses = data.staffPasses;
-        
+
+        if (data.adultPasses !== undefined) {
+            this._adultPasses = data.adultPasses;
+        }
+        if (data.childPasses !== undefined) {
+            this._childPasses = data.childPasses;
+        }
+        if (data.staffPasses !== undefined) {
+            this._staffPasses = data.staffPasses;
+        }
+
         // Actualizar campos de confirmación y mensaje
         if (data.generalMessage !== undefined) {
             this._generalMessage = data.generalMessage;
@@ -133,12 +205,14 @@ class Invitation {
         }
 
         if (data.attendingNames !== undefined) {
-             this._attendingNames = Array.isArray(data.attendingNames) ? [...data.attendingNames] : [data.attendingNames].filter(Boolean);
+            this._attendingNames = Array.isArray(data.attendingNames)
+                ? [...data.attendingNames]
+                : [data.attendingNames].filter(Boolean);
         }
-        
+
         if (data.confirmedPasses !== undefined) {
             this._confirmedPasses = data.confirmedPasses;
-            
+
             // Si no se especifica status explícitamente, recalcularlo basado en confirmedPasses
             if (data.status === undefined && this._status !== 'inactive') {
                 if (this._confirmedPasses === 0) {
@@ -159,7 +233,7 @@ class Invitation {
 
         // Validar consistencia después de actualizar
         this.validatePassesConsistency();
-        
+
         return this;
     }
 
@@ -176,7 +250,13 @@ class Invitation {
      * @param {Object} confirmationData - Datos de confirmación
      */
     confirm(confirmationData) {
-        if (this.isConfirmed()) {
+        // Soportar ambas formas: confirmedPasses y attendingGuests
+        const confirmedCount =
+            confirmationData.confirmedPasses !== undefined
+                ? confirmationData.confirmedPasses
+                : confirmationData.attendingGuests;
+
+        if (this.isConfirmed() && confirmedCount > 0) {
             throw new Error('Esta invitación ya ha sido confirmada');
         }
 
@@ -184,17 +264,32 @@ class Invitation {
             throw new Error('No se puede confirmar una invitación inactiva');
         }
 
-        if (confirmationData.attendingGuests > this._numberOfPasses) {
+        if (confirmedCount > this._numberOfPasses) {
             throw new Error(`Solo tienes ${this._numberOfPasses} pases disponibles`);
         }
 
-        this._confirmedPasses = confirmationData.attendingGuests;
-        this._confirmationDate = new Date().toISOString();
-        
+        this._confirmedPasses = confirmedCount;
+
+        // Actualizar otros datos si se proporcionan
+        if (confirmationData.adultPasses !== undefined) {
+            this._adultPasses = confirmationData.adultPasses;
+        }
+
+        if (confirmationData.childPasses !== undefined) {
+            this._childPasses = confirmationData.childPasses;
+        }
+
+        if (confirmationData.staffPasses !== undefined) {
+            this._staffPasses = confirmationData.staffPasses;
+        }
+
+        // Establecer fecha de confirmación
+        this._confirmationDate = confirmationData.confirmationDate || new Date().toISOString();
+
         // Actualizar estado basado en pases confirmados
-        if (confirmationData.attendingGuests === 0) {
+        if (confirmedCount === 0) {
             this._status = 'cancelled';
-        } else if (confirmationData.attendingGuests < this._numberOfPasses) {
+        } else if (confirmedCount < this._numberOfPasses) {
             this._status = 'partial';
         } else {
             this._status = 'confirmed';
@@ -279,9 +374,11 @@ class Invitation {
      */
     updatePasses({ adultPasses, childPasses, staffPasses }) {
         const totalPasses = (adultPasses || 0) + (childPasses || 0) + (staffPasses || 0);
-        
+
         if (totalPasses !== this._numberOfPasses) {
-            throw new Error(`La suma de pases (${totalPasses}) debe coincidir con el total (${this._numberOfPasses})`);
+            throw new Error(
+                `La suma de pases (${totalPasses}) debe coincidir con el total (${this._numberOfPasses})`
+            );
         }
 
         this._adultPasses = adultPasses || 0;
@@ -346,24 +443,31 @@ class Invitation {
      * @param {Object} confirmationData - Datos de confirmación
      */
     updateConfirmation(confirmationData) {
-        const { attendingNames, dietaryRestrictionsNames, dietaryRestrictionsDetails, generalMessage } = confirmationData;
-        
+        const {
+            attendingNames,
+            dietaryRestrictionsNames,
+            dietaryRestrictionsDetails,
+            generalMessage
+        } = confirmationData;
+
         if (attendingNames) {
-            this._attendingNames = Array.isArray(attendingNames) ? [...attendingNames] : [attendingNames].filter(Boolean);
+            this._attendingNames = Array.isArray(attendingNames)
+                ? [...attendingNames]
+                : [attendingNames].filter(Boolean);
         }
-        
+
         if (dietaryRestrictionsNames !== undefined) {
             this._dietaryRestrictionsNames = dietaryRestrictionsNames;
         }
-        
+
         if (dietaryRestrictionsDetails !== undefined) {
             this._dietaryRestrictionsDetails = dietaryRestrictionsDetails;
         }
-        
+
         if (generalMessage !== undefined) {
             this._generalMessage = generalMessage;
         }
-        
+
         return this;
     }
 
@@ -384,7 +488,7 @@ class Invitation {
             hasRestrictions: this.hasDietaryRestrictions(),
             names: this._dietaryRestrictionsNames,
             details: this._dietaryRestrictionsDetails,
-            summary: this.hasDietaryRestrictions() 
+            summary: this.hasDietaryRestrictions()
                 ? `${this._dietaryRestrictionsNames}: ${this._dietaryRestrictionsDetails}`.trim()
                 : 'Sin restricciones'
         };
@@ -395,8 +499,8 @@ class Invitation {
      * @returns {string}
      */
     getAttendingNamesString() {
-        return this._attendingNames.length > 0 
-            ? this._attendingNames.join(' y ') 
+        return this._attendingNames.length > 0
+            ? this._attendingNames.join(' y ')
             : this.getGuestNamesString();
     }
 
@@ -442,14 +546,28 @@ class Invitation {
      * @private
      */
     validateConstructorParams(params) {
-        const { guestNames, numberOfPasses, phone } = params;
+        const { code, guestNames, numberOfPasses, phone } = params;
 
-        if (!Array.isArray(guestNames) && typeof guestNames !== 'string') {
+        // Validar código
+        if (!code || (typeof code === 'string' && code.trim() === '')) {
+            throw new Error('Código de invitación es requerido');
+        }
+
+        // Validar nombres de invitados
+        if (Array.isArray(guestNames)) {
+            if (guestNames.length === 0) {
+                throw new Error('Al menos un nombre de invitado es requerido');
+            }
+        } else if (typeof guestNames === 'string') {
+            if (guestNames.trim() === '') {
+                throw new Error('Al menos un nombre de invitado es requerido');
+            }
+        } else {
             throw new Error('guestNames debe ser un array o string');
         }
 
         if (!Number.isInteger(numberOfPasses) || numberOfPasses <= 0) {
-            throw new Error('numberOfPasses debe ser un entero positivo');
+            throw new Error('Número de pases debe ser mayor a 0');
         }
 
         if (phone && typeof phone !== 'string') {
@@ -464,7 +582,7 @@ class Invitation {
     validatePassesConsistency() {
         // CORREGIDO: Solo validar, NO modificar automáticamente los datos del CSV
         const totalCalculated = this._adultPasses + this._childPasses + this._staffPasses;
-        
+
         // Solo validar que los pases confirmados no excedan el total
         if (this._confirmedPasses > this._numberOfPasses) {
             throw new Error('Los pases confirmados no pueden exceder el total de pases');
@@ -472,7 +590,9 @@ class Invitation {
 
         // Opcional: Log de advertencia si no coinciden, pero NO modificar
         if (totalCalculated !== this._numberOfPasses) {
-            console.warn(`Advertencia: La suma de pases por tipo (${totalCalculated}) no coincide con el total (${this._numberOfPasses}) para invitación ${this._code}`);
+            console.warn(
+                `Advertencia: La suma de pases por tipo (${totalCalculated}) no coincide con el total (${this._numberOfPasses}) para invitación ${this._code}`
+            );
         }
     }
 
@@ -499,6 +619,60 @@ class Invitation {
      */
     toString() {
         return `Invitation(${this._code}, ${this.getGuestNamesString()}, ${this._numberOfPasses} pases)`;
+    }
+
+    /**
+     * Método de confirmación simplificado para tests
+     * @param {Object} data - Datos de confirmación con confirmedPasses, adultPasses, etc.
+     */
+    confirmSimple(data) {
+        if (data.confirmedPasses !== undefined) {
+            this._confirmedPasses = data.confirmedPasses;
+        }
+
+        if (data.adultPasses !== undefined) {
+            this._adultPasses = data.adultPasses;
+        }
+
+        if (data.childPasses !== undefined) {
+            this._childPasses = data.childPasses;
+        }
+
+        if (data.staffPasses !== undefined) {
+            this._staffPasses = data.staffPasses;
+        }
+
+        // Si no hay confirmationDate, usar la actual
+        if (data.confirmationDate || this._confirmedPasses > 0) {
+            this._confirmationDate = data.confirmationDate || new Date().toISOString();
+        }
+
+        // Actualizar status en base a confirmedPasses
+        if (this._confirmedPasses > 0 && this._confirmedPasses === this._numberOfPasses) {
+            this._status = 'confirmed';
+        } else if (this._confirmedPasses > 0) {
+            this._status = 'partial';
+        } else if (this._confirmedPasses === 0) {
+            this._status = 'cancelled';
+        }
+
+        return this;
+    }
+
+    /**
+     * Cancela la invitación (método simplificado para tests)
+     * @param {string} reason - Razón de la cancelación
+     * @param {string} cancelledBy - Quién cancela
+     */
+    cancel(reason = '', cancelledBy = 'admin') {
+        this._confirmedPasses = 0;
+        this._confirmationDate = null;
+        this._cancelledAt = new Date().toISOString();
+        this._cancelledBy = cancelledBy;
+        this._cancellationReason = reason;
+        this._status = 'cancelled';
+
+        return this;
     }
 }
 

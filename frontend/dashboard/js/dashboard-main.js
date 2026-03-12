@@ -22,15 +22,14 @@ class AdminApp {
     async init() {
         try {
             console.log('🚀 Iniciando Admin App...');
-            
+
             this.initializeDynamicContent();
             await this.initializeControllers();
             this.setupGlobalEventListeners();
             this.setupErrorHandling();
-            
+
             this.isInitialized = true;
             console.log('✅ Admin App inicializada correctamente');
-            
         } catch (error) {
             console.error('❌ Error inicializando Admin App:', error);
             showToast('Error al cargar el sistema', 'error');
@@ -44,7 +43,7 @@ class AdminApp {
         }
 
         const config = window.WEDDING_CONFIG;
-        
+
         const mobileCoupleNames = document.getElementById('mobileCoupleNames');
         if (mobileCoupleNames) {
             mobileCoupleNames.textContent = config.couple.displayName;
@@ -77,7 +76,9 @@ class AdminApp {
 
     initializeCountdown(weddingDate) {
         const countdownTimer = document.getElementById('countdownTimer');
-        if (!countdownTimer) return;
+        if (!countdownTimer) {
+            return;
+        }
 
         countdownTimer.innerHTML = `
             <div class="timer-unit">
@@ -114,10 +115,18 @@ class AdminApp {
                 const minutesEl = document.getElementById('minutes');
                 const secondsEl = document.getElementById('seconds');
 
-                if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
-                if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
-                if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
-                if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+                if (daysEl) {
+                    daysEl.textContent = days.toString().padStart(2, '0');
+                }
+                if (hoursEl) {
+                    hoursEl.textContent = hours.toString().padStart(2, '0');
+                }
+                if (minutesEl) {
+                    minutesEl.textContent = minutes.toString().padStart(2, '0');
+                }
+                if (secondsEl) {
+                    secondsEl.textContent = seconds.toString().padStart(2, '0');
+                }
             } else {
                 countdownTimer.innerHTML = `
                     <div class="timer-unit timer-finished">
@@ -136,23 +145,23 @@ class AdminApp {
         this.renderService = new RenderService();
         window.renderService = this.renderService;
         this.renderService.initializeDynamicContainers();
-        
+
         this.dashboardController = new DashboardController();
         await this.dashboardController.init();
-        
+
         this.invitationsController = new InvitationsController();
         await this.invitationsController.init();
-        
+
         this.navigationController = new NavigationController(
             this.dashboardController,
             this.invitationsController
         );
         await this.navigationController.init();
-        
+
         const invitationsData = await this.invitationsController.getInvitationsData();
         notificationService.loadInitialNotifications(invitationsData);
         notificationService.startMonitoring();
-        
+
         // Global access for backward compatibility
         window.dashboardController = this.dashboardController;
         window.invitationsController = this.invitationsController;
@@ -161,16 +170,21 @@ class AdminApp {
 
     setupGlobalEventListeners() {
         // Event delegation for data-action buttons
-        document.addEventListener('click', (event) => {
+        document.addEventListener('click', event => {
             const target = event.target.closest('[data-action]');
-            if (!target) return;
+            if (!target) {
+                return;
+            }
 
             const action = target.getAttribute('data-action');
             const code = target.getAttribute('data-code');
 
             switch (action) {
                 case 'toggle-filters':
-                    if (window.invitationsController && typeof window.invitationsController.toggleFilters === 'function') {
+                    if (
+                        window.invitationsController &&
+                        typeof window.invitationsController.toggleFilters === 'function'
+                    ) {
                         window.invitationsController.toggleFilters();
                     }
                     break;
@@ -185,12 +199,18 @@ class AdminApp {
                     }
                     break;
                 case 'clear-filters':
-                    if (window.invitationsController && typeof window.invitationsController.clearFilters === 'function') {
+                    if (
+                        window.invitationsController &&
+                        typeof window.invitationsController.clearFilters === 'function'
+                    ) {
                         window.invitationsController.clearFilters();
                     }
                     break;
                 case 'apply-filters':
-                    if (window.invitationsController && typeof window.invitationsController.applyFilters === 'function') {
+                    if (
+                        window.invitationsController &&
+                        typeof window.invitationsController.applyFilters === 'function'
+                    ) {
                         window.invitationsController.applyFilters();
                     }
                     break;
@@ -217,21 +237,23 @@ class AdminApp {
     }
 
     setupErrorHandling() {
-        window.addEventListener('unhandledrejection', (event) => {
+        window.addEventListener('unhandledrejection', event => {
             console.error('Unhandled promise rejection:', event.reason);
             showToast('Error inesperado en la aplicación', 'error');
         });
 
-        window.addEventListener('error', (event) => {
+        window.addEventListener('error', event => {
             console.error('Global error:', event.error);
         });
     }
 
     async refreshCurrentSection() {
-        if (!this.navigationController) return;
-        
+        if (!this.navigationController) {
+            return;
+        }
+
         const currentSection = this.navigationController.getCurrentSection();
-        
+
         try {
             switch (currentSection) {
                 case 'dashboard':
@@ -252,25 +274,25 @@ class AdminApp {
 }
 
 // Global functions for backward compatibility
-window.viewInvitation = function(code) {
+window.viewInvitation = function (code) {
     if (window.invitationsController) {
         window.invitationsController.viewInvitation(code);
     }
 };
 
-window.exportAllInvitations = function() {
+window.exportAllInvitations = function () {
     if (window.invitationsController) {
         window.invitationsController.exportAllInvitations();
     }
 };
 
-window.showCreateModal = function() {
+window.showCreateModal = function () {
     if (window.invitationsController) {
         window.invitationsController.showCreateModal();
     }
 };
 
-window.showImportModal = function() {
+window.showImportModal = function () {
     if (window.invitationsController) {
         window.invitationsController.showImportModal();
     }

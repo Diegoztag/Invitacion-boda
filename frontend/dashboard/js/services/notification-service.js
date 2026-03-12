@@ -11,28 +11,28 @@ class NotificationService {
         this.notifications = [];
         this.panelOpen = false;
         this.backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
-        
+
         this.init();
     }
-    
+
     /**
      * Inicializa el servicio de notificaciones
      */
     init() {
         // Cargar confirmaciones vistas del localStorage
         this.loadSeenConfirmations();
-        
+
         // Crear el elemento de audio para notificaciones
         this.createNotificationSound();
-        
+
         // Marcar todas las confirmaciones actuales como vistas
         // Se inicializará cuando se carguen las invitaciones
         this.saveSeenConfirmations();
-        
+
         // Configurar eventos del panel
         this.setupPanelEvents();
     }
-    
+
     /**
      * Configura los eventos del panel de notificaciones
      */
@@ -42,37 +42,42 @@ class NotificationService {
         if (notificationBtn) {
             notificationBtn.addEventListener('click', () => this.togglePanel());
         }
-        
+
         // Click fuera del panel para cerrarlo
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             const panel = document.getElementById('notificationPanel');
             const btn = document.getElementById('notificationBtn');
-            
-            if (this.panelOpen && panel && btn && 
-                !panel.contains(e.target) && !btn.contains(e.target)) {
+
+            if (
+                this.panelOpen &&
+                panel &&
+                btn &&
+                !panel.contains(e.target) &&
+                !btn.contains(e.target)
+            ) {
                 this.closePanel();
             }
         });
-        
+
         // Click en el overlay para cerrar (móvil)
         const overlay = document.getElementById('notificationOverlay');
         if (overlay) {
             overlay.addEventListener('click', () => this.closePanel());
         }
-        
+
         // Botón "Marcar todas como leídas"
         const clearBtn = document.getElementById('notificationClearBtn');
         if (clearBtn) {
             clearBtn.addEventListener('click', () => this.markAllAsSeen());
         }
-        
+
         // Botón de cerrar del panel
         const closeBtn = document.getElementById('notificationCloseBtn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.closePanel());
         }
     }
-    
+
     /**
      * Alterna el panel de notificaciones
      */
@@ -83,7 +88,7 @@ class NotificationService {
             this.openPanel();
         }
     }
-    
+
     /**
      * Abre el panel de notificaciones
      */
@@ -91,23 +96,25 @@ class NotificationService {
         const panel = document.getElementById('notificationPanel');
         const overlay = document.getElementById('notificationOverlay');
         const btn = document.getElementById('notificationBtn');
-        
+
         if (panel) {
             panel.classList.add('active');
-            if (btn) btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            }
             this.panelOpen = true;
             this.renderNotifications();
-            
+
             // Marcar notificaciones como vistas
             this.markNotificationsAsRead();
-            
+
             // Mostrar overlay en móvil
             if (overlay && window.innerWidth <= 768) {
                 overlay.classList.add('active');
             }
         }
     }
-    
+
     /**
      * Cierra el panel de notificaciones
      */
@@ -115,26 +122,30 @@ class NotificationService {
         const panel = document.getElementById('notificationPanel');
         const overlay = document.getElementById('notificationOverlay');
         const btn = document.getElementById('notificationBtn');
-        
+
         if (panel) {
             panel.classList.remove('active');
-            if (btn) btn.classList.remove('active');
+            if (btn) {
+                btn.classList.remove('active');
+            }
             this.panelOpen = false;
         }
-        
+
         // Ocultar overlay
         if (overlay) {
             overlay.classList.remove('active');
         }
     }
-    
+
     /**
      * Renderiza las notificaciones en el panel
      */
     renderNotifications() {
         const notificationList = document.getElementById('notificationList');
-        if (!notificationList) return;
-        
+        if (!notificationList) {
+            return;
+        }
+
         if (this.notifications.length === 0) {
             notificationList.innerHTML = `
                 <div class="notification-empty">
@@ -144,13 +155,13 @@ class NotificationService {
             `;
             return;
         }
-        
+
         notificationList.innerHTML = this.notifications
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map(notification => this.renderNotificationItem(notification))
             .join('');
     }
-    
+
     /**
      * Renderiza un item de notificación
      */
@@ -158,7 +169,7 @@ class NotificationService {
         const timeAgo = getTimeAgo(notification.date);
         const isUnread = !notification.read;
         const statusClass = notification.willAttend ? 'confirmed' : 'cancelled';
-        
+
         return `
             <div class="notification-item ${isUnread ? 'unread' : ''}" 
                  onclick="window.notificationService.handleNotificationClick('${notification.code}')">
@@ -178,17 +189,17 @@ class NotificationService {
             </div>
         `;
     }
-    
+
     /**
      * Maneja el click en una notificación
      */
     handleNotificationClick(code) {
         // Cerrar panel
         this.closePanel();
-        
+
         // Navegar a la confirmación
         this.viewConfirmation(code);
-        
+
         // Marcar como leída
         const notification = this.notifications.find(n => n.code === code);
         if (notification) {
@@ -196,15 +207,15 @@ class NotificationService {
             this.updateNotificationCount();
         }
     }
-    
+
     /**
      * Marca todas las notificaciones como leídas
      */
     markNotificationsAsRead() {
-        this.notifications.forEach(n => n.read = true);
+        this.notifications.forEach(n => (n.read = true));
         this.updateNotificationCount();
     }
-    
+
     /**
      * Inicia el monitoreo de nuevas confirmaciones usando SSE
      */
@@ -219,7 +230,7 @@ class NotificationService {
             console.log('Conexión SSE establecida');
         };
 
-        this.eventSource.addEventListener('confirmation', (event) => {
+        this.eventSource.addEventListener('confirmation', event => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'new_confirmation') {
@@ -230,14 +241,14 @@ class NotificationService {
             }
         });
 
-        this.eventSource.onerror = (error) => {
+        this.eventSource.onerror = error => {
             console.error('Error en conexión SSE:', error);
             // Intentar reconectar en 5 segundos si se pierde la conexión
             this.eventSource.close();
             setTimeout(() => this.startMonitoring(), 5000);
         };
     }
-    
+
     /**
      * Detiene el monitoreo
      */
@@ -260,7 +271,7 @@ class NotificationService {
         this.addNotification(invitation);
         this.showNotificationToast(invitation);
         this.updateNotificationCount();
-        
+
         if (this.soundEnabled) {
             this.playNotificationSound();
         }
@@ -270,8 +281,7 @@ class NotificationService {
             window.dashboardController.loadInvitations();
         }
     }
-    
-    
+
     /**
      * Agrega una notificación a la lista
      */
@@ -283,13 +293,13 @@ class NotificationService {
             date: invitation.confirmationDate,
             read: false
         });
-        
+
         // Mantener solo las últimas 20 notificaciones
         if (this.notifications.length > 20) {
             this.notifications = this.notifications.slice(-20);
         }
     }
-    
+
     /**
      * Muestra una notificación toast
      */
@@ -297,7 +307,7 @@ class NotificationService {
         const guestNames = formatGuestNames(invitation.guestNames);
         const isConfirmed = invitation.status === 'confirmed' || invitation.status === 'partial';
         const status = isConfirmed ? 'confirmó' : 'rechazó';
-        
+
         const toast = document.createElement('div');
         toast.className = 'notification-toast';
         toast.innerHTML = `
@@ -310,25 +320,25 @@ class NotificationService {
                 Ver
             </button>
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         // Trigger animation
         setTimeout(() => toast.classList.add('show'), 100);
-        
+
         // Remove after 5 seconds
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
         }, 5000);
     }
-    
+
     /**
      * Actualiza el contador de notificaciones
      */
     updateNotificationCount() {
         const unreadCount = this.notifications.filter(n => !n.read).length;
-        
+
         // Actualizar contador en el botón del header
         const notificationCount = document.getElementById('notificationCount');
         if (notificationCount) {
@@ -340,14 +350,14 @@ class NotificationService {
             }
         }
     }
-    
+
     /**
      * Navega a una confirmación específica
      */
     viewConfirmation(code) {
         // Cambiar a la sección de dashboard
         window.location.hash = '#dashboard';
-        
+
         // Abrir el modal de detalles después de un pequeño delay
         setTimeout(() => {
             if (window.viewInvitation) {
@@ -355,7 +365,7 @@ class NotificationService {
             }
         }, 300);
     }
-    
+
     /**
      * Crea el elemento de audio para notificaciones
      */
@@ -367,14 +377,17 @@ class NotificationService {
                     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     const oscillator = audioContext.createOscillator();
                     const gainNode = audioContext.createGain();
-                    
+
                     oscillator.connect(gainNode);
                     gainNode.connect(audioContext.destination);
-                    
+
                     oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
                     gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                    
+                    gainNode.gain.exponentialRampToValueAtTime(
+                        0.01,
+                        audioContext.currentTime + 0.5
+                    );
+
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.5);
                 } catch (e) {
@@ -383,7 +396,7 @@ class NotificationService {
             }
         };
     }
-    
+
     /**
      * Reproduce el sonido de notificación
      */
@@ -392,7 +405,7 @@ class NotificationService {
             this.notificationSound.play();
         }
     }
-    
+
     /**
      * Alterna el sonido de notificaciones
      */
@@ -401,7 +414,7 @@ class NotificationService {
         localStorage.setItem('notificationSoundEnabled', this.soundEnabled);
         return this.soundEnabled;
     }
-    
+
     /**
      * Carga las confirmaciones vistas del localStorage
      */
@@ -415,12 +428,12 @@ class NotificationService {
                 this.seenConfirmations = new Set();
             }
         }
-        
+
         // Cargar preferencia de sonido
         const soundPref = localStorage.getItem('notificationSoundEnabled');
         this.soundEnabled = soundPref !== 'false';
     }
-    
+
     /**
      * Guarda las confirmaciones vistas en localStorage
      */
@@ -428,7 +441,7 @@ class NotificationService {
         const toSave = Array.from(this.seenConfirmations);
         localStorage.setItem('seenConfirmations', JSON.stringify(toSave));
     }
-    
+
     /**
      * Marca todas las confirmaciones como vistas
      */
@@ -438,34 +451,39 @@ class NotificationService {
             n.read = true;
             this.seenConfirmations.add(n.code);
         });
-        
+
         this.saveSeenConfirmations();
         this.updateNotificationCount();
-        
+
         // Re-renderizar si el panel está abierto
         if (this.panelOpen) {
             this.renderNotifications();
         }
     }
-    
+
     /**
      * Obtiene el número de confirmaciones no vistas
      */
     getUnseenCount() {
         return this.notifications.filter(n => !n.read).length;
     }
-    
+
     /**
      * Carga las notificaciones iniciales
      * @param {Array} invitations - Array de invitaciones para inicializar
      */
     loadInitialNotifications(invitations = []) {
         const confirmations = invitations
-            .filter(inv => inv.status === 'confirmed' || inv.status === 'partial' || inv.status === 'cancelled')
+            .filter(
+                inv =>
+                    inv.status === 'confirmed' ||
+                    inv.status === 'partial' ||
+                    inv.status === 'cancelled'
+            )
             .filter(inv => inv.confirmationDate) // Ensure there is a confirmation date
             .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
             .slice(0, 20);
-        
+
         confirmations.forEach(inv => {
             this.notifications.push({
                 code: inv.code,
@@ -475,7 +493,7 @@ class NotificationService {
                 read: this.seenConfirmations.has(inv.code)
             });
         });
-        
+
         this.updateNotificationCount();
     }
 }

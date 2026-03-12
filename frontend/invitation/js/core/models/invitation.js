@@ -7,25 +7,30 @@ export class Invitation {
     constructor(data = {}) {
         this.code = data.code || '';
         // Asegurar que guestNames sea siempre un array, incluso si viene como string
-        this.guestNames = Array.isArray(data.guestNames) 
-            ? data.guestNames 
-            : (data.guestNames ? [data.guestNames] : []);
+        this.guestNames = Array.isArray(data.guestNames)
+            ? data.guestNames
+            : data.guestNames
+              ? [data.guestNames]
+              : [];
         this.numberOfPasses = data.numberOfPasses || 0;
-        
+
         this.phone = data.phone || '';
         this.email = data.email || '';
         this.dietaryRestrictions = data.dietaryRestrictions || '';
-        
+
         // Si viene del backend como confirmedPasses, usarlo como guestCount
         // Asegurar que sea un número válido
-        const rawGuestCount = data.guestCount !== undefined ? data.guestCount : data.confirmedPasses;
+        const rawGuestCount =
+            data.guestCount !== undefined ? data.guestCount : data.confirmedPasses;
         this.guestCount = parseInt(rawGuestCount, 10);
-        if (isNaN(this.guestCount)) this.guestCount = 0;
-        
+        if (isNaN(this.guestCount)) {
+            this.guestCount = 0;
+        }
+
         // Procesar fecha de confirmación de manera robusta
         const dateStr = data.confirmedAt || data.confirmationDate;
         this.confirmedAt = null;
-        
+
         if (dateStr && typeof dateStr === 'string' && dateStr.trim() !== '') {
             const date = new Date(dateStr);
             // Verificar que sea una fecha válida (no Invalid Date)
@@ -64,20 +69,20 @@ export class Invitation {
         this.notes = data.notes || data.generalMessage || '';
         this.isActive = data.isActive !== undefined ? data.isActive : true;
     }
-    
+
     /**
      * Verifica si la invitación es válida
      * @returns {boolean}
      */
     isValid() {
         return !!(
-            this.code && 
-            this.guestNames.length > 0 && 
+            this.code &&
+            this.guestNames.length > 0 &&
             this.numberOfPasses > 0 &&
             this.isActive
         );
     }
-    
+
     /**
      * Obtiene el nombre para mostrar de los invitados
      * @returns {string}
@@ -86,19 +91,19 @@ export class Invitation {
         if (this.guestNames.length === 0) {
             return 'Invitado';
         }
-        
+
         if (this.guestNames.length === 1) {
             return this.guestNames[0];
         }
-        
+
         if (this.guestNames.length === 2) {
             return this.guestNames.join(' y ');
         }
-        
+
         // Para más de 2 nombres, mostrar el primero + "y acompañantes"
         return `${this.guestNames[0]} y acompañantes`;
     }
-    
+
     /**
      * Obtiene el nombre completo de todos los invitados
      * @returns {string}
@@ -106,7 +111,7 @@ export class Invitation {
     getFullGuestNames() {
         return this.guestNames.join(', ');
     }
-    
+
     /**
      * Verifica si la invitación está confirmada
      * @returns {boolean}
@@ -114,7 +119,7 @@ export class Invitation {
     isConfirmed() {
         return this.confirmed && this.attendance === 'yes';
     }
-    
+
     /**
      * Verifica si la invitación fue rechazada
      * @returns {boolean}
@@ -122,7 +127,7 @@ export class Invitation {
     isDeclined() {
         return this.confirmed && this.attendance === 'no';
     }
-    
+
     /**
      * Verifica si la invitación está pendiente de respuesta
      * @returns {boolean}
@@ -130,17 +135,21 @@ export class Invitation {
     isPending() {
         return !this.confirmed;
     }
-    
+
     /**
      * Obtiene el estado de la invitación
      * @returns {string} 'confirmed', 'declined', 'pending'
      */
     getStatus() {
-        if (this.isConfirmed()) return 'confirmed';
-        if (this.isDeclined()) return 'declined';
+        if (this.isConfirmed()) {
+            return 'confirmed';
+        }
+        if (this.isDeclined()) {
+            return 'declined';
+        }
         return 'pending';
     }
-    
+
     /**
      * Obtiene el texto del estado para mostrar
      * @returns {string}
@@ -157,7 +166,7 @@ export class Invitation {
                 return 'Desconocido';
         }
     }
-    
+
     /**
      * Verifica si puede confirmar asistencia
      * @returns {boolean}
@@ -165,7 +174,7 @@ export class Invitation {
     canConfirm() {
         return this.isValid() && this.isActive && !this.confirmed;
     }
-    
+
     /**
      * Verifica si puede modificar la confirmación
      * @returns {boolean}
@@ -173,7 +182,7 @@ export class Invitation {
     canModify() {
         return this.isValid() && this.isActive;
     }
-    
+
     /**
      * Obtiene el número de pases disponibles
      * @returns {number}
@@ -181,7 +190,7 @@ export class Invitation {
     getAvailablePasses() {
         return Math.max(0, this.numberOfPasses);
     }
-    
+
     /**
      * Verifica si el número de invitados es válido
      * @param {number} guestCount - Número de invitados
@@ -190,7 +199,7 @@ export class Invitation {
     isValidGuestCount(guestCount) {
         return guestCount > 0 && guestCount <= this.numberOfPasses;
     }
-    
+
     /**
      * Obtiene información de confirmación
      * @returns {Object|null}
@@ -199,7 +208,7 @@ export class Invitation {
         if (!this.confirmed) {
             return null;
         }
-        
+
         return {
             attendance: this.attendance,
             guestCount: this.guestCount,
@@ -210,7 +219,7 @@ export class Invitation {
             notes: this.notes
         };
     }
-    
+
     /**
      * Actualiza los datos de la invitación
      * @param {Object} data - Nuevos datos
@@ -225,10 +234,10 @@ export class Invitation {
                 }
             }
         });
-        
+
         this.updatedAt = new Date();
     }
-    
+
     /**
      * Confirma la asistencia
      * @param {Object} confirmationData - Datos de confirmación
@@ -244,7 +253,7 @@ export class Invitation {
         this.confirmedAt = new Date();
         this.updatedAt = new Date();
     }
-    
+
     /**
      * Convierte la invitación a objeto plano
      * @returns {Object}
@@ -267,7 +276,7 @@ export class Invitation {
             isActive: this.isActive
         };
     }
-    
+
     /**
      * Crea una copia de la invitación
      * @returns {Invitation}
@@ -275,7 +284,7 @@ export class Invitation {
     clone() {
         return new Invitation(this.toJSON());
     }
-    
+
     /**
      * Compara con otra invitación
      * @param {Invitation} other - Otra invitación
@@ -285,13 +294,15 @@ export class Invitation {
         if (!(other instanceof Invitation)) {
             return false;
         }
-        
-        return this.code === other.code &&
-               this.confirmed === other.confirmed &&
-               this.attendance === other.attendance &&
-               this.guestCount === other.guestCount;
+
+        return (
+            this.code === other.code &&
+            this.confirmed === other.confirmed &&
+            this.attendance === other.attendance &&
+            this.guestCount === other.guestCount
+        );
     }
-    
+
     /**
      * Valida los datos de confirmación
      * @param {Object} confirmationData - Datos a validar
@@ -299,29 +310,29 @@ export class Invitation {
      */
     validateConfirmationData(confirmationData) {
         const errors = [];
-        
+
         if (!confirmationData.attendance) {
             errors.push('Debe seleccionar si asistirá o no');
         }
-        
+
         if (confirmationData.attendance === 'yes') {
             if (!confirmationData.guestCount || confirmationData.guestCount < 1) {
                 errors.push('Debe indicar el número de invitados');
             }
-            
+
             if (confirmationData.guestCount > this.numberOfPasses) {
                 errors.push(`El número de invitados no puede ser mayor a ${this.numberOfPasses}`);
             }
         }
-        
+
         if (confirmationData.phone && !/^[\d\s\-\+\(\)]+$/.test(confirmationData.phone)) {
             errors.push('El formato del teléfono no es válido');
         }
-        
+
         if (confirmationData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(confirmationData.email)) {
             errors.push('El formato del email no es válido');
         }
-        
+
         return {
             isValid: errors.length === 0,
             errors

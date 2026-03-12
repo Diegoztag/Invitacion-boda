@@ -13,11 +13,11 @@ export class ScrollAnimationController {
             selector: '.itinerary-item',
             ...options
         };
-        
+
         this.observer = null;
         this.isInitialized = false;
     }
-    
+
     /**
      * Inicializa el controlador
      */
@@ -25,16 +25,16 @@ export class ScrollAnimationController {
         if (this.isInitialized) {
             return;
         }
-        
+
         console.log('✨ Initializing ScrollAnimationController...');
-        
+
         this.setupObserver();
         this.observeElements();
-        
+
         this.isInitialized = true;
         console.log('✅ ScrollAnimationController initialized');
     }
-    
+
     /**
      * Configura el IntersectionObserver
      */
@@ -44,8 +44,8 @@ export class ScrollAnimationController {
             rootMargin: this.options.rootMargin,
             threshold: this.options.threshold
         };
-        
-        this.observer = new IntersectionObserver((entries) => {
+
+        this.observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     this.animateElement(entry.target);
@@ -55,20 +55,20 @@ export class ScrollAnimationController {
             });
         }, options);
     }
-    
+
     /**
      * Observa los elementos que coinciden con el selector
      */
     observeElements() {
         const elements = this.container.querySelectorAll(this.options.selector);
-        
+
         elements.forEach(element => {
             this.observer.observe(element);
         });
-        
+
         console.log(`👀 Observing ${elements.length} elements for scroll animation`);
     }
-    
+
     /**
      * Anima un elemento añadiendo la clase configurada
      * @param {HTMLElement} element - Elemento a animar
@@ -76,7 +76,7 @@ export class ScrollAnimationController {
     animateElement(element) {
         element.classList.add(this.options.animationClass);
     }
-    
+
     /**
      * Refresca los elementos observados (útil si se añade contenido dinámicamente)
      */
@@ -86,7 +86,7 @@ export class ScrollAnimationController {
             this.observeElements();
         }
     }
-    
+
     /**
      * Destruye el controlador
      */

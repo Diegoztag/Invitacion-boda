@@ -20,19 +20,22 @@ function configureConfirmationRoutes(confirmationController, middleware) {
     router.use(middleware.requestLogger);
 
     // Rutas públicas para confirmación de asistencia
-    router.post('/:code',
+    router.post(
+        '/:code',
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
         confirmationController.confirmAttendance.bind(confirmationController)
     );
 
-    router.get('/:code',
+    router.get(
+        '/:code',
         middleware.validateParams,
         confirmationController.getConfirmation.bind(confirmationController)
     );
 
-    router.put('/:code',
+    router.put(
+        '/:code',
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -43,55 +46,63 @@ function configureConfirmationRoutes(confirmationController, middleware) {
     router.use(middleware.authenticate);
 
     // Estadísticas (debe ir antes de las rutas con parámetros)
-    router.get('/stats',
-        confirmationController.getStats.bind(confirmationController)
-    );
+    router.get('/stats', confirmationController.getStats.bind(confirmationController));
 
     // Confirmaciones por tipo
-    router.get('/positive',
+    router.get(
+        '/positive',
         confirmationController.getPositiveConfirmations.bind(confirmationController)
     );
 
-    router.get('/negative',
+    router.get(
+        '/negative',
         confirmationController.getNegativeConfirmations.bind(confirmationController)
     );
 
-    router.get('/dietary-restrictions',
+    router.get(
+        '/dietary-restrictions',
         confirmationController.getConfirmationsWithDietaryRestrictions.bind(confirmationController)
     );
 
-    router.get('/messages',
+    router.get(
+        '/messages',
         confirmationController.getConfirmationsWithMessages.bind(confirmationController)
     );
 
-    router.get('/recent',
+    router.get(
+        '/recent',
         middleware.validateQuery,
         confirmationController.getRecentConfirmations.bind(confirmationController)
     );
 
-    router.get('/total-guests',
+    router.get(
+        '/total-guests',
         confirmationController.getTotalConfirmedGuests.bind(confirmationController)
     );
 
     // Exportación
-    router.get('/export',
+    router.get(
+        '/export',
         middleware.validateQuery,
         confirmationController.exportConfirmations.bind(confirmationController)
     );
 
     // Búsqueda
-    router.get('/search/:name',
+    router.get(
+        '/search/:name',
         middleware.validateParams,
         confirmationController.searchByName.bind(confirmationController)
     );
 
     // CRUD Operations
-    router.get('/',
+    router.get(
+        '/',
         middleware.validateQuery,
         confirmationController.getConfirmations.bind(confirmationController)
     );
 
-    router.delete('/:code',
+    router.delete(
+        '/:code',
         middleware.validateParams,
         middleware.validateBody,
         confirmationController.cancelConfirmation.bind(confirmationController)

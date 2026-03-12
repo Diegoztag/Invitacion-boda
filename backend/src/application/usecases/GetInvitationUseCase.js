@@ -51,10 +51,9 @@ class GetInvitationUseCase {
                 invitation: invitation.toObject(),
                 message: 'Invitación encontrada'
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting invitation', {
                 code,
                 error: error.message,
@@ -111,8 +110,8 @@ class GetInvitationUseCase {
 
             const result = await this.invitationRepository.findPaginated(filters, pagination);
 
-            endOperation({ 
-                success: true, 
+            endOperation({
+                success: true,
                 total: result.total,
                 page: result.page,
                 totalPages: result.totalPages
@@ -131,10 +130,9 @@ class GetInvitationUseCase {
                 },
                 message: `${result.total} invitaciones encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting all invitations', {
                 options,
                 error: error.message,
@@ -174,10 +172,9 @@ class GetInvitationUseCase {
                 invitations: invitations.map(invitation => invitation.toObject()),
                 message: `${invitations.length} invitaciones encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error searching invitations', {
                 name,
                 error: error.message,
@@ -208,10 +205,9 @@ class GetInvitationUseCase {
                 stats,
                 message: 'Estadísticas obtenidas exitosamente'
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting invitation stats', {
                 error: error.message,
                 stack: error.stack
@@ -252,10 +248,9 @@ class GetInvitationUseCase {
                 format,
                 message: `${result.count} invitaciones exportadas en formato ${format}`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error exporting invitations', {
                 format,
                 error: error.message,

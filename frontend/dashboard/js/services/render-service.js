@@ -23,7 +23,9 @@ export class RenderService {
      */
     renderDashboardStats(data) {
         const container = document.querySelector(this.containers.dashboardStats);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const statsHtml = [
             DashboardTemplates.statCard({
@@ -35,20 +37,23 @@ export class RenderService {
                 ...STAT_CARD_CONFIGS.confirmedPasses,
                 value: data.confirmedPasses || 0,
                 subtitle: `Faltan <span>${data.remainingPasses || 0}</span> lugares`,
-                badge: data.confirmedPercentage !== undefined ? {
-                    class: 'success',
-                    text: `${data.confirmedPercentage}%`
-                } : null
+                badge:
+                    data.confirmedPercentage !== undefined
+                        ? {
+                              class: 'success',
+                              text: `${data.confirmedPercentage}%`
+                          }
+                        : null
             }),
             DashboardTemplates.statCard({
                 ...STAT_CARD_CONFIGS.pendingPasses,
                 value: data.pendingPasses || 0,
-                subtitle: `<span>Pendientes</span>`,
+                subtitle: '<span>Pendientes</span>'
             }),
             DashboardTemplates.statCard({
                 ...STAT_CARD_CONFIGS.cancelledPasses,
                 value: data.cancelledPasses || 0,
-                subtitle: `<span>Cancelaron</span>`,
+                subtitle: '<span>Cancelaron</span>'
             })
         ].join('');
 
@@ -60,7 +65,9 @@ export class RenderService {
      */
     renderInvitationsStats(data) {
         const container = document.querySelector(this.containers.invitationsStats);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const statsHtml = [
             DashboardTemplates.statCard({
@@ -70,10 +77,12 @@ export class RenderService {
             DashboardTemplates.statCard({
                 ...STAT_CARD_CONFIGS.confirmedInvitations,
                 value: data.confirmedInvitations || 0,
-                badge: data.confirmedChangePercentage ? {
-                    class: 'success',
-                    text: `+${data.confirmedChangePercentage}%`
-                } : null
+                badge: data.confirmedChangePercentage
+                    ? {
+                          class: 'success',
+                          text: `+${data.confirmedChangePercentage}%`
+                      }
+                    : null
             }),
             DashboardTemplates.statCard({
                 ...STAT_CARD_CONFIGS.pendingInvitations,
@@ -93,7 +102,9 @@ export class RenderService {
      */
     renderChartsContainers() {
         const container = document.querySelector(this.containers.chartsContainer);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const chartsHtml = [
             DashboardTemplates.chartContainer({
@@ -119,7 +130,9 @@ export class RenderService {
      */
     renderPassDistribution(data) {
         const chartContainer = document.querySelector('#passDistributionContainer');
-        if (!chartContainer) return;
+        if (!chartContainer) {
+            return;
+        }
 
         // Actualizar el valor total
         const totalSpan = chartContainer.querySelector('.chart-value span');
@@ -129,7 +142,9 @@ export class RenderService {
 
         // Determinar el label para niños basado en la configuración
         const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
-        const childLabel = allowChildren ? PASS_TYPE_LABELS.CHILD : PASS_TYPE_LABELS.CHILD_NOT_ALLOWED;
+        const childLabel = allowChildren
+            ? PASS_TYPE_LABELS.CHILD
+            : PASS_TYPE_LABELS.CHILD_NOT_ALLOWED;
 
         // Crear el contenido de distribución
         const distributionHtml = [
@@ -159,7 +174,7 @@ export class RenderService {
         if (!distributionContainer) {
             distributionContainer = document.createElement('div');
             distributionContainer.className = 'progress-list';
-            
+
             // Insertar después del header
             const header = chartContainer.querySelector('.chart-header');
             header.insertAdjacentElement('afterend', distributionContainer);
@@ -173,10 +188,12 @@ export class RenderService {
      */
     renderRecentConfirmationsTable() {
         const dashboardSection = document.querySelector('#dashboard');
-        if (!dashboardSection) return;
+        if (!dashboardSection) {
+            return;
+        }
 
         // Buscar si ya existe la tabla
-        let existingTable = dashboardSection.querySelector('#recentConfirmationsTable');
+        const existingTable = dashboardSection.querySelector('#recentConfirmationsTable');
         if (existingTable) {
             existingTable.remove();
         }
@@ -191,14 +208,18 @@ export class RenderService {
      */
     renderActionsBar() {
         const invitationsSection = document.querySelector('#invitations');
-        if (!invitationsSection) return;
+        if (!invitationsSection) {
+            return;
+        }
 
         // Buscar el lugar correcto para insertar (después de las stats)
         const statsGrid = invitationsSection.querySelector('.stats-grid');
-        if (!statsGrid) return;
+        if (!statsGrid) {
+            return;
+        }
 
         // Verificar si ya existe
-        let existingActions = invitationsSection.querySelector('.actions-bar');
+        const existingActions = invitationsSection.querySelector('.actions-bar');
         if (existingActions) {
             existingActions.remove();
         }
@@ -213,17 +234,21 @@ export class RenderService {
      */
     renderInvitationsTable() {
         const invitationsSection = document.querySelector('#invitations');
-        if (!invitationsSection) return;
+        if (!invitationsSection) {
+            return;
+        }
 
         // Buscar si ya existe
-        let existingTable = invitationsSection.querySelector('.table-container');
+        const existingTable = invitationsSection.querySelector('.table-container');
         if (existingTable) {
             existingTable.remove();
         }
 
         // Buscar la barra de acciones para insertar después
         const actionsBar = invitationsSection.querySelector('.actions-bar');
-        if (!actionsBar) return;
+        if (!actionsBar) {
+            return;
+        }
 
         // Insertar después de la barra de acciones
         const tableHtml = DashboardTemplates.invitationsTable();
@@ -235,9 +260,12 @@ export class RenderService {
      */
     renderStatsSkeletons(container) {
         const targetContainer = document.querySelector(container);
-        if (!targetContainer) return;
+        if (!targetContainer) {
+            return;
+        }
 
-        const skeletonsHtml = Array(4).fill(0)
+        const skeletonsHtml = Array(4)
+            .fill(0)
             .map(() => DashboardTemplates.statCardSkeleton())
             .join('');
 
@@ -249,7 +277,9 @@ export class RenderService {
      */
     renderTableSkeleton(containerId, rows = 5) {
         const container = document.querySelector(`#${containerId}`);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const skeletonHtml = DashboardTemplates.tableSkeleton(rows);
         container.innerHTML = skeletonHtml;
@@ -260,7 +290,9 @@ export class RenderService {
      */
     renderEmptyState(container, config) {
         const targetContainer = document.querySelector(container);
-        if (!targetContainer) return;
+        if (!targetContainer) {
+            return;
+        }
 
         const emptyHtml = DashboardTemplates.emptyState(config);
         targetContainer.innerHTML = emptyHtml;
@@ -271,7 +303,9 @@ export class RenderService {
      */
     renderErrorState(container, config) {
         const targetContainer = document.querySelector(container);
-        if (!targetContainer) return;
+        if (!targetContainer) {
+            return;
+        }
 
         const errorHtml = DashboardTemplates.errorState(config);
         targetContainer.innerHTML = errorHtml;
@@ -284,16 +318,16 @@ export class RenderService {
         // Renderizar skeletons iniciales
         this.renderStatsSkeletons(this.containers.dashboardStats);
         this.renderStatsSkeletons(this.containers.invitationsStats);
-        
+
         // Renderizar contenedores de gráficos
         this.renderChartsContainers();
-        
+
         // Renderizar tabla de confirmaciones recientes
         this.renderRecentConfirmationsTable();
-        
+
         // Renderizar barra de acciones
         this.renderActionsBar();
-        
+
         // Renderizar tabla de invitaciones
         this.renderInvitationsTable();
     }
@@ -309,10 +343,18 @@ export class RenderService {
             seconds: document.getElementById('seconds')
         };
 
-        if (elements.days) elements.days.textContent = String(timeLeft.days).padStart(2, '0');
-        if (elements.hours) elements.hours.textContent = String(timeLeft.hours).padStart(2, '0');
-        if (elements.minutes) elements.minutes.textContent = String(timeLeft.minutes).padStart(2, '0');
-        if (elements.seconds) elements.seconds.textContent = String(timeLeft.seconds).padStart(2, '0');
+        if (elements.days) {
+            elements.days.textContent = String(timeLeft.days).padStart(2, '0');
+        }
+        if (elements.hours) {
+            elements.hours.textContent = String(timeLeft.hours).padStart(2, '0');
+        }
+        if (elements.minutes) {
+            elements.minutes.textContent = String(timeLeft.minutes).padStart(2, '0');
+        }
+        if (elements.seconds) {
+            elements.seconds.textContent = String(timeLeft.seconds).padStart(2, '0');
+        }
     }
 
     /**

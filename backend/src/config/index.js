@@ -6,8 +6,13 @@
 require('dotenv').config();
 
 const parseList = (value, defaultVal = []) => {
-    if (!value) return defaultVal;
-    return value.split(',').map(v => v.trim()).filter(v => v.length);
+    if (!value) {
+        return defaultVal;
+    }
+    return value
+        .split(',')
+        .map(v => v.trim())
+        .filter(v => v.length);
 };
 
 const config = {

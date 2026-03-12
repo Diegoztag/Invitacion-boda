@@ -32,100 +32,113 @@ import { getApiConfig } from './app-config.js';
  */
 export function setupDependencies(container) {
     console.log('🔧 Setting up dependencies...');
-    
+
     // ========================================
     // INFRASTRUCTURE LAYER
     // ========================================
-    
+
     // API Client - Singleton para reutilizar conexiones
-    container.register('apiClient', (c) => {
-        const apiConfig = getApiConfig();
-        return new ApiClient(apiConfig.baseUrl, apiConfig);
-    }, true);
-    
+    container.register(
+        'apiClient',
+        c => {
+            const apiConfig = getApiConfig();
+            return new ApiClient(apiConfig.baseUrl, apiConfig);
+        },
+        true
+    );
+
     // ========================================
     // CORE SERVICES LAYER
     // ========================================
-    
+
     // Invitation Service - Maneja la lógica de negocio de invitaciones
-    container.register('invitationService', (c) => {
-        return new InvitationService(c.resolve('apiClient'));
-    }, true);
-    
+    container.register(
+        'invitationService',
+        c => {
+            return new InvitationService(c.resolve('apiClient'));
+        },
+        true
+    );
+
     // Meta Service - Maneja meta tags dinámicos
-    container.register('metaService', (c) => {
-        return new MetaService();
-    }, true);
-    
+    container.register(
+        'metaService',
+        c => {
+            return new MetaService();
+        },
+        true
+    );
+
     // Validation Service - Maneja validaciones de formularios
-    container.register('validationService', (c) => {
-        return new ValidationService();
-    }, true);
-    
+    container.register(
+        'validationService',
+        c => {
+            return new ValidationService();
+        },
+        true
+    );
+
     // ========================================
     // UI COMPONENTS LAYER
     // ========================================
-    
+
     // Countdown Component - Componente de cuenta regresiva
-    container.register('countdownComponent', (c) => {
+    container.register('countdownComponent', c => {
         const countdownElement = document.getElementById('countdown');
         if (!countdownElement) {
             console.warn('Countdown element not found, skipping registration');
             return null;
         }
-        
+
         // Obtener fecha objetivo desde WEDDING_CONFIG
         const targetDate = new Date(window.WEDDING_CONFIG?.event?.date || '2024-12-31');
         return new CountdownComponent(countdownElement, targetDate);
     });
-    
+
     // Modal Component - Componente modal reutilizable
-    container.register('modalComponent', (c) => {
+    container.register('modalComponent', c => {
         return new ModalComponent();
     });
-    
+
     // Loader Component - Componente de carga
-    container.register('loaderComponent', (c) => {
+    container.register('loaderComponent', c => {
         return new LoaderComponent();
     });
-    
+
     // ========================================
     // CONTROLLERS LAYER
     // ========================================
-    
+
     // Navigation Controller - Maneja navegación y scroll
-    container.register('navigationController', (c) => {
+    container.register('navigationController', c => {
         return new NavigationController();
     });
-    
+
     // RSVP Controller - Maneja formulario de confirmación
-    container.register('rsvpController', (c) => {
-        return new RSVPController(
-            c.resolve('invitationService'),
-            c.resolve('validationService')
-        );
+    container.register('rsvpController', c => {
+        return new RSVPController(c.resolve('invitationService'), c.resolve('validationService'));
     });
-    
+
     // Content Controller - Maneja contenido dinámico
-    container.register('contentController', (c) => {
+    container.register('contentController', c => {
         return new ContentController(c.resolve('metaService'));
     });
-    
+
     // Carousel Controller - Maneja carousel de fotos
-    container.register('carouselController', (c) => {
+    container.register('carouselController', c => {
         return new CarouselController();
     });
-    
+
     // ========================================
     // MAIN APP CONTROLLER
     // ========================================
-    
+
     // App Controller - Controlador principal que coordina todo
     // Nota: AppController se maneja directamente en app.js, no a través del DI
     // container.register('appController', (c) => {
     //     return new AppController(document.body, {});
     // }, true);
-    
+
     console.log('✅ Dependencies configured successfully');
     console.log('📋 Registered services:', container.getRegisteredServices());
 }
@@ -144,14 +157,14 @@ export function validateDependencies(container) {
         'navigationController',
         'contentController'
     ];
-    
+
     const missingServices = criticalServices.filter(service => !container.has(service));
-    
+
     if (missingServices.length > 0) {
         console.error('❌ Missing critical services:', missingServices);
         return false;
     }
-    
+
     console.log('✅ All critical dependencies are available');
     return true;
 }
@@ -162,16 +175,16 @@ export function validateDependencies(container) {
  */
 export async function initializeServices(container) {
     console.log('🚀 Initializing services...');
-    
+
     try {
         // Inicializar Meta Service
         const metaService = container.resolve('metaService');
         await metaService.init();
-        
+
         // Verificar conectividad de API
         const apiClient = container.resolve('apiClient');
         await apiClient.healthCheck();
-        
+
         console.log('✅ Services initialized successfully');
     } catch (error) {
         console.error('❌ Error initializing services:', error);
@@ -185,7 +198,7 @@ export async function initializeServices(container) {
  */
 export function cleanupServices(container) {
     console.log('🧹 Cleaning up services...');
-    
+
     // Limpiar componentes que puedan tener timers o event listeners
     const componentsToCleanup = [
         'countdownComponent',
@@ -193,7 +206,7 @@ export function cleanupServices(container) {
         'navigationController',
         'carouselController'
     ];
-    
+
     componentsToCleanup.forEach(serviceName => {
         try {
             const service = container.resolve(serviceName);
@@ -204,9 +217,9 @@ export function cleanupServices(container) {
             console.warn(`Warning cleaning up ${serviceName}:`, error);
         }
     });
-    
+
     // Limpiar el contenedor
     container.clear();
-    
+
     console.log('✅ Services cleaned up');
 }

@@ -23,6 +23,7 @@ npm run browser-sync # Solo browser-sync
 ```
 
 ### Configuración Browser-sync (Comando Directo):
+
 ```bash
 browser-sync start --proxy localhost:3000 --files "frontend/**/*.html" "frontend/**/*.css" "frontend/**/*.js" --port 3001 --no-open --reload-delay 200 --logLevel info --logPrefix BS
 ```
@@ -38,11 +39,13 @@ browser-sync start --proxy localhost:3000 --files "frontend/**/*.html" "frontend
 ## ⚡ Funcionalidades:
 
 ### ✅ Auto-Refresh Inteligente:
+
 - **Frontend**: Browser-sync detecta cambios en `frontend/**/*.{html,css,js}` → Refresca navegador instantáneamente
 - **Backend**: Nodemon detecta cambios en `backend/src/**/*` → Reinicia servidor automáticamente
 - **Sin interferencias**: Cada herramienta maneja su dominio específico
 
 ### ✅ Optimizaciones:
+
 - **Sin polling**: Browser-sync usa file watchers nativos
 - **Delay inteligente**: 1000ms para evitar múltiples reloads
 - **Filtros específicos**: Solo archivos relevantes (.html, .css, .js)
@@ -63,11 +66,13 @@ browser-sync start --proxy localhost:3000 --files "frontend/**/*.html" "frontend
 ## 🎉 Resultado Final:
 
 **PROBLEMA INICIAL:**
+
 - ❌ Browser-sync no detectaba cambios en frontend
 - ❌ Configuración con archivo `bs-config.js` fallaba
 - ❌ Paths relativos no funcionaban en Windows
 
 **SOLUCIÓN IMPLEMENTADA:**
+
 - ✅ **Comando directo** sin archivo de configuración
 - ✅ **Paths específicos** con comillas dobles para Windows
 - ✅ **Auto-refresh instantáneo** confirmado funcionando
@@ -88,6 +93,7 @@ browser-sync start --proxy localhost:3000 --files "frontend/**/*.html" "frontend
 ## 🔍 Verificación:
 
 Cuando browser-sync detecta un cambio, verás en la terminal:
+
 ```
 [1] [BS] Reloading Browsers...
 ```
@@ -108,6 +114,7 @@ Cuando browser-sync detecta un cambio, verás en la terminal:
 **Solución:** Comando directo con paths específicos y comillas dobles
 
 **Comando Final Funcionando:**
+
 ```bash
 browser-sync start --proxy localhost:3000 --files "frontend/**/*.html" "frontend/**/*.css" "frontend/**/*.js" --port 3001 --no-open --reload-delay 200 --logLevel info --logPrefix BS
 ```

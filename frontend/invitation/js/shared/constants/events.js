@@ -9,7 +9,7 @@ export const EVENTS = {
         MENU_TOGGLED: 'navigation:menu-toggled',
         SCROLL_UPDATED: 'navigation:scroll-updated'
     },
-    
+
     // Eventos de RSVP
     RSVP: {
         INVITATION_LOADED: 'rsvp:invitation-loaded',
@@ -31,34 +31,34 @@ export const EVENTS = {
         INVALID_SUBMIT: 'form:invalid-submit',
         VALIDATED: 'form:validated'
     },
-    
+
     // Eventos de contenido
     CONTENT: {
         LOADED: 'content:loaded',
         UPDATED: 'content:updated',
         ERROR: 'content:error'
     },
-    
+
     // Eventos de carousel
     CAROUSEL: {
         SLIDE_CHANGED: 'carousel:slide-changed',
         AUTOPLAY_STARTED: 'carousel:autoplay-started',
         AUTOPLAY_STOPPED: 'carousel:autoplay-stopped'
     },
-    
+
     // Eventos de modal
     MODAL: {
         OPENED: 'modal:opened',
         CLOSED: 'modal:closed',
         BACKDROP_CLICKED: 'modal:backdrop-clicked'
     },
-    
+
     // Eventos de countdown
     COUNTDOWN: {
         UPDATED: 'countdown:updated',
         FINISHED: 'countdown:finished'
     },
-    
+
     // Eventos de aplicación
     APP: {
         INITIALIZED: 'app:initialized',

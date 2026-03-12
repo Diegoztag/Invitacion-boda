@@ -17,11 +17,14 @@ class GetConfirmationStatsUseCase {
      */
     async _getActiveConfirmations() {
         const confirmations = await this.confirmationRepository.findAll();
-        
+
         // Obtener invitaciones inactivas
-        const inactiveInvitations = await this.invitationRepository.findAll({ status: 'inactive' }, true);
+        const inactiveInvitations = await this.invitationRepository.findAll(
+            { status: 'inactive' },
+            true
+        );
         const inactiveCodes = new Set(inactiveInvitations.map(inv => inv.code));
-        
+
         // Filtrar confirmaciones de invitaciones inactivas
         return confirmations.filter(conf => !inactiveCodes.has(conf.code));
     }
@@ -39,10 +42,12 @@ class GetConfirmationStatsUseCase {
 
             // 2. Obtener confirmaciones filtradas (excluyendo inactivas) para métricas adicionales
             const confirmations = await this._getActiveConfirmations();
-            
+
             // Calcular métricas adicionales de confirmaciones
             const positive = confirmations.filter(conf => conf.isPositive());
-            const withDietaryRestrictions = confirmations.filter(conf => conf.hasDietaryRestrictions()).length;
+            const withDietaryRestrictions = confirmations.filter(conf =>
+                conf.hasDietaryRestrictions()
+            ).length;
             const withMessages = confirmations.filter(conf => conf.hasMessage()).length;
             const withPhone = confirmations.filter(conf => conf.hasPhone()).length;
 
@@ -57,7 +62,7 @@ class GetConfirmationStatsUseCase {
                     cancelled: invitationStats.cancelled,
                     inactive: invitationStats.inactive
                 },
-                
+
                 // Estadísticas de Confirmaciones (Pases)
                 confirmations: {
                     totalConfirmedGuests: invitationStats.confirmedPasses,
@@ -72,7 +77,7 @@ class GetConfirmationStatsUseCase {
                     withMessages,
                     withPhone
                 },
-                
+
                 // Distribución de Pases
                 passDistribution: {
                     activeAdultPasses: invitationStats.activeAdultPasses,
@@ -81,13 +86,25 @@ class GetConfirmationStatsUseCase {
                     totalActivePasses: invitationStats.totalActivePasses,
                     distributionPercentages: invitationStats.distributionPercentages
                 },
-                
+
                 // Tasas de conversión
                 rates: {
-                    confirmationRate: invitationStats.total > 0 ? 
-                        Math.round(((invitationStats.confirmed + invitationStats.partial) / invitationStats.total) * 100) : 0,
-                    attendanceRate: invitationStats.totalActivePasses > 0 ? 
-                        Math.round((invitationStats.confirmedPasses / invitationStats.totalActivePasses) * 100) : 0
+                    confirmationRate:
+                        invitationStats.total > 0
+                            ? Math.round(
+                                  ((invitationStats.confirmed + invitationStats.partial) /
+                                      invitationStats.total) *
+                                      100
+                              )
+                            : 0,
+                    attendanceRate:
+                        invitationStats.totalActivePasses > 0
+                            ? Math.round(
+                                  (invitationStats.confirmedPasses /
+                                      invitationStats.totalActivePasses) *
+                                      100
+                              )
+                            : 0
                 }
             };
 
@@ -98,10 +115,9 @@ class GetConfirmationStatsUseCase {
                 ...stats, // Esparcir propiedades para mantener compatibilidad si es necesario
                 message: 'Estadísticas obtenidas exitosamente'
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmation stats', {
                 error: error.message,
                 stack: error.stack
@@ -133,10 +149,9 @@ class GetConfirmationStatsUseCase {
                 count: confirmations.length,
                 message: `${confirmations.length} confirmaciones positivas encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting positive confirmations', {
                 error: error.message,
                 stack: error.stack
@@ -168,10 +183,9 @@ class GetConfirmationStatsUseCase {
                 count: confirmations.length,
                 message: `${confirmations.length} confirmaciones negativas encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting negative confirmations', {
                 error: error.message,
                 stack: error.stack
@@ -203,10 +217,9 @@ class GetConfirmationStatsUseCase {
                 count: confirmations.length,
                 message: `${confirmations.length} confirmaciones con restricciones dietarias encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmations with dietary restrictions', {
                 error: error.message,
                 stack: error.stack
@@ -238,10 +251,9 @@ class GetConfirmationStatsUseCase {
                 count: confirmations.length,
                 message: `${confirmations.length} confirmaciones con mensajes encontradas`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmations with messages', {
                 error: error.message,
                 stack: error.stack
@@ -272,12 +284,12 @@ class GetConfirmationStatsUseCase {
             }
 
             const allConfirmations = await this._getActiveConfirmations();
-            
+
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - days);
-            
-            const confirmations = allConfirmations.filter(conf => 
-                new Date(conf.confirmedAt) > cutoffDate
+
+            const confirmations = allConfirmations.filter(
+                conf => new Date(conf.confirmedAt) > cutoffDate
             );
 
             endOperation({ success: true, count: confirmations.length, days });
@@ -289,10 +301,9 @@ class GetConfirmationStatsUseCase {
                 days,
                 message: `${confirmations.length} confirmaciones en los últimos ${days} días`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting recent confirmations', {
                 days,
                 error: error.message,
@@ -316,7 +327,10 @@ class GetConfirmationStatsUseCase {
         try {
             const allConfirmations = await this._getActiveConfirmations();
             const positiveConfirmations = allConfirmations.filter(conf => conf.isPositive());
-            const total = positiveConfirmations.reduce((sum, conf) => sum + conf.attendingGuests, 0);
+            const total = positiveConfirmations.reduce(
+                (sum, conf) => sum + conf.attendingGuests,
+                0
+            );
 
             endOperation({ success: true, total });
 
@@ -325,10 +339,9 @@ class GetConfirmationStatsUseCase {
                 total,
                 message: `Total de invitados confirmados: ${total}`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting total confirmed guests', {
                 error: error.message,
                 stack: error.stack
@@ -369,10 +382,9 @@ class GetConfirmationStatsUseCase {
                 format,
                 message: `${result.count} confirmaciones exportadas en formato ${format}`
             };
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error exporting confirmations', {
                 format,
                 error: error.message,

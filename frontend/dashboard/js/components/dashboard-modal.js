@@ -20,14 +20,14 @@ export class Modal {
         this.focusableElements = [];
         this.currentFocusIndex = 0;
         this.previousActiveElement = null;
-        
+
         this.modalElement = null;
         this.isOpen = false;
         this.scrollPosition = 0; // Guardar posición del scroll
-        
+
         this.init();
     }
-    
+
     /**
      * Inicializa el modal
      */
@@ -37,21 +37,21 @@ export class Modal {
         this.modalElement.id = this.id;
         this.modalElement.className = 'modal';
         this.modalElement.innerHTML = this.getTemplate();
-        
+
         // Agregar al DOM
         document.body.appendChild(this.modalElement);
-        
+
         // Configurar event listeners
         this.setupEventListeners();
     }
-    
+
     /**
      * Obtiene el template HTML del modal optimizado según tipo
      */
     getTemplate() {
         const modalTypeClass = `modal-${this.type}`;
         const showCloseButton = this.type === 'info';
-        
+
         // Para el modal CSV específicamente
         if (this.id === 'importCsvModal') {
             return `
@@ -79,7 +79,7 @@ export class Modal {
                 </div>
             `;
         }
-        
+
         // Template genérico optimizado por tipo
         return `
             <div class="modal-content modal-${this.size} ${modalTypeClass}" role="dialog" aria-labelledby="modal-title-${this.id}" aria-describedby="modal-body-${this.id}">
@@ -90,9 +90,13 @@ export class Modal {
                         </div>
                         <h3 id="modal-title-${this.id}" class="modal-title">${this.title}</h3>
                     </div>
-                    ${showCloseButton ? `<button class="modal-close" aria-label="Cerrar modal" tabindex="0">
+                    ${
+                        showCloseButton
+                            ? `<button class="modal-close" aria-label="Cerrar modal" tabindex="0">
                         <i class="fas fa-times"></i>
-                    </button>` : ''}
+                    </button>`
+                            : ''
+                    }
                 </div>
                 <div id="modal-body-${this.id}" class="modal-body">
                     ${this.content}
@@ -100,7 +104,7 @@ export class Modal {
             </div>
         `;
     }
-    
+
     /**
      * Obtiene el icono apropiado según el tipo de modal
      */
@@ -113,7 +117,7 @@ export class Modal {
         };
         return icons[this.type] || 'info-circle';
     }
-    
+
     /**
      * Configura los event listeners con mejores prácticas de accesibilidad
      */
@@ -122,50 +126,52 @@ export class Modal {
         const closeBtn = this.modalElement.querySelector('.modal-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.close());
-            closeBtn.addEventListener('keydown', (e) => {
+            closeBtn.addEventListener('keydown', e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.close();
                 }
             });
         }
-        
+
         // Botones de acción en footer
         const cancelBtn = this.modalElement.querySelector('[data-action="cancel"]');
         const confirmBtn = this.modalElement.querySelector('[data-action="confirm"]');
-        
+
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => this.close());
-            cancelBtn.addEventListener('keydown', (e) => {
+            cancelBtn.addEventListener('keydown', e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.close();
                 }
             });
         }
-        
+
         if (confirmBtn) {
-            confirmBtn.addEventListener('keydown', (e) => {
+            confirmBtn.addEventListener('keydown', e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     confirmBtn.click();
                 }
             });
         }
-        
+
         // Cerrar al hacer clic en el overlay (solo si está permitido)
         if (this.closeOnOverlay && this.type !== 'critical') {
-            this.modalElement.addEventListener('click', (e) => {
+            this.modalElement.addEventListener('click', e => {
                 if (e.target === this.modalElement) {
                     this.close();
                 }
             });
         }
-        
+
         // Navegación por teclado
-        this.keydownHandler = (e) => {
-            if (!this.isOpen) return;
-            
+        this.keydownHandler = e => {
+            if (!this.isOpen) {
+                return;
+            }
+
             switch (e.key) {
                 case 'Escape':
                     if (this.closeOnEsc && this.type !== 'critical') {
@@ -184,18 +190,20 @@ export class Modal {
             }
         };
     }
-    
+
     /**
      * Maneja la navegación por Tab para mantener el foco dentro del modal
      */
     handleTabNavigation(e) {
         this.updateFocusableElements();
-        
-        if (this.focusableElements.length === 0) return;
-        
+
+        if (this.focusableElements.length === 0) {
+            return;
+        }
+
         const firstElement = this.focusableElements[0];
         const lastElement = this.focusableElements[this.focusableElements.length - 1];
-        
+
         if (e.shiftKey) {
             // Shift + Tab (navegación hacia atrás)
             if (document.activeElement === firstElement) {
@@ -210,7 +218,7 @@ export class Modal {
             }
         }
     }
-    
+
     /**
      * Actualiza la lista de elementos que pueden recibir foco
      */
@@ -223,72 +231,76 @@ export class Modal {
             'a[href]',
             '[tabindex]:not([tabindex="-1"])'
         ];
-        
+
         this.focusableElements = Array.from(
             this.modalElement.querySelectorAll(focusableSelectors.join(', '))
         ).filter(el => {
-            return el.offsetParent !== null && // elemento visible
-                   !el.hasAttribute('hidden') &&
-                   getComputedStyle(el).display !== 'none';
+            return (
+                el.offsetParent !== null && // elemento visible
+                !el.hasAttribute('hidden') &&
+                getComputedStyle(el).display !== 'none'
+            );
         });
     }
-    
+
     /**
      * Abre el modal con mejoras de accesibilidad
      */
     open() {
-        if (this.isOpen) return;
-        
+        if (this.isOpen) {
+            return;
+        }
+
         // Set active modal global reference
         window.activeModal = this;
-        
+
         // Guardar elemento activo actual
         this.previousActiveElement = document.activeElement;
-        
+
         // Guardar posición actual del scroll
         this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-        
+
         // Guardar el ancho del body antes de aplicar fixed
         const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-        
+
         this.modalElement.classList.remove('modal-hidden');
         this.modalElement.classList.add('modal-visible');
         this.modalElement.style.display = 'block';
         this.isOpen = true;
-        
+
         // Agregar listeners de teclado
         document.addEventListener('keydown', this.keydownHandler);
-        
+
         // Callback onOpen
         if (this.onOpen) {
             this.onOpen(this);
         }
-        
+
         // Prevenir scroll del body
         document.body.classList.add('modal-open');
-        
+
         // Compensar por la barra de scroll que desaparece
         if (scrollBarWidth > 0) {
             document.body.style.paddingRight = `${scrollBarWidth}px`;
         }
-        
+
         // Mantener la posición visual del contenido
         document.body.style.top = `-${this.scrollPosition}px`;
-        
+
         // Configurar foco inicial
         this.setInitialFocus();
-        
+
         // Anunciar apertura del modal a lectores de pantalla
         this.announceToScreenReader('Modal abierto: ' + this.title);
     }
-    
+
     /**
      * Configura el foco inicial del modal
      */
     setInitialFocus() {
         setTimeout(() => {
             this.updateFocusableElements();
-            
+
             if (this.focusableElements.length > 0) {
                 // Buscar el botón por defecto primero
                 const defaultButton = this.modalElement.querySelector('.btn-default');
@@ -308,7 +320,7 @@ export class Modal {
             }
         }, 100); // Pequeño delay para asegurar que el modal esté completamente renderizado
     }
-    
+
     /**
      * Anuncia mensajes a lectores de pantalla
      */
@@ -322,57 +334,59 @@ export class Modal {
         announcement.style.height = '1px';
         announcement.style.overflow = 'hidden';
         announcement.textContent = message;
-        
+
         document.body.appendChild(announcement);
-        
+
         setTimeout(() => {
             document.body.removeChild(announcement);
         }, 1000);
     }
-    
+
     /**
      * Cierra el modal con restauración de foco
      */
     close() {
-        if (!this.isOpen) return;
-        
+        if (!this.isOpen) {
+            return;
+        }
+
         // Clear active modal global reference if it's this modal
         if (window.activeModal === this) {
             window.activeModal = null;
         }
-        
+
         this.modalElement.classList.remove('modal-visible');
         this.modalElement.classList.add('modal-hidden');
         this.modalElement.style.display = 'none';
         this.isOpen = false;
-        
+
         // Remover listeners de teclado
         document.removeEventListener('keydown', this.keydownHandler);
-        
+
         // Callback onClose
         if (this.onClose) {
             this.onClose(this);
         }
-        
+
         // Restaurar scroll del body
         document.body.classList.remove('modal-open');
-        
+
         // Remover el padding y top
         document.body.style.paddingRight = '';
         document.body.style.top = '';
-        
+
         // Restaurar posición del scroll
         window.scrollTo(0, this.scrollPosition);
-        
+
         // Restaurar foco al elemento anterior
         if (this.previousActiveElement && typeof this.previousActiveElement.focus === 'function') {
             this.previousActiveElement.focus();
         }
-        
+
         // Anunciar cierre del modal
         this.announceToScreenReader('Modal cerrado');
     }
-    
+
     /**
      * Actualiza el título del modal
      */
@@ -383,7 +397,7 @@ export class Modal {
             titleElement.textContent = title;
         }
     }
-    
+
     /**
      * Actualiza el contenido del modal
      */
@@ -394,7 +408,7 @@ export class Modal {
             bodyElement.innerHTML = content;
         }
     }
-    
+
     /**
      * Destruye el modal y lo remueve del DOM
      */
@@ -429,7 +443,7 @@ export class ModalFactory {
             }
         });
     }
-    
+
     /**
      * Crea un modal para crear invitación
      */
@@ -474,7 +488,7 @@ export class ModalFactory {
                 </div>
             </form>
         `;
-        
+
         return new Modal({
             id: 'createInvitationModal',
             title: 'Nueva Invitación',
@@ -549,7 +563,7 @@ export class ModalFactory {
                 </div>
             </form>
         `;
-        
+
         return new Modal({
             id: 'editInvitationModal',
             title: 'Editar Invitación',
@@ -569,7 +583,7 @@ export class ModalFactory {
             }
         });
     }
-    
+
     /**
      * Crea un modal para importar CSV
      */
@@ -631,7 +645,7 @@ export class ModalFactory {
                 <div id="csvResults" class="csv-results"></div>
             </div>
         `;
-        
+
         const modal = new Modal({
             id: 'importCsvModal',
             title: 'Importar desde CSV',
@@ -645,9 +659,13 @@ export class ModalFactory {
                 const fileSelectedInfo = document.getElementById('fileSelectedInfo');
                 const csvResults = document.getElementById('csvResults');
                 const uploadBtn = document.getElementById('uploadCsvBtn');
-                
-                if (csvFile) csvFile.value = '';
-                if (fileName) fileName.textContent = '';
+
+                if (csvFile) {
+                    csvFile.value = '';
+                }
+                if (fileName) {
+                    fileName.textContent = '';
+                }
                 if (fileSelectedInfo) {
                     // Remove inline style to avoid specificity issues
                     fileSelectedInfo.style.display = '';
@@ -658,8 +676,10 @@ export class ModalFactory {
                     csvResults.classList.remove('show', 'success', 'error');
                 }
                 // Ensure upload button is disabled when closing
-                if (uploadBtn) uploadBtn.disabled = true;
-                
+                if (uploadBtn) {
+                    uploadBtn.disabled = true;
+                }
+
                 // Clear selected file reference
                 window.selectedCsvFile = null;
             }
@@ -677,7 +697,7 @@ export class ModalFactory {
 
         return modal;
     }
-    
+
     /**
      * Crea un modal de confirmación
      */
@@ -695,18 +715,18 @@ export class ModalFactory {
                 </div>
             </div>
         `;
-        
+
         const modal = new Modal({
             title: options.title || 'Confirmar acción',
             type: 'confirmation',
             size: 'small',
             content: content,
-            onClose: (modalInstance) => {
+            onClose: modalInstance => {
                 // Destruir el modal al cerrar para evitar acumulación en el DOM
                 setTimeout(() => modalInstance.destroy(), 300);
             }
         });
-        
+
         modal.confirmAction = () => {
             if (options.onConfirm) {
                 options.onConfirm();
@@ -721,10 +741,10 @@ export class ModalFactory {
                 modal.confirmAction();
             });
         }
-        
+
         return modal;
     }
-    
+
     /**
      * Crea un modal para generar mensaje de WhatsApp
      */
@@ -745,14 +765,14 @@ export class ModalFactory {
                 </div>
             </div>
         `;
-        
+
         const modal = new Modal({
             id: 'whatsappModal',
             title: 'Mensaje para WhatsApp',
             type: 'info',
             size: 'medium',
             content: content,
-            onClose: (modalInstance) => {
+            onClose: modalInstance => {
                 // Destruir el modal al cerrar para evitar conflictos de ID y acumulación
                 setTimeout(() => modalInstance.destroy(), 300);
             }
@@ -766,7 +786,7 @@ export class ModalFactory {
                 if (textarea) {
                     textarea.select();
                     document.execCommand('copy');
-                    
+
                     // Feedback visual
                     const originalText = copyBtn.innerHTML;
                     copyBtn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
@@ -777,7 +797,7 @@ export class ModalFactory {
                 }
             });
         }
-        
+
         return modal;
     }
 
@@ -785,13 +805,13 @@ export class ModalFactory {
      * Crea un modal para desactivar invitación
      */
     static createDeactivateInvitationModal(invitation) {
-        const getStatusText = (status) => {
+        const getStatusText = status => {
             const statusMap = {
-                'pending': 'Pendiente',
-                'confirmed': 'Confirmado',
-                'partial': 'Confirmado Parcialmente',
-                'cancelled': 'Rechazado',
-                'inactive': 'Inactivo'
+                pending: 'Pendiente',
+                confirmed: 'Confirmado',
+                partial: 'Confirmado Parcialmente',
+                cancelled: 'Rechazado',
+                inactive: 'Inactivo'
             };
             return statusMap[status] || 'Desconocido';
         };
@@ -836,19 +856,19 @@ export class ModalFactory {
                 </div>
             </div>
         `;
-        
+
         const modal = new Modal({
             id: 'deactivateInvitationModal',
             title: 'Confirmar Desactivación',
             type: 'critical',
             size: 'medium',
             content: content,
-            onClose: (modalInstance) => {
+            onClose: modalInstance => {
                 // Destruir el modal al cerrar para evitar conflictos de ID y acumulación
                 setTimeout(() => modalInstance.destroy(), 300);
             }
         });
-        
+
         // Guardar referencia a la invitación
         modal.invitation = invitation;
 
@@ -861,7 +881,7 @@ export class ModalFactory {
                 }
             });
         }
-        
+
         return modal;
     }
 }
@@ -876,15 +896,15 @@ export function showToast(message, type = 'success', duration = 10000) {
         <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'exclamation-circle'}"></i>
         <span>${message}</span>
     `;
-    
+
     // Asegurar que el toast tenga un z-index alto
     toast.style.zIndex = '9999';
-    
+
     document.body.appendChild(toast);
-    
+
     // Trigger animation
     setTimeout(() => toast.classList.add('show'), 100);
-    
+
     // Remove after duration
     setTimeout(() => {
         toast.classList.remove('show');

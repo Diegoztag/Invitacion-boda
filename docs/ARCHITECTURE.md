@@ -84,11 +84,11 @@ class Invitation {
         this.validateData(data);
         // Lógica de negocio pura
     }
-    
+
     confirm(confirmationData) {
         // Reglas de negocio para confirmación
     }
-    
+
     cancel(reason, cancelledBy) {
         // Reglas de negocio para cancelación
     }
@@ -108,9 +108,15 @@ class Confirmation {
 ```javascript
 // core/repositories/IInvitationRepository.js
 class IInvitationRepository {
-    async save(invitation) { throw new Error('Not implemented'); }
-    async findByCode(code) { throw new Error('Not implemented'); }
-    async findAll(filters) { throw new Error('Not implemented'); }
+    async save(invitation) {
+        throw new Error('Not implemented');
+    }
+    async findByCode(code) {
+        throw new Error('Not implemented');
+    }
+    async findAll(filters) {
+        throw new Error('Not implemented');
+    }
     // ... más métodos
 }
 ```
@@ -129,7 +135,7 @@ class CreateInvitationUseCase {
         this.validationService = validationService;
         this.logger = logger;
     }
-    
+
     async execute(invitationData) {
         // 1. Validar datos
         // 2. Crear entidad
@@ -154,7 +160,7 @@ class CsvInvitationRepository extends IInvitationRepository {
         this.csvStorage = csvStorage;
         this.logger = logger;
     }
-    
+
     async save(invitation) {
         // Implementación específica para CSV
     }
@@ -169,7 +175,7 @@ class ValidationService {
     validateInvitationData(data) {
         // Validaciones específicas
     }
-    
+
     generateInvitationCode() {
         // Generación de códigos únicos
     }
@@ -190,7 +196,7 @@ class InvitationController {
         this.getInvitationUseCase = getInvitationUseCase;
         this.logger = logger;
     }
-    
+
     async createInvitation(req, res) {
         // 1. Extraer datos del request
         // 2. Ejecutar caso de uso
@@ -205,20 +211,22 @@ class InvitationController {
 // presentation/routes/invitationRoutes.js
 function configureInvitationRoutes(invitationController, middleware) {
     const router = express.Router();
-    
+
     // Rutas públicas
-    router.get('/:code', 
+    router.get(
+        '/:code',
         middleware.validateParams,
         invitationController.getInvitation.bind(invitationController)
     );
-    
+
     // Rutas administrativas
     router.use(middleware.authenticate);
-    router.post('/', 
+    router.post(
+        '/',
         middleware.validateBody,
         invitationController.createInvitation.bind(invitationController)
     );
-    
+
     return router;
 }
 ```
@@ -234,7 +242,7 @@ class SecurityMiddleware {
             max: 100
         });
     }
-    
+
     get validateParams() {
         return (req, res, next) => {
             // Validación de parámetros
@@ -279,11 +287,11 @@ class DIContainer {
         this.dependencies = new Map();
         this.singletons = new Map();
     }
-    
+
     register(name, factory, options = {}) {
         this.dependencies.set(name, { factory, options });
     }
-    
+
     resolve(name) {
         // Resolución de dependencias
     }
@@ -293,26 +301,32 @@ class DIContainer {
 ## 🔧 Patrones de Diseño Implementados
 
 ### 1. Repository Pattern
+
 - Abstrae el acceso a datos
 - Permite cambiar implementaciones sin afectar la lógica de negocio
 
 ### 2. Use Case Pattern
+
 - Encapsula la lógica de aplicación
 - Facilita testing y reutilización
 
 ### 3. Dependency Injection
+
 - Inversión de control
 - Facilita testing con mocks
 
 ### 4. Factory Pattern
+
 - Creación de objetos complejos
 - Centraliza la lógica de construcción
 
 ### 5. Observer Pattern
+
 - Comunicación entre componentes
 - Desacoplamiento de eventos
 
 ### 6. Strategy Pattern
+
 - Algoritmos intercambiables
 - Flexibilidad en validaciones
 
@@ -321,45 +335,45 @@ class DIContainer {
 ### Medidas Implementadas
 
 1. **Autenticación y Autorización**
-   - JWT tokens para sesiones
-   - Basic Auth para compatibilidad
-   - Middleware de autenticación
+    - JWT tokens para sesiones
+    - Basic Auth para compatibilidad
+    - Middleware de autenticación
 
 2. **Validación y Sanitización**
-   - Validación de entrada en todas las capas
-   - Sanitización contra XSS
-   - Validación de tipos de datos
+    - Validación de entrada en todas las capas
+    - Sanitización contra XSS
+    - Validación de tipos de datos
 
 3. **Rate Limiting**
-   - Protección contra ataques de fuerza bruta
-   - Límites diferenciados por endpoint
+    - Protección contra ataques de fuerza bruta
+    - Límites diferenciados por endpoint
 
 4. **Headers de Seguridad**
-   - Helmet.js para headers HTTP seguros
-   - CORS configurado apropiadamente
-   - CSP (Content Security Policy)
+    - Helmet.js para headers HTTP seguros
+    - CORS configurado apropiadamente
+    - CSP (Content Security Policy)
 
 5. **Logging y Monitoreo**
-   - Logs estructurados
-   - Tracking de requests
-   - Detección de anomalías
+    - Logs estructurados
+    - Tracking de requests
+    - Detección de anomalías
 
 ## 🧪 Testing
 
 ### Estrategia de Testing
 
 1. **Tests Unitarios**
-   - Cobertura mínima del 70%
-   - Tests para entidades, casos de uso y servicios
-   - Mocking de dependencias externas
+    - Cobertura mínima del 70%
+    - Tests para entidades, casos de uso y servicios
+    - Mocking de dependencias externas
 
 2. **Tests de Integración**
-   - Pruebas de endpoints completos
-   - Validación de flujos de datos
+    - Pruebas de endpoints completos
+    - Validación de flujos de datos
 
 3. **Tests de Contrato**
-   - Validación de interfaces
-   - Compatibilidad entre capas
+    - Validación de interfaces
+    - Compatibilidad entre capas
 
 ### Configuración
 
@@ -387,14 +401,16 @@ module.exports = {
 // shared/utils/Logger.js
 class Logger {
     info(message, metadata = {}) {
-        console.log(JSON.stringify({
-            level: 'info',
-            message,
-            timestamp: new Date().toISOString(),
-            ...metadata
-        }));
+        console.log(
+            JSON.stringify({
+                level: 'info',
+                message,
+                timestamp: new Date().toISOString(),
+                ...metadata
+            })
+        );
     }
-    
+
     startOperation(operation, metadata = {}) {
         const startTime = Date.now();
         return (result = {}, level = 'info') => {
@@ -421,20 +437,20 @@ class Logger {
 ### Consideraciones de Diseño
 
 1. **Separación de Responsabilidades**
-   - Cada capa tiene una responsabilidad específica
-   - Facilita el escalado horizontal
+    - Cada capa tiene una responsabilidad específica
+    - Facilita el escalado horizontal
 
 2. **Interfaces Bien Definidas**
-   - Contratos claros entre capas
-   - Permite reemplazar implementaciones
+    - Contratos claros entre capas
+    - Permite reemplazar implementaciones
 
 3. **Configuración Externalizada**
-   - Variables de entorno
-   - Configuración por ambiente
+    - Variables de entorno
+    - Configuración por ambiente
 
 4. **Stateless Design**
-   - No estado en el servidor
-   - Facilita la replicación
+    - No estado en el servidor
+    - Facilita la replicación
 
 ## 🔄 Flujo de Datos
 
@@ -491,24 +507,24 @@ graph TD
 ### Próximas Mejoras
 
 1. **Base de Datos**
-   - Migración de CSV a base de datos relacional
-   - Implementación de Repository para SQL
+    - Migración de CSV a base de datos relacional
+    - Implementación de Repository para SQL
 
 2. **Caching**
-   - Redis para cache de sesiones
-   - Cache de consultas frecuentes
+    - Redis para cache de sesiones
+    - Cache de consultas frecuentes
 
 3. **Microservicios**
-   - Separación en servicios independientes
-   - API Gateway
+    - Separación en servicios independientes
+    - API Gateway
 
 4. **Containerización**
-   - Docker para desarrollo y producción
-   - Kubernetes para orquestación
+    - Docker para desarrollo y producción
+    - Kubernetes para orquestación
 
 5. **CI/CD**
-   - Pipeline automatizado
-   - Despliegue continuo
+    - Pipeline automatizado
+    - Despliegue continuo
 
 ## 📚 Referencias
 
@@ -532,7 +548,7 @@ revisar el funcionamiento de modal detalles en invitaciones
 afinar la talba de invitaciones
 dejar de usar metodo de csv y pasarnos a base de datos
 
------
+---
 
 cosas por meter
 

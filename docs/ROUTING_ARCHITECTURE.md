@@ -8,19 +8,19 @@ Este documento describe la nueva arquitectura de rutas implementada para mejorar
 
 ### Rutas Principales
 
-| Ruta | Descripción | Archivo Servido | Propósito |
-|------|-------------|-----------------|-----------|
-| `/` | Página de inicio/landing | `frontend/landing/index.html` | Punto de entrada principal con navegación |
-| `/invitation` | Invitación pública | `frontend/invitation/index.html` | Invitación de boda para invitados |
-| `/dashboard` | Panel de administración | `frontend/dashboard/index.html` | Gestión de invitaciones y confirmaciones |
+| Ruta          | Descripción              | Archivo Servido                  | Propósito                                 |
+| ------------- | ------------------------ | -------------------------------- | ----------------------------------------- |
+| `/`           | Página de inicio/landing | `frontend/landing/index.html`    | Punto de entrada principal con navegación |
+| `/invitation` | Invitación pública       | `frontend/invitation/index.html` | Invitación de boda para invitados         |
+| `/dashboard`  | Panel de administración  | `frontend/dashboard/index.html`  | Gestión de invitaciones y confirmaciones  |
 
 ### Rutas de API
 
-| Ruta | Método | Descripción |
-|------|--------|-------------|
-| `/api/invitations` | GET, POST | Gestión de invitaciones |
+| Ruta                 | Método    | Descripción               |
+| -------------------- | --------- | ------------------------- |
+| `/api/invitations`   | GET, POST | Gestión de invitaciones   |
 | `/api/confirmations` | GET, POST | Gestión de confirmaciones |
-| `/health` | GET | Estado del servidor |
+| `/health`            | GET       | Estado del servidor       |
 
 ## Archivos Estáticos
 
@@ -32,9 +32,12 @@ app.use('/admin', express.static(path.join(__dirname, '../../frontend/admin')));
 app.use('/invitation', express.static(path.join(__dirname, '../../frontend/invitation')));
 
 // Servir página de inicio desde la raíz
-app.use('/', express.static(path.join(__dirname, '../../frontend'), {
-    index: 'index.html'
-}));
+app.use(
+    '/',
+    express.static(path.join(__dirname, '../../frontend'), {
+        index: 'index.html'
+    })
+);
 ```
 
 ### Rutas SPA (Single Page Application)
@@ -53,26 +56,31 @@ app.get('/invitation/*', (req, res) => {
 ## Beneficios de la Nueva Arquitectura
 
 ### 1. Separación Clara de Responsabilidades
+
 - **Landing Page**: Punto de entrada único y profesional
 - **Invitación**: Experiencia dedicada para invitados
 - **Admin**: Panel separado para gestión
 
 ### 2. Mejor Experiencia de Usuario
+
 - URLs más descriptivas y fáciles de recordar
 - Navegación intuitiva desde la página de inicio
 - Contextos claramente diferenciados
 
 ### 3. Escalabilidad
+
 - Fácil agregar nuevas secciones
 - Estructura modular y mantenible
 - Separación de assets por contexto
 
 ### 4. Seguridad
+
 - Panel de admin no expuesto en la raíz
 - Mejor control de acceso por rutas
 - Separación de recursos sensibles
 
 ### 5. SEO y Marketing
+
 - Mejor estructura para motores de búsqueda
 - URLs semánticas y descriptivas
 - Página de inicio optimizada para conversión
@@ -115,7 +123,7 @@ app.get('*', (req, res) => {
             error: 'Endpoint no encontrado'
         });
     }
-    
+
     // Para rutas no reconocidas, servir la página de inicio
     res.sendFile(path.join(__dirname, '../../frontend/index.html'));
 });
@@ -126,6 +134,7 @@ app.get('*', (req, res) => {
 ### Página de Inicio (Landing)
 
 La página de inicio (`/`) incluye:
+
 - Diseño elegante con información de la boda
 - Botón "Ver Invitación" → `/invitation`
 - Botón "Panel Admin" → `/admin`
@@ -141,11 +150,13 @@ La página de inicio (`/`) incluye:
 ## Consideraciones Técnicas
 
 ### Content Security Policy (CSP)
+
 - Configurado para permitir recursos locales
 - Bloquea recursos externos no autorizados
 - Mejora la seguridad de la aplicación
 
 ### MIME Types
+
 - Configuración correcta para archivos CSS y JS
 - Manejo apropiado de tipos de contenido
 - Prevención de errores de carga de recursos

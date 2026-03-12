@@ -10,7 +10,7 @@ export const APP_CONFIG = {
         environment: 'production', // 'development' | 'production'
         debug: false
     },
-    
+
     // Configuración de API
     api: {
         baseUrl: window.location.origin,
@@ -22,7 +22,7 @@ export const APP_CONFIG = {
         timeout: 10000, // 10 segundos
         retries: 3
     },
-    
+
     // Configuración de UI
     ui: {
         // Configuración de animaciones
@@ -31,21 +31,21 @@ export const APP_CONFIG = {
             easing: 'ease-in-out',
             enableAnimations: true
         },
-        
+
         // Configuración de scroll
         scroll: {
             offset: 80, // Offset para navegación
             behavior: 'smooth',
             debounceTime: 50
         },
-        
+
         // Configuración de modal
         modal: {
             closeOnBackdrop: true,
             closeOnEscape: true,
             animationDuration: 300
         },
-        
+
         // Configuración de carousel
         carousel: {
             autoplay: true,
@@ -53,7 +53,7 @@ export const APP_CONFIG = {
             transitionDuration: 500,
             pauseOnHover: true
         },
-        
+
         // Configuración de countdown
         countdown: {
             updateInterval: 1000, // 1 segundo
@@ -61,7 +61,7 @@ export const APP_CONFIG = {
             format: 'DD:HH:MM:SS'
         }
     },
-    
+
     // Configuración de validación
     validation: {
         // Reglas de validación para formularios
@@ -83,7 +83,7 @@ export const APP_CONFIG = {
                 pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
             }
         },
-        
+
         // Mensajes de error
         messages: {
             required: 'Este campo es obligatorio',
@@ -94,7 +94,7 @@ export const APP_CONFIG = {
             phone: 'Ingrese un teléfono válido'
         }
     },
-    
+
     // Configuración de notificaciones
     notifications: {
         duration: 5000, // 5 segundos
@@ -119,7 +119,7 @@ export const APP_CONFIG = {
             }
         }
     },
-    
+
     // Configuración de performance
     performance: {
         // Configuración de debounce/throttle
@@ -129,14 +129,14 @@ export const APP_CONFIG = {
             input: 300,
             search: 500
         },
-        
+
         // Configuración de lazy loading
         lazyLoading: {
             enabled: true,
             threshold: 0.1,
             rootMargin: '50px'
         },
-        
+
         // Configuración de cache
         cache: {
             enabled: true,
@@ -144,7 +144,7 @@ export const APP_CONFIG = {
             maxSize: 50
         }
     },
-    
+
     // Configuración de logging
     logging: {
         enabled: true,
@@ -152,7 +152,7 @@ export const APP_CONFIG = {
         console: true,
         remote: false
     },
-    
+
     // Configuración de features
     features: {
         // Features que pueden ser habilitadas/deshabilitadas
@@ -163,7 +163,7 @@ export const APP_CONFIG = {
         enableA11y: true, // Accessibility
         enableKeyboardNavigation: true
     },
-    
+
     // Configuración de breakpoints para responsive
     breakpoints: {
         mobile: 768,
@@ -171,7 +171,7 @@ export const APP_CONFIG = {
         desktop: 1200,
         large: 1400
     },
-    
+
     // Configuración de meta tags dinámicos
     meta: {
         updateTitle: true,

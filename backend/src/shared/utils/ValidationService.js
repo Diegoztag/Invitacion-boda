@@ -41,10 +41,10 @@ class ValidationService {
         if (!phone || typeof phone !== 'string') {
             return false;
         }
-        
+
         // Limpiar el teléfono de espacios y caracteres especiales
         const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
-        
+
         // Validar formato estricto
         return this.patterns.phone.test(cleanPhone);
     }
@@ -70,11 +70,13 @@ class ValidationService {
         if (!name || typeof name !== 'string') {
             return false;
         }
-        
+
         const trimmedName = name.trim();
-        return trimmedName.length >= 2 && 
-               trimmedName.length <= 100 && 
-               this.patterns.name.test(trimmedName);
+        return (
+            trimmedName.length >= 2 &&
+            trimmedName.length <= 100 &&
+            this.patterns.name.test(trimmedName)
+        );
     }
 
     /**
@@ -97,10 +99,7 @@ class ValidationService {
      * @returns {boolean}
      */
     validateNumberRange(value, min, max) {
-        return typeof value === 'number' && 
-               !isNaN(value) && 
-               value >= min && 
-               value <= max;
+        return typeof value === 'number' && !isNaN(value) && value >= min && value <= max;
     }
 
     /**
@@ -128,11 +127,7 @@ class ValidationService {
             return '';
         }
 
-        return str
-            .trim()
-            .replace(this.dangerousChars, '')
-            .replace(/[<>]/g, '')
-            .substring(0, 1000); // Limitar longitud máxima
+        return str.trim().replace(this.dangerousChars, '').replace(/[<>]/g, '').substring(0, 1000); // Limitar longitud máxima
     }
 
     /**
@@ -181,7 +176,7 @@ class ValidationService {
 
         for (const [field, rule] of Object.entries(rules)) {
             const value = data[field];
-            
+
             try {
                 // Verificar si es requerido
                 if (rule.required && (value === undefined || value === null || value === '')) {
@@ -203,7 +198,7 @@ class ValidationService {
                     }
 
                     const sanitizedValue = this.sanitizeString(value);
-                    
+
                     if (rule.minLength && sanitizedValue.length < rule.minLength) {
                         errors[field] = `${field} debe tener al menos ${rule.minLength} caracteres`;
                         continue;
@@ -220,10 +215,9 @@ class ValidationService {
                     }
 
                     sanitized[field] = sanitizedValue;
-                }
-                else if (rule.type === 'number') {
+                } else if (rule.type === 'number') {
                     const numValue = Number(value);
-                    
+
                     if (isNaN(numValue)) {
                         errors[field] = `${field} debe ser un número`;
                         continue;
@@ -245,24 +239,21 @@ class ValidationService {
                     }
 
                     sanitized[field] = numValue;
-                }
-                else if (rule.type === 'email') {
+                } else if (rule.type === 'email') {
                     if (!this.validateEmail(value)) {
                         errors[field] = `${field} debe ser un email válido`;
                         continue;
                     }
 
                     sanitized[field] = this.sanitizeEmail(value);
-                }
-                else if (rule.type === 'phone') {
+                } else if (rule.type === 'phone') {
                     if (!this.validatePhoneLoose(value)) {
                         errors[field] = `${field} debe ser un teléfono válido`;
                         continue;
                     }
 
                     sanitized[field] = this.sanitizePhone(value);
-                }
-                else if (rule.type === 'array') {
+                } else if (rule.type === 'array') {
                     if (!Array.isArray(value)) {
                         errors[field] = `${field} debe ser un array`;
                         continue;
@@ -284,20 +275,17 @@ class ValidationService {
                     } else {
                         sanitized[field] = value;
                     }
-                }
-                else if (rule.type === 'boolean') {
+                } else if (rule.type === 'boolean') {
                     if (typeof value !== 'boolean') {
                         errors[field] = `${field} debe ser un boolean`;
                         continue;
                     }
 
                     sanitized[field] = value;
-                }
-                else {
+                } else {
                     // Tipo no reconocido, usar valor tal como está
                     sanitized[field] = value;
                 }
-
             } catch (error) {
                 errors[field] = `Error validando ${field}: ${error.message}`;
             }

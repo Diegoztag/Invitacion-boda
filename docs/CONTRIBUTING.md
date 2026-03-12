@@ -3,6 +3,7 @@
 ## Código de Conducta
 
 Este proyecto se adhiere a un código de conducta basado en el respeto mutuo. Se espera que todos los contribuyentes:
+
 - Sean respetuosos y profesionales
 - Acepten críticas constructivas
 - Se enfoquen en lo mejor para la comunidad
@@ -13,6 +14,7 @@ Este proyecto se adhiere a un código de conducta basado en el respeto mutuo. Se
 ### 1. Reportar Bugs
 
 Antes de crear un issue:
+
 - Verifica que el bug no haya sido reportado
 - Incluye pasos detallados para reproducir
 - Especifica tu entorno (OS, Node version, etc.)
@@ -38,6 +40,7 @@ Antes de crear un issue:
 ### Principios Fundamentales
 
 #### 1. DRY (Don't Repeat Yourself)
+
 ```javascript
 // ❌ MALO - Código duplicado
 function formatUserName(user) {
@@ -54,21 +57,23 @@ function formatFullName(person) {
 ```
 
 #### 2. KISS (Keep It Simple, Stupid)
+
 ```javascript
 // ❌ MALO - Innecesariamente complejo
-const isAdult = (age) => {
+const isAdult = age => {
     if (age >= 18) {
         return true;
     } else {
         return false;
     }
-}
+};
 
 // ✅ BUENO - Simple y directo
-const isAdult = (age) => age >= 18;
+const isAdult = age => age >= 18;
 ```
 
 #### 3. SOLID
+
 - **S**ingle Responsibility: Una función = una tarea
 - **O**pen/Closed: Extensible sin modificar código existente
 - **L**iskov Substitution: Las subclases deben ser intercambiables
@@ -78,6 +83,7 @@ const isAdult = (age) => age >= 18;
 ### Convenciones de Código
 
 #### Nombres
+
 ```javascript
 // Variables y funciones: camelCase
 const userName = 'Juan';
@@ -96,6 +102,7 @@ const API_TIMEOUT = 5000;
 ```
 
 #### Funciones
+
 ```javascript
 // Máximo 20-30 líneas por función
 // Nombres descriptivos y verbos
@@ -112,6 +119,7 @@ function validateInvitationCode(code) {
 ```
 
 #### Estructura de Archivos
+
 ```javascript
 // 1. Imports
 import { validateEmail } from './utils/validators.js';
@@ -121,10 +129,10 @@ import { API_ENDPOINTS } from './constants.js';
 const RETRY_DELAY = 1000;
 
 // 3. Funciones auxiliares privadas
-function _formatData(data) { }
+function _formatData(data) {}
 
 // 4. Funciones/Clases públicas
-export function processInvitation(data) { }
+export function processInvitation(data) {}
 
 // 5. Exports al final (si no son inline)
 export { processInvitation };
@@ -133,6 +141,7 @@ export { processInvitation };
 ### Estilo de Código
 
 #### JavaScript
+
 ```javascript
 // Usar const/let, nunca var
 const immutableValue = 42;
@@ -160,6 +169,7 @@ async function fetchData() {
 ```
 
 #### CSS
+
 ```css
 /* Usar variables CSS */
 :root {
@@ -168,9 +178,12 @@ async function fetchData() {
 }
 
 /* BEM para naming */
-.invitation-card {}
-.invitation-card__header {}
-.invitation-card__header--active {}
+.invitation-card {
+}
+.invitation-card__header {
+}
+.invitation-card__header--active {
+}
 
 /* Mobile-first */
 .element {
@@ -196,9 +209,11 @@ try {
     console.error('Error in riskyOperation:', {
         error: error.message,
         stack: error.stack,
-        context: { /* datos relevantes */ }
+        context: {
+            /* datos relevantes */
+        }
     });
-    
+
     // Mensaje amigable para el usuario
     throw new Error('No se pudo completar la operación');
 }
@@ -217,21 +232,24 @@ class ValidationError extends Error {
 ### Testing
 
 #### Estructura de Tests
+
 ```javascript
 describe('InvitationService', () => {
     describe('createInvitation', () => {
         it('should create invitation with valid data', async () => {
             // Arrange
-            const data = { /* ... */ };
-            
+            const data = {
+                /* ... */
+            };
+
             // Act
             const result = await service.createInvitation(data);
-            
+
             // Assert
             expect(result).toHaveProperty('code');
             expect(result.code).toHaveLength(6);
         });
-        
+
         it('should throw error with invalid data', async () => {
             // Test de caso de error
         });
@@ -240,6 +258,7 @@ describe('InvitationService', () => {
 ```
 
 #### Cobertura Mínima
+
 - Funciones críticas: 90%
 - Utilidades: 80%
 - Componentes UI: 70%
@@ -247,6 +266,7 @@ describe('InvitationService', () => {
 ### Documentación
 
 #### JSDoc
+
 ```javascript
 /**
  * Servicio para gestionar invitaciones
@@ -266,12 +286,14 @@ class InvitationService {
      *   tableNumber: 5
      * });
      */
-    async create(data) { }
+    async create(data) {}
 }
 ```
 
 #### README para nuevas features
+
 Cada nueva funcionalidad debe incluir:
+
 - Descripción de la funcionalidad
 - Cómo usarla
 - Configuración necesaria
@@ -280,6 +302,7 @@ Cada nueva funcionalidad debe incluir:
 ### Git Workflow
 
 #### Commits
+
 ```bash
 # Formato de mensaje
 <tipo>(<alcance>): <descripción corta>
@@ -304,6 +327,7 @@ docs(api): actualizar documentación de endpoints
 ```
 
 #### Branches
+
 ```bash
 # Features
 feature/nombre-descriptivo
@@ -333,6 +357,7 @@ Antes de aprobar un PR, verificar:
 ### Performance Guidelines
 
 #### Optimizaciones Obligatorias
+
 ```javascript
 // Debounce para eventos frecuentes
 const debouncedSearch = debounce(searchFunction, 300);
@@ -348,6 +373,7 @@ const memoizedCalculation = useMemo(() => {
 ```
 
 #### Evitar
+
 - Manipulación excesiva del DOM
 - Loops anidados innecesarios
 - Operaciones síncronas bloqueantes
@@ -356,6 +382,7 @@ const memoizedCalculation = useMemo(() => {
 ### Seguridad
 
 #### Validación de Entrada
+
 ```javascript
 // Siempre validar y sanitizar entrada del usuario
 function sanitizeInput(input) {
@@ -373,6 +400,7 @@ if (!validator.isEmail(email)) {
 ```
 
 #### Nunca hacer
+
 - Guardar contraseñas en texto plano
 - Confiar en validación solo del cliente
 - Exponer información sensible en logs
@@ -396,6 +424,7 @@ if (!validator.isEmail(email)) {
 ## Contacto
 
 Para preguntas sobre contribución:
+
 - Abrir un issue con la etiqueta `question`
 - Revisar issues existentes primero
 - Ser específico y proporcionar contexto

@@ -27,6 +27,7 @@ Este proyecto sigue la especificación [Conventional Commits](https://www.conven
 ## Scope (Opcional)
 
 Área del código afectada:
+
 - `api`: cambios en rutas/controllers
 - `config`: configuración
 - `security`: seguridad
@@ -46,7 +47,7 @@ Este proyecto sigue la especificación [Conventional Commits](https://www.conven
 
 ## Body (Opcional pero recomendado)
 
-- Explicar el *qué* y el *por qué*, no el *cómo*
+- Explicar el _qué_ y el _por qué_, no el _cómo_
 - Separar con una línea en blanco del subject
 - Máximo 72 caracteres por línea
 - Puede tener múltiples párrafos
@@ -54,6 +55,7 @@ Este proyecto sigue la especificación [Conventional Commits](https://www.conven
 ## Footer (Opcional)
 
 Referencia a issues o breaking changes:
+
 ```
 Closes #123
 Fixes #456
@@ -63,6 +65,7 @@ BREAKING CHANGE: descripción del cambio que rompe compatibilidad
 ## Ejemplos
 
 ### Ejemplo 1: Feat simple
+
 ```
 feat(api): agregar endpoint para obtener estadísticas de confirmaciones
 
@@ -71,6 +74,7 @@ no asistencias y capacidad disponible para el evento.
 ```
 
 ### Ejemplo 2: Fix
+
 ```
 fix(validation): corregir validación de teléfono internacional
 
@@ -81,6 +85,7 @@ Closes #42
 ```
 
 ### Ejemplo 3: Refactor
+
 ```
 refactor(config): centralizar configuración en src/config/index.js
 
@@ -89,6 +94,7 @@ Reemplazar imports cruzados de frontend en backend.
 ```
 
 ### Ejemplo 4: Breaking Change
+
 ```
 feat(api)!: cambiar estructura de respuesta de invitaciones
 
@@ -107,5 +113,6 @@ y usa estructura anidada para mejor claridad.
 ## Herramientas
 
 Para automatizar esto, considera usar:
+
 - `commitizen`: CLI interactivo para crear commits válidos
 - `commitlint`: Validar commits en pre-commit hooks

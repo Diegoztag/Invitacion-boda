@@ -41,13 +41,13 @@ class CsvConfirmationRepository extends IConfirmationRepository {
 
             // Leer confirmaciones existentes
             const confirmations = await this.readAllConfirmations();
-            
+
             // Agregar nueva confirmación
             confirmations.push(confirmation);
-            
+
             // Escribir al archivo
             await this.writeAllConfirmations(confirmations);
-            
+
             this.logger.info('Confirmation saved successfully', {
                 code: confirmation.code,
                 willAttend: confirmation.willAttend,
@@ -93,20 +93,22 @@ class CsvConfirmationRepository extends IConfirmationRepository {
 
             // Aplicar filtros
             if (filters.willAttend !== undefined) {
-                confirmations = confirmations.filter(conf => conf.willAttend === filters.willAttend);
+                confirmations = confirmations.filter(
+                    conf => conf.willAttend === filters.willAttend
+                );
             }
 
             if (filters.confirmedAfter) {
                 const afterDate = new Date(filters.confirmedAfter);
-                confirmations = confirmations.filter(conf => 
-                    new Date(conf.confirmedAt) > afterDate
+                confirmations = confirmations.filter(
+                    conf => new Date(conf.confirmedAt) > afterDate
                 );
             }
 
             if (filters.confirmedBefore) {
                 const beforeDate = new Date(filters.confirmedBefore);
-                confirmations = confirmations.filter(conf => 
-                    new Date(conf.confirmedAt) < beforeDate
+                confirmations = confirmations.filter(
+                    conf => new Date(conf.confirmedAt) < beforeDate
                 );
             }
 
@@ -130,17 +132,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         try {
             const confirmations = await this.readAllConfirmations();
             const index = confirmations.findIndex(conf => conf.code === code);
-            
+
             if (index === -1) {
                 throw new Error(`Confirmación con código ${code} no encontrada`);
             }
 
             // Actualizar la confirmación
             confirmations[index] = confirmation;
-            
+
             // Escribir al archivo
             await this.writeAllConfirmations(confirmations);
-            
+
             this.logger.info('Confirmation updated successfully', {
                 code,
                 willAttend: confirmation.willAttend,
@@ -166,17 +168,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         try {
             const confirmations = await this.readAllConfirmations();
             const index = confirmations.findIndex(conf => conf.code === code);
-            
+
             if (index === -1) {
                 throw new Error(`Confirmación con código ${code} no encontrada`);
             }
 
             // Eliminar la confirmación
             confirmations.splice(index, 1);
-            
+
             // Escribir al archivo
             await this.writeAllConfirmations(confirmations);
-            
+
             this.logger.info('Confirmation deleted successfully', { code });
 
             return true;
@@ -216,11 +218,9 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         try {
             const confirmations = await this.readAllConfirmations();
             const searchName = guestName.toLowerCase();
-            
-            return confirmations.filter(confirmation => 
-                confirmation.attendingNames.some(name => 
-                    name.toLowerCase().includes(searchName)
-                )
+
+            return confirmations.filter(confirmation =>
+                confirmation.attendingNames.some(name => name.toLowerCase().includes(searchName))
             );
         } catch (error) {
             this.logger.error('Error finding confirmations by guest name', {
@@ -300,20 +300,24 @@ class CsvConfirmationRepository extends IConfirmationRepository {
     async getStats() {
         try {
             const confirmations = await this.readAllConfirmations();
-            
+
             const positive = confirmations.filter(conf => conf.isPositive());
             const negative = confirmations.filter(conf => conf.isNegative());
-            
+
             const stats = {
                 total: confirmations.length,
                 positive: positive.length,
                 negative: negative.length,
                 totalConfirmedGuests: positive.reduce((sum, conf) => sum + conf.attendingGuests, 0),
-                withDietaryRestrictions: confirmations.filter(conf => conf.hasDietaryRestrictions()).length,
+                withDietaryRestrictions: confirmations.filter(conf => conf.hasDietaryRestrictions())
+                    .length,
                 withMessages: confirmations.filter(conf => conf.hasMessage()).length,
                 withPhone: confirmations.filter(conf => conf.hasPhone()).length,
-                averageGuestsPerConfirmation: positive.length > 0 ? 
-                    positive.reduce((sum, conf) => sum + conf.attendingGuests, 0) / positive.length : 0
+                averageGuestsPerConfirmation:
+                    positive.length > 0
+                        ? positive.reduce((sum, conf) => sum + conf.attendingGuests, 0) /
+                          positive.length
+                        : 0
             };
 
             return stats;
@@ -371,17 +375,21 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      */
     async findPaginated(page = 1, limit = 10, filters = {}, sort = {}) {
         try {
-            let confirmations = await this.findAll(filters);
-            
+            const confirmations = await this.findAll(filters);
+
             // Aplicar ordenamiento
             if (sort.field) {
                 const direction = sort.direction === 'desc' ? -1 : 1;
                 confirmations.sort((a, b) => {
                     const aVal = a[sort.field];
                     const bVal = b[sort.field];
-                    
-                    if (aVal < bVal) return -1 * direction;
-                    if (aVal > bVal) return 1 * direction;
+
+                    if (aVal < bVal) {
+                        return -1 * direction;
+                    }
+                    if (aVal > bVal) {
+                        return 1 * direction;
+                    }
                     return 0;
                 });
             }
@@ -423,9 +431,9 @@ class CsvConfirmationRepository extends IConfirmationRepository {
     async exportAll(options = {}) {
         try {
             const confirmations = await this.readAllConfirmations();
-            
+
             const exportData = confirmations.map(confirmation => confirmation.toObject());
-            
+
             return {
                 data: exportData,
                 count: exportData.length,
@@ -464,7 +472,7 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         try {
             const cutoffDate = new Date();
             cutoffDate.setHours(cutoffDate.getHours() - hours);
-            
+
             return await this.findAll({ confirmedAfter: cutoffDate.toISOString() });
         } catch (error) {
             this.logger.error('Error finding recent confirmations', {
@@ -506,7 +514,7 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         try {
             const rawConfirmations = await this.csvStorage.readConfirmations();
             const confirmations = [];
-            
+
             for (const rawConfirmation of rawConfirmations) {
                 try {
                     const confirmationData = this.csvRowToConfirmationData(rawConfirmation);
@@ -536,7 +544,9 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      */
     async writeAllConfirmations(confirmations) {
         try {
-            const csvData = confirmations.map(confirmation => this.confirmationToCsvData(confirmation));
+            const csvData = confirmations.map(confirmation =>
+                this.confirmationToCsvData(confirmation)
+            );
             await this.csvStorage.writeConfirmations(csvData);
         } catch (error) {
             this.logger.error('Error writing confirmations to CSV', {
@@ -554,10 +564,10 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      */
     csvRowToConfirmationData(rawData) {
         const data = {};
-        
+
         for (const header of this.headers) {
             const value = rawData[header] || '';
-            
+
             switch (header) {
                 case 'guestCount':
                     data[header] = value ? parseInt(value, 10) : 0;
@@ -584,10 +594,10 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      */
     confirmationToCsvData(confirmation) {
         const data = {};
-        
+
         for (const header of this.headers) {
-            let value = confirmation[header];
-            
+            const value = confirmation[header];
+
             switch (header) {
                 case 'willAttend':
                     data[header] = confirmation.willAttend ? 'true' : 'false';
@@ -611,10 +621,10 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      */
     confirmationToCsvRow(confirmation) {
         const values = [];
-        
+
         for (const header of this.headers) {
             let value = confirmation[header];
-            
+
             switch (header) {
                 case 'attendingNames':
                     value = confirmation.attendingNames.join('|');
@@ -628,7 +638,7 @@ class CsvConfirmationRepository extends IConfirmationRepository {
                 default:
                     value = value || '';
             }
-            
+
             // Escapar comillas y comas
             const escapedValue = this.escapeCsvValue(String(value));
             values.push(escapedValue);
@@ -647,10 +657,10 @@ class CsvConfirmationRepository extends IConfirmationRepository {
         const values = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
-            
+
             if (char === '"') {
                 if (inQuotes && line[i + 1] === '"') {
                     // Comilla escapada
@@ -668,10 +678,10 @@ class CsvConfirmationRepository extends IConfirmationRepository {
                 current += char;
             }
         }
-        
+
         // Agregar el último valor
         values.push(current);
-        
+
         return values;
     }
 

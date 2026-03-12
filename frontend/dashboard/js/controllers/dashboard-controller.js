@@ -1,12 +1,12 @@
- /**
+/**
  * Dashboard Controller
  * Maneja toda la lógica relacionada con el dashboard principal
  */
 
 import { adminAPI, APIHelpers } from '../dashboard-api.js';
-import { 
-    updateStatsUI, 
-    updateTargetElements, 
+import {
+    updateStatsUI,
+    updateTargetElements,
     updateConfirmedChangeIndicator,
     getSafeValue,
     renderTableRow
@@ -26,17 +26,18 @@ export class DashboardController {
      */
     mapStatsData(backendStats) {
         console.log('🔄 Mapeando datos del backend:', backendStats);
-        
+
         // Extraer datos de la estructura optimizada del backend
         const invitations = backendStats.invitations || {};
         const confirmations = backendStats.confirmations || {};
         const passDistribution = backendStats.passDistribution || {};
         const rates = backendStats.rates || {};
-        
+
         // Calcular porcentaje de confirmados
         const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
         const confirmedPasses = getSafeValue(confirmations.totalConfirmedGuests, 0);
-        const confirmedPercentage = targetTotal > 0 ? Math.round((confirmedPasses / targetTotal) * 100) : 0;
+        const confirmedPercentage =
+            targetTotal > 0 ? Math.round((confirmedPasses / targetTotal) * 100) : 0;
 
         // Mapeo para RenderService (estructura que espera el template)
         const renderServiceData = {
@@ -45,19 +46,19 @@ export class DashboardController {
             confirmedPasses: confirmedPasses,
             pendingPasses: getSafeValue(confirmations.pendingPasses, 0),
             cancelledPasses: getSafeValue(invitations.cancelledPasses, 0),
-            
+
             // Invitations stats - usar valores individuales del backend
             totalInvitations: getSafeValue(invitations.total, 0),
             confirmedInvitations: getSafeValue(invitations.confirmed, 0),
             pendingInvitations: getSafeValue(invitations.pending, 0),
             cancelledInvitations: getSafeValue(invitations.cancelled, 0),
-            
+
             // Additional data
             targetPasses: targetTotal,
             remainingPasses: Math.max(0, targetTotal - confirmedPasses),
             confirmedPercentage: confirmedPercentage
         };
-        
+
         // Mapeo para updateStatsUI (estructura que espera dashboard-utils)
         const utilsData = {
             invitations: {
@@ -78,10 +79,10 @@ export class DashboardController {
                 attendanceRate: getSafeValue(rates.attendanceRate, 0)
             }
         };
-        
+
         console.log('📊 Datos mapeados para RenderService:', renderServiceData);
         console.log('� Datos mapeados para Utils:', utilsData);
-        
+
         return {
             renderService: renderServiceData,
             utils: utilsData,
@@ -158,17 +159,18 @@ export class DashboardController {
             // Load saved preference
             const savedPeriod = localStorage.getItem('confirmationPeriod') || 'today';
             periodSelector.value = savedPeriod;
-            
+
             // Add change event listener
-            periodSelector.addEventListener('change', async (e) => {
+            periodSelector.addEventListener('change', async e => {
                 const selectedPeriod = e.target.value;
-                
+
                 // Save preference
                 localStorage.setItem('confirmationPeriod', selectedPeriod);
-                
+
                 // Calculate confirmations for new period
-                const periodConfirmations = await this.calculateConfirmationsByPeriod(selectedPeriod);
-                
+                const periodConfirmations =
+                    await this.calculateConfirmationsByPeriod(selectedPeriod);
+
                 // Update welcome text
                 this.updateWelcomeText(selectedPeriod, periodConfirmations);
             });
@@ -183,50 +185,50 @@ export class DashboardController {
             console.log('🔄 Cargando datos del dashboard...');
             const result = await adminAPI.fetchStats();
             console.log('📊 Resultado de fetchStats:', result);
-            
+
             if (APIHelpers.isSuccess(result)) {
                 const backendStats = result.data;
                 console.log('📈 Stats recibidas del backend:', backendStats);
-                
+
                 // Usar el Data Mapper centralizado
                 const mappedData = this.mapStatsData(backendStats);
-                
+
                 // Actualizar stats usando RenderService
                 if (window.renderService) {
                     console.log('🎨 Actualizando dashboard stats con RenderService...');
                     window.renderService.renderDashboardStats(mappedData.renderService);
-                    
+
                     console.log('🎨 Actualizando invitations stats con RenderService...');
                     window.renderService.renderInvitationsStats(mappedData.renderService);
                 }
-                
+
                 // Actualizar stats usando dashboard-utils (para elementos que no usa RenderService)
                 console.log('🔧 Actualizando stats con dashboard-utils...');
                 updateStatsUI(mappedData.utils, ''); // Dashboard principal
                 updateStatsUI(mappedData.utils, 'Stats'); // Sección de invitaciones
-                
+
                 // Update confirmed percentage badge
                 this.updateConfirmedPercentageBadge(mappedData.renderService);
-                
+
                 // Update target elements
                 const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
                 updateTargetElements({
                     targetTotal: targetTotal
                 });
-                
+
                 // Calculate and display remaining guests
                 this.updateRemainingGuests(mappedData.renderService, targetTotal);
-                
+
                 // Get selected period and update welcome text
                 await this.updateWelcomeTextForPeriod();
-                
+
                 // Update pass distribution and chart
                 this.updatePassDistribution(mappedData.original);
                 this.updateConfirmationChart(mappedData.original);
-                
+
                 // Load recent confirmations
                 await this.loadRecentConfirmations();
-                
+
                 console.log('✅ Dashboard data loaded successfully');
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
@@ -234,7 +236,7 @@ export class DashboardController {
         } catch (error) {
             console.error('❌ Error loading dashboard data:', error);
             showToast(APIHelpers.getErrorMessage({ error: error.message }), 'error');
-            
+
             // Show empty state instead of demo data
             this.showEmptyState();
         }
@@ -246,18 +248,19 @@ export class DashboardController {
     updateConfirmedPercentageBadge(stats) {
         const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
         const confirmedPasses = getSafeValue(stats.confirmedPasses, 0);
-        const confirmedPercentage = targetTotal > 0 ? Math.round((confirmedPasses / targetTotal) * 100) : 0;
+        const confirmedPercentage =
+            targetTotal > 0 ? Math.round((confirmedPasses / targetTotal) * 100) : 0;
         const safePercentage = getSafeValue(confirmedPercentage, 0);
         const confirmedBadge = document.getElementById('confirmedChange');
-        
+
         if (confirmedBadge) {
             confirmedBadge.textContent = `${safePercentage}%`;
             confirmedBadge.title = 'Porcentaje de confirmados';
-            
+
             if (!confirmedBadge.classList.contains('stat-badge')) {
                 confirmedBadge.classList.add('stat-badge');
             }
-            
+
             // Update badge color based on percentage
             confirmedBadge.classList.remove('success', 'warning', 'danger', 'primary');
             if (safePercentage >= 70) {
@@ -289,7 +292,7 @@ export class DashboardController {
     async updateWelcomeTextForPeriod() {
         const periodSelector = document.getElementById('confirmationPeriod');
         const selectedPeriod = periodSelector ? periodSelector.value : 'today';
-        
+
         const periodConfirmations = await this.calculateConfirmationsByPeriod(selectedPeriod);
         this.updateWelcomeText(selectedPeriod, periodConfirmations);
     }
@@ -309,19 +312,19 @@ export class DashboardController {
             childPasses: 0,
             staffPasses: 0
         };
-        
+
         updateStatsUI(emptyStats);
         this.updateConfirmedPercentageBadge(emptyStats);
-        
+
         const targetTotal = WEDDING_CONFIG.guests?.targetTotal || 250;
         updateTargetElements({
             targetTotal: targetTotal
         });
-        
+
         this.updateRemainingGuests(emptyStats, targetTotal);
         this.updatePassDistribution(emptyStats);
         this.updateConfirmationChart(emptyStats);
-        
+
         // Show empty confirmations table
         this.displayRecentConfirmations([]);
     }
@@ -331,17 +334,18 @@ export class DashboardController {
      */
     updatePassDistribution(stats) {
         console.log('🎯 Actualizando distribución de pases con datos del backend:', stats);
-        
+
         const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
         const passDistribution = stats.passDistribution || {};
         const distributionPercentages = passDistribution.distributionPercentages || {};
-        
+
         // Usar datos ya procesados del backend - SIN cálculos en frontend
         const adultPasses = passDistribution.activeAdultPasses || 0;
-        const childPasses = allowChildren ? (passDistribution.activeChildPasses || 0) : 0;
+        const childPasses = allowChildren ? passDistribution.activeChildPasses || 0 : 0;
         const staffPasses = passDistribution.activeStaffPasses || 0;
-        const totalActivePasses = passDistribution.totalActivePasses || (adultPasses + childPasses + staffPasses);
-        
+        const totalActivePasses =
+            passDistribution.totalActivePasses || adultPasses + childPasses + staffPasses;
+
         // Recalcular porcentajes en frontend para asegurar consistencia visual
         // Esto corrige casos donde el backend pueda enviar 0 o undefined en los porcentajes
         let adultPercent = 0;
@@ -352,21 +356,27 @@ export class DashboardController {
             adultPercent = Math.round((adultPasses / totalActivePasses) * 100);
             childPercent = allowChildren ? Math.round((childPasses / totalActivePasses) * 100) : 0;
             staffPercent = Math.round((staffPasses / totalActivePasses) * 100);
-            
+
             // Asegurar mínimo visual de 1% si hay pases pero el porcentaje redondeado es 0
             // Esto garantiza que la barra de progreso sea visible aunque el porcentaje sea muy bajo (ej. 0.4%)
-            if (adultPasses > 0 && adultPercent === 0) adultPercent = 1;
-            if (childPasses > 0 && childPercent === 0) childPercent = 1;
-            if (staffPasses > 0 && staffPercent === 0) staffPercent = 1;
+            if (adultPasses > 0 && adultPercent === 0) {
+                adultPercent = 1;
+            }
+            if (childPasses > 0 && childPercent === 0) {
+                childPercent = 1;
+            }
+            if (staffPasses > 0 && staffPercent === 0) {
+                staffPercent = 1;
+            }
         }
-        
+
         console.log('📊 Distribución de pases (recalculado):', {
             totalActivePasses,
             adultos: `${adultPasses} (${adultPercent}%)`,
             niños: `${childPasses} (${childPercent}%)`,
             staff: `${staffPasses} (${staffPercent}%)`
         });
-        
+
         // Usar render service para actualizar la UI
         if (window.renderService) {
             window.renderService.renderPassDistribution({
@@ -404,14 +414,16 @@ export class DashboardController {
      */
     displayRecentConfirmations(confirmations) {
         const tbody = document.getElementById('recentConfirmations');
-        if (!tbody) return;
-        
+        if (!tbody) {
+            return;
+        }
+
         tbody.innerHTML = '';
-        
+
         if (confirmations.length === 0) {
             return;
         }
-        
+
         confirmations.forEach((invitation, index) => {
             const row = document.createElement('tr');
             // Use imported renderTableRow
@@ -427,10 +439,10 @@ export class DashboardController {
         try {
             // Usar fetchRecentConfirmations con filtro de días para obtener el conteo del período
             const result = await adminAPI.fetchRecentConfirmations(
-                period === 'lastWeek' ? 7 : 1, 
+                period === 'lastWeek' ? 7 : 1,
                 100 // Límite alto para obtener todas las confirmaciones del período
             );
-            
+
             if (APIHelpers.isSuccess(result)) {
                 return result.confirmations ? result.confirmations.length : 0;
             }
@@ -445,10 +457,12 @@ export class DashboardController {
      */
     updateWelcomeText(period, confirmations) {
         const welcomeSubtext = document.getElementById('welcomeSubtext');
-        if (!welcomeSubtext) return;
-        
+        if (!welcomeSubtext) {
+            return;
+        }
+
         let periodText = '';
-        switch(period) {
+        switch (period) {
             case 'today':
                 periodText = 'hoy';
                 break;
@@ -461,7 +475,7 @@ export class DashboardController {
             default:
                 periodText = 'hoy';
         }
-        
+
         if (confirmations > 0) {
             welcomeSubtext.textContent = `Aquí tienes el resumen de tu boda. Recibiste ${confirmations} confirmación${confirmations === 1 ? '' : 'es'} nueva${confirmations === 1 ? '' : 's'} ${periodText}.`;
         } else {
@@ -474,15 +488,15 @@ export class DashboardController {
      */
     updateConfirmationChart(stats) {
         const ctx = document.getElementById('confirmationChart').getContext('2d');
-        
+
         if (this.confirmationChart) {
             this.confirmationChart.destroy();
         }
-        
+
         // Extraer datos de la nueva estructura
         const confirmations = stats.confirmations || {};
         const invitations = stats.invitations || {};
-        
+
         const confirmedPasses = confirmations.totalConfirmedGuests || 0;
         const pendingPasses = confirmations.pendingPasses || 0;
         const cancelledPasses = invitations.cancelledPasses || 0;
@@ -490,19 +504,21 @@ export class DashboardController {
         // Determine font size based on screen width
         const isMobile = window.innerWidth < 768;
         const fontSize = isMobile ? 10 : 12;
-        
+
         this.confirmationChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Confirmados', 'Pendientes', 'Cancelados'],
-                datasets: [{
-                    data: [confirmedPasses, pendingPasses, cancelledPasses],
-                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                    borderWidth: 0,
-                    borderColor: '#2d1b27',
-                    hoverBorderColor: '#e619a1',
-                    hoverBorderWidth: 2
-                }]
+                datasets: [
+                    {
+                        data: [confirmedPasses, pendingPasses, cancelledPasses],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        borderColor: '#2d1b27',
+                        hoverBorderColor: '#e619a1',
+                        hoverBorderWidth: 2
+                    }
+                ]
             },
             options: {
                 responsive: true,
@@ -529,11 +545,12 @@ export class DashboardController {
                         padding: isMobile ? 8 : 12,
                         displayColors: true,
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 const label = context.label || '';
                                 const value = context.parsed || 0;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                                const percentage =
+                                    total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
                                 return `${label}: ${value} (${percentage}%)`;
                             }
                         },
@@ -548,5 +565,4 @@ export class DashboardController {
             }
         });
     }
-
 }

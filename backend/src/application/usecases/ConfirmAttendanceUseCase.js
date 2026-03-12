@@ -7,7 +7,13 @@
 const Confirmation = require('../../core/entities/Confirmation');
 
 class ConfirmAttendanceUseCase {
-    constructor(invitationRepository, confirmationRepository, validationService, sseService, logger) {
+    constructor(
+        invitationRepository,
+        confirmationRepository,
+        validationService,
+        sseService,
+        logger
+    ) {
         this.invitationRepository = invitationRepository;
         this.confirmationRepository = confirmationRepository;
         this.validationService = validationService;
@@ -42,7 +48,8 @@ class ConfirmAttendanceUseCase {
             this.validateInvitationState(invitation);
 
             // Verificar si ya existe una confirmación
-            const existingConfirmation = await this.confirmationRepository.findByCode(invitationCode);
+            const existingConfirmation =
+                await this.confirmationRepository.findByCode(invitationCode);
             if (existingConfirmation) {
                 throw new Error('Esta invitación ya ha sido confirmada');
             }
@@ -99,11 +106,10 @@ class ConfirmAttendanceUseCase {
                 success: true,
                 invitation: updatedInvitation.toObject(),
                 confirmation: savedConfirmation.toObject(),
-                message: normalizedData.willAttend 
+                message: normalizedData.willAttend
                     ? 'Asistencia confirmada exitosamente'
                     : 'Confirmación de no asistencia registrada'
             };
-
         } catch (error) {
             // Log de error
             this.logger.error('Error confirming attendance', {
@@ -138,7 +144,8 @@ class ConfirmAttendanceUseCase {
             }
 
             // Buscar confirmación existente
-            const existingConfirmation = await this.confirmationRepository.findByCode(invitationCode);
+            const existingConfirmation =
+                await this.confirmationRepository.findByCode(invitationCode);
             if (!existingConfirmation) {
                 throw new Error('No existe una confirmación para esta invitación');
             }
@@ -151,38 +158,44 @@ class ConfirmAttendanceUseCase {
 
             // Actualizar confirmación
             const updatedConfirmation = existingConfirmation.clone();
-            
+
             if (normalizedData.willAttend !== undefined) {
                 updatedConfirmation.updateAttendance(normalizedData.willAttend);
             }
-            
+
             if (normalizedData.attendingGuests !== undefined) {
                 updatedConfirmation.updateAttendingGuests(normalizedData.attendingGuests);
             }
-            
+
             if (normalizedData.attendingNames) {
                 updatedConfirmation.updateAttendingNames(normalizedData.attendingNames);
             }
-            
+
             if (normalizedData.phone !== undefined) {
                 updatedConfirmation.updatePhone(normalizedData.phone);
             }
-            
+
             if (normalizedData.dietaryRestrictions !== undefined) {
                 updatedConfirmation.updateDietaryRestrictions(normalizedData.dietaryRestrictions);
             }
-            
+
             if (normalizedData.message !== undefined) {
                 updatedConfirmation.updateMessage(normalizedData.message);
             }
 
             // Guardar confirmación actualizada
-            const savedConfirmation = await this.confirmationRepository.update(invitationCode, updatedConfirmation);
+            const savedConfirmation = await this.confirmationRepository.update(
+                invitationCode,
+                updatedConfirmation
+            );
 
             // Actualizar invitación si cambió la asistencia
-            if (normalizedData.willAttend !== undefined || normalizedData.attendingGuests !== undefined) {
+            if (
+                normalizedData.willAttend !== undefined ||
+                normalizedData.attendingGuests !== undefined
+            ) {
                 const updatedInvitation = invitation.clone();
-                
+
                 if (normalizedData.willAttend === false) {
                     updatedInvitation.unconfirm();
                 } else if (normalizedData.attendingGuests !== undefined) {
@@ -203,7 +216,6 @@ class ConfirmAttendanceUseCase {
                 confirmation: savedConfirmation.toObject(),
                 message: 'Confirmación actualizada exitosamente'
             };
-
         } catch (error) {
             // Log de error
             this.logger.error('Error updating confirmation', {
@@ -235,7 +247,8 @@ class ConfirmAttendanceUseCase {
             }
 
             // Buscar confirmación existente
-            const existingConfirmation = await this.confirmationRepository.findByCode(invitationCode);
+            const existingConfirmation =
+                await this.confirmationRepository.findByCode(invitationCode);
             if (!existingConfirmation) {
                 throw new Error('No existe una confirmación para esta invitación');
             }
@@ -259,7 +272,6 @@ class ConfirmAttendanceUseCase {
                 invitation: updatedInvitation.toObject(),
                 message: 'Confirmación cancelada exitosamente'
             };
-
         } catch (error) {
             // Log de error
             this.logger.error('Error cancelling confirmation', {
@@ -292,24 +304,36 @@ class ConfirmAttendanceUseCase {
         }
 
         // Validar willAttend si se proporciona
-        if (confirmationData.willAttend !== undefined && typeof confirmationData.willAttend !== 'boolean') {
+        if (
+            confirmationData.willAttend !== undefined &&
+            typeof confirmationData.willAttend !== 'boolean'
+        ) {
             throw new Error('willAttend debe ser un boolean');
         }
 
         // Validar attendingGuests si se proporciona
         if (confirmationData.attendingGuests !== undefined) {
-            if (!Number.isInteger(confirmationData.attendingGuests) || confirmationData.attendingGuests < 0) {
+            if (
+                !Number.isInteger(confirmationData.attendingGuests) ||
+                confirmationData.attendingGuests < 0
+            ) {
                 throw new Error('El número de invitados debe ser un entero no negativo');
             }
         }
 
         // Validar attendingNames si se proporciona
-        if (confirmationData.attendingNames !== undefined && !Array.isArray(confirmationData.attendingNames)) {
+        if (
+            confirmationData.attendingNames !== undefined &&
+            !Array.isArray(confirmationData.attendingNames)
+        ) {
             throw new Error('Los nombres de invitados deben ser un array');
         }
 
         // Validar teléfono si se proporciona
-        if (confirmationData.phone && !this.validationService.validatePhone(confirmationData.phone)) {
+        if (
+            confirmationData.phone &&
+            !this.validationService.validatePhone(confirmationData.phone)
+        ) {
             throw new Error('El formato del teléfono no es válido');
         }
     }
@@ -348,7 +372,9 @@ class ConfirmAttendanceUseCase {
 
         // Normalizar restricciones dietarias
         if (normalized.dietaryRestrictions) {
-            normalized.dietaryRestrictions = this.validationService.sanitizeString(normalized.dietaryRestrictions);
+            normalized.dietaryRestrictions = this.validationService.sanitizeString(
+                normalized.dietaryRestrictions
+            );
         }
 
         // Normalizar mensaje
@@ -382,7 +408,10 @@ class ConfirmAttendanceUseCase {
         }
 
         // Validar que el número de nombres no exceda el número de invitados
-        if (normalizedData.attendingNames && normalizedData.attendingNames.length > normalizedData.attendingGuests) {
+        if (
+            normalizedData.attendingNames &&
+            normalizedData.attendingNames.length > normalizedData.attendingGuests
+        ) {
             throw new Error('No se pueden tener más nombres que invitados confirmados');
         }
 

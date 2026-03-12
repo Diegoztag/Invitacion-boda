@@ -11,7 +11,7 @@ export const SELECTORS = {
         NAV_LINKS: '.nav-link',
         NAV_LOGO: '.nav-logo'
     },
-    
+
     // Secciones principales
     SECTIONS: {
         HERO: '.hero',
@@ -25,7 +25,7 @@ export const SELECTORS = {
         FOTOS: '#fotos',
         MESA_REGALOS: '#mesa-regalos'
     },
-    
+
     // Hero section
     HERO: {
         SECTION: '.hero',
@@ -35,7 +35,7 @@ export const SELECTORS = {
         DATE_MONTH: '#dateMonth',
         DATE_YEAR: '#dateYear'
     },
-    
+
     // Evento section
     EVENTO: {
         CEREMONY_NAME: '#ceremonyName',
@@ -47,7 +47,7 @@ export const SELECTORS = {
         RECEPTION_VENUE: '#receptionVenue',
         RECEPTION_ADDRESS: '#receptionAddress'
     },
-    
+
     // Dress code section
     DRESS_CODE: {
         TITLE: '#dressCodeTitle',
@@ -56,7 +56,7 @@ export const SELECTORS = {
         NO_CHILDREN_NOTE: '#noChildrenNote',
         NO_CHILDREN_MESSAGE: '#noChildrenMessage'
     },
-    
+
     // Itinerario section
     ITINERARIO: {
         TIMELINE: '#itineraryTimeline',
@@ -65,14 +65,14 @@ export const SELECTORS = {
         CONTENT: '.itinerary-content',
         TIME: '.itinerary-time'
     },
-    
+
     // Ubicación section
     UBICACION: {
         VENUE_NAME: '#locationVenueName',
         ADDRESS: '#locationAddress',
         MAP_IFRAME: '#mapIframe'
     },
-    
+
     // RSVP section
     RSVP: {
         FORM: '#rsvpForm',
@@ -85,7 +85,7 @@ export const SELECTORS = {
         SUCCESS_MESSAGE: '#rsvpSuccessMessage',
         ERROR_MESSAGE: '#rsvpErrorMessage'
     },
-    
+
     // Carousel section
     CAROUSEL: {
         CONTAINER: '#carousel',
@@ -98,7 +98,7 @@ export const SELECTORS = {
         INDICATORS: '#carouselIndicators',
         INDICATOR: '.carousel-indicator'
     },
-    
+
     // Fotos section
     FOTOS: {
         SECTION_TITLE: '#photoSectionTitle',
@@ -107,19 +107,19 @@ export const SELECTORS = {
         HASHTAG_DESCRIPTION: '#hashtagDescription',
         HASHTAG_CONTAINER: '.hashtag-container'
     },
-    
+
     // Mesa de regalos section
     MESA_REGALOS: {
         SECTION: '#mesa-regalos'
     },
-    
+
     // Footer
     FOOTER: {
         NAMES: '#footerNames',
         DATE: '#footerDate',
         HASHTAG: '#footerHashtag'
     },
-    
+
     // Countdown
     COUNTDOWN: {
         CONTAINER: '#countdown',
@@ -129,7 +129,7 @@ export const SELECTORS = {
         SECONDS: '#seconds',
         ENDED_MESSAGE: '.countdown-ended'
     },
-    
+
     // Modal
     MODAL: {
         OVERLAY: '.modal-overlay',
@@ -140,14 +140,14 @@ export const SELECTORS = {
         BODY: '.modal-body',
         FOOTER: '.modal-footer'
     },
-    
+
     // Loader
     LOADER: {
         CONTAINER: '.loader',
         SPINNER: '.loader-spinner',
         TEXT: '.loader-text'
     },
-    
+
     // Estados generales
     STATES: {
         ACTIVE: '.active',

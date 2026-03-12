@@ -21,23 +21,19 @@ export const DEFAULT_VALUES = {
 // Porcentajes de distribución de pases
 export const PASS_DISTRIBUTION = {
     WITH_CHILDREN: {
-        ADULT: 0.8,    // 80%
-        CHILD: 0.15,   // 15%
-        STAFF: 0.05    // 5%
+        ADULT: 0.8, // 80%
+        CHILD: 0.15, // 15%
+        STAFF: 0.05 // 5%
     },
     WITHOUT_CHILDREN: {
-        ADULT: 0.95,   // 95%
-        CHILD: 0,      // 0%
-        STAFF: 0.05    // 5%
+        ADULT: 0.95, // 95%
+        CHILD: 0, // 0%
+        STAFF: 0.05 // 5%
     }
 };
 
 // Gradientes para avatares
-export const AVATAR_GRADIENTS = [
-    'gradient-purple',
-    'gradient-blue', 
-    'gradient-primary'
-];
+export const AVATAR_GRADIENTS = ['gradient-purple', 'gradient-blue', 'gradient-primary'];
 
 export const GRADIENT_STYLES = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -147,7 +143,19 @@ export const BREAKPOINTS = {
 
 // Configuración de CSV
 export const CSV_CONFIG = {
-    HEADERS: ['Código', 'Invitados', 'Pases', 'Estado', 'Confirmados', 'Cancelados', 'Asistirá', 'Teléfono', 'Restricciones', 'Mensaje', 'Fecha Confirmación'],
+    HEADERS: [
+        'Código',
+        'Invitados',
+        'Pases',
+        'Estado',
+        'Confirmados',
+        'Cancelados',
+        'Asistirá',
+        'Teléfono',
+        'Restricciones',
+        'Mensaje',
+        'Fecha Confirmación'
+    ],
     DELIMITER: ',',
     ENCODING: 'text/csv;charset=utf-8;'
 };
@@ -173,9 +181,12 @@ export const ICONS = {
 // Estilos inline que deben moverse a CSS (para referencia)
 export const INLINE_STYLES_TO_MIGRATE = {
     guestNameLineHeight: 'line-height: 1.4;',
-    tableNumberStyle: 'text-align: center; font-size: 0.875rem; font-weight: 600; color: var(--primary);',
+    tableNumberStyle:
+        'text-align: center; font-size: 0.875rem; font-weight: 600; color: var(--primary);',
     messageStyle: 'font-style: italic; color: var(--text-muted); font-size: 0.875rem;',
     cancelledPassesStyle: 'color: #f44336; font-weight: 600;',
-    avatarStyle: 'width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;',
-    pulseAnimation: 'display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;'
+    avatarStyle:
+        'width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;',
+    pulseAnimation:
+        'display: inline-block; width: 6px; height: 6px; background: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;'
 };

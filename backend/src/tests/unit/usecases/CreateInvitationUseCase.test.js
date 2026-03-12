@@ -66,9 +66,7 @@ describe('CreateInvitationUseCase', () => {
             expect(result.success).toBe(true);
             expect(result.invitation).toEqual(savedInvitation);
             expect(result.message).toBe('Invitación creada exitosamente');
-            expect(mockInvitationRepository.save).toHaveBeenCalledWith(
-                expect.any(Invitation)
-            );
+            expect(mockInvitationRepository.save).toHaveBeenCalledWith(expect.any(Invitation));
         });
 
         test('should fail with invalid data', async () => {
@@ -218,12 +216,8 @@ describe('CreateInvitationUseCase', () => {
             ];
 
             const batchResult = {
-                success: [
-                    { index: 0, code: 'INV001' }
-                ],
-                errors: [
-                    { index: 1, error: 'Datos inválidos' }
-                ],
+                success: [{ index: 0, code: 'INV001' }],
+                errors: [{ index: 1, error: 'Datos inválidos' }],
                 total: 2
             };
 

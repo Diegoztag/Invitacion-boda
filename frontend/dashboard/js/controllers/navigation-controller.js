@@ -41,7 +41,7 @@ export class NavigationController {
                 overlay.classList.remove('active');
                 mobileMenuBtn.classList.remove('active');
             });
-            
+
             // Close sidebar when clicking a nav item on mobile
             const navItems = sidebar.querySelectorAll('.nav-item');
             navItems.forEach(item => {
@@ -56,7 +56,7 @@ export class NavigationController {
         }
 
         // Handle navigation clicks
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             const navItem = e.target.closest('.nav-item');
             if (navItem && navItem.hasAttribute('href')) {
                 e.preventDefault();
@@ -66,7 +66,7 @@ export class NavigationController {
         });
 
         // Handle browser back/forward
-        window.addEventListener('popstate', (e) => {
+        window.addEventListener('popstate', e => {
             if (e.state && e.state.section) {
                 this.navigateToSection(e.state.section, false);
             } else {
@@ -76,7 +76,9 @@ export class NavigationController {
 
         // Handle hash changes
         window.addEventListener('hashchange', () => {
-            if (!this.isInitialized) return;
+            if (!this.isInitialized) {
+                return;
+            }
             this.initializeFromHash();
         });
     }
@@ -94,7 +96,9 @@ export class NavigationController {
      * Navega a una sección específica
      */
     async navigateToSection(section, updateHistory = true) {
-        if (this.currentSection === section) return;
+        if (this.currentSection === section) {
+            return;
+        }
 
         // Validate section
         const validSections = ['dashboard', 'invitations'];
@@ -170,7 +174,9 @@ export class NavigationController {
      */
     async showSection(section) {
         const sectionElement = document.getElementById(section);
-        if (!sectionElement) return;
+        if (!sectionElement) {
+            return;
+        }
 
         // Show section
         sectionElement.style.display = 'block';
@@ -216,9 +222,11 @@ export class NavigationController {
      */
     triggerSectionInit(section) {
         // Dispatch custom event for section change
-        document.dispatchEvent(new CustomEvent('sectionChanged', {
-            detail: { section, previousSection: this.currentSection }
-        }));
+        document.dispatchEvent(
+            new CustomEvent('sectionChanged', {
+                detail: { section, previousSection: this.currentSection }
+            })
+        );
 
         // Section-specific initialization
         switch (section) {
@@ -302,7 +310,7 @@ export class NavigationController {
      */
     handleNavigationError(error, section) {
         console.error(`Navigation error for section ${section}:`, error);
-        
+
         // Fallback to dashboard if current section fails
         if (section !== 'dashboard') {
             this.navigateToSection('dashboard');

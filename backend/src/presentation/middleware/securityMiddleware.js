@@ -25,29 +25,34 @@ class SecurityMiddleware {
                 directives: {
                     defaultSrc: ["'self'"],
                     styleSrc: [
-                        "'self'", 
+                        "'self'",
                         "'unsafe-inline'",
-                        "https://fonts.googleapis.com",
-                        "https://cdnjs.cloudflare.com"
+                        'https://fonts.googleapis.com',
+                        'https://cdnjs.cloudflare.com'
                     ],
                     scriptSrc: [
-                        "'self'", 
+                        "'self'",
                         "'unsafe-inline'",
-                        "https://cdn.jsdelivr.net",
-                        "https://cdnjs.cloudflare.com"
+                        'https://cdn.jsdelivr.net',
+                        'https://cdnjs.cloudflare.com'
                     ],
-                    imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "http://localhost:3000", "https://localhost:3000", "https://cdn.jsdelivr.net"],
+                    imgSrc: ["'self'", 'data:', 'https:'],
+                    connectSrc: [
+                        "'self'",
+                        'http://localhost:3000',
+                        'https://localhost:3000',
+                        'https://cdn.jsdelivr.net'
+                    ],
                     fontSrc: [
-                        "'self'", 
-                        "https://fonts.gstatic.com",
-                        "https://fonts.googleapis.com",
-                        "https://cdnjs.cloudflare.com"
+                        "'self'",
+                        'https://fonts.gstatic.com',
+                        'https://fonts.googleapis.com',
+                        'https://cdnjs.cloudflare.com'
                     ],
                     objectSrc: ["'none'"],
-                    mediaSrc: ["'self'", "data:"],
-                    frameSrc: ["'self'", "https://www.google.com"],
-                },
+                    mediaSrc: ["'self'", 'data:'],
+                    frameSrc: ["'self'", 'https://www.google.com']
+                }
             },
             crossOriginEmbedderPolicy: false,
             hsts: {
@@ -89,16 +94,21 @@ class SecurityMiddleware {
                 'https://localhost:8080'
             ];
 
-            const allowedOrigins = (this.config && this.config.cors && Array.isArray(this.config.cors.allowedOrigins) && this.config.cors.allowedOrigins.length > 0)
-                ? this.config.cors.allowedOrigins
-                : defaultOrigins;
+            const allowedOrigins =
+                this.config &&
+                this.config.cors &&
+                Array.isArray(this.config.cors.allowedOrigins) &&
+                this.config.cors.allowedOrigins.length > 0
+                    ? this.config.cors.allowedOrigins
+                    : defaultOrigins;
 
             const origin = req.headers.origin;
 
-            }
-
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+            res.setHeader(
+                'Access-Control-Allow-Headers',
+                'Content-Type, Authorization, X-Requested-With'
+            );
             res.setHeader('Access-Control-Allow-Credentials', 'true');
             res.setHeader('Access-Control-Max-Age', '86400');
 
@@ -181,7 +191,7 @@ class SecurityMiddleware {
     get requestLogger() {
         return (req, res, next) => {
             const startTime = Date.now();
-            
+
             // Log del request entrante
             this.logger.info('Incoming request', {
                 requestId: req.id,
@@ -194,9 +204,9 @@ class SecurityMiddleware {
 
             // Interceptar el final de la respuesta
             const originalSend = res.send;
-            res.send = function(data) {
+            res.send = function (data) {
                 const duration = Date.now() - startTime;
-                
+
                 // Log de la respuesta
                 req.app.locals.logger.info('Request completed', {
                     requestId: req.id,
@@ -328,7 +338,8 @@ class SecurityMiddleware {
 
                 // Verificar tamaño del body
                 const bodySize = JSON.stringify(req.body).length;
-                if (bodySize > 1024 * 1024) { // 1MB
+                if (bodySize > 1024 * 1024) {
+                    // 1MB
                     return res.status(413).json({
                         success: false,
                         error: 'Cuerpo de la solicitud demasiado grande'

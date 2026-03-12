@@ -5,10 +5,10 @@
 Si descubres una vulnerabilidad de seguridad, **NO ABRAS UN ISSUE PÚBLICO**. En su lugar:
 
 1. Envía un email a <security@your-domain.com> (a definir) con:
-   - Descripción de la vulnerabilidad
-   - Paso a paso para reproducirla
-   - Impacto potencial
-   - Sugerencias de fix (si las tienes)
+    - Descripción de la vulnerabilidad
+    - Paso a paso para reproducirla
+    - Impacto potencial
+    - Sugerencias de fix (si las tienes)
 
 2. Proporciona un plazo razonable (típicamente 30-90 días) antes de divulgar públicamente
 
@@ -55,14 +55,16 @@ Si descubres una vulnerabilidad de seguridad, **NO ABRAS UN ISSUE PÚBLICO**. En
 ## Historial de Seguridad
 
 ### 2026-03-12
+
 - npm audit fix: Solucionadas 3 vulnerabilidades en dependencias
-  - ajv: ReDoS fix
-  - minimatch: ReDoS fixes (3 issues)
-  - qs: arrayLimit bypass fix
+    - ajv: ReDoS fix
+    - minimatch: ReDoS fixes (3 issues)
+    - qs: arrayLimit bypass fix
 
 ## Actualizaciones
 
 Este proyecto mantiene:
+
 - Dependencias actualizadas
 - Auditorías de seguridad mensuales
 - Revisiones de código enfocadas en seguridad

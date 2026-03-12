@@ -1,6 +1,11 @@
 // dashboard-utils.js - Funciones utilitarias para el panel de administración
 
-import { TIME_CONFIG, TIME_LABELS, GRADIENT_STYLES, AVATAR_GRADIENTS } from './dashboard-constants.js';
+import {
+    TIME_CONFIG,
+    TIME_LABELS,
+    GRADIENT_STYLES,
+    AVATAR_GRADIENTS
+} from './dashboard-constants.js';
 
 /**
  * Calcula los pases cancelados de una invitación
@@ -8,20 +13,22 @@ import { TIME_CONFIG, TIME_LABELS, GRADIENT_STYLES, AVATAR_GRADIENTS } from './d
  * @returns {number} Número de pases cancelados
  */
 function calculateCancelledPasses(invitation) {
-    if (!invitation) return 0;
-    
+    if (!invitation) {
+        return 0;
+    }
+
     // Si la invitación está cancelada, todos los pases están cancelados
     if (invitation.status === 'cancelled') {
         return invitation.numberOfPasses || 0;
     }
-    
+
     // Si está confirmada parcialmente, calcular pases no confirmados
     if (invitation.status === 'partial') {
         const numberOfPasses = invitation.numberOfPasses || 0;
         const confirmedPasses = invitation.confirmedPasses || 0;
         return Math.max(0, numberOfPasses - confirmedPasses);
     }
-    
+
     return 0;
 }
 
@@ -32,8 +39,10 @@ function calculateCancelledPasses(invitation) {
  * @returns {string} Iniciales en mayúsculas
  */
 export function getInitials(fullName, maxLength = 2) {
-    if (!fullName || typeof fullName !== 'string') return '';
-    
+    if (!fullName || typeof fullName !== 'string') {
+        return '';
+    }
+
     return fullName
         .split(' ')
         .map(word => word.charAt(0))
@@ -49,22 +58,26 @@ export function getInitials(fullName, maxLength = 2) {
  * @returns {string} Nombres formateados
  */
 export function formatGuestNames(names, asHtml = false) {
-    if (!Array.isArray(names) || names.length === 0) return '';
-    
-    const cleanNames = names
-        .map(name => name.trim())
-        .filter(name => name.length > 0);
-    
-    if (asHtml) {
-        return cleanNames
-            .map(name => `<div>${name}</div>`)
-            .join('');
+    if (!Array.isArray(names) || names.length === 0) {
+        return '';
     }
-    
-    if (cleanNames.length === 0) return '';
-    if (cleanNames.length === 1) return cleanNames[0];
-    if (cleanNames.length === 2) return cleanNames.join(' y ');
-    
+
+    const cleanNames = names.map(name => name.trim()).filter(name => name.length > 0);
+
+    if (asHtml) {
+        return cleanNames.map(name => `<div>${name}</div>`).join('');
+    }
+
+    if (cleanNames.length === 0) {
+        return '';
+    }
+    if (cleanNames.length === 1) {
+        return cleanNames[0];
+    }
+    if (cleanNames.length === 2) {
+        return cleanNames.join(' y ');
+    }
+
     const last = cleanNames[cleanNames.length - 1];
     const others = cleanNames.slice(0, -1);
     return `${others.join(', ')} y ${last}`;
@@ -76,10 +89,11 @@ export function formatGuestNames(names, asHtml = false) {
  * @returns {Object} Objeto con className y style
  */
 export function getRandomGradient(index = null) {
-    const gradientIndex = index !== null 
-        ? index % GRADIENT_STYLES.length 
-        : Math.floor(Math.random() * GRADIENT_STYLES.length);
-    
+    const gradientIndex =
+        index !== null
+            ? index % GRADIENT_STYLES.length
+            : Math.floor(Math.random() * GRADIENT_STYLES.length);
+
     return {
         className: AVATAR_GRADIENTS[gradientIndex % AVATAR_GRADIENTS.length],
         style: GRADIENT_STYLES[gradientIndex]
@@ -95,13 +109,13 @@ export function getTimeAgo(date) {
     if (!date || !(date instanceof Date)) {
         date = new Date(date);
     }
-    
+
     const now = new Date();
     const diff = now - date;
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
-    
+
     if (minutes < 1) {
         return 'hace un momento';
     } else if (minutes < TIME_CONFIG.MINUTES_IN_HOUR) {
@@ -113,7 +127,7 @@ export function getTimeAgo(date) {
     } else if (days < TIME_CONFIG.RECENT_DAYS) {
         return `hace ${days} ${TIME_LABELS.DAYS_AGO}`;
     } else {
-        return date.toLocaleDateString('es-MX', { 
+        return date.toLocaleDateString('es-MX', {
             day: 'numeric',
             month: 'short'
         });
@@ -145,7 +159,7 @@ export function getTableNumber(invitationCode) {
     // Usar el código para generar un número consistente
     let hash = 0;
     for (let i = 0; i < invitationCode.length; i++) {
-        hash = ((hash << 5) - hash) + invitationCode.charCodeAt(i);
+        hash = (hash << 5) - hash + invitationCode.charCodeAt(i);
         hash = hash & hash; // Convert to 32bit integer
     }
     return (Math.abs(hash) % 10) + 1;
@@ -158,23 +172,25 @@ export function getTableNumber(invitationCode) {
  * @returns {string} Fecha formateada
  */
 export function formatDate(date, includeTime = true) {
-    if (!date) return '-';
-    
+    if (!date) {
+        return '-';
+    }
+
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
-    
+
     const options = {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
     };
-    
+
     if (includeTime) {
         options.hour = '2-digit';
         options.minute = '2-digit';
     }
-    
+
     return date.toLocaleDateString('es-MX', options);
 }
 
@@ -184,7 +200,9 @@ export function formatDate(date, includeTime = true) {
  * @returns {boolean} True si es válido
  */
 export function isValidPhone(phone) {
-    if (!phone) return false;
+    if (!phone) {
+        return false;
+    }
     // Remover espacios y guiones
     const cleaned = phone.replace(/[\s-]/g, '');
     // Verificar formato mexicano básico
@@ -197,11 +215,13 @@ export function isValidPhone(phone) {
  * @returns {string} Teléfono formateado
  */
 export function formatPhone(phone) {
-    if (!phone) return '';
-    
+    if (!phone) {
+        return '';
+    }
+
     // Remover caracteres no numéricos excepto +
     let cleaned = phone.replace(/[^\d+]/g, '');
-    
+
     // Si no tiene código de país, agregar +52
     if (!cleaned.startsWith('+')) {
         if (!cleaned.startsWith('52')) {
@@ -210,7 +230,7 @@ export function formatPhone(phone) {
             cleaned = '+' + cleaned;
         }
     }
-    
+
     return cleaned;
 }
 
@@ -222,14 +242,14 @@ export function formatPhone(phone) {
  */
 export function calculatePercentageStats(current, target) {
     const percentage = target > 0 ? Math.round((current / target) * 100) : 0;
-    
+
     let badgeClass = 'warning';
     if (percentage >= 100) {
         badgeClass = 'success';
     } else if (percentage >= 75) {
         badgeClass = 'primary';
     }
-    
+
     return {
         percentage,
         badgeClass
@@ -285,7 +305,7 @@ export function escapeHtml(text) {
  * @returns {*} Valor seguro
  */
 export function getSafeValue(value, fallback = 0) {
-    return (value !== undefined && value !== null) ? value : fallback;
+    return value !== undefined && value !== null ? value : fallback;
 }
 
 /**
@@ -299,18 +319,18 @@ export function updateStatsUI(stats, suffix = '') {
         console.warn('updateStatsUI: stats is not a valid object', stats);
         return;
     }
-    
+
     // Extraer datos de la nueva estructura optimizada
     const invitations = stats.invitations || {};
     const confirmations = stats.confirmations || {};
     const rates = stats.rates || {};
-    
+
     // Actualizar contadores principales
     const totalInvitationsEl = document.getElementById(`totalInvitations${suffix}`);
     const confirmedPassesEl = document.getElementById(`confirmedPasses${suffix}`);
     const pendingInvitationsEl = document.getElementById(`pendingInvitations${suffix}`);
     const cancelledPassesEl = document.getElementById(`cancelledPasses${suffix}`);
-    
+
     if (totalInvitationsEl) {
         // En el dashboard (sin sufijo), mostrar totalPasses
         // En la sección de invitaciones (con sufijo 'Stats'), mostrar totalInvitations
@@ -323,49 +343,58 @@ export function updateStatsUI(stats, suffix = '') {
         totalInvitationsEl.textContent = totalValue;
         console.log(`Updated totalInvitations${suffix}:`, totalValue);
     }
-    
+
     if (confirmedPassesEl) {
         // En el dashboard, mostrar confirmedPasses
         // En la sección de invitaciones, mostrar número de invitaciones confirmadas
         let confirmedValue;
         if (suffix === 'Stats') {
             // Para la sección de invitaciones, contar invitaciones confirmadas
-            confirmedValue = getSafeValue(invitations.confirmed, getSafeValue(confirmations.totalConfirmedGuests));
+            confirmedValue = getSafeValue(
+                invitations.confirmed,
+                getSafeValue(confirmations.totalConfirmedGuests)
+            );
         } else {
             confirmedValue = getSafeValue(confirmations.totalConfirmedGuests);
         }
         confirmedPassesEl.textContent = confirmedValue;
         console.log(`Updated confirmedPasses${suffix}:`, confirmedValue);
     }
-    
+
     if (pendingInvitationsEl) {
         // En el dashboard, mostrar pendingPasses
         // En la sección de invitaciones, mostrar pendingInvitations
         let pendingValue;
         if (suffix === 'Stats') {
-            pendingValue = getSafeValue(invitations.pending, getSafeValue(confirmations.pendingPasses));
+            pendingValue = getSafeValue(
+                invitations.pending,
+                getSafeValue(confirmations.pendingPasses)
+            );
         } else {
-            pendingValue = getSafeValue(confirmations.pendingPasses, getSafeValue(invitations.pending));
+            pendingValue = getSafeValue(
+                confirmations.pendingPasses,
+                getSafeValue(invitations.pending)
+            );
         }
         pendingInvitationsEl.textContent = pendingValue;
         console.log(`Updated pendingInvitations${suffix}:`, pendingValue);
     }
-    
+
     if (cancelledPassesEl) {
         // Mostrar pases/invitaciones canceladas según el contexto
         // CORRECCIÓN: Usar solo el valor de canceladas, no sumar inactivas
-        let cancelledValue = getSafeValue(invitations.cancelled, 0);
-        
+        const cancelledValue = getSafeValue(invitations.cancelled, 0);
+
         cancelledPassesEl.textContent = cancelledValue;
         console.log(`Updated cancelledPasses${suffix}:`, cancelledValue);
     }
-    
+
     // Actualizar elementos adicionales si existen
     const confirmationRateEl = document.getElementById(`confirmationRate${suffix}`);
     if (confirmationRateEl && rates.confirmationRate) {
         confirmationRateEl.textContent = `${rates.confirmationRate}%`;
     }
-    
+
     const attendanceRateEl = document.getElementById(`attendanceRate${suffix}`);
     if (attendanceRateEl && rates.attendanceRate) {
         attendanceRateEl.textContent = `${rates.attendanceRate}%`;
@@ -378,14 +407,16 @@ export function updateStatsUI(stats, suffix = '') {
  */
 export function updateConfirmedChangeIndicator(recentConfirmations) {
     const confirmedChange = document.getElementById('confirmedChange');
-    if (!confirmedChange) return;
-    
+    if (!confirmedChange) {
+        return;
+    }
+
     if (recentConfirmations > 0) {
         confirmedChange.innerHTML = `<i class="fas fa-arrow-up trend-icon"></i> +${recentConfirmations}`;
         confirmedChange.classList.remove('warning', 'danger');
         confirmedChange.classList.add('success');
     } else {
-        confirmedChange.innerHTML = `<i class="fas fa-minus trend-icon"></i> 0`;
+        confirmedChange.innerHTML = '<i class="fas fa-minus trend-icon"></i> 0';
         confirmedChange.classList.remove('success', 'danger');
         confirmedChange.classList.add('warning');
     }
@@ -398,22 +429,21 @@ export function updateConfirmedChangeIndicator(recentConfirmations) {
  */
 export function updateTargetElements(targets) {
     const { targetTotal } = targets;
-    
+
     // Actualizar elementos que muestran la meta total
     const targetTotalElements = document.querySelectorAll('[data-target="total"]');
     targetTotalElements.forEach(el => {
         el.textContent = getSafeValue(targetTotal, 250);
     });
-    
+
     // Actualizar elementos específicos por ID si existen
     const targetTotalEl = document.getElementById('targetTotal');
     if (targetTotalEl) {
         targetTotalEl.textContent = getSafeValue(targetTotal, 250);
     }
-    
+
     console.log('Updated target elements:', { targetTotal });
 }
-
 
 /**
  * Genera un badge de estado para una invitación
@@ -426,16 +456,16 @@ export function updateTargetElements(targets) {
  */
 export function getStatusBadge(invitation, options = {}) {
     const { showIcon = false, showDot = false, animate = false } = options;
-    
+
     // Usar el estado directamente del objeto, con fallback a 'pending'
     const rawStatus = invitation.status || 'pending';
-    
+
     let status = rawStatus;
     let statusText = 'Pendiente';
     let statusClass = 'pending';
     let statusColor = '#ff9800';
     let statusIcon = 'clock';
-    
+
     switch (rawStatus) {
         case 'confirmed':
         case 'accepted': // Legacy support
@@ -445,7 +475,7 @@ export function getStatusBadge(invitation, options = {}) {
             statusColor = '#4caf50';
             statusIcon = 'check-circle';
             break;
-            
+
         case 'partial':
             status = 'partial';
             statusText = 'Parcial';
@@ -453,7 +483,7 @@ export function getStatusBadge(invitation, options = {}) {
             statusColor = '#ff6b6b';
             statusIcon = 'exclamation-circle';
             break;
-            
+
         case 'cancelled':
         case 'rejected': // Legacy support
             status = 'cancelled';
@@ -462,7 +492,7 @@ export function getStatusBadge(invitation, options = {}) {
             statusColor = '#f44336';
             statusIcon = 'times-circle';
             break;
-            
+
         case 'inactive':
             status = 'inactive';
             statusText = 'Inactivo';
@@ -470,7 +500,7 @@ export function getStatusBadge(invitation, options = {}) {
             statusColor = '#9e9e9e';
             statusIcon = 'power-off';
             break;
-            
+
         case 'pending':
         default:
             status = 'pending';
@@ -480,10 +510,10 @@ export function getStatusBadge(invitation, options = {}) {
             statusIcon = 'clock';
             break;
     }
-    
+
     // Construir HTML del badge
     let html = '';
-    
+
     if (showIcon) {
         // Badge grande con icono (para modales)
         html = `<span class="status-badge status-badge-large ${statusClass}">
@@ -498,7 +528,7 @@ export function getStatusBadge(invitation, options = {}) {
         }
         html = `<span class="status-badge ${statusClass}">${dotHtml}${statusText}</span>`;
     }
-    
+
     return {
         html,
         status,
@@ -524,10 +554,10 @@ export function renderStatBadge(value, type = 'count', options = {}) {
         trendDirection = 'up',
         badgeClass = ''
     } = options;
-    
+
     let html = '';
     let finalBadgeClass = badgeClass;
-    
+
     switch (type) {
         case 'percentage':
             // Determinar clase basada en umbral
@@ -542,23 +572,28 @@ export function renderStatBadge(value, type = 'count', options = {}) {
             }
             html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}%</span>`;
             break;
-            
+
         case 'trend':
             // Badge con tendencia
-            const trendIcon = trendDirection === 'up' ? 'arrow-up' : trendDirection === 'down' ? 'arrow-down' : 'minus';
+            const trendIcon =
+                trendDirection === 'up'
+                    ? 'arrow-up'
+                    : trendDirection === 'down'
+                      ? 'arrow-down'
+                      : 'minus';
             const trendClass = value > 0 ? 'success' : value < 0 ? 'danger' : 'warning';
             html = `<span class="stat-badge ${trendClass}">
                 <i class="fas fa-${trendIcon} trend-icon"></i> ${value > 0 ? '+' : ''}${value}
             </span>`;
             break;
-            
+
         case 'count':
         default:
             // Badge simple de conteo
             html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}</span>`;
             break;
     }
-    
+
     return html;
 }
 
@@ -571,10 +606,16 @@ export function renderStatBadge(value, type = 'count', options = {}) {
  */
 export function getBadgeType(current, target, thresholds = { high: 75, medium: 50 }) {
     const percentage = target > 0 ? (current / target) * 100 : 0;
-    
-    if (percentage >= 100) return 'success';
-    if (percentage >= thresholds.high) return 'primary';
-    if (percentage >= thresholds.medium) return 'warning';
+
+    if (percentage >= 100) {
+        return 'success';
+    }
+    if (percentage >= thresholds.high) {
+        return 'primary';
+    }
+    if (percentage >= thresholds.medium) {
+        return 'warning';
+    }
     return 'danger';
 }
 
@@ -609,10 +650,10 @@ function renderInvitationRow(invitation, index = 0) {
         console.warn('renderInvitationRow: invitation is null or undefined');
         return '<tr><td colspan="6">Error: Invitación no válida</td></tr>';
     }
-    
+
     const invitationCode = invitation.code || 'UNKNOWN';
     const statusBadge = getStatusBadge(invitation).html;
-    
+
     // Procesar nombres de invitados con validación
     let guestNames = [];
     if (Array.isArray(invitation.guestNames) && invitation.guestNames.length > 0) {
@@ -623,30 +664,35 @@ function renderInvitationRow(invitation, index = 0) {
             .map(name => name.trim())
             .filter(name => name && name.length > 0);
     }
-    
+
     // Si no hay nombres válidos, usar código como fallback
-    const displayNames = guestNames.length > 0 ? formatGuestNames(guestNames) : `Invitación ${invitationCode}`;
-    
+    const displayNames =
+        guestNames.length > 0 ? formatGuestNames(guestNames) : `Invitación ${invitationCode}`;
+
     // Preparar datos para el avatar y estructura rica
     const firstGuestName = guestNames.length > 0 ? guestNames[0] : invitationCode;
     const initials = getInitials(firstGuestName);
     const { className: gradientClass } = getRandomGradient(index);
-    
+
     // Formatear nombres para mostrar en líneas separadas si son múltiples
-    const guestNamesFormatted = guestNames.length > 0 
-        ? guestNames.map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`).join('')
-        : `<div class="guest-name-item fallback">${escapeHtml(displayNames)}</div>`;
+    const guestNamesFormatted =
+        guestNames.length > 0
+            ? guestNames
+                  .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
+                  .join('')
+            : `<div class="guest-name-item fallback">${escapeHtml(displayNames)}</div>`;
 
     const numberOfPasses = getSafeValue(invitation.numberOfPasses, 1);
     const confirmedPasses = getSafeValue(invitation.confirmedPasses, 0);
     const tableNumber = invitation.tableNumber || getTableNumber(invitationCode);
     const message = invitation.generalMessage;
-    
+
     // Mostrar pases como "Confirmados / Total" si hay confirmados, o solo Total
-    const passesDisplay = confirmedPasses > 0 
-        ? `<span class="passes-confirmed">${confirmedPasses}</span> / <span class="passes-total">${numberOfPasses}</span>`
-        : `<span class="passes-total">${numberOfPasses}</span>`;
-    
+    const passesDisplay =
+        confirmedPasses > 0
+            ? `<span class="passes-confirmed">${confirmedPasses}</span> / <span class="passes-total">${numberOfPasses}</span>`
+            : `<span class="passes-total">${numberOfPasses}</span>`;
+
     return `
         <td>
             <div class="guest-cell">
@@ -693,14 +739,14 @@ function renderRecentConfirmationRow(invitation, index) {
         console.warn('renderRecentConfirmationRow: invitation is null or undefined');
         return '<tr><td colspan="6">Error: Invitación no válida</td></tr>';
     }
-    
+
     // Validar que el código existe
     const invitationCode = invitation.code || `FALLBACK_${Date.now()}`;
-    
+
     // Procesar nombres de invitados con mejor manejo de errores
     let guestNames = [];
     let hasValidNames = false;
-    
+
     if (Array.isArray(invitation.guestNames) && invitation.guestNames.length > 0) {
         guestNames = invitation.guestNames.filter(name => name && name.trim());
         hasValidNames = guestNames.length > 0;
@@ -712,33 +758,39 @@ function renderRecentConfirmationRow(invitation, index) {
             .filter(name => name && name.length > 0);
         hasValidNames = guestNames.length > 0;
     }
-    
+
     // Si no hay nombres válidos, usar el código como fallback
     if (!hasValidNames) {
-        console.info(`renderRecentConfirmationRow: No valid guest names for invitation ${invitationCode}, using code as fallback`);
+        console.info(
+            `renderRecentConfirmationRow: No valid guest names for invitation ${invitationCode}, using code as fallback`
+        );
         guestNames = [`Invitación ${invitationCode}`];
     }
-    
+
     const firstGuestName = guestNames[0];
     const initials = getInitials(firstGuestName);
-    const timeAgo = invitation.confirmationDate ? getTimeAgo(new Date(invitation.confirmationDate)) : '';
+    const timeAgo = invitation.confirmationDate
+        ? getTimeAgo(new Date(invitation.confirmationDate))
+        : '';
     const { className: gradientClass } = getRandomGradient(index);
     const statusBadge = getStatusBadge(invitation).html;
-    
+
     // Format guest names - display each name on a separate line with better styling
-    const guestNamesFormatted = guestNames.map(name => {
-        const escapedName = escapeHtml(name);
-        return `<div class="guest-name-item">${escapedName}</div>`;
-    }).join('');
-    
+    const guestNamesFormatted = guestNames
+        .map(name => {
+            const escapedName = escapeHtml(name);
+            return `<div class="guest-name-item">${escapedName}</div>`;
+        })
+        .join('');
+
     // Use actual tableNumber if available, otherwise use generated one
     const tableNumber = invitation.tableNumber || getTableNumber(invitationCode);
     const confirmedPasses = getSafeValue(invitation.confirmedPasses, 0);
     const numberOfPasses = getSafeValue(invitation.numberOfPasses, 1);
-    
+
     const message = invitation.generalMessage;
     const displayPasses = confirmedPasses > 0 ? confirmedPasses : numberOfPasses;
-    
+
     return `
         <td>
             <div class="guest-cell">
@@ -783,25 +835,28 @@ function renderCreateSectionRow(invitation, index) {
         console.warn('renderCreateSectionRow: invitation is null or undefined');
         return '<tr><td colspan="5">Error: Invitación no válida</td></tr>';
     }
-    
+
     // Asegurar que guestNames existe y es un array
     const guestNames = Array.isArray(invitation.guestNames) ? invitation.guestNames : [];
     const firstGuestName = guestNames.length > 0 ? guestNames[0] : 'Invitado';
-    
+
     const initials = getInitials(firstGuestName);
     const { className: gradientClass } = getRandomGradient(index);
     const statusBadge = getStatusBadge(invitation, { showDot: true, animate: true }).html;
     const passTypeText = getPassTypeText(invitation);
     const invitationCode = invitation.code || 'UNKNOWN';
     const tableNumber = getTableNumber(invitationCode);
-    const timeText = invitation.confirmationDate 
-        ? getTimeAgo(new Date(invitation.confirmationDate)) 
+    const timeText = invitation.confirmationDate
+        ? getTimeAgo(new Date(invitation.confirmationDate))
         : '';
-    
+
     // Formatear nombres para mostrar en líneas separadas si son múltiples
-    const guestNamesFormatted = guestNames.length > 0 
-        ? guestNames.map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`).join('')
-        : `<div class="guest-name-item fallback">Invitado</div>`;
+    const guestNamesFormatted =
+        guestNames.length > 0
+            ? guestNames
+                  .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
+                  .join('')
+            : '<div class="guest-name-item fallback">Invitado</div>';
 
     return `
         <td>
@@ -846,43 +901,41 @@ function renderCreateSectionRow(invitation, index) {
  * @param {Function} config.onPageChange - Callback al cambiar de página
  */
 export function updateTablePagination(config) {
-    const {
-        currentPage,
-        totalPages,
-        prevBtnId,
-        nextBtnId,
-        numbersContainerId,
-        onPageChange
-    } = config;
-    
+    const { currentPage, totalPages, prevBtnId, nextBtnId, numbersContainerId, onPageChange } =
+        config;
+
     const prevBtn = document.getElementById(prevBtnId);
     const nextBtn = document.getElementById(nextBtnId);
     const numbersContainer = document.getElementById(numbersContainerId);
-    
-    if (!prevBtn || !nextBtn || !numbersContainer) return;
-    
+
+    if (!prevBtn || !nextBtn || !numbersContainer) {
+        return;
+    }
+
     // Update prev/next buttons
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-    
+
     // Update page numbers
     numbersContainer.innerHTML = '';
-    
-    if (totalPages === 0) return;
-    
+
+    if (totalPages === 0) {
+        return;
+    }
+
     // Show max 5 page numbers
     let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
-    
+    const endPage = Math.min(totalPages, startPage + 4);
+
     if (endPage - startPage < 4) {
         startPage = Math.max(1, endPage - 4);
     }
-    
+
     // Add first page if not visible
     if (startPage > 1) {
         const firstBtn = createPageButton(1, currentPage === 1, () => onPageChange(1));
         numbersContainer.appendChild(firstBtn);
-        
+
         if (startPage > 2) {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
@@ -890,13 +943,13 @@ export function updateTablePagination(config) {
             numbersContainer.appendChild(ellipsis);
         }
     }
-    
+
     // Add page numbers
     for (let i = startPage; i <= endPage; i++) {
         const btn = createPageButton(i, i === currentPage, () => onPageChange(i));
         numbersContainer.appendChild(btn);
     }
-    
+
     // Add last page if not visible
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
@@ -905,18 +958,20 @@ export function updateTablePagination(config) {
             ellipsis.className = 'pagination-ellipsis';
             numbersContainer.appendChild(ellipsis);
         }
-        
-        const lastBtn = createPageButton(totalPages, currentPage === totalPages, () => onPageChange(totalPages));
+
+        const lastBtn = createPageButton(totalPages, currentPage === totalPages, () =>
+            onPageChange(totalPages)
+        );
         numbersContainer.appendChild(lastBtn);
     }
-    
+
     // Set up prev/next button handlers
     prevBtn.onclick = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
         }
     };
-    
+
     nextBtn.onclick = () => {
         if (currentPage < totalPages) {
             onPageChange(currentPage + 1);
@@ -953,7 +1008,7 @@ export function calculatePaginationInfo(totalItems, currentPage, itemsPerPage) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    
+
     return {
         totalPages,
         startIndex,

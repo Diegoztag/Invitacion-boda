@@ -59,6 +59,7 @@ npm start
 ```
 
 Esto ejecutará:
+
 - Frontend y Backend en el mismo puerto: http://localhost:3000
 - Live reload integrado que actualiza automáticamente el navegador
 - API disponible en http://localhost:3000/api
@@ -74,11 +75,11 @@ Esto ejecutará:
 
 ```json
 {
-  "start": "node server.js",
-  "dev": "nodemon server.js",
-  "test": "jest",
-  "lint": "eslint .",
-  "format": "prettier --write ."
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write ."
 }
 ```
 
@@ -121,12 +122,12 @@ invitacion-boda/
 
 ```json
 {
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "files.autoSave": "afterDelay",
-  "files.autoSaveDelay": 1000
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000
 }
 ```
 
@@ -135,22 +136,24 @@ invitacion-boda/
 ### El servidor no inicia
 
 1. Verificar que el puerto 3000 esté libre:
-   ```bash
-   # Windows
-   netstat -ano | findstr :3000
-   
-   # Linux/Mac
-   lsof -i :3000
-   ```
+
+    ```bash
+    # Windows
+    netstat -ano | findstr :3000
+
+    # Linux/Mac
+    lsof -i :3000
+    ```
 
 2. Matar proceso si es necesario:
-   ```bash
-   # Windows
-   taskkill /PID <PID> /F
-   
-   # Linux/Mac
-   kill -9 <PID>
-   ```
+
+    ```bash
+    # Windows
+    taskkill /PID <PID> /F
+
+    # Linux/Mac
+    kill -9 <PID>
+    ```
 
 ### Los cambios no se reflejan
 
@@ -182,17 +185,17 @@ chmod 755 data
 
 ```json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Server",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/backend/server.js",
-      "envFile": "${workspaceFolder}/backend/.env"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Server",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/backend/server.js",
+            "envFile": "${workspaceFolder}/backend/.env"
+        }
+    ]
 }
 ```
 
@@ -207,7 +210,7 @@ Los logs se muestran en la consola. Para más detalle:
 const DEBUG = process.env.DEBUG === 'true';
 
 if (DEBUG) {
-  console.log('Información detallada...');
+    console.log('Información detallada...');
 }
 ```
 

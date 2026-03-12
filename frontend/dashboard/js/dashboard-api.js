@@ -12,24 +12,25 @@ export class AdminAPI {
         this.headers = {
             'Content-Type': 'application/json'
         };
-        
+
         // Configurar autenticación si está habilitada
         this.setupAuthentication();
     }
-    
+
     /**
      * Configura la autenticación basada en la configuración
      */
     setupAuthentication() {
         // Intentar obtener la configuración desde window.WEDDING_CONFIG
-        const config = (typeof window !== 'undefined' && window.WEDDING_CONFIG?.api?.dashboard) || null;
-        
+        const config =
+            (typeof window !== 'undefined' && window.WEDDING_CONFIG?.api?.dashboard) || null;
+
         if (config?.requireAuth) {
             if (config.authType === 'basic' && config.credentials) {
                 const { username, password } = config.credentials;
                 const credentials = btoa(`${username}:${password}`);
                 this.headers['Authorization'] = `Basic ${credentials}`;
-                
+
                 console.log('🔐 Autenticación básica configurada para el dashboard');
             } else if (config.authType === 'jwt') {
                 // Para JWT, se configurará dinámicamente después del login
@@ -39,7 +40,7 @@ export class AdminAPI {
             console.log('🔓 Dashboard configurado sin autenticación');
         }
     }
-    
+
     /**
      * Configura token JWT para autenticación
      * @param {string} token - Token JWT
@@ -51,7 +52,7 @@ export class AdminAPI {
             delete this.headers['Authorization'];
         }
     }
-    
+
     /**
      * Convierte el estado interno a texto para mostrar
      * @param {string} status - Estado de la invitación
@@ -59,16 +60,16 @@ export class AdminAPI {
      */
     getStatusDisplayText(status) {
         const statusMap = {
-            'pending': 'Pendiente',
-            'confirmed': 'Confirmado',
-            'partial': 'Parcial',
-            'cancelled': 'Cancelado',
-            'inactive': 'Inactivo'
+            pending: 'Pendiente',
+            confirmed: 'Confirmado',
+            partial: 'Parcial',
+            cancelled: 'Cancelado',
+            inactive: 'Inactivo'
         };
-        
+
         return statusMap[status] || 'Pendiente';
     }
-    
+
     /**
      * Maneja errores de API de forma consistente
      * @param {Error} error - Error capturado
@@ -77,7 +78,7 @@ export class AdminAPI {
      */
     handleApiError(error, context = '') {
         console.error(`API Error${context ? ` in ${context}` : ''}:`, error);
-        
+
         // Determinar tipo de error
         if (error.name === 'NetworkError' || !navigator.onLine) {
             return {
@@ -86,7 +87,7 @@ export class AdminAPI {
                 type: 'network'
             };
         }
-        
+
         if (error.status === 404) {
             return {
                 success: false,
@@ -94,7 +95,7 @@ export class AdminAPI {
                 type: 'not_found'
             };
         }
-        
+
         if (error.status === 500) {
             return {
                 success: false,
@@ -102,14 +103,14 @@ export class AdminAPI {
                 type: 'server'
             };
         }
-        
+
         return {
             success: false,
             error: error.message || 'Error desconocido',
             type: 'unknown'
         };
     }
-    
+
     /**
      * Realiza una petición fetch con manejo de errores
      * @param {string} endpoint - Endpoint relativo
@@ -120,7 +121,7 @@ export class AdminAPI {
         try {
             const url = `${this.backendUrl}${endpoint}`;
             console.log('Fetching:', url, 'with options:', options);
-            
+
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -128,18 +129,18 @@ export class AdminAPI {
                     ...options.headers
                 }
             });
-            
+
             console.log('Response status:', response.status);
-            
+
             if (!response.ok) {
                 const error = new Error(`HTTP error! status: ${response.status}`);
                 error.status = response.status;
                 throw error;
             }
-            
+
             const data = await response.json();
             console.log('Response data:', data);
-            
+
             return {
                 success: true,
                 data
@@ -149,24 +150,24 @@ export class AdminAPI {
             return this.handleApiError(error, endpoint);
         }
     }
-    
+
     /**
      * Obtiene las estadísticas del dashboard
      * @returns {Promise<Object>} Estadísticas o error
      */
     async fetchStats() {
         const result = await this.fetchWithErrorHandling(API_ENDPOINTS.STATS);
-        
+
         if (result.success) {
             return {
                 success: true,
                 data: result.data.stats || result.data
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Obtiene todas las invitaciones
      * @param {Object} options - Opciones de filtrado y paginación
@@ -175,23 +176,23 @@ export class AdminAPI {
     async fetchInvitations(options = {}) {
         // Construir query string
         const queryParams = new URLSearchParams();
-        
+
         // Agregar todas las opciones al query string
         Object.keys(options).forEach(key => {
             if (options[key] !== undefined && options[key] !== null && options[key] !== '') {
                 queryParams.append(key, options[key]);
             }
         });
-        
+
         const queryString = queryParams.toString();
         const endpoint = queryString ? `/invitations?${queryString}` : '/invitations';
-        
+
         const result = await this.fetchWithErrorHandling(endpoint);
-        
+
         if (result.success) {
             // Normalizar la respuesta - el backend puede devolver diferentes estructuras
             let invitations = [];
-            
+
             if (result.data) {
                 // Si tiene estructura de paginación
                 if (result.data.data && Array.isArray(result.data.data)) {
@@ -206,17 +207,17 @@ export class AdminAPI {
                     invitations = result.data.invitations;
                 }
             }
-            
+
             return {
                 success: true,
                 invitations: invitations,
                 pagination: result.data.pagination
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Crea una nueva invitación
      * @param {Object} invitationData - Datos de la invitación
@@ -227,7 +228,7 @@ export class AdminAPI {
             method: 'POST',
             body: JSON.stringify(invitationData)
         });
-        
+
         if (result.success) {
             return {
                 success: true,
@@ -235,10 +236,10 @@ export class AdminAPI {
                 invitationUrl: result.data.invitationUrl
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Actualiza una invitación existente
      * @param {string} code - Código de la invitación
@@ -250,17 +251,17 @@ export class AdminAPI {
             method: 'PUT',
             body: JSON.stringify(updateData)
         });
-        
+
         if (result.success) {
             return {
                 success: true,
                 invitation: result.data.invitation
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Elimina una invitación
      * @param {string} code - Código de la invitación
@@ -270,10 +271,10 @@ export class AdminAPI {
         const result = await this.fetchWithErrorHandling(`/invitations/${code}`, {
             method: 'DELETE'
         });
-        
+
         return result;
     }
-    
+
     /**
      * Obtiene invitaciones confirmadas recientemente
      * @param {number} days - Días hacia atrás (0 para sin límite de tiempo)
@@ -282,41 +283,41 @@ export class AdminAPI {
      */
     async fetchRecentConfirmations(days = 7, limit = 5) {
         const result = await this.fetchInvitations();
-        
+
         if (result.success) {
             const invitations = result.invitations || [];
-            
+
             // Filtrar solo confirmadas/parciales que tengan fecha de confirmación
-            let recentConfirmations = invitations
-                .filter(inv => 
+            let recentConfirmations = invitations.filter(
+                inv =>
                     (inv.status === 'confirmed' || inv.status === 'partial') && inv.confirmationDate
-                );
+            );
 
             // Si se especifica un rango de días, filtrar por fecha
             if (days > 0) {
                 const cutoffDate = new Date();
                 cutoffDate.setDate(cutoffDate.getDate() - days);
-                
+
                 recentConfirmations = recentConfirmations.filter(inv => {
                     const confirmDate = new Date(inv.confirmationDate);
                     return confirmDate >= cutoffDate;
                 });
             }
-            
+
             // Ordenar y limitar
             recentConfirmations = recentConfirmations
                 .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
                 .slice(0, limit);
-            
+
             return {
                 success: true,
                 confirmations: recentConfirmations
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Calcula el total de pases confirmados en los últimos días
      * @param {number} days - Días hacia atrás (default: 7)
@@ -324,22 +325,22 @@ export class AdminAPI {
      */
     async calculateRecentConfirmedPasses(days = 7) {
         const result = await this.fetchRecentConfirmations(days, 999);
-        
+
         if (result.success) {
             const totalPasses = result.confirmations.reduce((sum, inv) => {
                 return sum + (inv.confirmedPasses || 0);
             }, 0);
-            
+
             return {
                 success: true,
                 totalPasses,
                 confirmationCount: result.confirmations.length
             };
         }
-        
+
         return result;
     }
-    
+
     /**
      * Descarga el CSV de invitaciones desde el servidor
      * @returns {Promise<Object>} Resultado de la operación
@@ -392,10 +393,10 @@ export class AdminAPI {
             'Mensaje',
             'Fecha Confirmación'
         ];
-        
+
         const rows = invitations.map(invitation => {
             let cancelledPasses = 0;
-            
+
             // Calcular pases cancelados basado en el estado
             if (invitation.status === 'cancelled') {
                 cancelledPasses = invitation.numberOfPasses;
@@ -403,11 +404,12 @@ export class AdminAPI {
                 cancelledPasses = invitation.numberOfPasses - (invitation.confirmedPasses || 0);
             }
 
-            const isConfirmed = invitation.status === 'confirmed' || invitation.status === 'partial';
-            const dietaryRestrictions = invitation.dietaryRestrictionsNames 
+            const isConfirmed =
+                invitation.status === 'confirmed' || invitation.status === 'partial';
+            const dietaryRestrictions = invitation.dietaryRestrictionsNames
                 ? `${invitation.dietaryRestrictionsNames} ${invitation.dietaryRestrictionsDetails ? `(${invitation.dietaryRestrictionsDetails})` : ''}`
                 : '-';
-            
+
             return [
                 invitation.code,
                 formatGuestNames(invitation.guestNames),
@@ -415,20 +417,22 @@ export class AdminAPI {
                 this.getStatusDisplayText(invitation.status),
                 invitation.confirmedPasses || 0,
                 cancelledPasses,
-                isConfirmed ? 'Sí' : (invitation.status === 'cancelled' ? 'No' : '-'),
+                isConfirmed ? 'Sí' : invitation.status === 'cancelled' ? 'No' : '-',
                 invitation.phone || '-',
                 dietaryRestrictions,
                 invitation.generalMessage || '-',
-                invitation.confirmationDate ? new Date(invitation.confirmationDate).toLocaleDateString('es-MX') : '-'
+                invitation.confirmationDate
+                    ? new Date(invitation.confirmationDate).toLocaleDateString('es-MX')
+                    : '-'
             ];
         });
-        
+
         // Generar CSV
         let csv = headers.join(',') + '\n';
         rows.forEach(row => {
             csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
         });
-        
+
         // Descargar archivo
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
@@ -436,7 +440,7 @@ export class AdminAPI {
         link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
     }
-    
+
     /**
      * Importa invitaciones desde contenido CSV
      * @param {string} csvContent - Contenido del archivo CSV
@@ -446,7 +450,7 @@ export class AdminAPI {
         try {
             // Procesar CSV y convertir a formato de invitaciones
             const invitations = this.parseCSVToInvitations(csvContent);
-            
+
             if (invitations.length === 0) {
                 return {
                     success: false,
@@ -455,12 +459,12 @@ export class AdminAPI {
                     createdInvitations: []
                 };
             }
-            
+
             const result = await this.fetchWithErrorHandling('/invitations/import', {
                 method: 'POST',
                 body: JSON.stringify({ invitations })
             });
-            
+
             if (result.success) {
                 const data = result.data.result || result.data;
                 return {
@@ -470,7 +474,7 @@ export class AdminAPI {
                     createdInvitations: data.success || []
                 };
             }
-            
+
             return {
                 success: false,
                 created: 0,
@@ -486,7 +490,7 @@ export class AdminAPI {
             };
         }
     }
-    
+
     /**
      * Convierte contenido CSV a formato de invitaciones
      * @param {string} csvContent - Contenido CSV
@@ -496,34 +500,42 @@ export class AdminAPI {
     parseCSVToInvitations(csvContent) {
         const lines = csvContent.trim().split('\n');
         if (lines.length < 2) {
-            throw new Error('El archivo CSV debe tener al menos una fila de encabezados y una fila de datos');
+            throw new Error(
+                'El archivo CSV debe tener al menos una fila de encabezados y una fila de datos'
+            );
         }
-        
+
         // Obtener encabezados
         const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
         const invitations = [];
-        
+
         // Procesar cada fila de datos
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
-            if (!line) continue;
-            
+            if (!line) {
+                continue;
+            }
+
             const values = this.parseCSVLine(line);
-            if (values.length < 2) continue; // Necesita al menos Nombres y Pases
-            
+            if (values.length < 2) {
+                continue;
+            } // Necesita al menos Nombres y Pases
+
             const invitation = {};
-            
+
             // Mapear valores a campos
             headers.forEach((header, index) => {
                 if (values[index] !== undefined) {
                     const value = values[index].trim();
-                    
+
                     switch (header.toLowerCase()) {
                         case 'nombres':
                         case 'nombre':
                         case 'invitados':
                             // Agregar soporte para pipe (|) que es el separador usado en la exportación
-                            invitation.guestNames = value.split(/\s+y\s+|\s*,\s*|\s*&\s*|\|/).filter(n => n.trim());
+                            invitation.guestNames = value
+                                .split(/\s+y\s+|\s*,\s*|\s*&\s*|\|/)
+                                .filter(n => n.trim());
                             break;
                         case 'pases':
                         case 'passes':
@@ -557,30 +569,33 @@ export class AdminAPI {
                     }
                 }
             });
-            
+
             // Validaciones básicas
             if (!invitation.guestNames || invitation.guestNames.length === 0) {
                 continue; // Saltar filas sin nombres
             }
-            
+
             if (!invitation.numberOfPasses || invitation.numberOfPasses < 1) {
                 invitation.numberOfPasses = 1;
             }
-            
+
             // Validar suma de tipos de invitados si están especificados
             if (invitation.adults || invitation.children || invitation.staff) {
-                const total = (invitation.adults || 0) + (invitation.children || 0) + (invitation.staff || 0);
+                const total =
+                    (invitation.adults || 0) + (invitation.children || 0) + (invitation.staff || 0);
                 if (total !== invitation.numberOfPasses) {
-                    console.warn(`Fila ${i + 1}: La suma de adultos, niños y staff (${total}) no coincide con el total de pases (${invitation.numberOfPasses})`);
+                    console.warn(
+                        `Fila ${i + 1}: La suma de adultos, niños y staff (${total}) no coincide con el total de pases (${invitation.numberOfPasses})`
+                    );
                 }
             }
-            
+
             invitations.push(invitation);
         }
-        
+
         return invitations;
     }
-    
+
     /**
      * Parsea una línea CSV manejando comillas y comas
      * @param {string} line - Línea CSV
@@ -591,10 +606,10 @@ export class AdminAPI {
         const values = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
-            
+
             if (char === '"') {
                 if (inQuotes && line[i + 1] === '"') {
                     // Comilla escapada
@@ -612,10 +627,10 @@ export class AdminAPI {
                 current += char;
             }
         }
-        
+
         // Agregar el último valor
         values.push(current);
-        
+
         return values;
     }
 }
@@ -655,17 +670,19 @@ export const APIHelpers = {
     isSuccess(result) {
         return result && result.success === true;
     },
-    
+
     /**
      * Obtiene el mensaje de error de una respuesta
      * @param {Object} result - Resultado de API
      * @returns {string}
      */
     getErrorMessage(result) {
-        if (!result) return 'Error desconocido';
+        if (!result) {
+            return 'Error desconocido';
+        }
         return result.error || 'Error al procesar la solicitud';
     },
-    
+
     /**
      * Determina si el error es de red
      * @param {Object} result - Resultado de API
@@ -674,7 +691,7 @@ export const APIHelpers = {
     isNetworkError(result) {
         return result && result.type === 'network';
     },
-    
+
     /**
      * Determina si el error es del servidor
      * @param {Object} result - Resultado de API

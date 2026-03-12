@@ -27,7 +27,7 @@ class AuthMiddleware {
         try {
             // Verificar header de autorización
             const authHeader = req.headers.authorization;
-            
+
             if (!authHeader) {
                 endOperation({ authenticated: false, reason: 'no_auth_header' });
                 return res.status(401).json({
@@ -53,10 +53,9 @@ class AuthMiddleware {
                 success: false,
                 error: 'Tipo de autorización no válido'
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error in authentication middleware', {
                 error: error.message,
                 stack: error.stack
@@ -80,7 +79,7 @@ class AuthMiddleware {
     verifyJWT(token, req, res, next, endOperation) {
         try {
             const decoded = jwt.verify(token, this.secretKey);
-            
+
             // Verificar expiración
             if (decoded.exp && Date.now() >= decoded.exp * 1000) {
                 endOperation({ authenticated: false, reason: 'token_expired' });
@@ -99,10 +98,9 @@ class AuthMiddleware {
 
             endOperation({ authenticated: true, method: 'jwt' });
             next();
-
         } catch (error) {
             endOperation({ authenticated: false, reason: 'invalid_jwt' });
-            
+
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({
                     success: false,
@@ -150,7 +148,6 @@ class AuthMiddleware {
                     error: 'Credenciales inválidas'
                 });
             }
-
         } catch (error) {
             endOperation({ authenticated: false, reason: 'basic_auth_error' });
             return res.status(401).json({
@@ -171,7 +168,7 @@ class AuthMiddleware {
             role: 'admin',
             permissions: ['read', 'write', 'delete'],
             iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 horas
+            exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60 // 24 horas
         };
 
         return jwt.sign({ ...defaultPayload, ...payload }, this.secretKey);
@@ -213,10 +210,9 @@ class AuthMiddleware {
 
                 endOperation({ authorized: true });
                 next();
-
             } catch (error) {
                 endOperation({ error: error.message }, 'error');
-                
+
                 this.logger.error('Error checking permissions', {
                     error: error.message,
                     stack: error.stack
@@ -252,9 +248,9 @@ class AuthMiddleware {
 
             if (username === 'admin' && password === this.adminPassword) {
                 const token = this.generateToken();
-                
+
                 endOperation({ success: true });
-                
+
                 return res.json({
                     success: true,
                     token,
@@ -272,10 +268,9 @@ class AuthMiddleware {
                 success: false,
                 error: 'Credenciales inválidas'
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error in login', {
                 error: error.message,
                 stack: error.stack
@@ -312,10 +307,9 @@ class AuthMiddleware {
                 user: req.user,
                 valid: true
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error verifying token', {
                 error: error.message,
                 stack: error.stack

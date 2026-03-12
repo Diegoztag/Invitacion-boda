@@ -45,7 +45,7 @@ class Server {
         this.app = express();
         this.port = config.port; // definido en config/index.js
         this.container = new DIContainer();
-        
+
         this.setupDependencies();
         this.setupMiddleware();
         this.setupRoutes();
@@ -57,28 +57,38 @@ class Server {
      */
     setupDependencies() {
         const logger = new Logger();
-        
+
         // Registrar servicios básicos
         this.container.register('logger', () => logger, { singleton: true });
-        this.container.register('validationService', () => new ValidationService(logger), { singleton: true });
-        
+        this.container.register('validationService', () => new ValidationService(logger), {
+            singleton: true
+        });
+
         // Registrar servicios de infraestructura
         this.container.register('csvStorage', () => new CsvStorage(logger), { singleton: true });
         this.container.register('sseService', () => new SseService(logger), { singleton: true });
-        
+
         // Registrar repositorios
-        this.container.register('invitationRepository', () => {
-            const csvStorage = this.container.resolve('csvStorage');
-            const logger = this.container.resolve('logger');
-            return new CsvInvitationRepository(csvStorage, logger);
-        }, { singleton: true });
-        
-        this.container.register('confirmationRepository', () => {
-            const csvStorage = this.container.resolve('csvStorage');
-            const logger = this.container.resolve('logger');
-            return new CsvConfirmationRepository(csvStorage, logger);
-        }, { singleton: true });
-        
+        this.container.register(
+            'invitationRepository',
+            () => {
+                const csvStorage = this.container.resolve('csvStorage');
+                const logger = this.container.resolve('logger');
+                return new CsvInvitationRepository(csvStorage, logger);
+            },
+            { singleton: true }
+        );
+
+        this.container.register(
+            'confirmationRepository',
+            () => {
+                const csvStorage = this.container.resolve('csvStorage');
+                const logger = this.container.resolve('logger');
+                return new CsvConfirmationRepository(csvStorage, logger);
+            },
+            { singleton: true }
+        );
+
         // Registrar casos de uso
         this.container.register('createInvitationUseCase', () => {
             const invitationRepository = this.container.resolve('invitationRepository');
@@ -86,13 +96,13 @@ class Server {
             const logger = this.container.resolve('logger');
             return new CreateInvitationUseCase(invitationRepository, validationService, logger);
         });
-        
+
         this.container.register('getInvitationUseCase', () => {
             const invitationRepository = this.container.resolve('invitationRepository');
             const logger = this.container.resolve('logger');
             return new GetInvitationUseCase(invitationRepository, logger);
         });
-        
+
         this.container.register('confirmAttendanceUseCase', () => {
             const invitationRepository = this.container.resolve('invitationRepository');
             const confirmationRepository = this.container.resolve('confirmationRepository');
@@ -100,41 +110,52 @@ class Server {
             const sseService = this.container.resolve('sseService');
             const logger = this.container.resolve('logger');
             return new ConfirmAttendanceUseCase(
-                invitationRepository, 
-                confirmationRepository, 
-                validationService, 
+                invitationRepository,
+                confirmationRepository,
+                validationService,
                 sseService,
                 logger
             );
         });
-        
+
         this.container.register('getConfirmationStatsUseCase', () => {
             const confirmationRepository = this.container.resolve('confirmationRepository');
             const invitationRepository = this.container.resolve('invitationRepository');
             const logger = this.container.resolve('logger');
-            return new GetConfirmationStatsUseCase(confirmationRepository, invitationRepository, logger);
+            return new GetConfirmationStatsUseCase(
+                confirmationRepository,
+                invitationRepository,
+                logger
+            );
         });
-        
+
         // Registrar controladores
         this.container.register('invitationController', () => {
             const createInvitationUseCase = this.container.resolve('createInvitationUseCase');
             const invitationRepository = this.container.resolve('invitationRepository');
             const validationService = this.container.resolve('validationService');
             const logger = this.container.resolve('logger');
-            return new InvitationController(createInvitationUseCase, invitationRepository, validationService, logger);
+            return new InvitationController(
+                createInvitationUseCase,
+                invitationRepository,
+                validationService,
+                logger
+            );
         });
-        
+
         this.container.register('confirmationController', () => {
             const confirmAttendanceUseCase = this.container.resolve('confirmAttendanceUseCase');
-            const getConfirmationStatsUseCase = this.container.resolve('getConfirmationStatsUseCase');
+            const getConfirmationStatsUseCase = this.container.resolve(
+                'getConfirmationStatsUseCase'
+            );
             const confirmationRepository = this.container.resolve('confirmationRepository');
             const validationService = this.container.resolve('validationService');
             const logger = this.container.resolve('logger');
             return new ConfirmationController(
-                confirmAttendanceUseCase, 
-                getConfirmationStatsUseCase, 
-                confirmationRepository, 
-                validationService, 
+                confirmAttendanceUseCase,
+                getConfirmationStatsUseCase,
+                confirmationRepository,
+                validationService,
                 logger
             );
         });
@@ -152,38 +173,46 @@ class Server {
     setupMiddleware() {
         const logger = this.container.resolve('logger');
         const validationService = this.container.resolve('validationService');
-        
+
         // Middleware básico de Express
         this.app.use(express.json({ limit: '10mb' }));
         this.app.use(express.urlencoded({ extended: true }));
-        
+
         // Configurar middleware personalizado
         const middleware = configureMiddleware({ validationService, logger, config });
-        
+
         // Aplicar middleware global
         this.app.use(middleware.helmet);
         this.app.use(middleware.compression);
         this.app.use(middleware.cors);
         this.app.use(middleware.requestId);
         this.app.use(middleware.requestLogger);
-        
+
         // Hacer logger disponible globalmente en la app
         this.app.locals.logger = logger;
-        
+
         // Servir archivos estáticos del frontend con estructura modular
-        this.app.use('/dashboard', express.static(path.join(__dirname, '../../frontend/dashboard')));
-        this.app.use('/invitation', express.static(path.join(__dirname, '../../frontend/invitation')));
+        this.app.use(
+            '/dashboard',
+            express.static(path.join(__dirname, '../../frontend/dashboard'))
+        );
+        this.app.use(
+            '/invitation',
+            express.static(path.join(__dirname, '../../frontend/invitation'))
+        );
         this.app.use('/landing', express.static(path.join(__dirname, '../../frontend/landing')));
-        
+
         // Servir archivos públicos compartidos (como config.js) desde la raíz
-        this.app.use(express.static(path.join(__dirname, '../../frontend/public'), {
-            setHeaders: (res, path) => {
-                // Configurar MIME type correcto para archivos JavaScript
-                if (path.endsWith('.js')) {
-                    res.setHeader('Content-Type', 'text/javascript');
+        this.app.use(
+            express.static(path.join(__dirname, '../../frontend/public'), {
+                setHeaders: (res, path) => {
+                    // Configurar MIME type correcto para archivos JavaScript
+                    if (path.endsWith('.js')) {
+                        res.setHeader('Content-Type', 'text/javascript');
+                    }
                 }
-            }
-        }));
+            })
+        );
     }
 
     /**
@@ -192,39 +221,39 @@ class Server {
     setupRoutes() {
         const logger = this.container.resolve('logger');
         const validationService = this.container.resolve('validationService');
-        
+
         // Obtener controladores
         const controllers = {
             invitationController: this.container.resolve('invitationController'),
             confirmationController: this.container.resolve('confirmationController'),
             notificationController: this.container.resolve('notificationController')
         };
-        
+
         // Configurar middleware
         const middleware = configureMiddleware({ validationService, logger, config });
-        
+
         // Redirección de la raíz a landing (debe ir ANTES de las rutas principales)
         this.app.get('/', (req, res) => {
             res.redirect('/landing');
         });
-        
+
         // Configurar rutas principales
         const routes = configureRoutes(controllers, middleware);
         this.app.use('/', routes);
-        
+
         // Rutas específicas para SPA
         this.app.get('/dashboard/*', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/dashboard/index.html'));
         });
-        
+
         this.app.get('/invitation/*', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/invitation/index.html'));
         });
-        
+
         this.app.get('/landing/*', (req, res) => {
             res.sendFile(path.join(__dirname, '../../frontend/landing/index.html'));
         });
-        
+
         // Ruta de fallback para otras rutas
         this.app.get('*', (req, res) => {
             // Si es una ruta de API, devolver 404
@@ -234,7 +263,7 @@ class Server {
                     error: 'Endpoint no encontrado'
                 });
             }
-            
+
             // Para rutas no reconocidas, redirigir a landing
             res.redirect('/landing');
         });
@@ -245,23 +274,23 @@ class Server {
      */
     setupErrorHandling() {
         const logger = this.container.resolve('logger');
-        
+
         // Manejo de errores no capturados
-        process.on('uncaughtException', (error) => {
+        process.on('uncaughtException', error => {
             logger.error('Uncaught Exception', {
                 error: error.message,
                 stack: error.stack
             });
             process.exit(1);
         });
-        
+
         process.on('unhandledRejection', (reason, promise) => {
             logger.error('Unhandled Rejection', {
                 reason: reason,
                 promise: promise
             });
         });
-        
+
         // Middleware de manejo de errores de Express
         this.app.use((error, req, res, next) => {
             logger.error('Express Error Handler', {
@@ -271,11 +300,11 @@ class Server {
                 path: req.path,
                 method: req.method
             });
-            
+
             if (res.headersSent) {
                 return next(error);
             }
-            
+
             res.status(500).json({
                 success: false,
                 error: 'Error interno del servidor',
@@ -290,13 +319,13 @@ class Server {
     async start() {
         try {
             const logger = this.container.resolve('logger');
-            
+
             // Verificar que los directorios de datos existan
             await this.ensureDataDirectories();
-            
+
             // Inicializar repositorios
             await this.initializeRepositories();
-            
+
             // Iniciar servidor HTTP
             this.server = this.app.listen(this.port, () => {
                 logger.info('Server started successfully', {
@@ -304,7 +333,7 @@ class Server {
                     environment: process.env.NODE_ENV || 'development',
                     timestamp: new Date().toISOString()
                 });
-                
+
                 console.log(`🚀 Servidor iniciado en puerto ${this.port} - Stats verificados`);
                 console.log(`🏠 Inicio: http://localhost:${this.port} → /landing`);
                 console.log(`🎯 Landing: http://localhost:${this.port}/landing`);
@@ -313,7 +342,6 @@ class Server {
                 console.log(`🔧 API: http://localhost:${this.port}/api`);
                 console.log(`❤️  Health: http://localhost:${this.port}/health`);
             });
-            
         } catch (error) {
             const logger = this.container.resolve('logger');
             logger.error('Failed to start server', {
@@ -330,9 +358,9 @@ class Server {
     async ensureDataDirectories() {
         const fs = require('fs').promises;
         const path = require('path');
-        
+
         const dataDir = path.join(__dirname, '../../data');
-        
+
         try {
             await fs.access(dataDir);
         } catch (error) {
@@ -345,21 +373,20 @@ class Server {
      */
     async initializeRepositories() {
         const logger = this.container.resolve('logger');
-        
+
         try {
             // Inicializar el servicio de almacenamiento CSV
             const csvStorage = this.container.resolve('csvStorage');
             await csvStorage.initialize();
-            
+
             const invitationRepository = this.container.resolve('invitationRepository');
             const confirmationRepository = this.container.resolve('confirmationRepository');
-            
+
             // Verificar que los repositorios estén funcionando
             await invitationRepository.count();
             await confirmationRepository.count();
-            
+
             logger.info('Repositories initialized successfully');
-            
         } catch (error) {
             logger.error('Failed to initialize repositories', {
                 error: error.message,
@@ -374,8 +401,8 @@ class Server {
      */
     async stop() {
         const logger = this.container.resolve('logger');
-        
-        return new Promise((resolve) => {
+
+        return new Promise(resolve => {
             if (this.server) {
                 this.server.close(() => {
                     logger.info('Server stopped gracefully');
@@ -392,14 +419,14 @@ class Server {
 if (require.main === module) {
     const server = new Server();
     server.start().catch(console.error);
-    
+
     // Manejo graceful de shutdown
     process.on('SIGTERM', async () => {
         console.log('SIGTERM received, shutting down gracefully');
         await server.stop();
         process.exit(0);
     });
-    
+
     process.on('SIGINT', async () => {
         console.log('SIGINT received, shutting down gracefully');
         await server.stop();

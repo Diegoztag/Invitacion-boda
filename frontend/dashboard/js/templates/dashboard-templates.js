@@ -4,13 +4,12 @@
  */
 
 export class DashboardTemplates {
-    
     /**
      * Template para stat card
      */
     static statCard(config) {
         const { icon, iconClass = 'primary', title, value, subtitle, badge } = config;
-        
+
         return `
             <div class="stat-card">
                 <div class="stat-header">
@@ -33,7 +32,7 @@ export class DashboardTemplates {
      */
     static progressItem(config) {
         const { label, value, percentage, colorClass = 'primary', isLast = false } = config;
-        
+
         return `
             <div class="progress-item ${isLast ? 'mb-0' : ''}">
                 <div class="progress-header">
@@ -52,7 +51,7 @@ export class DashboardTemplates {
      */
     static chartContainer(config) {
         const { id, containerId, title, subtitle, value, valueLabel, hasCanvas = true } = config;
-        
+
         return `
             <div class="chart-container" ${containerId ? `id="${containerId}"` : ''}>
                 <div class="chart-header">
@@ -259,7 +258,10 @@ export class DashboardTemplates {
      * Template para loading skeleton de tabla
      */
     static tableSkeleton(rows = 5) {
-        const skeletonRows = Array(rows).fill(0).map(() => `
+        const skeletonRows = Array(rows)
+            .fill(0)
+            .map(
+                () => `
             <tr class="skeleton-row">
                 <td><div class="skeleton-text"></div></td>
                 <td><div class="skeleton-text skeleton-text-sm"></div></td>
@@ -268,7 +270,9 @@ export class DashboardTemplates {
                 <td><div class="skeleton-text"></div></td>
                 <td><div class="skeleton-text skeleton-text-xs"></div></td>
             </tr>
-        `).join('');
+        `
+            )
+            .join('');
 
         return `
             <div class="table-container">
@@ -301,7 +305,7 @@ export class DashboardTemplates {
      */
     static emptyState(config) {
         const { icon = 'fas fa-inbox', title, message, actionText, actionHandler } = config;
-        
+
         return `
             <div class="state-container empty-state">
                 <div class="state-icon">
@@ -319,7 +323,7 @@ export class DashboardTemplates {
      */
     static errorState(config) {
         const { title = 'Error al cargar datos', message, retryHandler } = config;
-        
+
         return `
             <div class="state-container error-state">
                 <div class="state-icon">

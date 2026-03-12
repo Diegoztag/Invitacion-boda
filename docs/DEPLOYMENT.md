@@ -42,6 +42,7 @@ npx imagemin images/* --out-dir=images/optimized/
 ### 3. Configuración de Seguridad
 
 #### Headers de Seguridad (agregar en server.js)
+
 ```javascript
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
 ### Opción 1: VPS (DigitalOcean, AWS EC2, Linode)
 
 #### Requisitos
+
 - Ubuntu 20.04+ o similar
 - 1GB RAM mínimo
 - 10GB almacenamiento
@@ -67,22 +69,26 @@ app.use((req, res, next) => {
 #### Pasos de Instalación
 
 1. **Conectar al servidor**
+
 ```bash
 ssh usuario@tu-servidor.com
 ```
 
 2. **Instalar Node.js**
+
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
 3. **Instalar PM2**
+
 ```bash
 sudo npm install -g pm2
 ```
 
 4. **Clonar el proyecto**
+
 ```bash
 cd /var/www
 sudo git clone https://github.com/tu-usuario/invitacion-boda.git
@@ -90,12 +96,14 @@ cd invitacion-boda
 ```
 
 5. **Instalar dependencias**
+
 ```bash
 cd backend
 npm install --production
 ```
 
 6. **Configurar PM2**
+
 ```bash
 # Crear ecosystem.config.js
 module.exports = {
@@ -120,6 +128,7 @@ pm2 startup
 ```
 
 7. **Configurar Nginx**
+
 ```nginx
 # /etc/nginx/sites-available/invitacion-boda
 server {
@@ -147,6 +156,7 @@ server {
 ```
 
 8. **Habilitar sitio**
+
 ```bash
 sudo ln -s /etc/nginx/sites-available/invitacion-boda /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -154,6 +164,7 @@ sudo systemctl restart nginx
 ```
 
 9. **Configurar SSL con Let's Encrypt**
+
 ```bash
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d tu-dominio.com
@@ -162,16 +173,19 @@ sudo certbot --nginx -d tu-dominio.com
 ### Opción 2: Heroku
 
 1. **Instalar Heroku CLI**
+
 ```bash
 # https://devcenter.heroku.com/articles/heroku-cli
 ```
 
 2. **Crear app en Heroku**
+
 ```bash
 heroku create nombre-app-invitacion
 ```
 
 3. **Configurar variables**
+
 ```bash
 heroku config:set ADMIN_USERNAME=admin_seguro
 heroku config:set ADMIN_PASSWORD=password_muy_segura
@@ -179,11 +193,13 @@ heroku config:set NODE_ENV=production
 ```
 
 4. **Crear Procfile**
+
 ```
 web: node backend/server.js
 ```
 
 5. **Desplegar**
+
 ```bash
 git add .
 git commit -m "Preparar para Heroku"
@@ -201,6 +217,7 @@ git push heroku main
 ### Opción 4: Docker
 
 1. **Crear Dockerfile**
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -223,23 +240,25 @@ CMD ["node", "backend/server.js"]
 ```
 
 2. **Crear docker-compose.yml**
+
 ```yaml
 version: '3.8'
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-    volumes:
-      - ./data:/app/data
-    restart: unless-stopped
+    app:
+        build: .
+        ports:
+            - '3000:3000'
+        environment:
+            - NODE_ENV=production
+            - ADMIN_USERNAME=${ADMIN_USERNAME}
+            - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+        volumes:
+            - ./data:/app/data
+        restart: unless-stopped
 ```
 
 3. **Construir y ejecutar**
+
 ```bash
 docker-compose up -d
 ```
@@ -247,6 +266,7 @@ docker-compose up -d
 ## Monitoreo y Mantenimiento
 
 ### 1. Logs con PM2
+
 ```bash
 # Ver logs en tiempo real
 pm2 logs invitacion-boda
@@ -256,6 +276,7 @@ pm2 logs invitacion-boda --lines 1000
 ```
 
 ### 2. Monitoreo de Recursos
+
 ```bash
 # Estado de la aplicación
 pm2 status
@@ -270,6 +291,7 @@ pm2 info invitacion-boda
 ### 3. Backups Automáticos
 
 Crear script de backup (`backup.sh`):
+
 ```bash
 #!/bin/bash
 BACKUP_DIR="/home/usuario/backups"
@@ -286,6 +308,7 @@ find $BACKUP_DIR -name "data_*.tar.gz" -mtime +30 -delete
 ```
 
 Agregar a crontab:
+
 ```bash
 # Backup diario a las 2 AM
 0 2 * * * /home/usuario/backup.sh
@@ -316,6 +339,7 @@ pm2 logs invitacion-boda --lines 100
 ## Checklist de Producción
 
 ### Antes del Despliegue
+
 - [ ] Variables de entorno configuradas
 - [ ] Credenciales seguras (no las default)
 - [ ] Assets minificados
@@ -325,6 +349,7 @@ pm2 logs invitacion-boda --lines 100
 - [ ] Backup inicial de datos
 
 ### Después del Despliegue
+
 - [ ] Verificar que el sitio carga correctamente
 - [ ] Probar panel de administración
 - [ ] Probar creación de invitación
@@ -334,6 +359,7 @@ pm2 logs invitacion-boda --lines 100
 - [ ] Programar backups automáticos
 
 ### Mantenimiento Regular
+
 - [ ] Revisar logs semanalmente
 - [ ] Verificar backups mensuales
 - [ ] Actualizar dependencias trimestralmente
@@ -343,6 +369,7 @@ pm2 logs invitacion-boda --lines 100
 ## Troubleshooting Común
 
 ### La aplicación no inicia
+
 ```bash
 # Verificar logs
 pm2 logs invitacion-boda --lines 200
@@ -355,6 +382,7 @@ ls -la data/
 ```
 
 ### Error 502 Bad Gateway
+
 ```bash
 # Verificar que PM2 está corriendo
 pm2 status
@@ -368,6 +396,7 @@ sudo systemctl restart nginx
 ```
 
 ### Problemas de permisos
+
 ```bash
 # Dar permisos correctos
 sudo chown -R www-data:www-data /var/www/invitacion-boda
@@ -378,12 +407,14 @@ sudo chmod -R 775 /var/www/invitacion-boda/data
 ## Escalabilidad
 
 ### Cuando considerar escalar:
+
 - Más de 1000 invitaciones activas
 - Tiempo de respuesta > 2 segundos
 - Uso de CPU > 80% constante
 - Archivos CSV > 10MB
 
 ### Opciones de escalado:
+
 1. **Vertical**: Aumentar recursos del servidor
 2. **Horizontal**: Múltiples instancias con load balancer
 3. **Migrar a base de datos**: PostgreSQL o MySQL
@@ -393,6 +424,7 @@ sudo chmod -R 775 /var/www/invitacion-boda/data
 ## Seguridad en Producción
 
 ### Recomendaciones críticas:
+
 1. Usar HTTPS siempre
 2. Actualizar dependencias regularmente
 3. Implementar rate limiting
@@ -403,6 +435,7 @@ sudo chmod -R 775 /var/www/invitacion-boda/data
 8. Monitoreo de seguridad
 
 ### Configuración de Firewall
+
 ```bash
 sudo ufw allow 22/tcp  # SSH
 sudo ufw allow 80/tcp  # HTTP
@@ -413,6 +446,7 @@ sudo ufw enable
 ## Contacto y Soporte
 
 Para problemas de despliegue:
+
 1. Revisar logs detalladamente
 2. Buscar en issues del repositorio
 3. Crear nuevo issue con información completa

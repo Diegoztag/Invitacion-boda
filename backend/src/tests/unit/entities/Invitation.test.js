@@ -43,7 +43,9 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 1
             };
 
-            expect(() => new Invitation(data)).toThrow('Al menos un nombre de invitado es requerido');
+            expect(() => new Invitation(data)).toThrow(
+                'Al menos un nombre de invitado es requerido'
+            );
         });
 
         test('should throw error with invalid number of passes', () => {
@@ -113,7 +115,7 @@ describe('Invitation Entity', () => {
 
         test('activate should set status to active', () => {
             invitation.status = 'inactive';
-            
+
             const activated = invitation.activate();
 
             expect(activated.status).toBe('active');
@@ -124,21 +126,21 @@ describe('Invitation Entity', () => {
 
         test('isActive should return correct status', () => {
             expect(invitation.isActive()).toBe(true);
-            
+
             invitation.status = 'inactive';
             expect(invitation.isActive()).toBe(false);
         });
 
         test('isConfirmed should return confirmation status', () => {
             expect(invitation.isConfirmed()).toBe(false);
-            
+
             invitation.confirmed = true;
             expect(invitation.isConfirmed()).toBe(true);
         });
 
         test('getPendingPasses should calculate correctly', () => {
             expect(invitation.getPendingPasses()).toBe(2);
-            
+
             invitation.confirmedPasses = 1;
             expect(invitation.getPendingPasses()).toBe(1);
         });
@@ -149,7 +151,7 @@ describe('Invitation Entity', () => {
 
         test('hasPhone should check phone presence', () => {
             expect(invitation.hasPhone()).toBe(true);
-            
+
             invitation.phone = '';
             expect(invitation.hasPhone()).toBe(false);
         });
@@ -195,7 +197,9 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 2
             };
 
-            expect(() => new Invitation(data)).toThrow('Nombres de invitados no pueden estar vacíos');
+            expect(() => new Invitation(data)).toThrow(
+                'Nombres de invitados no pueden estar vacíos'
+            );
         });
 
         test('should validate phone format if provided', () => {
@@ -231,8 +235,9 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 2
             });
 
-            expect(() => invitation.confirm({ confirmedPasses: 3 }))
-                .toThrow('Pases confirmados no pueden exceder el número total de pases');
+            expect(() => invitation.confirm({ confirmedPasses: 3 })).toThrow(
+                'Pases confirmados no pueden exceder el número total de pases'
+            );
         });
     });
 

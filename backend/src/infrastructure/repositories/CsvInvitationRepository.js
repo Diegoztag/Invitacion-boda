@@ -50,23 +50,23 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Leer invitaciones existentes
             const invitations = await this.readAllInvitations();
-            
+
             // Verificar duplicados de código
             const existingCodes = new Set(invitations.map(inv => inv.code));
-            
+
             for (const newInv of newInvitations) {
                 if (existingCodes.has(newInv.code)) {
                     throw new Error(`Ya existe una invitación con el código ${newInv.code}`);
                 }
                 existingCodes.add(newInv.code); // Agregar al set para verificar duplicados dentro del mismo lote
             }
-            
+
             // Agregar nuevas invitaciones
             invitations.push(...newInvitations);
-            
+
             // Escribir al archivo
             await this.writeAllInvitations(invitations);
-            
+
             this.logger.info('Batch invitations saved successfully', {
                 count: newInvitations.length
             });
@@ -96,13 +96,13 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Leer invitaciones existentes
             const invitations = await this.readAllInvitations();
-            
+
             // Agregar nueva invitación
             invitations.push(invitation);
-            
+
             // Escribir al archivo
             await this.writeAllInvitations(invitations);
-            
+
             this.logger.info('Invitation saved successfully', {
                 code: invitation.code,
                 guestNames: invitation.getGuestNamesString()
@@ -126,8 +126,9 @@ class CsvInvitationRepository extends IInvitationRepository {
     async findByCode(code) {
         try {
             const invitations = await this.readAllInvitations();
-            const found = invitations.find(inv => inv.code.toLowerCase() === code.toLowerCase()) || null;
-            
+            const found =
+                invitations.find(inv => inv.code.toLowerCase() === code.toLowerCase()) || null;
+
             if (!found) {
                 this.logger.warn(`Invitation not found for code: ${code}`, {
                     totalInvitations: invitations.length,
@@ -203,19 +204,21 @@ class CsvInvitationRepository extends IInvitationRepository {
             // Filtro por teléfono
             if (filters.phone) {
                 if (filters.phone === 'with_phone') {
-                    invitations = invitations.filter(inv => inv.phone && inv.phone.trim().length > 0);
+                    invitations = invitations.filter(
+                        inv => inv.phone && inv.phone.trim().length > 0
+                    );
                 } else if (filters.phone === 'without_phone') {
-                    invitations = invitations.filter(inv => !inv.phone || inv.phone.trim().length === 0);
+                    invitations = invitations.filter(
+                        inv => !inv.phone || inv.phone.trim().length === 0
+                    );
                 }
             }
 
             // Filtro de búsqueda por nombre
             if (filters.search) {
                 const searchName = filters.search.toLowerCase();
-                invitations = invitations.filter(invitation => 
-                    invitation.guestNames.some(name => 
-                        name.toLowerCase().includes(searchName)
-                    )
+                invitations = invitations.filter(invitation =>
+                    invitation.guestNames.some(name => name.toLowerCase().includes(searchName))
                 );
             }
 
@@ -239,18 +242,20 @@ class CsvInvitationRepository extends IInvitationRepository {
     async update(code, invitation) {
         try {
             const invitations = await this.readAllInvitations();
-            const index = invitations.findIndex(inv => inv.code.toLowerCase() === code.toLowerCase());
-            
+            const index = invitations.findIndex(
+                inv => inv.code.toLowerCase() === code.toLowerCase()
+            );
+
             if (index === -1) {
                 throw new Error(`Invitación con código ${code} no encontrada`);
             }
 
             // Actualizar la invitación
             invitations[index] = invitation;
-            
+
             // Escribir al archivo
             await this.writeAllInvitations(invitations);
-            
+
             this.logger.info('Invitation updated successfully', {
                 code,
                 guestNames: invitation.getGuestNamesString()
@@ -282,10 +287,10 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Desactivar la invitación
             const deactivatedInvitation = invitation.deactivate(deletedBy, reason);
-            
+
             // Actualizar en el archivo
             await this.update(code, deactivatedInvitation);
-            
+
             this.logger.info('Invitation deleted successfully', {
                 code,
                 deletedBy,
@@ -316,10 +321,10 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Reactivar la invitación
             const reactivatedInvitation = invitation.activate();
-            
+
             // Actualizar en el archivo
             await this.update(code, reactivatedInvitation);
-            
+
             this.logger.info('Invitation restored successfully', { code });
 
             return reactivatedInvitation;
@@ -342,11 +347,9 @@ class CsvInvitationRepository extends IInvitationRepository {
         try {
             const invitations = await this.findAll({}, includeInactive);
             const searchName = guestName.toLowerCase();
-            
-            return invitations.filter(invitation => 
-                invitation.guestNames.some(name => 
-                    name.toLowerCase().includes(searchName)
-                )
+
+            return invitations.filter(invitation =>
+                invitation.guestNames.some(name => name.toLowerCase().includes(searchName))
             );
         } catch (error) {
             this.logger.error('Error finding invitations by guest name', {
@@ -405,36 +408,49 @@ class CsvInvitationRepository extends IInvitationRepository {
     async getStats() {
         try {
             const invitations = await this.readAllInvitations();
-            
+
             // Filtrar invitaciones activas (excluir inactive Y cancelled)
-            const activeInvitations = invitations.filter(inv => 
-                inv.status !== 'inactive' && inv.status !== 'cancelled'
+            const activeInvitations = invitations.filter(
+                inv => inv.status !== 'inactive' && inv.status !== 'cancelled'
             );
-            const confirmedInvitations = activeInvitations.filter(inv => inv.status === 'confirmed');
+            const confirmedInvitations = activeInvitations.filter(
+                inv => inv.status === 'confirmed'
+            );
             const partialInvitations = activeInvitations.filter(inv => inv.status === 'partial');
             const pendingInvitations = activeInvitations.filter(inv => inv.status === 'pending');
-            
+
             // Separar las excluidas para tracking
             const cancelledInvitations = invitations.filter(inv => inv.status === 'cancelled');
             const inactiveInvitations = invitations.filter(inv => inv.status === 'inactive');
-            
+
             // Calcular pases ocupados
-            const occupiedPasses = 
+            const occupiedPasses =
                 // confirmed: todos los confirmedPasses
                 confirmedInvitations.reduce((sum, inv) => sum + inv.confirmedPasses, 0) +
                 // partial: solo los confirmedPasses
                 partialInvitations.reduce((sum, inv) => sum + inv.confirmedPasses, 0) +
                 // pending: asumimos que todos van (numberOfPasses)
                 pendingInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
-            
+
             // Calcular pases liberados
-            const liberatedByCancel = cancelledInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
-            const liberatedByInactive = inactiveInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
-            const liberatedByPartial = partialInvitations.reduce((sum, inv) => sum + (inv.numberOfPasses - inv.confirmedPasses), 0);
-            
+            const liberatedByCancel = cancelledInvitations.reduce(
+                (sum, inv) => sum + inv.numberOfPasses,
+                0
+            );
+            const liberatedByInactive = inactiveInvitations.reduce(
+                (sum, inv) => sum + inv.numberOfPasses,
+                0
+            );
+            const liberatedByPartial = partialInvitations.reduce(
+                (sum, inv) => sum + (inv.numberOfPasses - inv.confirmedPasses),
+                0
+            );
+
             // Total de pases emitidos (Activos + Cancelados)
             // Excluye inactivos para mantener consistencia con la regla de negocio "no contar inactivos"
-            const totalIssuedPasses = activeInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0) + liberatedByCancel;
+            const totalIssuedPasses =
+                activeInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0) +
+                liberatedByCancel;
 
             // Total de pases liberados (Cancelados + Parciales)
             // Excluye inactivos porque no son parte del "Total Emitido" visible
@@ -442,14 +458,25 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Calcular totales para porcentajes
             const totalActivePassesCalc = activeInvitations.reduce((sum, inv) => {
-                if (inv.status === 'pending') return sum + inv.numberOfPasses;
+                if (inv.status === 'pending') {
+                    return sum + inv.numberOfPasses;
+                }
                 return sum + inv.confirmedPasses;
             }, 0);
 
             // Calcular desglose por tipos - ACTIVOS
-            const activeAdultPasses = this.calculateAdjustedPassesByType(activeInvitations, 'adultPasses');
-            const activeChildPasses = this.calculateAdjustedPassesByType(activeInvitations, 'childPasses');
-            const activeStaffPasses = this.calculateAdjustedPassesByType(activeInvitations, 'staffPasses');
+            const activeAdultPasses = this.calculateAdjustedPassesByType(
+                activeInvitations,
+                'adultPasses'
+            );
+            const activeChildPasses = this.calculateAdjustedPassesByType(
+                activeInvitations,
+                'childPasses'
+            );
+            const activeStaffPasses = this.calculateAdjustedPassesByType(
+                activeInvitations,
+                'staffPasses'
+            );
 
             const stats = {
                 // Conteos básicos de invitaciones
@@ -461,41 +488,65 @@ class CsvInvitationRepository extends IInvitationRepository {
                 partial: partialInvitations.length,
                 cancelled: cancelledInvitations.length,
                 pending: pendingInvitations.length,
-                
+
                 // Total Emitido para UI
                 totalIssuedPasses: totalIssuedPasses,
-                
+
                 // Pases confirmados reales
-                confirmedPasses: activeInvitations.reduce((sum, inv) => sum + inv.confirmedPasses, 0),
-                
+                confirmedPasses: activeInvitations.reduce(
+                    (sum, inv) => sum + inv.confirmedPasses,
+                    0
+                ),
+
                 // Pases pendientes (estimados)
                 pendingPasses: pendingInvitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0),
-                
+
                 // Desglose por tipos - ACTIVOS (Ajustado: Pending completos + Confirmed/Partial proporcionales)
                 // Esto asegura que el desglose sume correctamente al total de pases activos reales
                 activeAdultPasses: activeAdultPasses,
                 activeChildPasses: activeChildPasses,
                 activeStaffPasses: activeStaffPasses,
-                
+
                 // Total de pases activos (Pending completos + Confirmed/Partial reales)
                 // Excluye la parte liberada de las invitaciones parciales
                 totalActivePasses: totalActivePassesCalc,
 
                 // Porcentajes de distribución (calculados en backend)
                 distributionPercentages: {
-                    adults: totalActivePassesCalc > 0 ? Math.round((activeAdultPasses / totalActivePassesCalc) * 100) : 0,
-                    children: totalActivePassesCalc > 0 ? Math.round((activeChildPasses / totalActivePassesCalc) * 100) : 0,
-                    staff: totalActivePassesCalc > 0 ? Math.round((activeStaffPasses / totalActivePassesCalc) * 100) : 0
+                    adults:
+                        totalActivePassesCalc > 0
+                            ? Math.round((activeAdultPasses / totalActivePassesCalc) * 100)
+                            : 0,
+                    children:
+                        totalActivePassesCalc > 0
+                            ? Math.round((activeChildPasses / totalActivePassesCalc) * 100)
+                            : 0,
+                    staff:
+                        totalActivePassesCalc > 0
+                            ? Math.round((activeStaffPasses / totalActivePassesCalc) * 100)
+                            : 0
                 },
-                
+
                 // Desglose por tipos - CONFIRMADOS (basado en proporción real)
-                confirmedAdultPasses: this.calculateConfirmedPassesByType(activeInvitations, 'adultPasses'),
-                confirmedChildPasses: this.calculateConfirmedPassesByType(activeInvitations, 'childPasses'),
-                confirmedStaffPasses: this.calculateConfirmedPassesByType(activeInvitations, 'staffPasses'),
-                
+                confirmedAdultPasses: this.calculateConfirmedPassesByType(
+                    activeInvitations,
+                    'adultPasses'
+                ),
+                confirmedChildPasses: this.calculateConfirmedPassesByType(
+                    activeInvitations,
+                    'childPasses'
+                ),
+                confirmedStaffPasses: this.calculateConfirmedPassesByType(
+                    activeInvitations,
+                    'staffPasses'
+                ),
+
                 // Total de pases confirmados
-                totalConfirmedPasses: activeInvitations.reduce((sum, inv) => sum + inv.confirmedPasses, 0),
-                
+                totalConfirmedPasses: activeInvitations.reduce(
+                    (sum, inv) => sum + inv.confirmedPasses,
+                    0
+                ),
+
                 // Métricas de capacidad
                 occupiedPasses: occupiedPasses,
                 totalLiberatedPasses: totalLiberatedPasses,
@@ -517,8 +568,8 @@ class CsvInvitationRepository extends IInvitationRepository {
      * Calcula pases activos ajustados por tipo
      * Para pending: cuenta todos
      * Para partial/confirmed: cuenta proporcional a lo confirmado
-     * @param {Array<Invitation>} invitations 
-     * @param {string} passType 
+     * @param {Array<Invitation>} invitations
+     * @param {string} passType
      * @returns {number}
      * @private
      */
@@ -612,9 +663,9 @@ class CsvInvitationRepository extends IInvitationRepository {
     async exportAll(options = {}) {
         try {
             const invitations = await this.readAllInvitations();
-            
+
             const exportData = invitations.map(invitation => invitation.toObject());
-            
+
             return {
                 data: exportData,
                 count: exportData.length,
@@ -674,17 +725,21 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     async findPaginated(page = 1, limit = 10, filters = {}, sort = {}, includeInactive = false) {
         try {
-            let invitations = await this.findAll(filters, includeInactive);
-            
+            const invitations = await this.findAll(filters, includeInactive);
+
             // Aplicar ordenamiento
             if (sort.field) {
                 const direction = sort.direction === 'desc' ? -1 : 1;
                 invitations.sort((a, b) => {
                     const aVal = a[sort.field];
                     const bVal = b[sort.field];
-                    
-                    if (aVal < bVal) return -1 * direction;
-                    if (aVal > bVal) return 1 * direction;
+
+                    if (aVal < bVal) {
+                        return -1 * direction;
+                    }
+                    if (aVal > bVal) {
+                        return 1 * direction;
+                    }
                     return 0;
                 });
             }
@@ -727,7 +782,7 @@ class CsvInvitationRepository extends IInvitationRepository {
         try {
             const rawInvitations = await this.csvStorage.readInvitations();
             const invitations = [];
-            
+
             for (const rawInvitation of rawInvitations) {
                 try {
                     const invitationData = this.csvRowToInvitationData(rawInvitation);
@@ -775,10 +830,10 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     csvRowToInvitationData(rawData) {
         const data = {};
-        
+
         for (const header of this.headers) {
             const value = rawData[header];
-            
+
             switch (header) {
                 case 'guestNames':
                 case 'attendingNames':
@@ -792,7 +847,7 @@ class CsvInvitationRepository extends IInvitationRepository {
                 case 'tableNumber':
                     // CORREGIDO: Manejar correctamente valores 0 del CSV
                     if (value === '' || value === null || value === undefined) {
-                        data[header] = (header === 'numberOfPasses' ? 1 : 0);
+                        data[header] = header === 'numberOfPasses' ? 1 : 0;
                     } else {
                         const numValue = parseInt(value, 10);
                         data[header] = isNaN(numValue) ? 0 : numValue;
@@ -828,10 +883,10 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     invitationToCsvData(invitation) {
         const data = {};
-        
+
         for (const header of this.headers) {
             let value;
-            
+
             // Usar getters públicos en lugar de acceso directo a propiedades
             switch (header) {
                 case 'code':
@@ -894,9 +949,18 @@ class CsvInvitationRepository extends IInvitationRepository {
                 default:
                     value = '';
             }
-            
+
             // Manejar valores numéricos
-            if (['numberOfPasses', 'confirmedPasses', 'adultPasses', 'childPasses', 'staffPasses', 'tableNumber'].includes(header)) {
+            if (
+                [
+                    'numberOfPasses',
+                    'confirmedPasses',
+                    'adultPasses',
+                    'childPasses',
+                    'staffPasses',
+                    'tableNumber'
+                ].includes(header)
+            ) {
                 data[header] = value || 0;
             } else {
                 data[header] = value || '';
@@ -914,10 +978,10 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     invitationToCsvRow(invitation) {
         const values = [];
-        
+
         for (const header of this.headers) {
             let value = invitation[header];
-            
+
             switch (header) {
                 case 'guestNames':
                     value = invitation.guestNames.join('|');
@@ -936,7 +1000,7 @@ class CsvInvitationRepository extends IInvitationRepository {
                 default:
                     value = value || '';
             }
-            
+
             // Escapar comillas y comas
             const escapedValue = this.escapeCsvValue(String(value));
             values.push(escapedValue);
@@ -955,10 +1019,10 @@ class CsvInvitationRepository extends IInvitationRepository {
         const values = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
-            
+
             if (char === '"') {
                 if (inQuotes && line[i + 1] === '"') {
                     // Comilla escapada
@@ -976,10 +1040,10 @@ class CsvInvitationRepository extends IInvitationRepository {
                 current += char;
             }
         }
-        
+
         // Agregar el último valor
         values.push(current);
-        
+
         return values;
     }
 

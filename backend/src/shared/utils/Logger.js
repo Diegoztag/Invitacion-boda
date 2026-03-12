@@ -12,7 +12,7 @@ class Logger {
         this.filePath = options.filePath || './logs/app.log';
         this.format = options.format || 'json';
         this.serviceName = options.serviceName || 'wedding-app';
-        
+
         // Niveles de logging
         this.levels = {
             error: 0,
@@ -25,8 +25,8 @@ class Logger {
         // Colores para consola
         this.colors = {
             error: '\x1b[31m', // Rojo
-            warn: '\x1b[33m',  // Amarillo
-            info: '\x1b[36m',  // Cian
+            warn: '\x1b[33m', // Amarillo
+            info: '\x1b[36m', // Cian
             debug: '\x1b[35m', // Magenta
             trace: '\x1b[37m', // Blanco
             reset: '\x1b[0m'
@@ -114,7 +114,7 @@ class Logger {
      */
     createLogEntry(level, message, meta) {
         const timestamp = new Date().toISOString();
-        
+
         return {
             timestamp,
             level: level.toUpperCase(),
@@ -122,11 +122,12 @@ class Logger {
             message,
             ...meta,
             // Agregar información del stack si es un error
-            ...(level === 'error' && meta.error instanceof Error && {
-                stack: meta.error.stack,
-                errorName: meta.error.name,
-                errorMessage: meta.error.message
-            })
+            ...(level === 'error' &&
+                meta.error instanceof Error && {
+                    stack: meta.error.stack,
+                    errorName: meta.error.name,
+                    errorMessage: meta.error.message
+                })
         };
     }
 
@@ -144,9 +145,9 @@ class Logger {
             console.log(JSON.stringify(logEntry, null, 2));
         } else {
             // Formato legible para humanos
-            const metaStr = Object.keys(meta).length > 0 ? 
-                `\n${JSON.stringify(meta, null, 2)}` : '';
-            
+            const metaStr =
+                Object.keys(meta).length > 0 ? `\n${JSON.stringify(meta, null, 2)}` : '';
+
             console.log(
                 `${color}[${timestamp}] ${level} [${service}]: ${message}${reset}${metaStr}`
             );
@@ -162,11 +163,11 @@ class Logger {
         try {
             const fs = require('fs').promises;
             const path = require('path');
-            
+
             // Crear directorio si no existe
             const logDir = path.dirname(this.filePath);
             await fs.mkdir(logDir, { recursive: true });
-            
+
             // Escribir al archivo
             const logLine = JSON.stringify(logEntry) + '\n';
             await fs.appendFile(this.filePath, logLine);
@@ -186,7 +187,7 @@ class Logger {
     startOperation(operation, context = {}) {
         const startTime = Date.now();
         const operationId = this.generateOperationId();
-        
+
         this.info(`Starting operation: ${operation}`, {
             operationId,
             operation,
@@ -195,7 +196,7 @@ class Logger {
 
         return (result = {}, level = 'info') => {
             const duration = Date.now() - startTime;
-            
+
             this.log(level, `Completed operation: ${operation}`, {
                 operationId,
                 operation,
@@ -214,9 +215,9 @@ class Logger {
     logHttpRequest(req, res, duration) {
         const { method, url, ip, headers } = req;
         const { statusCode } = res;
-        
+
         const level = statusCode >= 400 ? 'warn' : 'info';
-        
+
         this.log(level, `HTTP ${method} ${url}`, {
             method,
             url,
@@ -351,17 +352,17 @@ class Logger {
         try {
             const fs = require('fs').promises;
             const path = require('path');
-            
+
             const logDir = path.dirname(this.filePath);
             const files = await fs.readdir(logDir);
-            
+
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - days);
-            
+
             for (const file of files) {
                 const filePath = path.join(logDir, file);
                 const stats = await fs.stat(filePath);
-                
+
                 if (stats.mtime < cutoffDate) {
                     await fs.unlink(filePath);
                     this.info(`Deleted old log file: ${file}`);

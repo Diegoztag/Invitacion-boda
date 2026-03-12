@@ -151,7 +151,7 @@ class DIContainer {
      */
     listServices() {
         const services = [];
-        
+
         for (const [name] of this.services) {
             services.push(this.getServiceInfo(name));
         }
@@ -180,7 +180,7 @@ class DIContainer {
      */
     createScope() {
         const scope = new DIContainer();
-        
+
         // Copiar servicios del padre
         for (const [name, definition] of this.services) {
             scope.services.set(name, definition);

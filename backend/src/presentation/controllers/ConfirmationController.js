@@ -5,7 +5,13 @@
  */
 
 class ConfirmationController {
-    constructor(confirmAttendanceUseCase, getConfirmationStatsUseCase, confirmationRepository, validationService, logger) {
+    constructor(
+        confirmAttendanceUseCase,
+        getConfirmationStatsUseCase,
+        confirmationRepository,
+        validationService,
+        logger
+    ) {
         this.confirmAttendanceUseCase = confirmAttendanceUseCase;
         this.getConfirmationStatsUseCase = getConfirmationStatsUseCase;
         this.confirmationRepository = confirmationRepository;
@@ -36,7 +42,7 @@ class ConfirmationController {
 
             // Validar datos de confirmación
             const validation = this.validationService.validateConfirmationData(req.body);
-            
+
             if (!validation.isValid) {
                 return res.status(400).json({
                     success: false,
@@ -52,17 +58,16 @@ class ConfirmationController {
                 return res.status(400).json(result);
             }
 
-            endOperation({ 
-                confirmed: true, 
+            endOperation({
+                confirmed: true,
                 willAttend: validation.sanitized.willAttend,
                 attendingGuests: validation.sanitized.attendingGuests || 0
             });
 
             res.status(201).json(result);
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error confirming attendance', {
                 code: req.params.code,
                 body: req.body,
@@ -100,7 +105,7 @@ class ConfirmationController {
 
             // Buscar confirmación
             const confirmation = await this.confirmationRepository.findByCode(code);
-            
+
             if (!confirmation) {
                 return res.status(404).json({
                     success: false,
@@ -114,10 +119,9 @@ class ConfirmationController {
                 success: true,
                 confirmation: confirmation.toObject()
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmation', {
                 code: req.params.code,
                 error: error.message,
@@ -154,7 +158,7 @@ class ConfirmationController {
 
             // Validar datos de actualización
             const validation = this.validationService.validateConfirmationData(req.body);
-            
+
             if (!validation.isValid) {
                 return res.status(400).json({
                     success: false,
@@ -164,7 +168,10 @@ class ConfirmationController {
             }
 
             // Ejecutar actualización
-            const result = await this.confirmAttendanceUseCase.updateConfirmation(code, validation.sanitized);
+            const result = await this.confirmAttendanceUseCase.updateConfirmation(
+                code,
+                validation.sanitized
+            );
 
             if (!result.success) {
                 return res.status(400).json(result);
@@ -173,10 +180,9 @@ class ConfirmationController {
             endOperation({ updated: true });
 
             res.json(result);
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error updating confirmation', {
                 code: req.params.code,
                 body: req.body,
@@ -223,10 +229,9 @@ class ConfirmationController {
             endOperation({ cancelled: true });
 
             res.json(result);
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error cancelling confirmation', {
                 code: req.params.code,
                 error: error.message,
@@ -280,7 +285,9 @@ class ConfirmationController {
 
             // Construir filtros
             const filters = {};
-            if (willAttend !== undefined) filters.willAttend = willAttend === 'true';
+            if (willAttend !== undefined) {
+                filters.willAttend = willAttend === 'true';
+            }
 
             // Construir opciones de ordenamiento
             const sort = {
@@ -289,10 +296,10 @@ class ConfirmationController {
             };
 
             // Obtener confirmaciones paginadas
-            let result = await this.confirmationRepository.findPaginated(
-                pageNum, 
-                limitNum, 
-                filters, 
+            const result = await this.confirmationRepository.findPaginated(
+                pageNum,
+                limitNum,
+                filters,
                 sort
             );
 
@@ -305,19 +312,18 @@ class ConfirmationController {
                 result.pagination.total = result.data.length;
             }
 
-            endOperation({ 
+            endOperation({
                 count: result.data.length,
-                total: result.pagination.total 
+                total: result.pagination.total
             });
 
             res.json({
                 success: true,
                 ...result
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmations', {
                 query: req.query,
                 error: error.message,
@@ -349,10 +355,9 @@ class ConfirmationController {
                 success: true,
                 stats
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmation stats', {
                 error: error.message,
                 stack: error.stack
@@ -384,10 +389,9 @@ class ConfirmationController {
                 confirmations: confirmations.map(conf => conf.toObject()),
                 count: confirmations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting positive confirmations', {
                 error: error.message,
                 stack: error.stack
@@ -419,10 +423,9 @@ class ConfirmationController {
                 confirmations: confirmations.map(conf => conf.toObject()),
                 count: confirmations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting negative confirmations', {
                 error: error.message,
                 stack: error.stack
@@ -454,10 +457,9 @@ class ConfirmationController {
                 confirmations: confirmations.map(conf => conf.toObject()),
                 count: confirmations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmations with dietary restrictions', {
                 error: error.message,
                 stack: error.stack
@@ -489,10 +491,9 @@ class ConfirmationController {
                 confirmations: confirmations.map(conf => conf.toObject()),
                 count: confirmations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting confirmations with messages', {
                 error: error.message,
                 stack: error.stack
@@ -518,7 +519,8 @@ class ConfirmationController {
             const { hours = 24 } = req.query;
             const hoursNum = parseInt(hours, 10);
 
-            if (isNaN(hoursNum) || hoursNum < 1 || hoursNum > 168) { // Max 1 semana
+            if (isNaN(hoursNum) || hoursNum < 1 || hoursNum > 168) {
+                // Max 1 semana
                 return res.status(400).json({
                     success: false,
                     error: 'Horas inválidas (1-168)'
@@ -527,9 +529,9 @@ class ConfirmationController {
 
             const confirmations = await this.confirmationRepository.findRecent(hoursNum);
 
-            endOperation({ 
+            endOperation({
                 found: confirmations.length,
-                hours: hoursNum 
+                hours: hoursNum
             });
 
             res.json({
@@ -538,10 +540,9 @@ class ConfirmationController {
                 count: confirmations.length,
                 hours: hoursNum
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting recent confirmations', {
                 query: req.query,
                 error: error.message,
@@ -569,15 +570,15 @@ class ConfirmationController {
 
             const result = await this.confirmationRepository.exportAll();
 
-            endOperation({ 
+            endOperation({
                 exported: result.count,
-                format 
+                format
             });
 
             if (format === 'csv') {
                 res.setHeader('Content-Type', 'text/csv');
                 res.setHeader('Content-Disposition', 'attachment; filename=confirmations.csv');
-                
+
                 // Convertir a CSV (implementación simplificada)
                 const csvData = this.convertToCSV(result.data);
                 res.send(csvData);
@@ -587,10 +588,9 @@ class ConfirmationController {
                     ...result
                 });
             }
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error exporting confirmations', {
                 error: error.message,
                 stack: error.stack
@@ -632,10 +632,9 @@ class ConfirmationController {
                 confirmations: confirmations.map(conf => conf.toObject()),
                 count: confirmations.length
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error searching confirmations by name', {
                 name: req.params.name,
                 error: error.message,
@@ -667,10 +666,9 @@ class ConfirmationController {
                 success: true,
                 totalConfirmedGuests: total
             });
-
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            
+
             this.logger.error('Error getting total confirmed guests', {
                 error: error.message,
                 stack: error.stack
@@ -690,7 +688,9 @@ class ConfirmationController {
      * @private
      */
     convertToCSV(data) {
-        if (!data || data.length === 0) return '';
+        if (!data || data.length === 0) {
+            return '';
+        }
 
         const headers = Object.keys(data[0]);
         const csvRows = [headers.join(',')];

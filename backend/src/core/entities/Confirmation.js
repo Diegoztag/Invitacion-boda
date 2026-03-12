@@ -37,14 +37,30 @@ class Confirmation {
     }
 
     // Getters (inmutables desde el exterior)
-    get code() { return this._code; }
-    get willAttend() { return this._willAttend; }
-    get attendingGuests() { return this._attendingGuests; }
-    get attendingNames() { return [...this._attendingNames]; }
-    get phone() { return this._phone; }
-    get dietaryRestrictions() { return this._dietaryRestrictions; }
-    get message() { return this._message; }
-    get confirmedAt() { return this._confirmedAt; }
+    get code() {
+        return this._code;
+    }
+    get willAttend() {
+        return this._willAttend;
+    }
+    get attendingGuests() {
+        return this._attendingGuests;
+    }
+    get attendingNames() {
+        return [...this._attendingNames];
+    }
+    get phone() {
+        return this._phone;
+    }
+    get dietaryRestrictions() {
+        return this._dietaryRestrictions;
+    }
+    get message() {
+        return this._message;
+    }
+    get confirmedAt() {
+        return this._confirmedAt;
+    }
 
     // Métodos de dominio
 
@@ -54,7 +70,7 @@ class Confirmation {
      */
     updateAttendance(willAttend) {
         this._willAttend = willAttend;
-        
+
         // Si no va a asistir, limpiar datos relacionados
         if (!willAttend) {
             this._attendingGuests = 0;
@@ -96,12 +112,14 @@ class Confirmation {
             throw new Error('Los nombres de invitados deben ser un array');
         }
 
-        const validNames = attendingNames.filter(name => 
-            typeof name === 'string' && name.trim().length > 0
+        const validNames = attendingNames.filter(
+            name => typeof name === 'string' && name.trim().length > 0
         );
 
         if (validNames.length > this._attendingGuests) {
-            throw new Error(`No se pueden tener más nombres (${validNames.length}) que invitados confirmados (${this._attendingGuests})`);
+            throw new Error(
+                `No se pueden tener más nombres (${validNames.length}) que invitados confirmados (${this._attendingGuests})`
+            );
         }
 
         this._attendingNames = validNames.map(name => name.trim());
@@ -281,7 +299,15 @@ class Confirmation {
      * @private
      */
     validateConstructorParams(params) {
-        const { code, willAttend, attendingGuests, attendingNames, phone, dietaryRestrictions, message } = params;
+        const {
+            code,
+            willAttend,
+            attendingGuests,
+            attendingNames,
+            phone,
+            dietaryRestrictions,
+            message
+        } = params;
 
         if (!code || typeof code !== 'string') {
             throw new Error('El código de invitación es requerido y debe ser un string');

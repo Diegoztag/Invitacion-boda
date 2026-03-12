@@ -74,7 +74,6 @@ class CsvStorage {
         ];
     }
 
-
     /**
      * Lee datos de un archivo CSV
      */
@@ -155,13 +154,13 @@ class CsvStorage {
             const invitations = await this.readInvitations();
             invitations.push(invitation);
             await this.writeInvitations(invitations);
-            
+
             this.logger.info('Invitation added to CSV', { code: invitation.code });
             return invitation;
         } catch (error) {
-            this.logger.error('Error adding invitation to CSV', { 
-                code: invitation.code, 
-                error: error.message 
+            this.logger.error('Error adding invitation to CSV', {
+                code: invitation.code,
+                error: error.message
             });
             throw error;
         }
@@ -174,20 +173,20 @@ class CsvStorage {
         try {
             const invitations = await this.readInvitations();
             const index = invitations.findIndex(inv => inv.code === code);
-            
+
             if (index === -1) {
                 throw new Error(`Invitation with code ${code} not found`);
             }
 
             invitations[index] = { ...invitations[index], ...updates };
             await this.writeInvitations(invitations);
-            
+
             this.logger.info('Invitation updated in CSV', { code });
             return invitations[index];
         } catch (error) {
-            this.logger.error('Error updating invitation in CSV', { 
-                code, 
-                error: error.message 
+            this.logger.error('Error updating invitation in CSV', {
+                code,
+                error: error.message
             });
             throw error;
         }
@@ -198,8 +197,8 @@ class CsvStorage {
      * @deprecated
      */
     async addConfirmation(confirmation) {
-        this.logger.debug('addConfirmation called but ignored (deprecated)', { 
-            invitationCode: confirmation.invitationCode 
+        this.logger.debug('addConfirmation called but ignored (deprecated)', {
+            invitationCode: confirmation.invitationCode
         });
         return confirmation;
     }
@@ -210,7 +209,7 @@ class CsvStorage {
     async findInvitations(criteria = {}) {
         try {
             const invitations = await this.readInvitations();
-            
+
             return invitations.filter(invitation => {
                 return Object.keys(criteria).every(key => {
                     if (criteria[key] === null || criteria[key] === undefined) {
@@ -220,9 +219,9 @@ class CsvStorage {
                 });
             });
         } catch (error) {
-            this.logger.error('Error finding invitations in CSV', { 
-                criteria, 
-                error: error.message 
+            this.logger.error('Error finding invitations in CSV', {
+                criteria,
+                error: error.message
             });
             throw error;
         }
@@ -254,11 +253,11 @@ class CsvStorage {
                 confirmed,
                 declined,
                 pending,
-                confirmationRate: total > 0 ? (confirmed / total * 100).toFixed(2) : 0
+                confirmationRate: total > 0 ? ((confirmed / total) * 100).toFixed(2) : 0
             };
         } catch (error) {
-            this.logger.error('Error getting invitation stats from CSV', { 
-                error: error.message 
+            this.logger.error('Error getting invitation stats from CSV', {
+                error: error.message
             });
             throw error;
         }
@@ -271,7 +270,7 @@ class CsvStorage {
         try {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const backupDir = path.join(this.dataPath, 'backups');
-            
+
             await fs.mkdir(backupDir, { recursive: true });
 
             // Backup invitations

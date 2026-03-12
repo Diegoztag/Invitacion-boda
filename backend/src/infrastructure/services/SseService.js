@@ -18,7 +18,7 @@ class SseService {
         res.writeHead(200, {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
+            Connection: 'keep-alive',
             'X-Accel-Buffering': 'no' // Para evitar buffering en Nginx si se usa
         });
 
@@ -38,7 +38,9 @@ class SseService {
         // Manejar cierre de conexión
         req.on('close', () => {
             this.clients.delete(newClient);
-            this.logger.info(`SSE Client disconnected. Total clients: ${this.clients.size}`, { clientId });
+            this.logger.info(`SSE Client disconnected. Total clients: ${this.clients.size}`, {
+                clientId
+            });
         });
     }
 
@@ -59,9 +61,9 @@ class SseService {
                 client.res.write(`event: ${type}\n`);
                 client.res.write(`data: ${JSON.stringify(data)}\n\n`);
             } catch (error) {
-                this.logger.error('Error sending SSE to client', { 
-                    clientId: client.id, 
-                    error: error.message 
+                this.logger.error('Error sending SSE to client', {
+                    clientId: client.id,
+                    error: error.message
                 });
                 this.clients.delete(client);
             }

@@ -72,7 +72,7 @@ export class ItineraryAnimations {
 
             // Agregar clases iniciales
             item.element.classList.add('itinerary-animate');
-            
+
             // Estado inicial: oculto
             item.element.style.opacity = '0';
             item.element.style.transform = 'translateX(40px)';
@@ -89,10 +89,12 @@ export class ItineraryAnimations {
             threshold: 0.3
         };
 
-        this.observer = new IntersectionObserver((entries) => {
+        this.observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 const item = this.items.find(item => item.element === entry.target);
-                if (!item) return;
+                if (!item) {
+                    return;
+                }
 
                 if (entry.isIntersecting && !item.hasAnimated) {
                     this.animateItemIn(item);
@@ -112,7 +114,9 @@ export class ItineraryAnimations {
     setupInitialAnimations() {
         // Verificar si la sección del itinerario está visible al cargar
         const itinerarySection = document.getElementById('itinerario');
-        if (!itinerarySection) return;
+        if (!itinerarySection) {
+            return;
+        }
 
         const rect = itinerarySection.getBoundingClientRect();
         const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
@@ -130,7 +134,9 @@ export class ItineraryAnimations {
      * @param {Object} item - Elemento del itinerario
      */
     animateItemIn(item) {
-        if (item.hasAnimated) return;
+        if (item.hasAnimated) {
+            return;
+        }
 
         item.hasAnimated = true;
         item.isVisible = true;
@@ -183,11 +189,11 @@ export class ItineraryAnimations {
             item.element.classList.remove('animate-in');
             item.element.style.opacity = '0';
             item.element.style.transform = 'translateX(40px)';
-            
+
             if (item.dot) {
                 item.dot.classList.remove('animate-in');
             }
-            
+
             if (item.content) {
                 item.content.classList.remove('animate-in');
             }
@@ -214,7 +220,7 @@ export class ItineraryAnimations {
 
         this.items = [];
         this.isInitialized = false;
-        
+
         // Reinicializar
         setTimeout(() => {
             this.init();

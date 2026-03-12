@@ -13,15 +13,16 @@ class CSVStorageService {
         try {
             // Create data directory if it doesn't exist
             await fs.mkdir(this.dataDir, { recursive: true });
-            
+
             // Initialize invitations file if it doesn't exist
             try {
                 await fs.access(this.invitationsFile);
             } catch {
-                const headers = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
+                const headers =
+                    'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
-            
+
             console.log('✅ CSV Storage initialized successfully');
         } catch (error) {
             console.error('Error initializing CSV storage:', error);
@@ -33,10 +34,10 @@ class CSVStorageService {
         const result = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
-            
+
             if (char === '"') {
                 inQuotes = !inQuotes;
             } else if (char === ',' && !inQuotes) {
@@ -46,14 +47,16 @@ class CSVStorageService {
                 current += char;
             }
         }
-        
+
         result.push(current.trim());
         return result;
     }
 
     // Format value for CSV (add quotes if contains comma)
     formatCSVValue(value) {
-        if (value === null || value === undefined) return '';
+        if (value === null || value === undefined) {
+            return '';
+        }
         const strValue = String(value);
         if (strValue.includes(',') || strValue.includes('"') || strValue.includes('\n')) {
             return `"${strValue.replace(/"/g, '""')}"`;
@@ -70,36 +73,37 @@ class CSVStorageService {
     async saveInvitation(invitation) {
         try {
             const code = this.generateInvitationCode();
-            const guestNamesStr = Array.isArray(invitation.guestNames) 
-                ? invitation.guestNames.join(' y ') 
+            const guestNamesStr = Array.isArray(invitation.guestNames)
+                ? invitation.guestNames.join(' y ')
                 : invitation.guestNames;
-            
+
             // Default values for new fields
             const adultPasses = invitation.adultPasses || invitation.numberOfPasses;
             const childPasses = invitation.childPasses || 0;
             const staffPasses = invitation.staffPasses || 0;
-            
-            const row = [
-                code,
-                this.formatCSVValue(guestNamesStr),
-                invitation.numberOfPasses,
-                this.formatCSVValue(invitation.phone || ''),
-                new Date().toISOString(),
-                'false',
-                '0',
-                '',
-                adultPasses,
-                childPasses,
-                staffPasses,
-                invitation.tableNumber || '',
-                '',  // status (empty = active)
-                '',        // cancelledAt
-                '',        // cancelledBy
-                ''         // cancellationReason
-            ].join(',') + '\n';
-            
+
+            const row =
+                [
+                    code,
+                    this.formatCSVValue(guestNamesStr),
+                    invitation.numberOfPasses,
+                    this.formatCSVValue(invitation.phone || ''),
+                    new Date().toISOString(),
+                    'false',
+                    '0',
+                    '',
+                    adultPasses,
+                    childPasses,
+                    staffPasses,
+                    invitation.tableNumber || '',
+                    '', // status (empty = active)
+                    '', // cancelledAt
+                    '', // cancelledBy
+                    '' // cancellationReason
+                ].join(',') + '\n';
+
             await fs.appendFile(this.invitationsFile, row);
-            
+
             return {
                 code,
                 guestNames: invitation.guestNames,
@@ -126,24 +130,32 @@ class CSVStorageService {
             const lines = content.trim().split('\n');
             const invitations = [];
             const confirmations = await this.getAllConfirmations();
-            
+
             // Skip header
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (!line) continue;
-                
+                if (!line) {
+                    continue;
+                }
+
                 const parts = this.parseCSVLine(line);
                 if (parts.length >= 8) {
                     // Parse guest names - handle both pipe (|) and ' y ' separators
                     let guestNames = [];
                     if (parts[1].includes('|')) {
-                        guestNames = parts[1].split('|').map(n => n.trim()).filter(n => n);
+                        guestNames = parts[1]
+                            .split('|')
+                            .map(n => n.trim())
+                            .filter(n => n);
                     } else if (parts[1].includes(' y ')) {
-                        guestNames = parts[1].split(' y ').map(n => n.trim()).filter(n => n);
+                        guestNames = parts[1]
+                            .split(' y ')
+                            .map(n => n.trim())
+                            .filter(n => n);
                     } else {
                         guestNames = [parts[1].trim()].filter(n => n);
                     }
-                    
+
                     const invitation = {
                         code: parts[0],
                         guestNames: guestNames,
@@ -159,22 +171,22 @@ class CSVStorageService {
                         staffPasses: parts[10] ? parseInt(parts[10]) : 0,
                         tableNumber: parts[11] ? parseInt(parts[11]) : null,
                         // Add status fields
-                        status: parts[12] || '',  // empty = active
+                        status: parts[12] || '', // empty = active
                         cancelledAt: parts[13] || null,
                         cancelledBy: parts[14] || null,
                         cancellationReason: parts[15] || null
                     };
-                    
+
                     // Add confirmation details if available
                     const confirmation = confirmations.find(conf => conf.code === invitation.code);
                     if (confirmation) {
                         invitation.confirmationDetails = confirmation;
                     }
-                    
+
                     invitations.push(invitation);
                 }
             }
-            
+
             return invitations;
         } catch (error) {
             console.error('Error reading invitations:', error);
@@ -193,22 +205,22 @@ class CSVStorageService {
         try {
             const invitations = await this.getAllInvitations();
             const invitationIndex = invitations.findIndex(inv => inv.code === code);
-            
+
             if (invitationIndex === -1) {
                 throw new Error('Invitación no encontrada');
             }
-            
+
             // Update invitation with new data
             const updatedInvitation = {
                 ...invitations[invitationIndex],
                 ...updateData
             };
-            
+
             invitations[invitationIndex] = updatedInvitation;
-            
+
             // Rewrite invitations file using helper method
             await this.rewriteInvitationsFile(invitations);
-            
+
             // Return updated invitation with confirmation details if available
             if (updatedInvitation.confirmed) {
                 const confirmations = await this.getAllConfirmations();
@@ -217,7 +229,7 @@ class CSVStorageService {
                     updatedInvitation.confirmationDetails = confirmation;
                 }
             }
-            
+
             return updatedInvitation;
         } catch (error) {
             console.error('Error updating invitation:', error);
@@ -230,24 +242,24 @@ class CSVStorageService {
         try {
             const invitations = await this.getAllInvitations();
             const invitationIndex = invitations.findIndex(inv => inv.code === code);
-            
+
             if (invitationIndex === -1) {
                 throw new Error('Invitación no encontrada');
             }
-            
+
             // Update invitation
             invitations[invitationIndex].confirmed = true;
             invitations[invitationIndex].confirmedPasses = confirmationData.attendingGuests;
             invitations[invitationIndex].confirmationDate = new Date().toISOString();
-            
+
             // Rewrite invitations file using helper method
             await this.rewriteInvitationsFile(invitations);
-            
+
             // Return updated invitation with confirmation details
             const updatedInvitation = invitations[invitationIndex];
             updatedInvitation.confirmationDetails = confirmationData;
             updatedInvitation.confirmationDetails.confirmedAt = new Date().toISOString();
-            
+
             return updatedInvitation;
         } catch (error) {
             console.error('Error updating confirmation:', error);
@@ -265,20 +277,20 @@ class CSVStorageService {
     async getStats() {
         const allInvitations = await this.getAllInvitations();
         const confirmations = await this.getAllConfirmations();
-        
+
         // Filter out inactive invitations for stats
         const invitations = allInvitations.filter(inv => inv.status !== 'inactive');
         const inactiveInvitations = allInvitations.filter(inv => inv.status === 'inactive');
-        
+
         // Calculate cancelled passes (both not attending and partial confirmations)
         let cancelledPasses = 0;
         let adultPasses = 0;
         let childPasses = 0;
         let staffPasses = 0;
-        
+
         // Inactive invitations don't count in any statistics
         // Only count cancelled passes from active invitations where guest cancelled
-        
+
         invitations.forEach(invitation => {
             if (invitation.confirmed) {
                 const confirmation = confirmations.find(conf => conf.code === invitation.code);
@@ -286,20 +298,30 @@ class CSVStorageService {
                     if (!confirmation.willAttend) {
                         // If not attending, all passes are cancelled
                         cancelledPasses += invitation.numberOfPasses;
-                    } else if (confirmation.willAttend && invitation.confirmedPasses < invitation.numberOfPasses) {
+                    } else if (
+                        confirmation.willAttend &&
+                        invitation.confirmedPasses < invitation.numberOfPasses
+                    ) {
                         // If attending but not using all passes, count the difference as cancelled
-                        cancelledPasses += (invitation.numberOfPasses - invitation.confirmedPasses);
+                        cancelledPasses += invitation.numberOfPasses - invitation.confirmedPasses;
                     }
                 }
             }
-            
+
             // Use actual data from invitation if available
-            if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined && invitation.staffPasses !== undefined) {
+            if (
+                invitation.adultPasses !== undefined &&
+                invitation.childPasses !== undefined &&
+                invitation.staffPasses !== undefined
+            ) {
                 // Use specific adult/child/staff breakdown
                 adultPasses += invitation.adultPasses;
                 childPasses += invitation.childPasses;
                 staffPasses += invitation.staffPasses;
-            } else if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+            } else if (
+                invitation.adultPasses !== undefined &&
+                invitation.childPasses !== undefined
+            ) {
                 // Old data with only adult/child breakdown
                 adultPasses += invitation.adultPasses;
                 childPasses += invitation.childPasses;
@@ -308,16 +330,17 @@ class CSVStorageService {
                 adultPasses += invitation.numberOfPasses;
             }
         });
-        
+
         const totalPasses = invitations.reduce((sum, inv) => sum + inv.numberOfPasses, 0);
-        
+
         const stats = {
             totalInvitations: invitations.length,
             totalPasses: totalPasses,
             confirmedInvitations: invitations.filter(inv => inv.confirmed).length,
             confirmedPasses: invitations.reduce((sum, inv) => sum + (inv.confirmedPasses || 0), 0),
             pendingInvitations: invitations.filter(inv => !inv.confirmed).length,
-            pendingPasses: invitations.filter(inv => !inv.confirmed)
+            pendingPasses: invitations
+                .filter(inv => !inv.confirmed)
                 .reduce((sum, inv) => sum + inv.numberOfPasses, 0),
             cancelledPasses: cancelledPasses,
             inactiveInvitations: inactiveInvitations.length,
@@ -326,7 +349,7 @@ class CSVStorageService {
             childPasses: childPasses,
             staffPasses: staffPasses
         };
-        
+
         return stats;
     }
 
@@ -334,7 +357,7 @@ class CSVStorageService {
     async exportAllData() {
         const invitations = await this.getAllInvitations();
         const confirmations = await this.getAllConfirmations();
-        
+
         return {
             invitations,
             confirmations,
@@ -347,20 +370,20 @@ class CSVStorageService {
         try {
             const invitations = await this.getAllInvitations();
             const invitationIndex = invitations.findIndex(inv => inv.code === code);
-            
+
             if (invitationIndex === -1) {
                 throw new Error('Invitación no encontrada');
             }
-            
+
             // Update invitation with deactivation data
             invitations[invitationIndex].status = 'inactive';
             invitations[invitationIndex].cancelledAt = new Date().toISOString();
             invitations[invitationIndex].cancelledBy = deactivatedBy;
             invitations[invitationIndex].cancellationReason = deactivationReason;
-            
+
             // Rewrite invitations file
             await this.rewriteInvitationsFile(invitations);
-            
+
             return invitations[invitationIndex];
         } catch (error) {
             console.error('Error deactivating invitation:', error);
@@ -373,24 +396,24 @@ class CSVStorageService {
         try {
             const invitations = await this.getAllInvitations();
             const invitationIndex = invitations.findIndex(inv => inv.code === code);
-            
+
             if (invitationIndex === -1) {
                 throw new Error('Invitación no encontrada');
             }
-            
+
             if (invitations[invitationIndex].status !== 'inactive') {
                 throw new Error('La invitación no está inactiva');
             }
-            
+
             // Update invitation to active status (empty)
             invitations[invitationIndex].status = '';
             invitations[invitationIndex].cancelledAt = '';
             invitations[invitationIndex].cancelledBy = '';
             invitations[invitationIndex].cancellationReason = '';
-            
+
             // Rewrite invitations file
             await this.rewriteInvitationsFile(invitations);
-            
+
             return invitations[invitationIndex];
         } catch (error) {
             console.error('Error activating invitation:', error);
@@ -400,30 +423,32 @@ class CSVStorageService {
 
     // Helper method to rewrite invitations file
     async rewriteInvitationsFile(invitations) {
-        let csvContent = 'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
-        
+        let csvContent =
+            'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
+
         for (const inv of invitations) {
-            const row = [
-                inv.code,
-                this.formatCSVValue(inv.guestNames.join(' y ')),
-                inv.numberOfPasses,
-                this.formatCSVValue(inv.phone || ''),
-                inv.createdAt,
-                inv.confirmed,
-                inv.confirmedPasses || 0,
-                inv.confirmationDate || '',
-                inv.adultPasses || inv.numberOfPasses,
-                inv.childPasses || 0,
-                inv.staffPasses || 0,
-                inv.tableNumber || '',
-                inv.status || '',
-                inv.cancelledAt || '',
-                inv.cancelledBy || '',
-                this.formatCSVValue(inv.cancellationReason || '')
-            ].join(',') + '\n';
+            const row =
+                [
+                    inv.code,
+                    this.formatCSVValue(inv.guestNames.join(' y ')),
+                    inv.numberOfPasses,
+                    this.formatCSVValue(inv.phone || ''),
+                    inv.createdAt,
+                    inv.confirmed,
+                    inv.confirmedPasses || 0,
+                    inv.confirmationDate || '',
+                    inv.adultPasses || inv.numberOfPasses,
+                    inv.childPasses || 0,
+                    inv.staffPasses || 0,
+                    inv.tableNumber || '',
+                    inv.status || '',
+                    inv.cancelledAt || '',
+                    inv.cancelledBy || '',
+                    this.formatCSVValue(inv.cancellationReason || '')
+                ].join(',') + '\n';
             csvContent += row;
         }
-        
+
         await fs.writeFile(this.invitationsFile, csvContent);
     }
 
@@ -433,15 +458,17 @@ class CSVStorageService {
             const lines = csvContent.trim().split('\n');
             const imported = [];
             const errors = [];
-            
+
             // Skip header if present
             const firstLine = lines[0].toLowerCase();
             const startIndex = firstLine.includes('nombres') ? 1 : 0;
-            
+
             for (let i = startIndex; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (!line) continue;
-                
+                if (!line) {
+                    continue;
+                }
+
                 try {
                     const parts = this.parseCSVLine(line);
                     if (parts.length >= 2) {
@@ -455,24 +482,39 @@ class CSVStorageService {
                             childPasses: parts[5] ? parseInt(parts[5]) : undefined,
                             staffPasses: parts[6] ? parseInt(parts[6]) : undefined
                         };
-                        
+
                         // Validate pass breakdown if provided
-                        if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined && invitation.staffPasses !== undefined) {
-                            const totalFromBreakdown = invitation.adultPasses + invitation.childPasses + invitation.staffPasses;
+                        if (
+                            invitation.adultPasses !== undefined &&
+                            invitation.childPasses !== undefined &&
+                            invitation.staffPasses !== undefined
+                        ) {
+                            const totalFromBreakdown =
+                                invitation.adultPasses +
+                                invitation.childPasses +
+                                invitation.staffPasses;
                             if (totalFromBreakdown !== invitation.numberOfPasses) {
-                                errors.push(`Línea ${i + 1}: La suma de adultos (${invitation.adultPasses}), niños (${invitation.childPasses}) y staff (${invitation.staffPasses}) = ${totalFromBreakdown} no coincide con el total de pases (${invitation.numberOfPasses})`);
+                                errors.push(
+                                    `Línea ${i + 1}: La suma de adultos (${invitation.adultPasses}), niños (${invitation.childPasses}) y staff (${invitation.staffPasses}) = ${totalFromBreakdown} no coincide con el total de pases (${invitation.numberOfPasses})`
+                                );
                                 continue;
                             }
-                        } else if (invitation.adultPasses !== undefined && invitation.childPasses !== undefined) {
+                        } else if (
+                            invitation.adultPasses !== undefined &&
+                            invitation.childPasses !== undefined
+                        ) {
                             // Old format without staff - default staff to 0
                             invitation.staffPasses = 0;
-                            const totalFromBreakdown = invitation.adultPasses + invitation.childPasses;
+                            const totalFromBreakdown =
+                                invitation.adultPasses + invitation.childPasses;
                             if (totalFromBreakdown !== invitation.numberOfPasses) {
-                                errors.push(`Línea ${i + 1}: La suma de adultos y niños (${totalFromBreakdown}) no coincide con el total de pases (${invitation.numberOfPasses})`);
+                                errors.push(
+                                    `Línea ${i + 1}: La suma de adultos y niños (${totalFromBreakdown}) no coincide con el total de pases (${invitation.numberOfPasses})`
+                                );
                                 continue;
                             }
                         }
-                        
+
                         if (invitation.guestNames.length > 0 && !isNaN(invitation.numberOfPasses)) {
                             const saved = await this.saveInvitation(invitation);
                             imported.push(saved);
@@ -484,7 +526,7 @@ class CSVStorageService {
                     errors.push(`Línea ${i + 1}: ${error.message}`);
                 }
             }
-            
+
             return { imported, errors };
         } catch (error) {
             console.error('Error importing invitations:', error);

@@ -17,13 +17,13 @@ export class ContentController {
             animationDuration: 300,
             ...options
         };
-        
+
         this.contentElements = new Map();
         this.dynamicElements = new Map();
         this.eventListeners = new Map();
         this.isInitialized = false;
     }
-    
+
     /**
      * Inicializa el controlador
      */
@@ -31,22 +31,22 @@ export class ContentController {
         if (this.isInitialized) {
             return;
         }
-        
+
         console.log('📄 Initializing ContentController...');
-        
+
         // Descubrir elementos de contenido dinámico
         this.discoverContentElements();
-        
+
         // Configurar event listeners
         this.setupEventListeners();
-        
+
         // Actualizar contenido inicial
         await this.updateInitialContent();
-        
+
         this.isInitialized = true;
         console.log('✅ ContentController initialized');
     }
-    
+
     /**
      * Descubre elementos de contenido dinámico
      */
@@ -66,13 +66,13 @@ export class ContentController {
                 });
             }
         });
-        
+
         // Elementos dinámicos especiales
         this.discoverSpecialElements();
-        
+
         console.log(`📋 Discovered ${this.contentElements.size} content elements`);
     }
-    
+
     /**
      * Descubre elementos dinámicos especiales
      */
@@ -88,7 +88,7 @@ export class ContentController {
                 format: element.getAttribute('data-date-format') || 'default'
             });
         });
-        
+
         // Contadores
         const counterElements = this.container.querySelectorAll('[data-counter]');
         counterElements.forEach(element => {
@@ -102,14 +102,16 @@ export class ContentController {
                 duration: parseInt(element.getAttribute('data-counter-duration')) || 2000
             });
         });
-        
+
         // Elementos condicionales
-        const conditionalElements = this.container.querySelectorAll('[data-show-if], [data-hide-if]');
+        const conditionalElements = this.container.querySelectorAll(
+            '[data-show-if], [data-hide-if]'
+        );
         conditionalElements.forEach(element => {
             const showCondition = element.getAttribute('data-show-if');
             const hideCondition = element.getAttribute('data-hide-if');
             const key = showCondition || hideCondition;
-            
+
             this.dynamicElements.set(`conditional-${key}`, {
                 element: element,
                 type: 'conditional',
@@ -118,22 +120,22 @@ export class ContentController {
             });
         });
     }
-    
+
     /**
      * Configura los event listeners
      */
     setupEventListeners() {
         // Escuchar cambios de datos
-        this.container.addEventListener('dataChanged', (e) => {
+        this.container.addEventListener('dataChanged', e => {
             this.handleDataChange(e.detail);
         });
-        
+
         // Escuchar eventos de navegación para actualizar contenido
-        this.container.addEventListener(EVENTS.NAVIGATION.SECTION_CHANGED, (e) => {
+        this.container.addEventListener(EVENTS.NAVIGATION.SECTION_CHANGED, e => {
             this.handleSectionChange(e.detail);
         });
     }
-    
+
     /**
      * Actualiza el contenido inicial
      */
@@ -142,14 +144,14 @@ export class ContentController {
         if (this.options.autoUpdateMeta && this.metaService) {
             await this.updateMetaTags();
         }
-        
+
         // Inicializar contadores
         this.initializeCounters();
-        
+
         // Evaluar elementos condicionales
         this.evaluateConditionalElements();
     }
-    
+
     /**
      * Actualiza un elemento de contenido específico
      * @param {string} key - Clave del contenido
@@ -162,19 +164,19 @@ export class ContentController {
             console.warn(`Content element not found: ${key}`);
             return;
         }
-        
+
         console.log(`📝 Updating content: ${key}`);
-        
+
         // Formatear valor según el tipo
         const formattedValue = this.formatValue(value, contentElement);
-        
+
         // Aplicar animación si está habilitada
         if (this.options.enableAnimations && !options.skipAnimation) {
             await this.animateContentChange(contentElement.element, formattedValue);
         } else {
             this.setElementContent(contentElement.element, formattedValue, contentElement.type);
         }
-        
+
         // Emitir evento de contenido actualizado
         this.emit(EVENTS.CONTENT.UPDATED, {
             key: key,
@@ -183,20 +185,20 @@ export class ContentController {
             element: contentElement.element
         });
     }
-    
+
     /**
      * Actualiza múltiples elementos de contenido
      * @param {Object} data - Objeto con claves y valores
      * @param {Object} options - Opciones de actualización
      */
     async updateMultipleContent(data, options = {}) {
-        const updates = Object.entries(data).map(([key, value]) => 
+        const updates = Object.entries(data).map(([key, value]) =>
             this.updateContent(key, value, options)
         );
-        
+
         await Promise.all(updates);
     }
-    
+
     /**
      * Formatea un valor según el tipo de contenido
      * @param {*} value - Valor a formatear
@@ -207,26 +209,26 @@ export class ContentController {
         if (value === null || value === undefined) {
             return contentElement.fallback;
         }
-        
+
         switch (contentElement.type) {
             case 'date':
                 return this.formatDate(value, contentElement.format);
-            
+
             case 'number':
                 return this.formatNumber(value, contentElement.format);
-            
+
             case 'currency':
                 return this.formatCurrency(value, contentElement.format);
-            
+
             case 'html':
                 return value; // HTML sin escapar
-            
+
             case 'text':
             default:
                 return String(value);
         }
     }
-    
+
     /**
      * Formatea una fecha
      * @param {Date|string} date - Fecha a formatear
@@ -235,15 +237,15 @@ export class ContentController {
      */
     formatDate(date, format) {
         const dateObj = date instanceof Date ? date : new Date(date);
-        
+
         if (isNaN(dateObj.getTime())) {
             return 'Fecha inválida';
         }
-        
+
         switch (format) {
             case 'short':
                 return dateObj.toLocaleDateString('es-ES');
-            
+
             case 'long':
                 return dateObj.toLocaleDateString('es-ES', {
                     weekday: 'long',
@@ -251,21 +253,21 @@ export class ContentController {
                     month: 'long',
                     day: 'numeric'
                 });
-            
+
             case 'time':
                 return dateObj.toLocaleTimeString('es-ES', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-            
+
             case 'datetime':
                 return dateObj.toLocaleString('es-ES');
-            
+
             default:
                 return dateObj.toLocaleDateString('es-ES');
         }
     }
-    
+
     /**
      * Formatea un número
      * @param {number} number - Número a formatear
@@ -274,32 +276,34 @@ export class ContentController {
      */
     formatNumber(number, format) {
         const num = parseFloat(number);
-        
+
         if (isNaN(num)) {
             return '0';
         }
-        
+
         switch (format) {
             case 'integer':
                 return Math.round(num).toLocaleString('es-ES');
-            
+
             case 'decimal':
                 return num.toLocaleString('es-ES', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
-            
+
             case 'percentage':
-                return (num * 100).toLocaleString('es-ES', {
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1
-                }) + '%';
-            
+                return (
+                    (num * 100).toLocaleString('es-ES', {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1
+                    }) + '%'
+                );
+
             default:
                 return num.toLocaleString('es-ES');
         }
     }
-    
+
     /**
      * Formatea una moneda
      * @param {number} amount - Cantidad a formatear
@@ -308,17 +312,17 @@ export class ContentController {
      */
     formatCurrency(amount, currency = 'EUR') {
         const num = parseFloat(amount);
-        
+
         if (isNaN(num)) {
             return '0 €';
         }
-        
+
         return num.toLocaleString('es-ES', {
             style: 'currency',
             currency: currency
         });
     }
-    
+
     /**
      * Establece el contenido de un elemento
      * @param {HTMLElement} element - Elemento
@@ -330,19 +334,19 @@ export class ContentController {
             case 'html':
                 element.innerHTML = content;
                 break;
-            
+
             case 'attribute':
                 const attrName = element.getAttribute('data-content-attribute') || 'value';
                 element.setAttribute(attrName, content);
                 break;
-            
+
             case 'text':
             default:
                 element.textContent = content;
                 break;
         }
     }
-    
+
     /**
      * Anima el cambio de contenido
      * @param {HTMLElement} element - Elemento
@@ -350,19 +354,18 @@ export class ContentController {
      * @returns {Promise}
      */
     animateContentChange(element, newContent) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             // Fade out
             element.style.transition = `opacity ${this.options.animationDuration / 2}ms ease`;
             element.style.opacity = '0';
-            
+
             setTimeout(() => {
                 // Cambiar contenido
-                this.setElementContent(element, newContent, 
-                    this.getElementContentType(element));
-                
+                this.setElementContent(element, newContent, this.getElementContentType(element));
+
                 // Fade in
                 element.style.opacity = '1';
-                
+
                 setTimeout(() => {
                     element.style.transition = '';
                     resolve();
@@ -370,7 +373,7 @@ export class ContentController {
             }, this.options.animationDuration / 2);
         });
     }
-    
+
     /**
      * Obtiene el tipo de contenido de un elemento
      * @param {HTMLElement} element - Elemento
@@ -379,7 +382,7 @@ export class ContentController {
     getElementContentType(element) {
         return element.getAttribute('data-content-type') || 'text';
     }
-    
+
     /**
      * Inicializa contadores animados
      */
@@ -390,7 +393,7 @@ export class ContentController {
             }
         });
     }
-    
+
     /**
      * Anima un contador
      * @param {Object} counterElement - Elemento contador
@@ -399,25 +402,25 @@ export class ContentController {
         const { element, start, end, duration } = counterElement;
         const startTime = performance.now();
         const difference = end - start;
-        
-        const updateCounter = (currentTime) => {
+
+        const updateCounter = currentTime => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             // Easing function
             const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-            const currentValue = Math.round(start + (difference * easeOutQuart));
-            
+            const currentValue = Math.round(start + difference * easeOutQuart);
+
             element.textContent = currentValue.toLocaleString('es-ES');
-            
+
             if (progress < 1) {
                 requestAnimationFrame(updateCounter);
             }
         };
-        
+
         requestAnimationFrame(updateCounter);
     }
-    
+
     /**
      * Evalúa elementos condicionales
      * @param {Object} data - Datos para evaluación
@@ -426,7 +429,7 @@ export class ContentController {
         this.dynamicElements.forEach((element, key) => {
             if (element.type === 'conditional') {
                 const shouldShow = this.evaluateCondition(element.key, element.condition, data);
-                
+
                 if (shouldShow) {
                     element.element.style.display = '';
                     element.element.removeAttribute('hidden');
@@ -437,7 +440,7 @@ export class ContentController {
             }
         });
     }
-    
+
     /**
      * Evalúa una condición
      * @param {string} key - Clave de la condición
@@ -450,23 +453,25 @@ export class ContentController {
         // Puede expandirse para condiciones más complejas
         const value = data[key];
         const shouldShow = Boolean(value);
-        
+
         return type === 'show' ? shouldShow : !shouldShow;
     }
-    
+
     /**
      * Actualiza meta tags
      */
     async updateMetaTags(data = {}) {
-        if (!this.metaService) return;
-        
+        if (!this.metaService) {
+            return;
+        }
+
         try {
             await this.metaService.updateFromData(data);
         } catch (error) {
             console.error('Error updating meta tags:', error);
         }
     }
-    
+
     /**
      * Maneja cambios de datos
      * @param {Object} data - Datos cambiados
@@ -474,16 +479,16 @@ export class ContentController {
     handleDataChange(data) {
         // Actualizar contenido dinámico
         this.updateMultipleContent(data, { skipAnimation: false });
-        
+
         // Evaluar elementos condicionales
         this.evaluateConditionalElements(data);
-        
+
         // Actualizar meta tags si es necesario
         if (this.options.autoUpdateMeta) {
             this.updateMetaTags(data);
         }
     }
-    
+
     /**
      * Maneja cambios de sección
      * @param {Object} sectionData - Datos de la sección
@@ -491,14 +496,14 @@ export class ContentController {
     handleSectionChange(sectionData) {
         // Emitir evento de cambio de sección para contenido
         this.emit(EVENTS.CONTENT.SECTION_CHANGED, sectionData);
-        
+
         // Actualizar contenido específico de la sección si es necesario
         const sectionSpecificData = this.getSectionSpecificData(sectionData.current);
         if (sectionSpecificData) {
             this.updateMultipleContent(sectionSpecificData);
         }
     }
-    
+
     /**
      * Obtiene datos específicos de una sección
      * @param {string} sectionId - ID de la sección
@@ -509,7 +514,7 @@ export class ContentController {
         // Por ahora retorna null, pero puede ser implementada según necesidades
         return null;
     }
-    
+
     /**
      * Registra un listener para eventos
      * @param {string} event - Nombre del evento
@@ -521,7 +526,7 @@ export class ContentController {
         }
         this.eventListeners.get(`custom-${event}`).push(callback);
     }
-    
+
     /**
      * Remueve un listener de eventos
      * @param {string} event - Nombre del evento
@@ -536,7 +541,7 @@ export class ContentController {
             }
         }
     }
-    
+
     /**
      * Emite un evento
      * @param {string} event - Nombre del evento
@@ -553,14 +558,14 @@ export class ContentController {
                 }
             });
         }
-        
+
         // También emitir en el contenedor como evento DOM
         if (this.container) {
             const customEvent = new CustomEvent(event, { detail: data });
             this.container.dispatchEvent(customEvent);
         }
     }
-    
+
     /**
      * Obtiene todos los elementos de contenido
      * @returns {Map}
@@ -568,7 +573,7 @@ export class ContentController {
     getAllContentElements() {
         return new Map(this.contentElements);
     }
-    
+
     /**
      * Obtiene todos los elementos dinámicos
      * @returns {Map}
@@ -576,30 +581,30 @@ export class ContentController {
     getAllDynamicElements() {
         return new Map(this.dynamicElements);
     }
-    
+
     /**
      * Resetea el contenido a su estado original
      * @param {string[]} keys - Claves específicas a resetear (opcional)
      */
     resetContent(keys = null) {
-        const elementsToReset = keys ? 
-            keys.filter(key => this.contentElements.has(key)) :
-            Array.from(this.contentElements.keys());
-        
+        const elementsToReset = keys
+            ? keys.filter(key => this.contentElements.has(key))
+            : Array.from(this.contentElements.keys());
+
         elementsToReset.forEach(key => {
             const contentElement = this.contentElements.get(key);
             if (contentElement) {
                 this.setElementContent(
-                    contentElement.element, 
-                    contentElement.originalContent, 
+                    contentElement.element,
+                    contentElement.originalContent,
                     'html'
                 );
             }
         });
-        
+
         console.log(`🔄 Content reset for ${elementsToReset.length} elements`);
     }
-    
+
     /**
      * Actualiza las opciones del controlador
      * @param {Object} newOptions - Nuevas opciones
@@ -608,20 +613,20 @@ export class ContentController {
         this.options = { ...this.options, ...newOptions };
         console.log('⚙️ Content controller options updated');
     }
-    
+
     /**
      * Destruye el controlador y limpia recursos
      */
     destroy() {
         // Limpiar event listeners
         this.eventListeners.clear();
-        
+
         // Limpiar referencias
         this.contentElements.clear();
         this.dynamicElements.clear();
         this.container = null;
         this.metaService = null;
-        
+
         this.isInitialized = false;
         console.log('🗑️ ContentController destroyed');
     }

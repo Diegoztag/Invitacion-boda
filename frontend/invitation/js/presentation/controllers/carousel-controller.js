@@ -24,14 +24,14 @@ export class CarouselController {
             animationType: 'slide', // 'slide', 'fade', 'scale'
             ...options
         };
-        
+
         this.slides = [];
         this.currentSlide = 0;
         this.totalSlides = 0; // Total de slides reales
         this.isPlaying = false;
         this.isTransitioning = false;
         this.autoPlayTimer = null;
-        
+
         // Elementos del DOM
         this.slidesContainer = null;
         this.slideElements = []; // Todos los slides (incluyendo clones)
@@ -40,21 +40,21 @@ export class CarouselController {
         this.dotElements = [];
         this.prevButton = null;
         this.nextButton = null;
-        
+
         // Touch/Swipe
         this.touchStartX = 0;
         this.touchEndX = 0;
         this.touchStartY = 0;
         this.touchEndY = 0;
         this.minSwipeDistance = 50;
-        
+
         this.eventListeners = new Map();
         this.isInitialized = false;
-        
+
         // Debounced resize handler
         this.debouncedResize = debounce(this.handleResize.bind(this), 250);
     }
-    
+
     /**
      * Inicializa el controlador
      */
@@ -62,67 +62,71 @@ export class CarouselController {
         if (this.isInitialized) {
             return;
         }
-        
+
         // Descubrir elementos del carrusel
         this.discoverCarouselElements();
-        
+
         // Configurar estructura si es necesario
         this.setupCarouselStructure();
-        
+
         // Configurar event listeners
         this.setupEventListeners();
-        
+
         // Inicializar estado
         this.initializeCarousel();
-        
+
         // Iniciar autoplay si está habilitado
         if (this.options.autoPlay) {
             this.startAutoPlay();
         }
-        
+
         this.isInitialized = true;
     }
-    
+
     /**
      * Descubre elementos del carrusel
      */
     discoverCarouselElements() {
         // Container de slides
-        this.slidesContainer = this.container.querySelector(SELECTORS.CAROUSEL.SLIDES_CONTAINER) ||
-                              this.container.querySelector('.carousel-slides') ||
-                              this.container.querySelector('[data-carousel-slides]');
-        
+        this.slidesContainer =
+            this.container.querySelector(SELECTORS.CAROUSEL.SLIDES_CONTAINER) ||
+            this.container.querySelector('.carousel-slides') ||
+            this.container.querySelector('[data-carousel-slides]');
+
         if (!this.slidesContainer) {
             console.warn('Carousel slides container not found');
             return;
         }
-        
+
         // Slides individuales iniciales (antes de clonar)
         this.slideElements = Array.from(
             this.slidesContainer.querySelectorAll(SELECTORS.CAROUSEL.SLIDE) ||
-            this.slidesContainer.querySelectorAll('.carousel-slide') ||
-            this.slidesContainer.querySelectorAll('[data-carousel-slide]') ||
-            this.slidesContainer.children
+                this.slidesContainer.querySelectorAll('.carousel-slide') ||
+                this.slidesContainer.querySelectorAll('[data-carousel-slide]') ||
+                this.slidesContainer.children
         );
-        
+
         // Botones de navegación
-        this.prevButton = this.container.querySelector(SELECTORS.CAROUSEL.PREV_BUTTON) ||
-                         this.container.querySelector('.carousel-prev') ||
-                         this.container.querySelector('[data-carousel-prev]');
-        
-        this.nextButton = this.container.querySelector(SELECTORS.CAROUSEL.NEXT_BUTTON) ||
-                         this.container.querySelector('.carousel-next') ||
-                         this.container.querySelector('[data-carousel-next]');
-        
+        this.prevButton =
+            this.container.querySelector(SELECTORS.CAROUSEL.PREV_BUTTON) ||
+            this.container.querySelector('.carousel-prev') ||
+            this.container.querySelector('[data-carousel-prev]');
+
+        this.nextButton =
+            this.container.querySelector(SELECTORS.CAROUSEL.NEXT_BUTTON) ||
+            this.container.querySelector('.carousel-next') ||
+            this.container.querySelector('[data-carousel-next]');
+
         // Container de dots
-        this.dotsContainer = this.container.querySelector(SELECTORS.CAROUSEL.DOTS_CONTAINER) ||
-                            this.container.querySelector('.carousel-dots') ||
-                            this.container.querySelector('[data-carousel-dots]');
-        
+        this.dotsContainer =
+            this.container.querySelector(SELECTORS.CAROUSEL.DOTS_CONTAINER) ||
+            this.container.querySelector('.carousel-dots') ||
+            this.container.querySelector('[data-carousel-dots]');
+
         this.totalSlides = this.slideElements.length;
         this.realSlideElements = [...this.slideElements];
     }
-    
+
     /**
      * Configura la estructura del carrusel
      */
@@ -148,16 +152,16 @@ export class CarouselController {
             // Actualizar lista de elementos incluyendo clones
             this.slideElements = Array.from(this.slidesContainer.children);
         }
-        
+
         // Configurar slides reales
         this.realSlideElements.forEach((slide, index) => {
             slide.classList.add('carousel-slide');
             slide.setAttribute('data-slide-index', index);
-            
+
             if (index === 0) {
                 slide.classList.add('active');
             }
-            
+
             // Configurar lazy loading si hay imágenes
             this.setupLazyLoading(slide);
         });
@@ -167,30 +171,30 @@ export class CarouselController {
             this.setupLazyLoading(this.slideElements[0]); // Last clone
             this.setupLazyLoading(this.slideElements[this.slideElements.length - 1]); // First clone
         }
-        
+
         // Crear botones si no existen y están habilitados
         if (this.options.showArrows && (!this.prevButton || !this.nextButton)) {
             this.createNavigationButtons();
         }
-        
+
         // Crear dots si no existen y están habilitados
         if (this.options.showDots && !this.dotsContainer) {
             this.createDots();
         }
-        
+
         // Configurar clases CSS
         this.container.classList.add('carousel-container');
         this.slidesContainer.classList.add('carousel-slides-container');
-        
+
         // Configurar tipo de animación
         this.container.classList.add(`carousel-${this.options.animationType}`);
 
         // Posicionar inicialmente en el primer slide real (índice 1)
         if (this.totalSlides > 1) {
-            this.slidesContainer.style.transform = `translateX(-100%)`;
+            this.slidesContainer.style.transform = 'translateX(-100%)';
         }
     }
-    
+
     /**
      * Configura lazy loading para imágenes
      * @param {HTMLElement} slide - Elemento del slide
@@ -201,7 +205,7 @@ export class CarouselController {
             img.classList.add('lazy-load');
         });
     }
-    
+
     /**
      * Crea botones de navegación
      */
@@ -213,7 +217,7 @@ export class CarouselController {
             this.prevButton.setAttribute('aria-label', 'Slide anterior');
             this.container.appendChild(this.prevButton);
         }
-        
+
         if (!this.nextButton) {
             this.nextButton = document.createElement('button');
             this.nextButton.className = 'carousel-btn carousel-next';
@@ -222,31 +226,31 @@ export class CarouselController {
             this.container.appendChild(this.nextButton);
         }
     }
-    
+
     /**
      * Crea indicadores de dots
      */
     createDots() {
         this.dotsContainer = document.createElement('div');
         this.dotsContainer.className = 'carousel-dots';
-        
+
         for (let i = 0; i < this.totalSlides; i++) {
             const dot = document.createElement('button');
             dot.className = 'carousel-dot';
             dot.setAttribute('data-slide', i);
             dot.setAttribute('aria-label', `Ir al slide ${i + 1}`);
-            
+
             if (i === 0) {
                 dot.classList.add('active');
             }
-            
+
             this.dotsContainer.appendChild(dot);
             this.dotElements.push(dot);
         }
-        
+
         this.container.appendChild(this.dotsContainer);
     }
-    
+
     /**
      * Configura event listeners
      */
@@ -261,7 +265,7 @@ export class CarouselController {
                 handler: prevHandler
             });
         }
-        
+
         if (this.nextButton) {
             const nextHandler = () => this.nextSlide();
             this.nextButton.addEventListener('click', nextHandler);
@@ -271,16 +275,16 @@ export class CarouselController {
                 handler: nextHandler
             });
         }
-        
+
         // Dots
         if (this.dotsContainer) {
-            const dotsHandler = (e) => {
+            const dotsHandler = e => {
                 if (e.target.classList.contains('carousel-dot')) {
                     const slideIndex = parseInt(e.target.getAttribute('data-slide'));
                     this.goToSlide(slideIndex);
                 }
             };
-            
+
             this.dotsContainer.addEventListener('click', dotsHandler);
             this.eventListeners.set('dots-click', {
                 element: this.dotsContainer,
@@ -288,22 +292,22 @@ export class CarouselController {
                 handler: dotsHandler
             });
         }
-        
+
         // Touch/Swipe events
         if (this.options.swipeEnabled && this.slidesContainer) {
             this.setupTouchEvents();
         }
-        
+
         // Keyboard navigation
         if (this.options.keyboardEnabled) {
             this.setupKeyboardEvents();
         }
-        
+
         // Pause on hover
         if (this.options.pauseOnHover) {
             this.setupHoverEvents();
         }
-        
+
         // Resize handler
         const resizeHandler = () => this.debouncedResize();
         window.addEventListener('resize', resizeHandler);
@@ -312,7 +316,7 @@ export class CarouselController {
             event: 'resize',
             handler: resizeHandler
         });
-        
+
         // Visibility change (pause when tab is hidden)
         const visibilityHandler = () => {
             if (document.hidden) {
@@ -321,7 +325,7 @@ export class CarouselController {
                 this.startAutoPlay();
             }
         };
-        
+
         document.addEventListener('visibilitychange', visibilityHandler);
         this.eventListeners.set('visibility', {
             element: document,
@@ -329,69 +333,69 @@ export class CarouselController {
             handler: visibilityHandler
         });
     }
-    
+
     /**
      * Configura eventos touch/swipe
      */
     setupTouchEvents() {
-        const touchStartHandler = (e) => {
+        const touchStartHandler = e => {
             this.touchStartX = e.touches[0].clientX;
             this.touchStartY = e.touches[0].clientY;
             this.pauseAutoPlay();
         };
-        
-        const touchMoveHandler = (e) => {
+
+        const touchMoveHandler = e => {
             // Prevenir scroll si es swipe horizontal
             const deltaX = Math.abs(e.touches[0].clientX - this.touchStartX);
             const deltaY = Math.abs(e.touches[0].clientY - this.touchStartY);
-            
+
             if (deltaX > deltaY) {
                 e.preventDefault();
             }
         };
-        
-        const touchEndHandler = (e) => {
+
+        const touchEndHandler = e => {
             this.touchEndX = e.changedTouches[0].clientX;
             this.touchEndY = e.changedTouches[0].clientY;
             this.handleSwipe();
-            
+
             if (this.options.autoPlay) {
                 this.startAutoPlay();
             }
         };
-        
+
         this.slidesContainer.addEventListener('touchstart', touchStartHandler, { passive: false });
         this.slidesContainer.addEventListener('touchmove', touchMoveHandler, { passive: false });
         this.slidesContainer.addEventListener('touchend', touchEndHandler);
-        
+
         this.eventListeners.set('touch-start', {
             element: this.slidesContainer,
             event: 'touchstart',
             handler: touchStartHandler
         });
-        
+
         this.eventListeners.set('touch-move', {
             element: this.slidesContainer,
             event: 'touchmove',
             handler: touchMoveHandler
         });
-        
+
         this.eventListeners.set('touch-end', {
             element: this.slidesContainer,
             event: 'touchend',
             handler: touchEndHandler
         });
     }
-    
+
     /**
      * Configura eventos de teclado
      */
     setupKeyboardEvents() {
-        const keyHandler = (e) => {
+        const keyHandler = e => {
             if (!this.container.contains(document.activeElement)) {
                 return;
             }
-            
+
             switch (e.key) {
                 case 'ArrowLeft':
                     e.preventDefault();
@@ -415,7 +419,7 @@ export class CarouselController {
                     break;
             }
         };
-        
+
         document.addEventListener('keydown', keyHandler);
         this.eventListeners.set('keyboard', {
             element: document,
@@ -423,7 +427,7 @@ export class CarouselController {
             handler: keyHandler
         });
     }
-    
+
     /**
      * Configura eventos hover
      */
@@ -434,23 +438,23 @@ export class CarouselController {
                 this.startAutoPlay();
             }
         };
-        
+
         this.container.addEventListener('mouseenter', mouseEnterHandler);
         this.container.addEventListener('mouseleave', mouseLeaveHandler);
-        
+
         this.eventListeners.set('mouse-enter', {
             element: this.container,
             event: 'mouseenter',
             handler: mouseEnterHandler
         });
-        
+
         this.eventListeners.set('mouse-leave', {
             element: this.container,
             event: 'mouseleave',
             handler: mouseLeaveHandler
         });
     }
-    
+
     /**
      * Inicializa el carrusel
      */
@@ -458,15 +462,15 @@ export class CarouselController {
         if (this.totalSlides === 0) {
             return;
         }
-        
+
         // Configurar slide inicial
         this.updateSlideVisibility();
         this.updateDots();
         this.updateButtons();
-        
+
         // Cargar imágenes del primer slide (índice lógico 0)
         this.loadSlideImages(0);
-        
+
         // Precargar siguiente slide si existe
         if (this.totalSlides > 1) {
             this.loadSlideImages(1);
@@ -475,7 +479,7 @@ export class CarouselController {
             this.loadSlideImages(this.totalSlides); // Clone first
         }
     }
-    
+
     /**
      * Va al slide anterior
      */
@@ -483,9 +487,9 @@ export class CarouselController {
         if (this.isTransitioning) {
             return;
         }
-        
+
         let prevIndex = this.currentSlide - 1;
-        
+
         if (prevIndex < 0) {
             if (this.options.loop) {
                 prevIndex = this.totalSlides - 1;
@@ -493,10 +497,10 @@ export class CarouselController {
                 return;
             }
         }
-        
+
         this.goToSlide(prevIndex);
     }
-    
+
     /**
      * Va al siguiente slide
      */
@@ -504,9 +508,9 @@ export class CarouselController {
         if (this.isTransitioning) {
             return;
         }
-        
+
         let nextIndex = this.currentSlide + 1;
-        
+
         if (nextIndex >= this.totalSlides) {
             if (this.options.loop) {
                 nextIndex = 0;
@@ -514,10 +518,10 @@ export class CarouselController {
                 return;
             }
         }
-        
+
         this.goToSlide(nextIndex);
     }
-    
+
     /**
      * Va a un slide específico
      * @param {number} slideIndex - Índice del slide
@@ -526,20 +530,26 @@ export class CarouselController {
         if (this.isTransitioning) {
             return;
         }
-        
+
         // Validar índice
-        if (slideIndex < 0) slideIndex = this.totalSlides - 1;
-        if (slideIndex >= this.totalSlides) slideIndex = 0;
-        
-        if (slideIndex === this.currentSlide) return;
-        
+        if (slideIndex < 0) {
+            slideIndex = this.totalSlides - 1;
+        }
+        if (slideIndex >= this.totalSlides) {
+            slideIndex = 0;
+        }
+
+        if (slideIndex === this.currentSlide) {
+            return;
+        }
+
         this.isTransitioning = true;
         const previousSlide = this.currentSlide;
-        
+
         // Determinar target físico
         // Los slides reales están en índices 1 a N
         let physicalTargetIndex = slideIndex + 1;
-        
+
         // Manejo especial para loop infinito
         if (this.totalSlides > 1) {
             if (previousSlide === this.totalSlides - 1 && slideIndex === 0) {
@@ -552,19 +562,19 @@ export class CarouselController {
         }
 
         this.currentSlide = slideIndex;
-        
+
         // Emitir evento antes del cambio
         this.emit(EVENTS.CAROUSEL.BEFORE_SLIDE_CHANGE, {
             from: previousSlide,
             to: slideIndex
         });
-        
+
         // Cargar imágenes
         this.loadSlideImages(slideIndex);
-        
+
         // Realizar transición
         await this.performTransition(physicalTargetIndex);
-        
+
         // Si estamos en un clon, saltar silenciosamente al real
         if (this.totalSlides > 1) {
             if (physicalTargetIndex === 0) {
@@ -575,14 +585,14 @@ export class CarouselController {
                 this.jumpToSlideWithoutAnimation(1);
             }
         }
-        
+
         // Actualizar UI
         this.updateSlideVisibility();
         this.updateDots();
         this.updateButtons();
-        
+
         this.isTransitioning = false;
-        
+
         // Emitir evento después del cambio
         this.emit(EVENTS.CAROUSEL.SLIDE_CHANGED, {
             from: previousSlide,
@@ -590,20 +600,20 @@ export class CarouselController {
             slide: this.realSlideElements[slideIndex]
         });
     }
-    
+
     /**
      * Realiza la transición visual
      * @param {number} physicalIndex - Índice físico en el DOM
      * @returns {Promise}
      */
     performTransition(physicalIndex) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (this.slidesContainer) {
                 // Asegurar que la transición esté activa con la duración configurada
-                this.slidesContainer.style.transition = `transform ${this.options.animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`; 
+                this.slidesContainer.style.transition = `transform ${this.options.animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
                 this.slidesContainer.style.transform = `translateX(-${physicalIndex * 100}%)`;
             }
-            
+
             // Esperar a que termine la transición + pequeño buffer de seguridad
             setTimeout(() => {
                 resolve();
@@ -627,7 +637,7 @@ export class CarouselController {
             this.slidesContainer.style.transition = '';
         }
     }
-    
+
     /**
      * Actualiza la visibilidad de los slides
      */
@@ -643,13 +653,15 @@ export class CarouselController {
             }
         });
     }
-    
+
     /**
      * Actualiza los dots indicadores
      */
     updateDots() {
-        if (!this.dotsContainer) return;
-        
+        if (!this.dotsContainer) {
+            return;
+        }
+
         this.dotElements.forEach((dot, index) => {
             if (index === this.currentSlide) {
                 dot.classList.add('active');
@@ -660,7 +672,7 @@ export class CarouselController {
             }
         });
     }
-    
+
     /**
      * Actualiza el estado de los botones
      */
@@ -669,20 +681,20 @@ export class CarouselController {
             if (this.prevButton) {
                 this.prevButton.disabled = this.currentSlide === 0;
             }
-            
+
             if (this.nextButton) {
                 this.nextButton.disabled = this.currentSlide === this.totalSlides - 1;
             }
         }
     }
-    
+
     /**
      * Carga imágenes de un slide específico
      * @param {number} slideIndex - Índice lógico del slide (-1 y totalSlides para clones)
      */
     loadSlideImages(slideIndex) {
         let targetSlide;
-        
+
         if (slideIndex === -1) {
             // Clone last (primer elemento físico)
             targetSlide = this.slideElements[0];
@@ -695,40 +707,42 @@ export class CarouselController {
         } else {
             return;
         }
-        
-        if (!targetSlide) return;
+
+        if (!targetSlide) {
+            return;
+        }
 
         const lazyImages = targetSlide.querySelectorAll('img[data-src]');
-        
+
         lazyImages.forEach(img => {
             if (!img.src) {
                 img.src = img.getAttribute('data-src');
                 img.removeAttribute('data-src');
                 img.classList.remove('lazy-load');
-                
+
                 img.onload = () => {
                     img.classList.add('loaded');
                 };
-                
+
                 img.onerror = () => {
                     img.classList.add('error');
                 };
             }
         });
     }
-    
+
     /**
      * Maneja el swipe touch
      */
     handleSwipe() {
         const deltaX = this.touchEndX - this.touchStartX;
         const deltaY = Math.abs(this.touchEndY - this.touchStartY);
-        
+
         // Solo procesar si es un swipe horizontal
         if (Math.abs(deltaX) < this.minSwipeDistance || deltaY > Math.abs(deltaX)) {
             return;
         }
-        
+
         if (deltaX > 0) {
             // Swipe derecha - slide anterior
             this.prevSlide();
@@ -737,20 +751,20 @@ export class CarouselController {
             this.nextSlide();
         }
     }
-    
+
     /**
      * Maneja el resize de la ventana
      */
     handleResize() {
         // Recalcular posiciones si es necesario
         this.updateSlideVisibility();
-        
+
         // Emitir evento de resize
         this.emit(EVENTS.CAROUSEL.RESIZED, {
             currentSlide: this.currentSlide
         });
     }
-    
+
     /**
      * Inicia el autoplay
      */
@@ -758,13 +772,13 @@ export class CarouselController {
         if (this.isPlaying || this.totalSlides <= 1) {
             return;
         }
-        
+
         this.isPlaying = true;
         this.autoPlayTimer = setInterval(() => {
             this.nextSlide();
         }, this.options.autoPlayInterval);
     }
-    
+
     /**
      * Pausa el autoplay
      */
@@ -772,14 +786,14 @@ export class CarouselController {
         if (!this.isPlaying) {
             return;
         }
-        
+
         this.isPlaying = false;
         if (this.autoPlayTimer) {
             clearInterval(this.autoPlayTimer);
             this.autoPlayTimer = null;
         }
     }
-    
+
     /**
      * Alterna el autoplay
      */
@@ -790,7 +804,7 @@ export class CarouselController {
             this.startAutoPlay();
         }
     }
-    
+
     /**
      * Obtiene el slide actual
      * @returns {number}
@@ -798,7 +812,7 @@ export class CarouselController {
     getCurrentSlide() {
         return this.currentSlide;
     }
-    
+
     /**
      * Obtiene el total de slides
      * @returns {number}
@@ -806,7 +820,7 @@ export class CarouselController {
     getTotalSlides() {
         return this.totalSlides;
     }
-    
+
     /**
      * Verifica si está en autoplay
      * @returns {boolean}
@@ -814,7 +828,7 @@ export class CarouselController {
     isAutoPlaying() {
         return this.isPlaying;
     }
-    
+
     /**
      * Verifica si está en transición
      * @returns {boolean}
@@ -822,7 +836,7 @@ export class CarouselController {
     isInTransition() {
         return this.isTransitioning;
     }
-    
+
     /**
      * Registra un listener para eventos
      * @param {string} event - Nombre del evento
@@ -834,7 +848,7 @@ export class CarouselController {
         }
         this.eventListeners.get(`custom-${event}`).push(callback);
     }
-    
+
     /**
      * Remueve un listener de eventos
      * @param {string} event - Nombre del evento
@@ -849,7 +863,7 @@ export class CarouselController {
             }
         }
     }
-    
+
     /**
      * Emite un evento
      * @param {string} event - Nombre del evento
@@ -866,14 +880,14 @@ export class CarouselController {
                 }
             });
         }
-        
+
         // También emitir en el contenedor como evento DOM
         if (this.container) {
             const customEvent = new CustomEvent(event, { detail: data });
             this.container.dispatchEvent(customEvent);
         }
     }
-    
+
     /**
      * Actualiza las opciones del controlador
      * @param {Object} newOptions - Nuevas opciones
@@ -881,7 +895,7 @@ export class CarouselController {
     updateOptions(newOptions) {
         const oldOptions = { ...this.options };
         this.options = { ...this.options, ...newOptions };
-        
+
         // Reconfigurar autoplay si cambió
         if (oldOptions.autoPlay !== this.options.autoPlay) {
             if (this.options.autoPlay) {
@@ -890,28 +904,28 @@ export class CarouselController {
                 this.pauseAutoPlay();
             }
         }
-        
+
         // Reconfigurar intervalo si cambió
         if (oldOptions.autoPlayInterval !== this.options.autoPlayInterval && this.isPlaying) {
             this.pauseAutoPlay();
             this.startAutoPlay();
         }
     }
-    
+
     /**
      * Destruye el controlador y limpia recursos
      */
     destroy() {
         // Parar autoplay
         this.pauseAutoPlay();
-        
+
         // Remover event listeners
         this.eventListeners.forEach((listener, key) => {
             if (listener.element && listener.handler) {
                 listener.element.removeEventListener(listener.event, listener.handler);
             }
         });
-        
+
         // Limpiar referencias
         this.eventListeners.clear();
         this.slideElements = [];
@@ -924,7 +938,7 @@ export class CarouselController {
         this.container = null;
         this.autoPlayTimer = null;
         this.debouncedResize = null;
-        
+
         this.isInitialized = false;
     }
 }

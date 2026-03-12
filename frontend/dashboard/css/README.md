@@ -55,7 +55,9 @@ frontend/dashboard/css/
 ## 🎨 Convenciones
 
 ### Variables CSS
+
 Las variables principales se definen en `01-settings/_variables.css` y controlan:
+
 - Colores (tema claro y oscuro)
 - Espaciado
 - Tipografía
@@ -63,7 +65,9 @@ Las variables principales se definen en `01-settings/_variables.css` y controlan
 - Breakpoints
 
 ### Nomenclatura
+
 Se utiliza una convención relajada inspirada en BEM:
+
 - `.componente`
 - `.componente-elemento`
 - `.componente.modificador`
@@ -71,14 +75,17 @@ Se utiliza una convención relajada inspirada en BEM:
 ## 🚀 Mantenimiento
 
 ### Agregar un nuevo componente
+
 1. Crear el archivo en `04-components/_nuevo-componente.css`
 2. Importarlo en `main.css` en la sección correspondiente
 
 ### Modificar estilos existentes
+
 1. Localizar el componente específico
 2. Realizar cambios usando las variables CSS siempre que sea posible
 
 ## ✅ Estado de la Migración
+
 - **Refactorización completa:** Todos los estilos legacy han sido migrados a esta nueva estructura.
 - **Limpieza:** Los archivos CSS antiguos han sido eliminados.
 - **Independencia:** Este sistema es independiente de los estilos de la invitación (`frontend/invitation/`) y la landing page (`frontend/landing/`).

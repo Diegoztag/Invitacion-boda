@@ -11,7 +11,7 @@ export class LoaderComponent extends Component {
         // Crear elemento loader si no se proporciona
         const loaderElement = element || LoaderComponent.createLoaderElement();
         super(loaderElement);
-        
+
         this.options = {
             type: 'spinner', // 'spinner', 'dots', 'pulse', 'bars'
             size: 'medium', // 'small', 'medium', 'large'
@@ -21,12 +21,12 @@ export class LoaderComponent extends Component {
             overlay: false, // Mostrar como overlay
             ...options
         };
-        
+
         this.isVisible = false;
         this.textElement = null;
         this.spinnerElement = null;
     }
-    
+
     /**
      * Crea el elemento loader base
      * @returns {HTMLElement}
@@ -37,10 +37,10 @@ export class LoaderComponent extends Component {
         loader.setAttribute('role', 'status');
         loader.setAttribute('aria-live', 'polite');
         loader.style.display = 'none';
-        
+
         return loader;
     }
-    
+
     /**
      * Inicializa el componente
      */
@@ -48,40 +48,40 @@ export class LoaderComponent extends Component {
         if (this.isInitialized) {
             return;
         }
-        
+
         console.log('⏳ Initializing LoaderComponent...');
-        
+
         // Crear estructura del loader
         this.createLoaderStructure();
-        
+
         // Aplicar configuraciones
         this.applyConfiguration();
-        
+
         await super.init();
         console.log('✅ LoaderComponent initialized');
     }
-    
+
     /**
      * Crea la estructura HTML del loader
      */
     createLoaderStructure() {
         const loaderHTML = this.generateLoaderHTML();
         this.element.innerHTML = loaderHTML;
-        
+
         // Obtener referencias a elementos
         this.textElement = this.find('.loader-text');
         this.spinnerElement = this.find('.loader-spinner');
     }
-    
+
     /**
      * Genera el HTML del loader según el tipo
      * @returns {string}
      */
     generateLoaderHTML() {
         const baseClasses = `loader-container ${this.options.size} ${this.options.color}`;
-        
+
         let spinnerHTML = '';
-        
+
         switch (this.options.type) {
             case 'spinner':
                 spinnerHTML = `
@@ -92,7 +92,7 @@ export class LoaderComponent extends Component {
                     </div>
                 `;
                 break;
-                
+
             case 'dots':
                 spinnerHTML = `
                     <div class="loader-spinner dots">
@@ -102,7 +102,7 @@ export class LoaderComponent extends Component {
                     </div>
                 `;
                 break;
-                
+
             case 'pulse':
                 spinnerHTML = `
                     <div class="loader-spinner pulse">
@@ -110,7 +110,7 @@ export class LoaderComponent extends Component {
                     </div>
                 `;
                 break;
-                
+
             case 'bars':
                 spinnerHTML = `
                     <div class="loader-spinner bars">
@@ -121,7 +121,7 @@ export class LoaderComponent extends Component {
                     </div>
                 `;
                 break;
-                
+
             default:
                 spinnerHTML = `
                     <div class="loader-spinner spinner">
@@ -131,10 +131,11 @@ export class LoaderComponent extends Component {
                     </div>
                 `;
         }
-        
-        const textHTML = this.options.showText ? 
-            `<div class="loader-text">${this.options.text}</div>` : '';
-        
+
+        const textHTML = this.options.showText
+            ? `<div class="loader-text">${this.options.text}</div>`
+            : '';
+
         return `
             <div class="${baseClasses}">
                 ${spinnerHTML}
@@ -142,7 +143,7 @@ export class LoaderComponent extends Component {
             </div>
         `;
     }
-    
+
     /**
      * Aplica la configuración inicial
      */
@@ -151,7 +152,7 @@ export class LoaderComponent extends Component {
         this.addClass(`loader-${this.options.size}`);
         this.addClass(`loader-${this.options.color}`);
         this.addClass(`loader-${this.options.type}`);
-        
+
         // Configurar como overlay si es necesario
         if (this.options.overlay) {
             this.addClass('loader-overlay');
@@ -167,7 +168,7 @@ export class LoaderComponent extends Component {
             this.element.style.justifyContent = 'center';
         }
     }
-    
+
     /**
      * Muestra el loader
      * @param {string} text - Texto opcional a mostrar
@@ -176,30 +177,30 @@ export class LoaderComponent extends Component {
         if (this.isVisible) {
             return;
         }
-        
+
         // Actualizar texto si se proporciona
         if (text && this.textElement) {
             this.textElement.textContent = text;
         }
-        
+
         // Mostrar elemento
         this.element.style.display = this.options.overlay ? 'flex' : 'block';
         this.element.setAttribute('aria-hidden', 'false');
-        
+
         // Agregar al body si es overlay
         if (this.options.overlay && !document.body.contains(this.element)) {
             document.body.appendChild(this.element);
         }
-        
+
         // Animación de entrada
         requestAnimationFrame(() => {
             this.addClass('loader-visible');
         });
-        
+
         this.isVisible = true;
         console.log('⏳ Loader shown');
     }
-    
+
     /**
      * Oculta el loader
      */
@@ -207,25 +208,25 @@ export class LoaderComponent extends Component {
         if (!this.isVisible) {
             return;
         }
-        
+
         // Animación de salida
         this.removeClass('loader-visible');
-        
+
         // Ocultar después de la animación
         setTimeout(() => {
             this.element.style.display = 'none';
             this.element.setAttribute('aria-hidden', 'true');
-            
+
             // Remover del body si es overlay
             if (this.options.overlay && document.body.contains(this.element)) {
                 document.body.removeChild(this.element);
             }
         }, 300);
-        
+
         this.isVisible = false;
         console.log('✅ Loader hidden');
     }
-    
+
     /**
      * Alterna la visibilidad del loader
      */
@@ -236,7 +237,7 @@ export class LoaderComponent extends Component {
             this.show(text);
         }
     }
-    
+
     /**
      * Actualiza el texto del loader
      * @param {string} text - Nuevo texto
@@ -247,7 +248,7 @@ export class LoaderComponent extends Component {
         }
         this.options.text = text;
     }
-    
+
     /**
      * Actualiza el tipo de loader
      * @param {string} type - Nuevo tipo ('spinner', 'dots', 'pulse', 'bars')
@@ -256,22 +257,22 @@ export class LoaderComponent extends Component {
         if (this.options.type === type) {
             return;
         }
-        
+
         // Remover clase anterior
         this.removeClass(`loader-${this.options.type}`);
-        
+
         // Actualizar tipo
         this.options.type = type;
-        
+
         // Agregar nueva clase
         this.addClass(`loader-${type}`);
-        
+
         // Recrear estructura
         this.createLoaderStructure();
-        
+
         console.log(`🔄 Loader type changed to: ${type}`);
     }
-    
+
     /**
      * Actualiza el tamaño del loader
      * @param {string} size - Nuevo tamaño ('small', 'medium', 'large')
@@ -280,19 +281,19 @@ export class LoaderComponent extends Component {
         if (this.options.size === size) {
             return;
         }
-        
+
         // Remover clase anterior
         this.removeClass(`loader-${this.options.size}`);
-        
+
         // Actualizar tamaño
         this.options.size = size;
-        
+
         // Agregar nueva clase
         this.addClass(`loader-${size}`);
-        
+
         console.log(`📏 Loader size changed to: ${size}`);
     }
-    
+
     /**
      * Actualiza el color del loader
      * @param {string} color - Nuevo color ('primary', 'secondary', 'white')
@@ -301,26 +302,26 @@ export class LoaderComponent extends Component {
         if (this.options.color === color) {
             return;
         }
-        
+
         // Remover clase anterior
         this.removeClass(`loader-${this.options.color}`);
-        
+
         // Actualizar color
         this.options.color = color;
-        
+
         // Agregar nueva clase
         this.addClass(`loader-${color}`);
-        
+
         console.log(`🎨 Loader color changed to: ${color}`);
     }
-    
+
     /**
      * Configura el loader como overlay
      * @param {boolean} overlay - Si debe ser overlay
      */
     setOverlay(overlay) {
         this.options.overlay = overlay;
-        
+
         if (overlay) {
             this.addClass('loader-overlay');
             this.element.style.position = 'fixed';
@@ -347,7 +348,7 @@ export class LoaderComponent extends Component {
             this.element.style.justifyContent = '';
         }
     }
-    
+
     /**
      * Verifica si el loader está visible
      * @returns {boolean}
@@ -355,7 +356,7 @@ export class LoaderComponent extends Component {
     isLoaderVisible() {
         return this.isVisible;
     }
-    
+
     /**
      * Muestra el loader por un tiempo determinado
      * @param {number} duration - Duración en milisegundos
@@ -363,16 +364,16 @@ export class LoaderComponent extends Component {
      * @returns {Promise}
      */
     showFor(duration, text) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.show(text);
-            
+
             setTimeout(() => {
                 this.hide();
                 resolve();
             }, duration);
         });
     }
-    
+
     /**
      * Muestra el loader mientras se ejecuta una promesa
      * @param {Promise} promise - Promesa a esperar
@@ -381,7 +382,7 @@ export class LoaderComponent extends Component {
      */
     async showWhile(promise, text) {
         this.show(text);
-        
+
         try {
             const result = await promise;
             this.hide();
@@ -391,7 +392,7 @@ export class LoaderComponent extends Component {
             throw error;
         }
     }
-    
+
     /**
      * Obtiene la configuración actual
      * @returns {Object}
@@ -399,7 +400,7 @@ export class LoaderComponent extends Component {
     getOptions() {
         return { ...this.options };
     }
-    
+
     /**
      * Actualiza múltiples opciones
      * @param {Object} newOptions - Nuevas opciones
@@ -407,31 +408,31 @@ export class LoaderComponent extends Component {
     updateOptions(newOptions) {
         const oldOptions = { ...this.options };
         this.options = { ...this.options, ...newOptions };
-        
+
         // Aplicar cambios si es necesario
         if (oldOptions.type !== this.options.type) {
             this.setType(this.options.type);
         }
-        
+
         if (oldOptions.size !== this.options.size) {
             this.setSize(this.options.size);
         }
-        
+
         if (oldOptions.color !== this.options.color) {
             this.setColor(this.options.color);
         }
-        
+
         if (oldOptions.overlay !== this.options.overlay) {
             this.setOverlay(this.options.overlay);
         }
-        
+
         if (oldOptions.text !== this.options.text) {
             this.setText(this.options.text);
         }
-        
+
         console.log('⚙️ Loader options updated');
     }
-    
+
     /**
      * Destruye el componente
      */
@@ -440,16 +441,16 @@ export class LoaderComponent extends Component {
         if (this.isVisible) {
             this.hide();
         }
-        
+
         // Limpiar referencias
         this.textElement = null;
         this.spinnerElement = null;
-        
+
         // Remover del DOM si es overlay
         if (this.options.overlay && document.body.contains(this.element)) {
             document.body.removeChild(this.element);
         }
-        
+
         super.destroy();
         console.log('🗑️ LoaderComponent destroyed');
     }

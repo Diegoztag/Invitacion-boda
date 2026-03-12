@@ -24,7 +24,8 @@ function configureInvitationRoutes(invitationController, middleware) {
     // ==========================================
 
     // Búsqueda por nombre (Pública)
-    router.get('/search/:name',
+    router.get(
+        '/search/:name',
         middleware.validateParams,
         invitationController.searchByName.bind(invitationController)
     );
@@ -36,7 +37,7 @@ function configureInvitationRoutes(invitationController, middleware) {
             // Asumimos que el controller tiene acceso al repositorio
             const repo = invitationController.invitationRepository;
             const all = await repo.findAll({}, true); // includeInactive = true
-            
+
             res.json({
                 count: all.length,
                 invitations: all.map(inv => ({
@@ -53,14 +54,16 @@ function configureInvitationRoutes(invitationController, middleware) {
 
     // Exportación (Privada)
     // IMPORTANTE: Debe ir antes de /:code para evitar conflicto
-    router.get('/export',
+    router.get(
+        '/export',
         middleware.authenticate,
         middleware.validateQuery,
         invitationController.exportInvitations.bind(invitationController)
     );
 
     // Importación masiva (Privada)
-    router.post('/import',
+    router.post(
+        '/import',
         middleware.authenticate,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -72,14 +75,16 @@ function configureInvitationRoutes(invitationController, middleware) {
     // ==========================================
 
     // Obtener todas (Privada)
-    router.get('/',
+    router.get(
+        '/',
         middleware.authenticate,
         middleware.validateQuery,
         invitationController.getInvitations.bind(invitationController)
     );
 
     // Crear nueva (Privada)
-    router.post('/',
+    router.post(
+        '/',
         middleware.authenticate,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -91,22 +96,25 @@ function configureInvitationRoutes(invitationController, middleware) {
     // ==========================================
 
     // Reactivación de invitación (Privada)
-    // Debe ir antes de operaciones CRUD estándar si hay conflicto de verbos, 
+    // Debe ir antes de operaciones CRUD estándar si hay conflicto de verbos,
     // aunque aquí es PUT /:code/activate vs PUT /:code
-    router.put('/:code/activate',
+    router.put(
+        '/:code/activate',
         middleware.authenticate,
         middleware.validateParams,
         invitationController.restoreInvitation.bind(invitationController)
     );
 
     // Obtener una (Pública)
-    router.get('/:code', 
+    router.get(
+        '/:code',
         middleware.validateParams,
         invitationController.getInvitation.bind(invitationController)
     );
 
     // Actualizar (Privada)
-    router.put('/:code',
+    router.put(
+        '/:code',
         middleware.authenticate,
         middleware.validateParams,
         middleware.validateBody,
@@ -115,7 +123,8 @@ function configureInvitationRoutes(invitationController, middleware) {
     );
 
     // Eliminar (Privada)
-    router.delete('/:code',
+    router.delete(
+        '/:code',
         middleware.authenticate,
         middleware.validateParams,
         middleware.validateBody,

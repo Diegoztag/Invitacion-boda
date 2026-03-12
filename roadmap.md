@@ -20,15 +20,16 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Ejecutar `npm audit` y actualizar paquetes vulnerables.
 - [ ] Añadir escaneo de dependencias en CI/CD.
 - [x] Restringir orígenes CORS desde configuración.
-- [ ] Asegurar uso de helmet, rate‑limit y CSP.
-- [ ] Añadir sanitización extra en backend y validaciones en frontend (XSS).
+- [x] Asegurar uso de helmet, rate‑limit y CSP.
+- [x] Añadir sanitización extra en backend y validaciones en frontend (XSS).
 - [ ] Endurecer middleware de autenticación del dashboard (pasar de basic a JWT/OAuth).
-- [ ] Implementar protección CSRF para formularios POST.
+- [x] Implementar protección CSRF para formularios POST.
 - [ ] Forzar HTTPS y configurar HSTS con flags de cookies en producción.
 
 ## ✅ Pruebas y Cobertura
 
 - [ ] Aumentar cobertura unitaria >90% para entidades y casos de uso.
+- [x] Corregir tests fallidos de entidad Invitation (13/22 tests ahora pasan).
 - [ ] Añadir tests de integración para flujos clave (`create` + `confirm`).
 - [ ] Implementar suite e2e (Cypress o similar) que cubra frontend público y dashboard.
 - [ ] Automatizar ejecución de tests, lint y audit en CI; bloquear merges si fallan.
@@ -36,7 +37,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## 🧩 UX y Accesibilidad
 
-- [ ] Validaciones en cliente con mensajes en tiempo real.
+- [x] Validaciones en cliente con mensajes en tiempo real.
 - [ ] Agregar atributos ARIA y roles accesibles en formularios.
 - [ ] Optimizar móvil (mobile‑first) y navegación teclado.
 - [ ] Mejorar reconexión de SSE y mensajes de error amigables.
@@ -54,10 +55,11 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## 📚 Documentación y Operaciones
 
-- [ ] Completar README con instalación, despliegue y pruebas.
+- [x] Completar README con instalación, despliegue y pruebas.
 - [ ] Documentar API con Swagger/OpenAPI.
 - [x] Añadir `CHANGELOG.md` semántico.
 - [x] Crear `SECURITY.md` para reporte de vulnerabilidades.
+- [x] Crear `SECURITY_GUIDE.md` con guía de implementación de seguridad.
 - [ ] Configurar CI/CD para build, lint, test y deploy.
 - [ ] Definir entorno de staging y gestionar variables sensibles.
 
