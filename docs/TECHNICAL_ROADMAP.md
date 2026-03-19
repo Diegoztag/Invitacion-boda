@@ -201,32 +201,49 @@ frontend/js/
 
 #### 3.2.3 Tests Unitarios - Componentes UI [ALTO]
 
-**Estado**: ⏳ **PLANIFICADO**
+**Estado**: ⏳ **PRÓXIMO**
 
 - [ ] **CountdownComponent** - Timer y lifecycle
 - [ ] **ModalComponent** - Aperturas, cierres, eventos
 - [ ] **FormValidator** - Validaciones en tiempo real
 - [ ] **MobileMenu** - Responsive interactions
 - [ ] **Loader** - Estados de carga
+- [ ] Target: 70%+ coverage
 
 #### 3.2.4 Tests de Controladores [ALTO]
 
-**Estado**: ⏳ **PLANIFICADO**
+**Estado**: ⏳ **PRÓXIMO**
 
 - [ ] **AppController** - Orquestación principal
 - [ ] **NavigationController** - Scroll y secciones
 - [ ] **CarouselController** - Carruseles
 - [ ] **RsvpController** - Formularios RSVP
-- [ ] Target: 75%+ coverage
+- [ ] Target: 70%+ coverage
 
 #### 3.2.5 Integration Testing Frontend [ALTO]
 
-**Estado**: ⏳ **PLANIFICADO**
+**Estado**: ⏳ **PRÓXIMO**
 
 - [ ] **Tests de navegación** - Scroll y secciones visibles
 - [ ] **Tests de formularios** - Validación + submit + API call
 - [ ] **Tests de flujo RSVP** - End-to-end user journey
 - [ ] **Tests de responsive** - Móvil (375px), tablet (768px), desktop (1024px)
+
+---
+
+### 🟡 FASE 3.3: E2E TESTING - ⏳ PLANIFICADA
+
+**Estado**: ⏳ **NO INICIADA**
+
+#### 3.3.1 Cypress Setup [CRÍTICO]
+
+**Duración estimada**: 2-3 días
+
+- [ ] **Cypress installation & configuration** 
+- [ ] **Login flow tests**
+- [ ] **RSVP flow tests**
+- [ ] **Navigation & scroll tests**
+- [ ] **Responsive device tests** (mobile, tablet, desktop)
 
 #### 3.3 E2E Testing Setup [ALTO]
 
