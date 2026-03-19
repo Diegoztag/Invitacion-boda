@@ -293,7 +293,7 @@ export function escapeHtml(text) {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#039;'
+        '\'': '&#039;'
     };
     return text.replace(/[&<>"']/g, m => map[m]);
 }
@@ -467,48 +467,48 @@ export function getStatusBadge(invitation, options = {}) {
     let statusIcon = 'clock';
 
     switch (rawStatus) {
-        case 'confirmed':
-        case 'accepted': // Legacy support
-            status = 'confirmed';
-            statusText = 'Confirmado';
-            statusClass = 'confirmed';
-            statusColor = '#4caf50';
-            statusIcon = 'check-circle';
-            break;
+    case 'confirmed':
+    case 'accepted': // Legacy support
+        status = 'confirmed';
+        statusText = 'Confirmado';
+        statusClass = 'confirmed';
+        statusColor = '#4caf50';
+        statusIcon = 'check-circle';
+        break;
 
-        case 'partial':
-            status = 'partial';
-            statusText = 'Parcial';
-            statusClass = 'partial';
-            statusColor = '#ff6b6b';
-            statusIcon = 'exclamation-circle';
-            break;
+    case 'partial':
+        status = 'partial';
+        statusText = 'Parcial';
+        statusClass = 'partial';
+        statusColor = '#ff6b6b';
+        statusIcon = 'exclamation-circle';
+        break;
 
-        case 'cancelled':
-        case 'rejected': // Legacy support
-            status = 'cancelled';
-            statusText = 'Cancelado';
-            statusClass = 'rejected'; // Mantener clase visual 'rejected' para rojo
-            statusColor = '#f44336';
-            statusIcon = 'times-circle';
-            break;
+    case 'cancelled':
+    case 'rejected': // Legacy support
+        status = 'cancelled';
+        statusText = 'Cancelado';
+        statusClass = 'rejected'; // Mantener clase visual 'rejected' para rojo
+        statusColor = '#f44336';
+        statusIcon = 'times-circle';
+        break;
 
-        case 'inactive':
-            status = 'inactive';
-            statusText = 'Inactivo';
-            statusClass = 'inactive';
-            statusColor = '#9e9e9e';
-            statusIcon = 'power-off';
-            break;
+    case 'inactive':
+        status = 'inactive';
+        statusText = 'Inactivo';
+        statusClass = 'inactive';
+        statusColor = '#9e9e9e';
+        statusIcon = 'power-off';
+        break;
 
-        case 'pending':
-        default:
-            status = 'pending';
-            statusText = 'Pendiente';
-            statusClass = 'pending';
-            statusColor = '#ff9800';
-            statusIcon = 'clock';
-            break;
+    case 'pending':
+    default:
+        status = 'pending';
+        statusText = 'Pendiente';
+        statusClass = 'pending';
+        statusColor = '#ff9800';
+        statusIcon = 'clock';
+        break;
     }
 
     // Construir HTML del badge
@@ -559,39 +559,39 @@ export function renderStatBadge(value, type = 'count', options = {}) {
     let finalBadgeClass = badgeClass;
 
     switch (type) {
-        case 'percentage':
-            // Determinar clase basada en umbral
-            if (!badgeClass && threshold !== null) {
-                if (value >= 100) {
-                    finalBadgeClass = 'success';
-                } else if (value >= threshold) {
-                    finalBadgeClass = 'primary';
-                } else {
-                    finalBadgeClass = 'warning';
-                }
+    case 'percentage':
+        // Determinar clase basada en umbral
+        if (!badgeClass && threshold !== null) {
+            if (value >= 100) {
+                finalBadgeClass = 'success';
+            } else if (value >= threshold) {
+                finalBadgeClass = 'primary';
+            } else {
+                finalBadgeClass = 'warning';
             }
-            html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}%</span>`;
-            break;
+        }
+        html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}%</span>`;
+        break;
 
-        case 'trend':
-            // Badge con tendencia
-            const trendIcon =
+    case 'trend':
+        // Badge con tendencia
+        const trendIcon =
                 trendDirection === 'up'
                     ? 'arrow-up'
                     : trendDirection === 'down'
-                      ? 'arrow-down'
-                      : 'minus';
-            const trendClass = value > 0 ? 'success' : value < 0 ? 'danger' : 'warning';
-            html = `<span class="stat-badge ${trendClass}">
+                        ? 'arrow-down'
+                        : 'minus';
+        const trendClass = value > 0 ? 'success' : value < 0 ? 'danger' : 'warning';
+        html = `<span class="stat-badge ${trendClass}">
                 <i class="fas fa-${trendIcon} trend-icon"></i> ${value > 0 ? '+' : ''}${value}
             </span>`;
-            break;
+        break;
 
-        case 'count':
-        default:
-            // Badge simple de conteo
-            html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}</span>`;
-            break;
+    case 'count':
+    default:
+        // Badge simple de conteo
+        html = `<span class="stat-badge ${finalBadgeClass}" ${title ? `title="${title}"` : ''}>${value}</span>`;
+        break;
     }
 
     return html;
@@ -628,13 +628,13 @@ export function getBadgeType(current, target, thresholds = { high: 75, medium: 5
  */
 export function renderTableRow(invitation, tableType = 'invitations', index = 0) {
     switch (tableType) {
-        case 'recent':
-            return renderRecentConfirmationRow(invitation, index);
-        case 'create':
-            return renderCreateSectionRow(invitation, index);
-        case 'invitations':
-        default:
-            return renderInvitationRow(invitation, index);
+    case 'recent':
+        return renderRecentConfirmationRow(invitation, index);
+    case 'create':
+        return renderCreateSectionRow(invitation, index);
+    case 'invitations':
+    default:
+        return renderInvitationRow(invitation, index);
     }
 }
 
@@ -678,8 +678,8 @@ function renderInvitationRow(invitation, index = 0) {
     const guestNamesFormatted =
         guestNames.length > 0
             ? guestNames
-                  .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
-                  .join('')
+                .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
+                .join('')
             : `<div class="guest-name-item fallback">${escapeHtml(displayNames)}</div>`;
 
     const numberOfPasses = getSafeValue(invitation.numberOfPasses, 1);
@@ -854,8 +854,8 @@ function renderCreateSectionRow(invitation, index) {
     const guestNamesFormatted =
         guestNames.length > 0
             ? guestNames
-                  .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
-                  .join('')
+                .map(name => `<div class="guest-name-item">${escapeHtml(name)}</div>`)
+                .join('')
             : '<div class="guest-name-item fallback">Invitado</div>';
 
     return `

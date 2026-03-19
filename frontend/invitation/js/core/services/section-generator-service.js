@@ -159,8 +159,8 @@ export class SectionGeneratorService {
                     
                     <!-- Carousel Controls -->
                     ${
-                        this.config.carouselSection.carousel.showNavigationButtons
-                            ? `
+    this.config.carouselSection.carousel.showNavigationButtons
+        ? `
                     <button class="carousel-control carousel-prev" id="carouselPrev">
                         <i class="fas fa-chevron-left"></i>
                     </button>
@@ -168,19 +168,19 @@ export class SectionGeneratorService {
                         <i class="fas fa-chevron-right"></i>
                     </button>
                     `
-                            : ''
-                    }
+        : ''
+}
                     
                     <!-- Carousel Indicators -->
                     ${
-                        this.config.carouselSection.carousel.showIndicators
-                            ? `
+    this.config.carouselSection.carousel.showIndicators
+        ? `
                     <div class="carousel-indicators" id="carouselIndicators">
                         <!-- Indicators will be dynamically generated -->
                     </div>
                     `
-                            : ''
-                    }
+        : ''
+}
                 </div>
             </div>
         `;
@@ -223,8 +223,8 @@ export class SectionGeneratorService {
                     
                     <!-- Información bancaria -->
                     ${
-                        this.config.giftRegistry.bankAccount?.enabled
-                            ? `
+    this.config.giftRegistry.bankAccount?.enabled
+        ? `
                     <div class="bank-info" id="bankInfo">
                         <div class="bank-card">
                             <div class="bank-icon">
@@ -238,8 +238,8 @@ export class SectionGeneratorService {
                         </div>
                     </div>
                     `
-                            : ''
-                    }
+        : ''
+}
                 </div>
             </div>
         `;

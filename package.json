@@ -14,7 +14,10 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write \"**/*.{js,json,md}\"",
-        "format:check": "prettier --check \"**/*.{js,json,md}\""
+        "format:check": "prettier --check \"**/*.{js,json,md}\"",
+        "test:frontend": "npx jest --config=jest.config.frontend.js",
+        "test:frontend:watch": "npx jest --config=jest.config.frontend.js --watch",
+        "test:frontend:coverage": "npx jest --config=jest.config.frontend.js --coverage"
     },
     "keywords": [
         "wedding",
@@ -24,9 +27,12 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@babel/preset-env": "^7.29.2",
+        "@testing-library/jest-dom": "^6.9.1",
         "browser-sync": "^3.0.4",
         "concurrently": "^9.2.1",
         "eslint": "^9.39.2",
+        "jest-environment-jsdom": "^30.3.0",
         "prettier": "^3.7.4"
     },
     "dependencies": {

@@ -461,9 +461,9 @@ class InvitationController {
             const attendanceRate =
                 invitationStats.totalIssuedPasses > 0
                     ? (
-                          (invitationStats.confirmedPasses / invitationStats.totalIssuedPasses) *
+                        (invitationStats.confirmedPasses / invitationStats.totalIssuedPasses) *
                           100
-                      ).toFixed(2)
+                    ).toFixed(2)
                     : '0.00';
 
             endOperation({ statsGenerated: true });
@@ -493,8 +493,8 @@ class InvitationController {
                         averageGuestsPerConfirmation:
                             invitationStats.confirmed > 0
                                 ? (
-                                      invitationStats.confirmedPasses / invitationStats.confirmed
-                                  ).toFixed(2)
+                                    invitationStats.confirmedPasses / invitationStats.confirmed
+                                ).toFixed(2)
                                 : '0.00'
                     },
                     passDistribution: {

@@ -77,7 +77,10 @@ describe('ConfirmAttendanceUseCase', () => {
         expect(result.invitation.status).toBe('confirmed');
         expect(result.confirmation).toEqual(savedConfirmation.toObject());
         expect(mockConfirmationRepository.save).toHaveBeenCalled();
-        expect(mockInvitationRepository.update).toHaveBeenCalledWith('INV001', expect.any(Invitation));
+        expect(mockInvitationRepository.update).toHaveBeenCalledWith(
+            'INV001',
+            expect.any(Invitation)
+        );
         expect(mockSseService.notify).toHaveBeenCalled();
     });
 
@@ -167,7 +170,10 @@ describe('ConfirmAttendanceUseCase', () => {
 
         expect(result.success).toBe(true);
         expect(result.confirmation).toEqual(existingConfirmation.toObject());
-        expect(mockConfirmationRepository.update).toHaveBeenCalledWith('INV001', expect.any(Confirmation));
+        expect(mockConfirmationRepository.update).toHaveBeenCalledWith(
+            'INV001',
+            expect.any(Confirmation)
+        );
     });
 
     test('should cancel confirmation successfully', async () => {
@@ -196,6 +202,9 @@ describe('ConfirmAttendanceUseCase', () => {
         expect(result.success).toBe(true);
         expect(result.message).toBe('Confirmación cancelada exitosamente');
         expect(mockConfirmationRepository.delete).toHaveBeenCalledWith('INV001');
-        expect(mockInvitationRepository.update).toHaveBeenCalledWith('INV001', expect.any(Invitation));
+        expect(mockInvitationRepository.update).toHaveBeenCalledWith(
+            'INV001',
+            expect.any(Invitation)
+        );
     });
 });

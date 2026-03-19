@@ -211,21 +211,21 @@ export class ContentController {
         }
 
         switch (contentElement.type) {
-            case 'date':
-                return this.formatDate(value, contentElement.format);
+        case 'date':
+            return this.formatDate(value, contentElement.format);
 
-            case 'number':
-                return this.formatNumber(value, contentElement.format);
+        case 'number':
+            return this.formatNumber(value, contentElement.format);
 
-            case 'currency':
-                return this.formatCurrency(value, contentElement.format);
+        case 'currency':
+            return this.formatCurrency(value, contentElement.format);
 
-            case 'html':
-                return value; // HTML sin escapar
+        case 'html':
+            return value; // HTML sin escapar
 
-            case 'text':
-            default:
-                return String(value);
+        case 'text':
+        default:
+            return String(value);
         }
     }
 
@@ -243,28 +243,28 @@ export class ContentController {
         }
 
         switch (format) {
-            case 'short':
-                return dateObj.toLocaleDateString('es-ES');
+        case 'short':
+            return dateObj.toLocaleDateString('es-ES');
 
-            case 'long':
-                return dateObj.toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
+        case 'long':
+            return dateObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
 
-            case 'time':
-                return dateObj.toLocaleTimeString('es-ES', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+        case 'time':
+            return dateObj.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-            case 'datetime':
-                return dateObj.toLocaleString('es-ES');
+        case 'datetime':
+            return dateObj.toLocaleString('es-ES');
 
-            default:
-                return dateObj.toLocaleDateString('es-ES');
+        default:
+            return dateObj.toLocaleDateString('es-ES');
         }
     }
 
@@ -282,25 +282,25 @@ export class ContentController {
         }
 
         switch (format) {
-            case 'integer':
-                return Math.round(num).toLocaleString('es-ES');
+        case 'integer':
+            return Math.round(num).toLocaleString('es-ES');
 
-            case 'decimal':
-                return num.toLocaleString('es-ES', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+        case 'decimal':
+            return num.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
 
-            case 'percentage':
-                return (
-                    (num * 100).toLocaleString('es-ES', {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1
-                    }) + '%'
-                );
+        case 'percentage':
+            return (
+                (num * 100).toLocaleString('es-ES', {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                }) + '%'
+            );
 
-            default:
-                return num.toLocaleString('es-ES');
+        default:
+            return num.toLocaleString('es-ES');
         }
     }
 
@@ -331,19 +331,19 @@ export class ContentController {
      */
     setElementContent(element, content, type) {
         switch (type) {
-            case 'html':
-                element.innerHTML = content;
-                break;
+        case 'html':
+            element.innerHTML = content;
+            break;
 
-            case 'attribute':
-                const attrName = element.getAttribute('data-content-attribute') || 'value';
-                element.setAttribute(attrName, content);
-                break;
+        case 'attribute':
+            const attrName = element.getAttribute('data-content-attribute') || 'value';
+            element.setAttribute(attrName, content);
+            break;
 
-            case 'text':
-            default:
-                element.textContent = content;
-                break;
+        case 'text':
+        default:
+            element.textContent = content;
+            break;
         }
     }
 

@@ -635,18 +635,18 @@ export class AppController {
      */
     getController(name) {
         switch (name) {
-            case 'navigation':
-                return this.navigationController;
-            case 'content':
-                return this.contentController;
-            case 'rsvp':
-                return this.rsvpController;
-            case 'carousel':
-                return this.carouselController;
-            case 'scrollAnimation':
-                return this.scrollAnimationController;
-            default:
-                return null;
+        case 'navigation':
+            return this.navigationController;
+        case 'content':
+            return this.contentController;
+        case 'rsvp':
+            return this.rsvpController;
+        case 'carousel':
+            return this.carouselController;
+        case 'scrollAnimation':
+            return this.scrollAnimationController;
+        default:
+            return null;
         }
     }
 

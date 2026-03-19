@@ -569,17 +569,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             const value = rawData[header] || '';
 
             switch (header) {
-                case 'guestCount':
-                    data[header] = value ? parseInt(value, 10) : 0;
-                    break;
-                case 'willAttend':
-                    data[header] = value === 'true';
-                    break;
-                case 'confirmedAt':
-                    data[header] = value || null;
-                    break;
-                default:
-                    data[header] = value;
+            case 'guestCount':
+                data[header] = value ? parseInt(value, 10) : 0;
+                break;
+            case 'willAttend':
+                data[header] = value === 'true';
+                break;
+            case 'confirmedAt':
+                data[header] = value || null;
+                break;
+            default:
+                data[header] = value;
             }
         }
 
@@ -599,14 +599,14 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             const value = confirmation[header];
 
             switch (header) {
-                case 'willAttend':
-                    data[header] = confirmation.willAttend ? 'true' : 'false';
-                    break;
-                case 'guestCount':
-                    data[header] = value || 0;
-                    break;
-                default:
-                    data[header] = value || '';
+            case 'willAttend':
+                data[header] = confirmation.willAttend ? 'true' : 'false';
+                break;
+            case 'guestCount':
+                data[header] = value || 0;
+                break;
+            default:
+                data[header] = value || '';
             }
         }
 
@@ -626,17 +626,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             let value = confirmation[header];
 
             switch (header) {
-                case 'attendingNames':
-                    value = confirmation.attendingNames.join('|');
-                    break;
-                case 'willAttend':
-                    value = confirmation.willAttend ? 'true' : 'false';
-                    break;
-                case 'attendingGuests':
-                    value = value || 0;
-                    break;
-                default:
-                    value = value || '';
+            case 'attendingNames':
+                value = confirmation.attendingNames.join('|');
+                break;
+            case 'willAttend':
+                value = confirmation.willAttend ? 'true' : 'false';
+                break;
+            case 'attendingGuests':
+                value = value || 0;
+                break;
+            default:
+                value = value || '';
             }
 
             // Escapar comillas y comas

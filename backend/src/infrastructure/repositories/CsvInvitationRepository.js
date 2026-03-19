@@ -835,40 +835,40 @@ class CsvInvitationRepository extends IInvitationRepository {
             const value = rawData[header];
 
             switch (header) {
-                case 'guestNames':
-                case 'attendingNames':
-                    data[header] = value ? value.split('|') : [];
-                    break;
-                case 'numberOfPasses':
-                case 'confirmedPasses':
-                case 'adultPasses':
-                case 'childPasses':
-                case 'staffPasses':
-                case 'tableNumber':
-                    // CORREGIDO: Manejar correctamente valores 0 del CSV
-                    if (value === '' || value === null || value === undefined) {
-                        data[header] = header === 'numberOfPasses' ? 1 : 0;
-                    } else {
-                        const numValue = parseInt(value, 10);
-                        data[header] = isNaN(numValue) ? 0 : numValue;
-                    }
-                    break;
-                case 'createdAt':
-                case 'confirmationDate':
-                case 'cancelledAt':
-                    data[header] = value || null;
-                    break;
-                case 'dietaryRestrictionsNames':
-                case 'dietaryRestrictionsDetails':
-                case 'generalMessage':
-                    data[header] = value || '';
-                    break;
-                case 'status':
-                    // Normalizar status: minúsculas y sin espacios
-                    data[header] = value ? value.toLowerCase().trim() : 'pending';
-                    break;
-                default:
-                    data[header] = value || '';
+            case 'guestNames':
+            case 'attendingNames':
+                data[header] = value ? value.split('|') : [];
+                break;
+            case 'numberOfPasses':
+            case 'confirmedPasses':
+            case 'adultPasses':
+            case 'childPasses':
+            case 'staffPasses':
+            case 'tableNumber':
+                // CORREGIDO: Manejar correctamente valores 0 del CSV
+                if (value === '' || value === null || value === undefined) {
+                    data[header] = header === 'numberOfPasses' ? 1 : 0;
+                } else {
+                    const numValue = parseInt(value, 10);
+                    data[header] = isNaN(numValue) ? 0 : numValue;
+                }
+                break;
+            case 'createdAt':
+            case 'confirmationDate':
+            case 'cancelledAt':
+                data[header] = value || null;
+                break;
+            case 'dietaryRestrictionsNames':
+            case 'dietaryRestrictionsDetails':
+            case 'generalMessage':
+                data[header] = value || '';
+                break;
+            case 'status':
+                // Normalizar status: minúsculas y sin espacios
+                data[header] = value ? value.toLowerCase().trim() : 'pending';
+                break;
+            default:
+                data[header] = value || '';
             }
         }
 
@@ -889,65 +889,65 @@ class CsvInvitationRepository extends IInvitationRepository {
 
             // Usar getters públicos en lugar de acceso directo a propiedades
             switch (header) {
-                case 'code':
-                    value = invitation.code;
-                    break;
-                case 'guestNames':
-                    data[header] = invitation.guestNames.join('|');
-                    continue;
-                case 'numberOfPasses':
-                    value = invitation.numberOfPasses;
-                    break;
-                case 'phone':
-                    value = invitation.phone;
-                    break;
-                case 'createdAt':
-                    value = invitation.createdAt;
-                    break;
-                case 'confirmedPasses':
-                    value = invitation.confirmedPasses;
-                    break;
-                case 'confirmationDate':
-                    value = invitation.confirmationDate;
-                    break;
-                case 'adultPasses':
-                    value = invitation.adultPasses;
-                    break;
-                case 'childPasses':
-                    value = invitation.childPasses;
-                    break;
-                case 'staffPasses':
-                    value = invitation.staffPasses;
-                    break;
-                case 'tableNumber':
-                    value = invitation.tableNumber;
-                    break;
-                case 'status':
-                    value = invitation.status;
-                    break;
-                case 'cancelledAt':
-                    value = invitation.cancelledAt;
-                    break;
-                case 'cancelledBy':
-                    value = invitation.cancelledBy;
-                    break;
-                case 'cancellationReason':
-                    value = invitation.cancellationReason;
-                    break;
-                case 'attendingNames':
-                    data[header] = invitation.attendingNames.join('|');
-                    continue;
-                case 'dietaryRestrictionsNames':
-                    value = invitation.dietaryRestrictionsNames;
-                    break;
-                case 'dietaryRestrictionsDetails':
-                    value = invitation.dietaryRestrictionsDetails;
-                    break;
-                case 'generalMessage':
-                    value = invitation.generalMessage;
-                    break;
-                default:
-                    value = '';
+            case 'code':
+                value = invitation.code;
+                break;
+            case 'guestNames':
+                data[header] = invitation.guestNames.join('|');
+                continue;
+            case 'numberOfPasses':
+                value = invitation.numberOfPasses;
+                break;
+            case 'phone':
+                value = invitation.phone;
+                break;
+            case 'createdAt':
+                value = invitation.createdAt;
+                break;
+            case 'confirmedPasses':
+                value = invitation.confirmedPasses;
+                break;
+            case 'confirmationDate':
+                value = invitation.confirmationDate;
+                break;
+            case 'adultPasses':
+                value = invitation.adultPasses;
+                break;
+            case 'childPasses':
+                value = invitation.childPasses;
+                break;
+            case 'staffPasses':
+                value = invitation.staffPasses;
+                break;
+            case 'tableNumber':
+                value = invitation.tableNumber;
+                break;
+            case 'status':
+                value = invitation.status;
+                break;
+            case 'cancelledAt':
+                value = invitation.cancelledAt;
+                break;
+            case 'cancelledBy':
+                value = invitation.cancelledBy;
+                break;
+            case 'cancellationReason':
+                value = invitation.cancellationReason;
+                break;
+            case 'attendingNames':
+                data[header] = invitation.attendingNames.join('|');
+                continue;
+            case 'dietaryRestrictionsNames':
+                value = invitation.dietaryRestrictionsNames;
+                break;
+            case 'dietaryRestrictionsDetails':
+                value = invitation.dietaryRestrictionsDetails;
+                break;
+            case 'generalMessage':
+                value = invitation.generalMessage;
+                break;
+            default:
+                value = '';
             }
 
             // Manejar valores numéricos
@@ -983,22 +983,22 @@ class CsvInvitationRepository extends IInvitationRepository {
             let value = invitation[header];
 
             switch (header) {
-                case 'guestNames':
-                    value = invitation.guestNames.join('|');
-                    break;
-                case 'confirmed':
-                    value = invitation.confirmed ? 'true' : 'false';
-                    break;
-                case 'numberOfPasses':
-                case 'confirmedPasses':
-                case 'adultPasses':
-                case 'childPasses':
-                case 'staffPasses':
-                case 'tableNumber':
-                    value = value || 0;
-                    break;
-                default:
-                    value = value || '';
+            case 'guestNames':
+                value = invitation.guestNames.join('|');
+                break;
+            case 'confirmed':
+                value = invitation.confirmed ? 'true' : 'false';
+                break;
+            case 'numberOfPasses':
+            case 'confirmedPasses':
+            case 'adultPasses':
+            case 'childPasses':
+            case 'staffPasses':
+            case 'tableNumber':
+                value = value || 0;
+                break;
+            default:
+                value = value || '';
             }
 
             // Escapar comillas y comas

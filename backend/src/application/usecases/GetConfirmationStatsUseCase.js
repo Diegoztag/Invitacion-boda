@@ -92,18 +92,18 @@ class GetConfirmationStatsUseCase {
                     confirmationRate:
                         invitationStats.total > 0
                             ? Math.round(
-                                  ((invitationStats.confirmed + invitationStats.partial) /
+                                ((invitationStats.confirmed + invitationStats.partial) /
                                       invitationStats.total) *
                                       100
-                              )
+                            )
                             : 0,
                     attendanceRate:
                         invitationStats.totalActivePasses > 0
                             ? Math.round(
-                                  (invitationStats.confirmedPasses /
+                                (invitationStats.confirmedPasses /
                                       invitationStats.totalActivePasses) *
                                       100
-                              )
+                            )
                             : 0
                 }
             };

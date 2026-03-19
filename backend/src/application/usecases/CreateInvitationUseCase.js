@@ -7,7 +7,7 @@
 const Invitation = require('../../core/entities/Invitation');
 // importar configuración del backend en lugar de frontend
 // la configuración se encuentra en src/config/index.js
-eval("require('module').Module._initPaths()");
+eval('require(\'module\').Module._initPaths()');
 const config = require('../../config');
 
 class CreateInvitationUseCase {

@@ -124,10 +124,10 @@ class Logger {
             // Agregar información del stack si es un error
             ...(level === 'error' &&
                 meta.error instanceof Error && {
-                    stack: meta.error.stack,
-                    errorName: meta.error.name,
-                    errorMessage: meta.error.message
-                })
+                stack: meta.error.stack,
+                errorName: meta.error.name,
+                errorMessage: meta.error.message
+            })
         };
     }
 

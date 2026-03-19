@@ -537,43 +537,43 @@ export class AdminAPI {
                     const value = values[index].trim();
 
                     switch (header.toLowerCase()) {
-                        case 'nombres':
-                        case 'nombre':
-                        case 'invitados':
-                            // Agregar soporte para pipe (|) que es el separador usado en la exportación
-                            invitation.guestNames = value
-                                .split(/\s+y\s+|\s*,\s*|\s*&\s*|\|/)
-                                .filter(n => n.trim());
-                            break;
-                        case 'pases':
-                        case 'passes':
-                            invitation.numberOfPasses = parseInt(value) || 1;
-                            break;
-                        case 'mesa':
-                        case 'table':
-                            if (value && value !== '0') {
-                                invitation.tableNumber = parseInt(value) || null;
-                            }
-                            break;
-                        case 'telefono':
-                        case 'teléfono':
-                        case 'phone':
-                            if (value) {
-                                invitation.phone = value;
-                            }
-                            break;
-                        case 'adultos':
-                        case 'adults':
-                            invitation.adults = parseInt(value) || 0;
-                            break;
-                        case 'niños':
-                        case 'ninos':
-                        case 'children':
-                            invitation.children = parseInt(value) || 0;
-                            break;
-                        case 'staff':
-                            invitation.staff = parseInt(value) || 0;
-                            break;
+                    case 'nombres':
+                    case 'nombre':
+                    case 'invitados':
+                        // Agregar soporte para pipe (|) que es el separador usado en la exportación
+                        invitation.guestNames = value
+                            .split(/\s+y\s+|\s*,\s*|\s*&\s*|\|/)
+                            .filter(n => n.trim());
+                        break;
+                    case 'pases':
+                    case 'passes':
+                        invitation.numberOfPasses = parseInt(value) || 1;
+                        break;
+                    case 'mesa':
+                    case 'table':
+                        if (value && value !== '0') {
+                            invitation.tableNumber = parseInt(value) || null;
+                        }
+                        break;
+                    case 'telefono':
+                    case 'teléfono':
+                    case 'phone':
+                        if (value) {
+                            invitation.phone = value;
+                        }
+                        break;
+                    case 'adultos':
+                    case 'adults':
+                        invitation.adults = parseInt(value) || 0;
+                        break;
+                    case 'niños':
+                    case 'ninos':
+                    case 'children':
+                        invitation.children = parseInt(value) || 0;
+                        break;
+                    case 'staff':
+                        invitation.staff = parseInt(value) || 0;
+                        break;
                     }
                 }
             });

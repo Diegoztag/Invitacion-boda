@@ -40,9 +40,9 @@ export class RenderService {
                 badge:
                     data.confirmedPercentage !== undefined
                         ? {
-                              class: 'success',
-                              text: `${data.confirmedPercentage}%`
-                          }
+                            class: 'success',
+                            text: `${data.confirmedPercentage}%`
+                        }
                         : null
             }),
             DashboardTemplates.statCard({
@@ -79,9 +79,9 @@ export class RenderService {
                 value: data.confirmedInvitations || 0,
                 badge: data.confirmedChangePercentage
                     ? {
-                          class: 'success',
-                          text: `+${data.confirmedChangePercentage}%`
-                      }
+                        class: 'success',
+                        text: `+${data.confirmedChangePercentage}%`
+                    }
                     : null
             }),
             DashboardTemplates.statCard({

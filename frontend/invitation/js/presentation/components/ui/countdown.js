@@ -119,16 +119,16 @@ export class CountdownComponent extends Component {
                     <span class="countdown-label">Segundos</span>
                 </div>
                 ${
-                    this.showMilliseconds
-                        ? `
+    this.showMilliseconds
+        ? `
                 <div class="countdown-separator">.</div>
                 <div class="countdown-item">
                     <span class="milliseconds countdown-number">000</span>
                     <span class="countdown-label">ms</span>
                 </div>
                 `
-                        : ''
-                }
+        : ''
+}
             </div>
         `;
 
