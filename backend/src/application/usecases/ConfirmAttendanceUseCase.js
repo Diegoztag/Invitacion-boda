@@ -47,7 +47,12 @@ class ConfirmAttendanceUseCase {
             // Validar estado de la invitación
             this.validateInvitationState(invitation);
 
-            // Verificar si ya existe una confirmación
+            // Verificar si la invitación ya está confirmada (o parcialmente confirmada)
+            if (invitation.isConfirmed()) {
+                throw new Error('Esta invitación ya ha sido confirmada');
+            }
+
+            // Verificar si ya existe una confirmación (repositorios legacy)
             const existingConfirmation =
                 await this.confirmationRepository.findByCode(invitationCode);
             if (existingConfirmation) {

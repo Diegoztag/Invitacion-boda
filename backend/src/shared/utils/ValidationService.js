@@ -4,6 +4,8 @@
  * Sigue principios SOLID: Single Responsibility
  */
 
+const crypto = require('crypto');
+
 class ValidationService {
     constructor() {
         // Expresiones regulares para validaciones
@@ -186,7 +188,10 @@ class ValidationService {
 
                 // Si no es requerido y está vacío, continuar
                 if (!rule.required && (value === undefined || value === null || value === '')) {
-                    sanitized[field] = rule.default || null;
+                    // Solo incluir valores por defecto cuando estén explícitamente definidos.
+                    if (Object.prototype.hasOwnProperty.call(rule, 'default')) {
+                        sanitized[field] = rule.default;
+                    }
                     continue;
                 }
 
@@ -423,6 +428,14 @@ class ValidationService {
     validateConfirmationData(data) {
         const rules = this.getConfirmationValidationRules();
         return this.validateObject(data, rules);
+    }
+
+    /**
+     * Genera un código de invitación aleatorio
+     * @returns {string}
+     */
+    generateInvitationCode() {
+        return crypto.randomBytes(4).toString('hex');
     }
 }
 

@@ -11,8 +11,22 @@ const { stringify } = require('csv-stringify/sync');
 class CsvStorage {
     constructor(logger) {
         this.logger = logger;
-        this.dataPath = path.join(__dirname, '../../../data');
-        this.invitationsFile = path.join(this.dataPath, 'invitations.csv');
+
+        // Permitir sobreescritura de rutas de archivos mediante variables de entorno (útil para tests)
+        const defaultDataPath = path.join(__dirname, '../../../data');
+        const invitationsPath = process.env.CSV_INVITATIONS_PATH
+            ? path.resolve(process.env.CSV_INVITATIONS_PATH)
+            : path.join(defaultDataPath, 'invitations.csv');
+        const confirmationsPath = process.env.CSV_CONFIRMATIONS_PATH
+            ? path.resolve(process.env.CSV_CONFIRMATIONS_PATH)
+            : path.join(defaultDataPath, 'confirmations.csv');
+
+        this.invitationsFile = invitationsPath;
+        this.confirmationsFile = confirmationsPath;
+
+        // Usar la carpeta del archivo de invitaciones como base para el storage.
+        // Si se usan rutas personalizadas, puede ser diferente a `../data`.
+        this.dataPath = path.dirname(this.invitationsFile);
     }
 
     /**
@@ -20,11 +34,13 @@ class CsvStorage {
      */
     async initialize() {
         try {
-            // Crear directorio de datos si no existe
-            await fs.mkdir(this.dataPath, { recursive: true });
+            // Crear directorios si no existen
+            await fs.mkdir(path.dirname(this.invitationsFile), { recursive: true });
+            await fs.mkdir(path.dirname(this.confirmationsFile), { recursive: true });
 
-            // Verificar y crear archivos CSV si no existen
+            // Verificar y crear archivos CSV si no existen (o reiniciar en modo test)
             await this.ensureFileExists(this.invitationsFile, this.getInvitationsHeaders());
+            await this.ensureFileExists(this.confirmationsFile, ['invitationCode', 'willAttend']);
 
             this.logger.info('CSV Storage initialized successfully');
         } catch (error) {
@@ -38,6 +54,14 @@ class CsvStorage {
      */
     async ensureFileExists(filePath, headers) {
         try {
+            if (process.env.NODE_ENV === 'test') {
+                // En tests, siempre reiniciar a un archivo limpio para evitar contaminación entre pruebas
+                const csvContent = stringify([headers]);
+                await fs.writeFile(filePath, csvContent, 'utf8');
+                this.logger.debug(`Reset CSV file for test: ${filePath}`);
+                return;
+            }
+
             await fs.access(filePath);
         } catch (error) {
             // El archivo no existe, crearlo con headers

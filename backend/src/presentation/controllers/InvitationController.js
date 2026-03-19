@@ -6,7 +6,7 @@
 
 const path = require('path');
 // Importar configuración para validación de límites
-const config = require('../../../config');
+const config = require('../../config');
 
 class InvitationController {
     constructor(createInvitationUseCase, invitationRepository, validationService, logger) {
@@ -103,7 +103,11 @@ class InvitationController {
                 code: result.invitation.code
             });
 
-            res.status(201).json(result);
+            // Convertir entidad a objeto plano para no exponer getters/protótipo
+            res.status(201).json({
+                ...result,
+                invitation: result.invitation.toObject()
+            });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 

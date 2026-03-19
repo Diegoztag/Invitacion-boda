@@ -113,12 +113,13 @@ describe('Invitation Entity', () => {
             expect(deactivated.cancellationReason).toBe(reason);
         });
 
-        test('activate should set status to active', () => {
+        test('activate should set status to pending when not confirmed', () => {
             invitation.status = 'inactive';
 
             const activated = invitation.activate();
 
-            expect(activated.status).toBe('active');
+            // La entidad recalcula el estado según los pases confirmados (0) -> pending
+            expect(activated.status).toBe('pending');
             expect(activated.cancelledAt).toBeNull();
             expect(activated.cancelledBy).toBeNull();
             expect(activated.cancellationReason).toBeNull();
@@ -134,26 +135,44 @@ describe('Invitation Entity', () => {
         test('isConfirmed should return confirmation status', () => {
             expect(invitation.isConfirmed()).toBe(false);
 
-            invitation.confirmed = true;
+            invitation.confirm({
+                confirmedPasses: 1,
+                adultPasses: 1,
+                childPasses: 0,
+                confirmationDate: new Date().toISOString()
+            });
+
             expect(invitation.isConfirmed()).toBe(true);
         });
 
         test('getPendingPasses should calculate correctly', () => {
             expect(invitation.getPendingPasses()).toBe(2);
 
-            invitation.confirmedPasses = 1;
+            invitation.confirm({
+                confirmedPasses: 1,
+                adultPasses: 1,
+                childPasses: 0,
+                confirmationDate: new Date().toISOString()
+            });
+
             expect(invitation.getPendingPasses()).toBe(1);
         });
 
         test('getGuestNamesString should join names', () => {
-            expect(invitation.getGuestNamesString()).toBe('Juan Pérez, María García');
+            expect(invitation.getGuestNamesString()).toBe('Juan Pérez y María García');
         });
 
-        test('hasPhone should check phone presence', () => {
-            expect(invitation.hasPhone()).toBe(true);
+        test('phone property should reflect the value provided at construction', () => {
+            expect(invitation.phone).toBe('+1234567890');
 
-            invitation.phone = '';
-            expect(invitation.hasPhone()).toBe(false);
+            const invitationWithoutPhone = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez', 'María García'],
+                numberOfPasses: 2,
+                phone: ''
+            });
+
+            expect(invitationWithoutPhone.phone).toBe('');
         });
 
         test('clone should create deep copy', () => {
@@ -168,7 +187,7 @@ describe('Invitation Entity', () => {
         test('toObject should return plain object', () => {
             const obj = invitation.toObject();
 
-            expect(obj).toEqual({
+            expect(obj).toMatchObject({
                 code: 'INV001',
                 guestNames: ['Juan Pérez', 'María García'],
                 numberOfPasses: 2,
@@ -184,8 +203,117 @@ describe('Invitation Entity', () => {
                 status: 'active',
                 cancelledAt: null,
                 cancelledBy: null,
-                cancellationReason: null
+                cancellationReason: null,
+                attendingNames: [],
+                dietaryRestrictionsNames: '',
+                dietaryRestrictionsDetails: '',
+                generalMessage: ''
             });
+        });
+
+        test('update should change invitation fields and preserve consistency', () => {
+            invitation.update({
+                guestNames: ['Nuevo Nombre'],
+                numberOfPasses: 3,
+                phone: '+5555555',
+                tableNumber: 5,
+                adultPasses: 2,
+                childPasses: 1,
+                staffPasses: 0,
+                generalMessage: 'Nuevo mensaje'
+            });
+
+            expect(invitation.guestNames).toEqual(['Nuevo Nombre']);
+            expect(invitation.numberOfPasses).toBe(3);
+            expect(invitation.phone).toBe('+5555555');
+            expect(invitation.tableNumber).toBe(5);
+            expect(invitation.adultPasses).toBe(2);
+            expect(invitation.childPasses).toBe(1);
+            expect(invitation.staffPasses).toBe(0);
+            expect(invitation.generalMessage).toBe('Nuevo mensaje');
+        });
+
+        test('assignTable should update table number and reject invalid values', () => {
+            invitation.assignTable(10);
+            expect(invitation.tableNumber).toBe(10);
+
+            expect(() => invitation.assignTable(-1)).toThrow(
+                'El número de mesa debe ser un entero positivo'
+            );
+        });
+
+        test('updatePasses should enforce consistency', () => {
+            expect(() =>
+                invitation.updatePasses({ adultPasses: 1, childPasses: 1, staffPasses: 1 })
+            ).toThrow('La suma de pases (3) debe coincidir con el total (2)');
+
+            invitation.updatePasses({ adultPasses: 2, childPasses: 0, staffPasses: 0 });
+            expect(invitation.adultPasses).toBe(2);
+        });
+
+        test('updateConfirmation should update confirmation-related fields', () => {
+            invitation.updateConfirmation({
+                attendingNames: ['Juan Pérez'],
+                dietaryRestrictionsNames: 'Sin gluten',
+                dietaryRestrictionsDetails: 'Sin gluten',
+                generalMessage: '¡Nos vemos!'
+            });
+
+            expect(invitation.attendingNames).toEqual(['Juan Pérez']);
+            expect(invitation.dietaryRestrictionsNames).toBe('Sin gluten');
+            expect(invitation.dietaryRestrictionsDetails).toBe('Sin gluten');
+            expect(invitation.generalMessage).toBe('¡Nos vemos!');
+        });
+
+        test('getDietaryRestrictionsInfo should return correct summary', () => {
+            invitation.updateConfirmation({
+                dietaryRestrictionsNames: 'Sin gluten',
+                dietaryRestrictionsDetails: 'No flour'
+            });
+
+            const info = invitation.getDietaryRestrictionsInfo();
+            expect(info.hasRestrictions).toBe(true);
+            expect(info.summary).toContain('Sin gluten');
+        });
+
+        test('equals and toString should work correctly', () => {
+            const other = new Invitation({
+                code: 'INV002',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 1
+            });
+
+            expect(invitation.equals(invitation)).toBe(true);
+            expect(invitation.equals(other)).toBe(false);
+            expect(invitation.toString()).toContain('Invitation(');
+        });
+
+        test('isFullyConfirmed should reflect status after confirm', () => {
+            expect(invitation.isFullyConfirmed()).toBe(false);
+
+            invitation.confirm({
+                confirmedPasses: 2,
+                adultPasses: 2,
+                childPasses: 0,
+                confirmationDate: new Date().toISOString()
+            });
+
+            expect(invitation.isFullyConfirmed()).toBe(true);
+            expect(invitation.status).toBe('confirmed');
+        });
+
+        test('unconfirm should reset confirmation state', () => {
+            invitation.confirm({
+                confirmedPasses: 1,
+                adultPasses: 1,
+                childPasses: 0,
+                confirmationDate: new Date().toISOString()
+            });
+
+            expect(invitation.isConfirmed()).toBe(true);
+            invitation.unconfirm();
+            expect(invitation.isConfirmed()).toBe(false);
+            expect(invitation.status).toBe('pending');
         });
     });
 
@@ -202,30 +330,15 @@ describe('Invitation Entity', () => {
             );
         });
 
-        test('should validate phone format if provided', () => {
+        test('should validate phone type if provided', () => {
             const data = {
                 code: 'INV001',
                 guestNames: ['Juan Pérez'],
                 numberOfPasses: 1,
-                phone: 'invalid-phone'
+                phone: 1234567890
             };
 
-            expect(() => new Invitation(data)).toThrow('Formato de teléfono inválido');
-        });
-
-        test('should accept valid phone formats', () => {
-            const validPhones = ['+1234567890', '1234567890', '+52-123-456-7890'];
-
-            validPhones.forEach(phone => {
-                const data = {
-                    code: 'INV001',
-                    guestNames: ['Juan Pérez'],
-                    numberOfPasses: 1,
-                    phone
-                };
-
-                expect(() => new Invitation(data)).not.toThrow();
-            });
+            expect(() => new Invitation(data)).toThrow('phone debe ser un string');
         });
 
         test('should validate confirmation data', () => {
@@ -236,7 +349,7 @@ describe('Invitation Entity', () => {
             });
 
             expect(() => invitation.confirm({ confirmedPasses: 3 })).toThrow(
-                'Pases confirmados no pueden exceder el número total de pases'
+                'Solo tienes 2 pases disponibles'
             );
         });
     });

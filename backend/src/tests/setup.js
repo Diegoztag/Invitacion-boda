@@ -22,12 +22,14 @@ jest.setTimeout(10000);
 
 // Mock de Date para tests determinísticos
 const mockDate = new Date('2024-01-01T00:00:00.000Z');
-global.Date = class extends Date {
+const RealDate = Date;
+
+global.Date = class extends RealDate {
     constructor(...args) {
         if (args.length === 0) {
             return mockDate;
         }
-        return new Date(...args);
+        return super(...args);
     }
 
     static now() {

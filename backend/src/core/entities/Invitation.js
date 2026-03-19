@@ -515,6 +515,7 @@ class Invitation {
             numberOfPasses: this.numberOfPasses,
             phone: this.phone,
             createdAt: this.createdAt,
+            confirmed: this.confirmed,
             confirmedPasses: this.confirmedPasses,
             confirmationDate: this.confirmationDate,
             adultPasses: this.adultPasses,
@@ -557,6 +558,10 @@ class Invitation {
         if (Array.isArray(guestNames)) {
             if (guestNames.length === 0) {
                 throw new Error('Al menos un nombre de invitado es requerido');
+            }
+
+            if (guestNames.some(name => typeof name !== 'string' || name.trim() === '')) {
+                throw new Error('Nombres de invitados no pueden estar vacíos');
             }
         } else if (typeof guestNames === 'string') {
             if (guestNames.trim() === '') {

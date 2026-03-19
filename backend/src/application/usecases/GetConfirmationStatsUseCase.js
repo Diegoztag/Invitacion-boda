@@ -112,6 +112,7 @@ class GetConfirmationStatsUseCase {
 
             return {
                 success: true,
+                stats,
                 ...stats, // Esparcir propiedades para mantener compatibilidad si es necesario
                 message: 'Estadísticas obtenidas exitosamente'
             };

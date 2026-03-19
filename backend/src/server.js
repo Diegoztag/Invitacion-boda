@@ -181,6 +181,11 @@ class Server {
         // Configurar middleware personalizado
         const middleware = configureMiddleware({ validationService, logger, config });
 
+        // Registrar middleware en el contenedor para acceso en tests
+        this.container.register('authMiddleware', () => middleware.authMiddleware, {
+            singleton: true
+        });
+
         // Aplicar middleware global
         this.app.use(middleware.helmet);
         this.app.use(middleware.compression);

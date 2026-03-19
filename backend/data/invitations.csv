@@ -3,3 +3,6 @@ code,guestNames,numberOfPasses,phone,createdAt,confirmedPasses,confirmationDate,
 b642396b,hhfghgh,1,,2026-01-27T15:32:09.665Z,0,2026-01-27T15:33:10.220Z,1,0,0,0,cancelled,,,,,,,no
 f35e573a,lili,1,,2026-02-07T00:45:15.057Z,1,2026-02-07T00:45:34.425Z,1,0,0,0,confirmed,,,,hfhghfhg,,,pipiop
 213f7a69,pepe,1,,2026-02-16T18:22:22.966Z,0,,1,0,0,0,pending,,,,,,,
+4af1b578,Juan Pérez|María García,2,+1234567890,2024-01-01T01:00:00.000Z,0,,2,0,0,0,active,,,,,,,
+05dd682e,Pedro López,1,+0987654321,2024-01-01T02:30:00.000Z,0,,1,0,0,0,active,,,,,,,
+3f5adfa5,Ana Rodríguez,1,,2024-01-01T03:00:00.000Z,0,,1,0,0,0,active,,,,,,,
