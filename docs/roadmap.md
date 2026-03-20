@@ -9,7 +9,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] Desacoplar configuración del backend del `frontend/public/config.js`.
 - [x] Centralizar y tipar la configuración en `src/config/index.js`.
 - [x] Extraer validaciones de casos de uso a servicios/utilitarias (usar `ValidationService` y/o librería externa).
-- [ ] Revisar y simplificar la inyección de dependencias; evitar creación de objetos en el container.
+- [x] Revisar y simplificar la inyección de dependencias; evitar creación de objetos en el container.
 - [x] Eliminar valores "hard‑coded" (p. ej. `maxPassesPerTable = 10`) y moverlos a configuración.
 - [ ] Normalizar nomenclatura y DTOs entre capas.
 - [x] Evitar imports cruzados entre frontend y backend; usar contratos o variables de entorno.

@@ -56,114 +56,83 @@ class Server {
      * Configurar todas las dependencias en el contenedor DI
      */
     setupDependencies() {
+        // 1. Instanciar dependencias base
         const logger = new Logger();
+        const validationService = new ValidationService(logger);
+        const csvStorage = new CsvStorage(logger);
+        const sseService = new SseService(logger);
 
-        // Registrar servicios básicos
+        // 2. Instanciar repositorios
+        const invitationRepository = new CsvInvitationRepository(csvStorage, logger);
+        const confirmationRepository = new CsvConfirmationRepository(csvStorage, logger);
+
+        // 3. Instanciar casos de uso
+        const createInvitationUseCase = new CreateInvitationUseCase(
+            invitationRepository,
+            validationService,
+            logger
+        );
+        const getInvitationUseCase = new GetInvitationUseCase(invitationRepository, logger);
+        const confirmAttendanceUseCase = new ConfirmAttendanceUseCase(
+            invitationRepository,
+            confirmationRepository,
+            validationService,
+            sseService,
+            logger
+        );
+        const getConfirmationStatsUseCase = new GetConfirmationStatsUseCase(
+            confirmationRepository,
+            invitationRepository,
+            logger
+        );
+
+        // 4. Instanciar controladores
+        const invitationController = new InvitationController(
+            createInvitationUseCase,
+            invitationRepository,
+            validationService,
+            logger
+        );
+        const confirmationController = new ConfirmationController(
+            confirmAttendanceUseCase,
+            getConfirmationStatsUseCase,
+            confirmationRepository,
+            validationService,
+            logger
+        );
+        const notificationController = new NotificationController(sseService, logger);
+
+        // 5. Registrar en el contenedor (para compatibilidad con tests y otras partes)
         this.container.register('logger', () => logger, { singleton: true });
-        this.container.register('validationService', () => new ValidationService(logger), {
+        this.container.register('validationService', () => validationService, { singleton: true });
+        this.container.register('csvStorage', () => csvStorage, { singleton: true });
+        this.container.register('sseService', () => sseService, { singleton: true });
+        this.container.register('invitationRepository', () => invitationRepository, {
             singleton: true
         });
-
-        // Registrar servicios de infraestructura
-        this.container.register('csvStorage', () => new CsvStorage(logger), { singleton: true });
-        this.container.register('sseService', () => new SseService(logger), { singleton: true });
-
-        // Registrar repositorios
-        this.container.register(
-            'invitationRepository',
-            () => {
-                const csvStorage = this.container.resolve('csvStorage');
-                const logger = this.container.resolve('logger');
-                return new CsvInvitationRepository(csvStorage, logger);
-            },
-            { singleton: true }
-        );
-
-        this.container.register(
-            'confirmationRepository',
-            () => {
-                const csvStorage = this.container.resolve('csvStorage');
-                const logger = this.container.resolve('logger');
-                return new CsvConfirmationRepository(csvStorage, logger);
-            },
-            { singleton: true }
-        );
-
-        // Registrar casos de uso
-        this.container.register('createInvitationUseCase', () => {
-            const invitationRepository = this.container.resolve('invitationRepository');
-            const validationService = this.container.resolve('validationService');
-            const logger = this.container.resolve('logger');
-            return new CreateInvitationUseCase(invitationRepository, validationService, logger);
+        this.container.register('confirmationRepository', () => confirmationRepository, {
+            singleton: true
         });
-
-        this.container.register('getInvitationUseCase', () => {
-            const invitationRepository = this.container.resolve('invitationRepository');
-            const logger = this.container.resolve('logger');
-            return new GetInvitationUseCase(invitationRepository, logger);
+        this.container.register('createInvitationUseCase', () => createInvitationUseCase, {
+            singleton: true
         });
-
-        this.container.register('confirmAttendanceUseCase', () => {
-            const invitationRepository = this.container.resolve('invitationRepository');
-            const confirmationRepository = this.container.resolve('confirmationRepository');
-            const validationService = this.container.resolve('validationService');
-            const sseService = this.container.resolve('sseService');
-            const logger = this.container.resolve('logger');
-            return new ConfirmAttendanceUseCase(
-                invitationRepository,
-                confirmationRepository,
-                validationService,
-                sseService,
-                logger
-            );
+        this.container.register('getInvitationUseCase', () => getInvitationUseCase, {
+            singleton: true
         });
-
-        this.container.register('getConfirmationStatsUseCase', () => {
-            const confirmationRepository = this.container.resolve('confirmationRepository');
-            const invitationRepository = this.container.resolve('invitationRepository');
-            const logger = this.container.resolve('logger');
-            return new GetConfirmationStatsUseCase(
-                confirmationRepository,
-                invitationRepository,
-                logger
-            );
+        this.container.register('confirmAttendanceUseCase', () => confirmAttendanceUseCase, {
+            singleton: true
         });
-
-        // Registrar controladores
-        this.container.register('invitationController', () => {
-            const createInvitationUseCase = this.container.resolve('createInvitationUseCase');
-            const invitationRepository = this.container.resolve('invitationRepository');
-            const validationService = this.container.resolve('validationService');
-            const logger = this.container.resolve('logger');
-            return new InvitationController(
-                createInvitationUseCase,
-                invitationRepository,
-                validationService,
-                logger
-            );
+        this.container.register('getConfirmationStatsUseCase', () => getConfirmationStatsUseCase, {
+            singleton: true
         });
-
-        this.container.register('confirmationController', () => {
-            const confirmAttendanceUseCase = this.container.resolve('confirmAttendanceUseCase');
-            const getConfirmationStatsUseCase = this.container.resolve(
-                'getConfirmationStatsUseCase'
-            );
-            const confirmationRepository = this.container.resolve('confirmationRepository');
-            const validationService = this.container.resolve('validationService');
-            const logger = this.container.resolve('logger');
-            return new ConfirmationController(
-                confirmAttendanceUseCase,
-                getConfirmationStatsUseCase,
-                confirmationRepository,
-                validationService,
-                logger
-            );
+        this.container.register('invitationController', () => invitationController, {
+            singleton: true
         });
-
-        this.container.register('notificationController', () => {
-            const sseService = this.container.resolve('sseService');
-            const logger = this.container.resolve('logger');
-            return new NotificationController(sseService, logger);
+        this.container.register('confirmationController', () => confirmationController, {
+            singleton: true
+        });
+        this.container.register('notificationController', () => notificationController, {
+            singleton: true
         });
     }
 
