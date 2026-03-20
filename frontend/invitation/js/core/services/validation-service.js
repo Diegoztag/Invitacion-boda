@@ -303,6 +303,16 @@ export class ValidationService {
             message = message.replace(`{${key}}`, params[key]);
         });
 
+        // Reemplazar el nombre del campo si hay placeholder
+        if (message.includes('{field}')) {
+            message = message.replace('{field}', fieldName);
+        }
+
+        // Asegurar que para mensajes de required se incluya el campo
+        if (type === 'required' && !message.includes(fieldName)) {
+            message = `${message} (${fieldName})`;
+        }
+
         return message;
     }
 

@@ -91,12 +91,12 @@ export class Modal {
                         <h3 id="modal-title-${this.id}" class="modal-title">${this.title}</h3>
                     </div>
                     ${
-    showCloseButton
-        ? `<button class="modal-close" aria-label="Cerrar modal" tabindex="0">
+                        showCloseButton
+                            ? `<button class="modal-close" aria-label="Cerrar modal" tabindex="0">
                         <i class="fas fa-times"></i>
                     </button>`
-        : ''
-}
+                            : ''
+                    }
                 </div>
                 <div id="modal-body-${this.id}" class="modal-body">
                     ${this.content}
@@ -173,20 +173,20 @@ export class Modal {
             }
 
             switch (e.key) {
-            case 'Escape':
-                if (this.closeOnEsc && this.type !== 'critical') {
-                    this.close();
-                }
-                break;
-            case 'Tab':
-                this.handleTabNavigation(e);
-                break;
-            case 'Enter':
-                if (e.target.classList.contains('btn-default')) {
-                    e.preventDefault();
-                    e.target.click();
-                }
-                break;
+                case 'Escape':
+                    if (this.closeOnEsc && this.type !== 'critical') {
+                        this.close();
+                    }
+                    break;
+                case 'Tab':
+                    this.handleTabNavigation(e);
+                    break;
+                case 'Enter':
+                    if (e.target.classList.contains('btn-default')) {
+                        e.preventDefault();
+                        e.target.click();
+                    }
+                    break;
             }
         };
     }

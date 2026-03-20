@@ -82,6 +82,10 @@ export class CountdownComponent extends Component {
      * Configura la estructura HTML si no existe
      */
     setupHTML() {
+        if (!this.element) {
+            return;
+        }
+
         // Si no existen los elementos, crear la estructura
         if (
             !this.daysElement ||
@@ -97,6 +101,10 @@ export class CountdownComponent extends Component {
      * Crea la estructura HTML del countdown
      */
     createCountdownStructure() {
+        if (!this.element) {
+            return;
+        }
+
         const countdownHTML = `
             <div class="countdown-container">
                 <div class="countdown-item">
@@ -119,16 +127,16 @@ export class CountdownComponent extends Component {
                     <span class="countdown-label">Segundos</span>
                 </div>
                 ${
-    this.showMilliseconds
-        ? `
+                    this.showMilliseconds
+                        ? `
                 <div class="countdown-separator">.</div>
                 <div class="countdown-item">
                     <span class="milliseconds countdown-number">000</span>
                     <span class="countdown-label">ms</span>
                 </div>
                 `
-        : ''
-}
+                        : ''
+                }
             </div>
         `;
 
@@ -241,6 +249,10 @@ export class CountdownComponent extends Component {
      * @param {Object} timeLeft - Tiempo restante calculado
      */
     updateDisplay(timeLeft) {
+        if (!timeLeft) {
+            timeLeft = this.getTimeRemaining();
+        }
+
         if (this.daysElement) {
             this.daysElement.textContent = this.formatNumber(timeLeft.days, 2);
         }
@@ -314,6 +326,10 @@ export class CountdownComponent extends Component {
      * Muestra el mensaje de finalización
      */
     showFinishedMessage() {
+        if (!this.element) {
+            return;
+        }
+
         const finishedHTML = `
             <div class="countdown-finished">
                 <div class="countdown-finished-icon">🎉</div>
@@ -331,6 +347,10 @@ export class CountdownComponent extends Component {
      * @param {string} message - Mensaje de error
      */
     showError(message) {
+        if (!this.element) {
+            return;
+        }
+
         const errorHTML = `
             <div class="countdown-error">
                 <div class="countdown-error-icon">⚠️</div>
@@ -343,14 +363,48 @@ export class CountdownComponent extends Component {
     }
 
     /**
+     * Obtiene el tiempo restante hasta la fecha objetivo
+     * @returns {Object}
+     */
+    getTimeRemaining() {
+        if (!this.targetDate) {
+            return {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0,
+                total: 0
+            };
+        }
+
+        const now = new Date().getTime();
+        const distance = this.targetDate.getTime() - now;
+
+        if (distance <= 0) {
+            return {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0,
+                total: 0
+            };
+        }
+
+        return this.calculateTimeLeft(distance);
+    }
+
+    /**
      * Valida la fecha objetivo
      * @returns {boolean}
      */
     isValidTargetDate() {
+        const now = new Date();
         return (
             this.targetDate instanceof Date &&
             !isNaN(this.targetDate.getTime()) &&
-            this.targetDate > new Date('1900-01-01')
+            this.targetDate > now
         );
     }
 
@@ -430,7 +484,7 @@ export class CountdownComponent extends Component {
      */
     destroy() {
         this.stop();
-        this.targetDate = null;
+        // Mantener targetDate para permitir reinicialización
         this.isFinished = false;
 
         // Limpiar elementos

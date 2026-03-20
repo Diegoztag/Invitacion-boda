@@ -23,35 +23,35 @@ class SecurityMiddleware {
         return helmet({
             contentSecurityPolicy: {
                 directives: {
-                    defaultSrc: ['\'self\''],
+                    defaultSrc: ["'self'"],
                     styleSrc: [
-                        '\'self\'',
-                        '\'unsafe-inline\'',
+                        "'self'",
+                        "'unsafe-inline'",
                         'https://fonts.googleapis.com',
                         'https://cdnjs.cloudflare.com'
                     ],
                     scriptSrc: [
-                        '\'self\'',
-                        '\'unsafe-inline\'',
+                        "'self'",
+                        "'unsafe-inline'",
                         'https://cdn.jsdelivr.net',
                         'https://cdnjs.cloudflare.com'
                     ],
-                    imgSrc: ['\'self\'', 'data:', 'https:'],
+                    imgSrc: ["'self'", 'data:', 'https:'],
                     connectSrc: [
-                        '\'self\'',
+                        "'self'",
                         'http://localhost:3000',
                         'https://localhost:3000',
                         'https://cdn.jsdelivr.net'
                     ],
                     fontSrc: [
-                        '\'self\'',
+                        "'self'",
                         'https://fonts.gstatic.com',
                         'https://fonts.googleapis.com',
                         'https://cdnjs.cloudflare.com'
                     ],
-                    objectSrc: ['\'none\''],
-                    mediaSrc: ['\'self\'', 'data:'],
-                    frameSrc: ['\'self\'', 'https://www.google.com']
+                    objectSrc: ["'none'"],
+                    mediaSrc: ["'self'", 'data:'],
+                    frameSrc: ["'self'", 'https://www.google.com']
                 }
             },
             crossOriginEmbedderPolicy: false,

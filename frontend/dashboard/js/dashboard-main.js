@@ -217,40 +217,40 @@ class AdminApp {
             const code = target.getAttribute('data-code');
 
             switch (action) {
-            case 'toggle-filters':
-                if (
-                    window.invitationsController &&
+                case 'toggle-filters':
+                    if (
+                        window.invitationsController &&
                         typeof window.invitationsController.toggleFilters === 'function'
-                ) {
-                    window.invitationsController.toggleFilters();
-                }
-                break;
-            case 'view-invitation':
-                if (code && window.invitationsController) {
-                    window.invitationsController.viewInvitation(code);
-                }
-                break;
-            case 'copy-invitation-link':
-                if (code && window.invitationsController) {
-                    window.invitationsController.copyInvitationLink(code);
-                }
-                break;
-            case 'clear-filters':
-                if (
-                    window.invitationsController &&
+                    ) {
+                        window.invitationsController.toggleFilters();
+                    }
+                    break;
+                case 'view-invitation':
+                    if (code && window.invitationsController) {
+                        window.invitationsController.viewInvitation(code);
+                    }
+                    break;
+                case 'copy-invitation-link':
+                    if (code && window.invitationsController) {
+                        window.invitationsController.copyInvitationLink(code);
+                    }
+                    break;
+                case 'clear-filters':
+                    if (
+                        window.invitationsController &&
                         typeof window.invitationsController.clearFilters === 'function'
-                ) {
-                    window.invitationsController.clearFilters();
-                }
-                break;
-            case 'apply-filters':
-                if (
-                    window.invitationsController &&
+                    ) {
+                        window.invitationsController.clearFilters();
+                    }
+                    break;
+                case 'apply-filters':
+                    if (
+                        window.invitationsController &&
                         typeof window.invitationsController.applyFilters === 'function'
-                ) {
-                    window.invitationsController.applyFilters();
-                }
-                break;
+                    ) {
+                        window.invitationsController.applyFilters();
+                    }
+                    break;
             }
         });
 
@@ -293,16 +293,16 @@ class AdminApp {
 
         try {
             switch (currentSection) {
-            case 'dashboard':
-                if (this.dashboardController) {
-                    await this.dashboardController.loadDashboardData();
-                }
-                break;
-            case 'invitations':
-                if (this.invitationsController) {
-                    await this.invitationsController.loadInvitationsSectionData();
-                }
-                break;
+                case 'dashboard':
+                    if (this.dashboardController) {
+                        await this.dashboardController.loadDashboardData();
+                    }
+                    break;
+                case 'invitations':
+                    if (this.invitationsController) {
+                        await this.invitationsController.loadInvitationsSectionData();
+                    }
+                    break;
             }
         } catch (error) {
             console.error(`Error refreshing ${currentSection}:`, error);

@@ -184,12 +184,12 @@ export class NavigationController {
         // Load section-specific data
         try {
             switch (section) {
-            case 'dashboard':
-                await this.loadDashboardSection();
-                break;
-            case 'invitations':
-                await this.loadInvitationsSection();
-                break;
+                case 'dashboard':
+                    await this.loadDashboardSection();
+                    break;
+                case 'invitations':
+                    await this.loadInvitationsSection();
+                    break;
             }
         } catch (error) {
             console.error(`Error loading ${section} section:`, error);
@@ -230,12 +230,12 @@ export class NavigationController {
 
         // Section-specific initialization
         switch (section) {
-        case 'dashboard':
-            this.initDashboardSection();
-            break;
-        case 'invitations':
-            this.initInvitationsSection();
-            break;
+            case 'dashboard':
+                this.initDashboardSection();
+                break;
+            case 'invitations':
+                this.initInvitationsSection();
+                break;
         }
     }
 

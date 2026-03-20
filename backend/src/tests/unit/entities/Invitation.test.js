@@ -57,6 +57,27 @@ describe('Invitation Entity', () => {
 
             expect(() => new Invitation(data)).toThrow('Número de pases debe ser mayor a 0');
         });
+
+        test('should throw error with invalid guestNames type', () => {
+            const data = {
+                code: 'INV001',
+                guestNames: 123,
+                numberOfPasses: 1
+            };
+
+            expect(() => new Invitation(data)).toThrow('guestNames debe ser un array o string');
+        });
+
+        test('should create invitation from string guestNames', () => {
+            const data = {
+                code: 'INV001',
+                guestNames: 'Juan Pérez',
+                numberOfPasses: 1
+            };
+
+            const invitation = new Invitation(data);
+            expect(invitation.guestNames).toEqual(['Juan Pérez']);
+        });
     });
 
     describe('Methods', () => {
@@ -76,6 +97,7 @@ describe('Invitation Entity', () => {
                 confirmedPasses: 2,
                 adultPasses: 2,
                 childPasses: 0,
+                staffPasses: 0,
                 confirmationDate: new Date().toISOString()
             };
 
@@ -85,7 +107,28 @@ describe('Invitation Entity', () => {
             expect(invitation.confirmedPasses).toBe(2);
             expect(invitation.adultPasses).toBe(2);
             expect(invitation.childPasses).toBe(0);
+            expect(invitation.staffPasses).toBe(0);
             expect(invitation.confirmationDate).toBeDefined();
+            expect(invitation.status).toBe('confirmed');
+        });
+
+        test('confirm should throw error if already confirmed', () => {
+            invitation.confirm({ confirmedPasses: 2 });
+            expect(() => invitation.confirm({ confirmedPasses: 1 })).toThrow(
+                'Esta invitación ya ha sido confirmada'
+            );
+        });
+
+        test('confirm should set status to cancelled if confirmedPasses is 0', () => {
+            invitation.confirm({ confirmedPasses: 0 });
+            expect(invitation.status).toBe('cancelled');
+        });
+
+        test('confirm should throw error if inactive', () => {
+            invitation.deactivate();
+            expect(() => invitation.confirm({ confirmedPasses: 1 })).toThrow(
+                'No se puede confirmar una invitación inactiva'
+            );
         });
 
         test('cancel should set cancellation data', () => {
@@ -213,6 +256,27 @@ describe('Invitation Entity', () => {
 
         test('update should change invitation fields and preserve consistency', () => {
             invitation.update({
+                guestNames: 'Nuevo Nombre',
+                numberOfPasses: 3,
+                phone: '+5555555',
+                tableNumber: 5,
+                adultPasses: 2,
+                childPasses: 1,
+                staffPasses: 0,
+                generalMessage: 'Nuevo mensaje',
+                dietaryRestrictionsNames: 'Ninguna',
+                dietaryRestrictionsDetails: 'Ninguna',
+                attendingNames: 'Nuevo Nombre',
+                confirmedPasses: 0
+            });
+
+            expect(invitation.status).toBe('cancelled');
+            expect(invitation.guestNames).toEqual(['Nuevo Nombre']);
+            expect(invitation.attendingNames).toEqual(['Nuevo Nombre']);
+            expect(invitation.dietaryRestrictionsNames).toBe('Ninguna');
+            expect(invitation.dietaryRestrictionsDetails).toBe('Ninguna');
+
+            invitation.update({
                 guestNames: ['Nuevo Nombre'],
                 numberOfPasses: 3,
                 phone: '+5555555',
@@ -220,7 +284,8 @@ describe('Invitation Entity', () => {
                 adultPasses: 2,
                 childPasses: 1,
                 staffPasses: 0,
-                generalMessage: 'Nuevo mensaje'
+                generalMessage: 'Nuevo mensaje',
+                status: 'confirmed'
             });
 
             expect(invitation.guestNames).toEqual(['Nuevo Nombre']);
@@ -253,7 +318,7 @@ describe('Invitation Entity', () => {
 
         test('updateConfirmation should update confirmation-related fields', () => {
             invitation.updateConfirmation({
-                attendingNames: ['Juan Pérez'],
+                attendingNames: 'Juan Pérez',
                 dietaryRestrictionsNames: 'Sin gluten',
                 dietaryRestrictionsDetails: 'Sin gluten',
                 generalMessage: '¡Nos vemos!'
@@ -315,6 +380,41 @@ describe('Invitation Entity', () => {
             expect(invitation.isConfirmed()).toBe(false);
             expect(invitation.status).toBe('pending');
         });
+
+        test('fromObject should create instance', () => {
+            const obj = invitation.toObject();
+            const newInv = Invitation.fromObject(obj);
+            expect(newInv).toBeInstanceOf(Invitation);
+            expect(newInv.code).toBe(invitation.code);
+        });
+
+        test('confirmSimple should update fields', () => {
+            invitation.confirmSimple({
+                confirmedPasses: 1,
+                adultPasses: 1,
+                childPasses: 0,
+                staffPasses: 0
+            });
+            expect(invitation.confirmedPasses).toBe(1);
+            expect(invitation.status).toBe('partial');
+
+            invitation.confirmSimple({
+                confirmedPasses: 2
+            });
+            expect(invitation.status).toBe('confirmed');
+
+            invitation.confirmSimple({
+                confirmedPasses: 0
+            });
+            expect(invitation.status).toBe('cancelled');
+        });
+
+        test('cancel should update fields', () => {
+            invitation.cancel('Razón', 'admin');
+            expect(invitation.status).toBe('cancelled');
+            expect(invitation.cancellationReason).toBe('Razón');
+            expect(invitation.cancelledBy).toBe('admin');
+        });
     });
 
     describe('Validation', () => {
@@ -350,6 +450,19 @@ describe('Invitation Entity', () => {
 
             expect(() => invitation.confirm({ confirmedPasses: 3 })).toThrow(
                 'Solo tienes 2 pases disponibles'
+            );
+        });
+
+        test('should throw error if confirmed passes exceed total in constructor', () => {
+            const data = {
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2,
+                confirmedPasses: 3
+            };
+
+            expect(() => new Invitation(data)).toThrow(
+                'Los pases confirmados no pueden exceder el total de pases'
             );
         });
     });

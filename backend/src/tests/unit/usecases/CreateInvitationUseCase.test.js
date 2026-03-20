@@ -36,6 +36,8 @@ describe('CreateInvitationUseCase', () => {
 
         // Reset mocks
         jest.clearAllMocks();
+        delete mockValidationService.sanitizeString;
+        delete mockValidationService.sanitizePhone;
     });
 
     describe('execute', () => {
@@ -170,6 +172,144 @@ describe('CreateInvitationUseCase', () => {
             expect(result.error).toBe('Error creando invitación');
             expect(mockLogger.error).toHaveBeenCalled();
         });
+
+        test('should fail when max passes exceeded', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 11 // Assuming max is 10
+            };
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+
+            const result = await useCase.execute(invitationData);
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Error creando invitación');
+            expect(mockLogger.error).toHaveBeenCalled();
+        });
+
+        test('should fail when specific passes do not match total', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2,
+                adultPasses: 1,
+                childPasses: 0,
+                staffPasses: 0
+            };
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+
+            const result = await useCase.execute(invitationData);
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Error creando invitación');
+            expect(mockLogger.error).toHaveBeenCalled();
+        });
+
+        test('should use sanitizeString and sanitizePhone if available', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 1,
+                phone: '1234567890'
+            };
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+            mockValidationService.sanitizeString = jest
+                .fn()
+                .mockReturnValue('Juan Perez Sanitized');
+            mockValidationService.sanitizePhone = jest.fn().mockReturnValue('+521234567890');
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+            mockInvitationRepository.save.mockResolvedValue(
+                new Invitation({ code: 'INV001', ...invitationData })
+            );
+
+            await useCase.execute(invitationData);
+
+            expect(mockValidationService.sanitizeString).toHaveBeenCalledWith('Juan Pérez');
+            expect(mockValidationService.sanitizePhone).toHaveBeenCalledWith('1234567890');
+        });
+
+        test('should warn if phone is already in use', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 1,
+                phone: '+1234567890'
+            };
+
+            // Reset sanitizePhone to avoid interference from previous tests
+            mockValidationService.sanitizePhone = undefined;
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+
+            const mockInv = new Invitation({
+                code: 'INV002',
+                guestNames: ['Otro'],
+                numberOfPasses: 1,
+                phone: '+1234567890',
+                status: 'pending'
+            });
+            mockInv.isActive = jest.fn().mockReturnValue(true);
+
+            mockInvitationRepository.findByPhone = jest.fn().mockResolvedValue([mockInv]);
+            mockInvitationRepository.save.mockResolvedValue(
+                new Invitation({ code: 'INV001', ...invitationData })
+            );
+
+            await useCase.execute(invitationData);
+
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Phone number already in use',
+                expect.any(Object)
+            );
+        });
+
+        test('should fail if table capacity is exceeded', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 5,
+                tableNumber: 'Mesa 1'
+            };
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+            mockInvitationRepository.findByTable = jest.fn().mockResolvedValue([
+                new Invitation({
+                    code: 'INV002',
+                    guestNames: ['Otro'],
+                    numberOfPasses: 8,
+                    tableNumber: 'Mesa 1',
+                    status: 'pending'
+                })
+            ]);
+
+            const result = await useCase.execute(invitationData);
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Error creando invitación');
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Table capacity exceeded',
+                expect.any(Object)
+            );
+        });
     });
 
     describe('executeBatch', () => {
@@ -252,6 +392,141 @@ describe('CreateInvitationUseCase', () => {
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error procesando lote de invitaciones');
             expect(mockLogger.error).toHaveBeenCalled();
+        });
+
+        test('should fallback to manual batch if importBatch is not available', async () => {
+            const invitationsData = [
+                {
+                    guestNames: ['Juan Pérez'],
+                    numberOfPasses: 1
+                }
+            ];
+
+            const useCaseWithoutImportBatch = new CreateInvitationUseCase(
+                {
+                    save: jest.fn().mockResolvedValue(
+                        new Invitation({
+                            code: 'INV001',
+                            guestNames: ['Juan Pérez'],
+                            numberOfPasses: 1
+                        })
+                    ),
+                    findByCode: jest.fn().mockResolvedValue(null)
+                },
+                mockValidationService,
+                mockLogger
+            );
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationsData[0]
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+
+            const result = await useCaseWithoutImportBatch.executeBatch(invitationsData);
+
+            expect(result.success).toBeDefined();
+            expect(result.total).toBe(1);
+        });
+
+        test('should use saveBatch if available when importBatch is not', async () => {
+            const invitationsData = [
+                {
+                    guestNames: ['Juan Pérez'],
+                    numberOfPasses: 1
+                }
+            ];
+
+            const useCaseWithSaveBatch = new CreateInvitationUseCase(
+                {
+                    saveBatch: jest.fn().mockResolvedValue([
+                        new Invitation({
+                            code: 'INV001',
+                            guestNames: ['Juan Pérez'],
+                            numberOfPasses: 1
+                        })
+                    ]),
+                    findByCode: jest.fn().mockResolvedValue(null)
+                },
+                mockValidationService,
+                mockLogger
+            );
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationsData[0]
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+
+            const result = await useCaseWithSaveBatch.executeBatch(invitationsData);
+
+            expect(result.success).toBeDefined();
+            expect(result.total).toBe(1);
+        });
+
+        test('should handle saveBatch failure', async () => {
+            const invitationsData = [
+                {
+                    guestNames: ['Juan Pérez'],
+                    numberOfPasses: 1
+                }
+            ];
+
+            const useCaseWithSaveBatch = new CreateInvitationUseCase(
+                {
+                    saveBatch: jest.fn().mockRejectedValue(new Error('saveBatch error')),
+                    findByCode: jest.fn().mockResolvedValue(null)
+                },
+                mockValidationService,
+                mockLogger
+            );
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationsData[0]
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+
+            const result = await useCaseWithSaveBatch.executeBatch(invitationsData);
+
+            expect(result.success).toBeDefined();
+            expect(result.errors[0].error).toBe('Error al guardar lote: saveBatch error');
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Batch save failed',
+                expect.objectContaining({ error: 'saveBatch error' })
+            );
+        });
+
+        test('should handle sequential save failure when saveBatch is not available', async () => {
+            const invitationsData = [
+                {
+                    guestNames: ['Juan Pérez'],
+                    numberOfPasses: 1
+                }
+            ];
+
+            const useCaseWithoutSaveBatch = new CreateInvitationUseCase(
+                {
+                    save: jest.fn().mockRejectedValue(new Error('sequential save error')),
+                    findByCode: jest.fn().mockResolvedValue(null)
+                },
+                mockValidationService,
+                mockLogger
+            );
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationsData[0]
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+
+            const result = await useCaseWithoutSaveBatch.executeBatch(invitationsData);
+
+            expect(result.success).toBeDefined();
+            expect(result.errors[0].error).toBe('sequential save error');
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Repository does not support saveBatch, falling back to sequential save'
+            );
         });
     });
 

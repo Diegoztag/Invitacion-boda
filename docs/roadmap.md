@@ -28,9 +28,9 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## ✅ Pruebas y Cobertura
 
-- [ ] Aumentar cobertura unitaria >90% para entidades y casos de uso.
+- [x] Aumentar cobertura unitaria >90% para entidades y casos de uso.
 - [x] Corregir tests fallidos de entidad Invitation (13/22 tests ahora pasan).
-- [ ] Añadir tests de integración para flujos clave (`create` + `confirm`).
+- [x] Añadir tests de integración para flujos clave (`create` + `confirm`).
 - [ ] Implementar suite e2e (Cypress o similar) que cubra frontend público y dashboard.
 - [ ] Automatizar ejecución de tests, lint y audit en CI; bloquear merges si fallan.
 - [x] Configurar ESLint y Prettier como hooks (`husky` + `lint-staged`).

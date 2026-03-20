@@ -397,26 +397,26 @@ export class CarouselController {
             }
 
             switch (e.key) {
-            case 'ArrowLeft':
-                e.preventDefault();
-                this.prevSlide();
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                this.nextSlide();
-                break;
-            case 'Home':
-                e.preventDefault();
-                this.goToSlide(0);
-                break;
-            case 'End':
-                e.preventDefault();
-                this.goToSlide(this.totalSlides - 1);
-                break;
-            case ' ':
-                e.preventDefault();
-                this.toggleAutoPlay();
-                break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    this.prevSlide();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    this.nextSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goToSlide(this.totalSlides - 1);
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    this.toggleAutoPlay();
+                    break;
             }
         };
 

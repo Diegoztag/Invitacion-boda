@@ -10,8 +10,8 @@ export class Invitation {
         this.guestNames = Array.isArray(data.guestNames)
             ? data.guestNames
             : data.guestNames
-                ? [data.guestNames]
-                : [];
+              ? [data.guestNames]
+              : [];
         this.numberOfPasses = data.numberOfPasses || 0;
 
         this.phone = data.phone || '';
@@ -156,14 +156,14 @@ export class Invitation {
      */
     getStatusText() {
         switch (this.getStatus()) {
-        case 'confirmed':
-            return 'Confirmada';
-        case 'declined':
-            return 'No asistirá';
-        case 'pending':
-            return 'Pendiente';
-        default:
-            return 'Desconocido';
+            case 'confirmed':
+                return 'Confirmada';
+            case 'declined':
+                return 'No asistirá';
+            case 'pending':
+                return 'Pendiente';
+            default:
+                return 'Desconocido';
         }
     }
 

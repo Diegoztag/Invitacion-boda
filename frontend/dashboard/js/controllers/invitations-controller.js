@@ -131,43 +131,43 @@ export class InvitationsController {
                 const url = actionBtn.dataset.url;
 
                 switch (action) {
-                case 'copy-link':
-                    if (url) {
-                        this.copyToClipboard(url);
-                    }
-                    break;
-                case 'open-link':
-                    if (url) {
-                        window.open(url, '_blank');
-                    }
-                    break;
-                case 'activate-invitation':
-                    if (code) {
-                        this.activateInvitation(code);
-                    }
-                    break;
-                case 'edit-invitation':
-                    if (code) {
-                        this.editInvitation(code);
-                    }
-                    break;
-                case 'deactivate-invitation':
-                    if (code) {
-                        this.deactivateInvitation(code);
-                    }
-                    break;
-                case 'generate-whatsapp':
-                    if (code) {
-                        this.generateWhatsAppMessage(code);
-                    }
-                    break;
-                case 'apply-filters':
-                    this.applyFilters();
-                    this.closeFiltersPopover();
-                    break;
-                case 'clear-filters':
-                    this.clearFilters();
-                    break;
+                    case 'copy-link':
+                        if (url) {
+                            this.copyToClipboard(url);
+                        }
+                        break;
+                    case 'open-link':
+                        if (url) {
+                            window.open(url, '_blank');
+                        }
+                        break;
+                    case 'activate-invitation':
+                        if (code) {
+                            this.activateInvitation(code);
+                        }
+                        break;
+                    case 'edit-invitation':
+                        if (code) {
+                            this.editInvitation(code);
+                        }
+                        break;
+                    case 'deactivate-invitation':
+                        if (code) {
+                            this.deactivateInvitation(code);
+                        }
+                        break;
+                    case 'generate-whatsapp':
+                        if (code) {
+                            this.generateWhatsAppMessage(code);
+                        }
+                        break;
+                    case 'apply-filters':
+                        this.applyFilters();
+                        this.closeFiltersPopover();
+                        break;
+                    case 'clear-filters':
+                        this.clearFilters();
+                        break;
                 }
             }
         });
@@ -552,8 +552,8 @@ export class InvitationsController {
                     Han declinado la invitación
                 </div>
                 ${
-    invitation.generalMessage
-        ? `
+                    invitation.generalMessage
+                        ? `
                 <div class="info-list mt-3" style="margin-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1rem;">
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-comment-alt"></i></div>
@@ -562,8 +562,8 @@ export class InvitationsController {
                         </div>
                     </div>
                 </div>`
-        : ''
-}
+                        : ''
+                }
             `;
         } else {
             cardClass = 'confirmed';
@@ -577,39 +577,39 @@ export class InvitationsController {
                     </div>
 
                     ${
-    invitation.confirmationDate
-        ? `
+                        invitation.confirmationDate
+                            ? `
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-clock"></i></div>
                         <div class="info-content">
                             <span class="info-value">${new Date(
-        invitation.confirmationDate
-    ).toLocaleDateString('es-MX', {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit'
-    })}</span>
+                                invitation.confirmationDate
+                            ).toLocaleDateString('es-MX', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</span>
                         </div>
                     </div>`
-        : ''
-}
+                            : ''
+                    }
 
                     ${
-    invitation.generalMessage
-        ? `
+                        invitation.generalMessage
+                            ? `
                     <div class="info-row">
                         <div class="info-icon"><i class="far fa-comment-alt"></i></div>
                         <div class="info-content">
                             <span class="info-value message-text-detail">"${invitation.generalMessage}"</span>
                         </div>
                     </div>`
-        : ''
-}
+                            : ''
+                    }
                     
                     ${
-    invitation.dietaryRestrictionsNames
-        ? `
+                        invitation.dietaryRestrictionsNames
+                            ? `
                     <div class="info-row">
                         <div class="info-icon status-icon-warning"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="info-content">
@@ -617,8 +617,8 @@ export class InvitationsController {
                             ${invitation.dietaryRestrictionsDetails ? `<span class="info-value dietary-details">(${invitation.dietaryRestrictionsDetails})</span>` : ''}
                         </div>
                     </div>`
-        : ''
-}
+                            : ''
+                    }
                 </div>
             `;
         }

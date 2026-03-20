@@ -155,6 +155,10 @@ export class ModalComponent extends Component {
      * Aplica la configuración inicial
      */
     applyConfiguration() {
+        // Configurar atributos ARIA
+        this.element.setAttribute('aria-modal', 'true');
+        this.element.setAttribute('aria-hidden', 'true');
+
         // Aplicar clase personalizada
         if (this.options.className) {
             this.addClass(this.options.className);
@@ -194,6 +198,7 @@ export class ModalComponent extends Component {
         // Mostrar modal
         this.element.style.display = 'block';
         this.element.setAttribute('aria-hidden', 'false');
+        this.element.setAttribute('aria-modal', 'true');
 
         // Prevenir scroll del body
         document.body.style.overflow = 'hidden';
@@ -243,6 +248,7 @@ export class ModalComponent extends Component {
         setTimeout(() => {
             this.element.style.display = 'none';
             this.element.setAttribute('aria-hidden', 'true');
+            this.element.removeAttribute('aria-modal');
 
             // Restaurar scroll del body
             document.body.style.overflow = '';
@@ -301,6 +307,23 @@ export class ModalComponent extends Component {
         } else if (content instanceof HTMLElement) {
             this.body.innerHTML = '';
             this.body.appendChild(content);
+        }
+    }
+
+    /**
+     * Obtiene el contenido actual del modal
+     * @returns {string} Contenido HTML del modal
+     */
+    getContent() {
+        return this.body ? this.body.innerHTML : '';
+    }
+
+    /**
+     * Limpia el contenido del modal
+     */
+    clearContent() {
+        if (this.body) {
+            this.body.innerHTML = '';
         }
     }
 

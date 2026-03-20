@@ -83,36 +83,36 @@ export class LoaderComponent extends Component {
         let spinnerHTML = '';
 
         switch (this.options.type) {
-        case 'spinner':
-            spinnerHTML = `
+            case 'spinner':
+                spinnerHTML = `
                     <div class="loader-spinner spinner">
                         <div class="spinner-border" role="status">
                             <span class="sr-only">Cargando...</span>
                         </div>
                     </div>
                 `;
-            break;
+                break;
 
-        case 'dots':
-            spinnerHTML = `
+            case 'dots':
+                spinnerHTML = `
                     <div class="loader-spinner dots">
                         <div class="dot dot-1"></div>
                         <div class="dot dot-2"></div>
                         <div class="dot dot-3"></div>
                     </div>
                 `;
-            break;
+                break;
 
-        case 'pulse':
-            spinnerHTML = `
+            case 'pulse':
+                spinnerHTML = `
                     <div class="loader-spinner pulse">
                         <div class="pulse-circle"></div>
                     </div>
                 `;
-            break;
+                break;
 
-        case 'bars':
-            spinnerHTML = `
+            case 'bars':
+                spinnerHTML = `
                     <div class="loader-spinner bars">
                         <div class="bar bar-1"></div>
                         <div class="bar bar-2"></div>
@@ -120,10 +120,10 @@ export class LoaderComponent extends Component {
                         <div class="bar bar-4"></div>
                     </div>
                 `;
-            break;
+                break;
 
-        default:
-            spinnerHTML = `
+            default:
+                spinnerHTML = `
                     <div class="loader-spinner spinner">
                         <div class="spinner-border" role="status">
                             <span class="sr-only">Cargando...</span>

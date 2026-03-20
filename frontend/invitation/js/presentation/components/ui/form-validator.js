@@ -248,7 +248,12 @@ export class FormValidatorComponent extends Component {
 
         try {
             // Validar usando el servicio de validación
-            const result = this.validationService.validateField(fieldName, value, field.rules);
+            const validationArgs = [fieldName, value];
+            if (field.rules && Object.keys(field.rules).length > 0) {
+                validationArgs.push(field.rules);
+            }
+
+            const result = this.validationService.validateField(...validationArgs);
 
             // Actualizar estado del campo
             field.isValid = result.isValid;
@@ -272,10 +277,10 @@ export class FormValidatorComponent extends Component {
             // Actualizar estado general del formulario
             this.updateFormValidationState();
 
-            return result.isValid;
+            return result;
         } catch (error) {
             console.error(`Error validating field ${fieldName}:`, error);
-            return false;
+            return { isValid: false, errors: ['Error de validación'] };
         }
     }
 
@@ -448,11 +453,19 @@ export class FormValidatorComponent extends Component {
 
         // Actualizar clases del formulario
         if (this.isValid) {
-            this.addClass('form-valid');
-            this.removeClass('form-invalid');
+            if (typeof this.addClass === 'function') {
+                this.addClass('form-valid');
+            }
+            if (typeof this.removeClass === 'function') {
+                this.removeClass('form-invalid');
+            }
         } else {
-            this.addClass('form-invalid');
-            this.removeClass('form-valid');
+            if (typeof this.addClass === 'function') {
+                this.addClass('form-invalid');
+            }
+            if (typeof this.removeClass === 'function') {
+                this.removeClass('form-valid');
+            }
         }
     }
 
@@ -521,6 +534,72 @@ export class FormValidatorComponent extends Component {
         if (field) {
             field.rules = { ...field.rules, ...rules };
             console.log(`📝 Custom rules set for field: ${fieldName}`);
+        }
+    }
+
+    /**
+     * Establece el valor de un campo
+     * @param {string} fieldName - Nombre del campo
+     * @param {string} value - Valor a establecer
+     */
+    setFieldValue(fieldName, value) {
+        const field = this.fields.get(fieldName);
+        if (field) {
+            field.element.value = value;
+            console.log(`📝 Field value set for ${fieldName}: ${value}`);
+        }
+    }
+
+    /**
+     * Obtiene el valor de un campo
+     * @param {string} fieldName - Nombre del campo
+     * @returns {string} Valor del campo
+     */
+    getFieldValue(fieldName) {
+        const field = this.fields.get(fieldName);
+        if (field) {
+            return field.element.value;
+        }
+        return '';
+    }
+
+    /**
+     * Agrega un nuevo campo dinámicamente
+     * @param {string} fieldName - Nombre del campo
+     * @param {HTMLElement} fieldElement - Elemento del campo
+     */
+    addField(fieldName, fieldElement) {
+        if (!this.fields.has(fieldName)) {
+            this.fields.set(fieldName, {
+                element: fieldElement,
+                rules: this.extractRulesFromElement(fieldElement),
+                errorElement: null,
+                isValid: null
+            });
+
+            console.log(`✅ New field added: ${fieldName}`);
+        }
+    }
+
+    /**
+     * Remueve un campo
+     * @param {string} fieldName - Nombre del campo a remover
+     */
+    removeField(fieldName) {
+        const field = this.fields.get(fieldName);
+        if (field) {
+            // Remover elemento de error si existe
+            if (field.errorElement && field.errorElement.parentNode) {
+                field.errorElement.parentNode.removeChild(field.errorElement);
+            }
+
+            // Remover errores del campo
+            this.errors.delete(fieldName);
+
+            // Remover el campo del mapa
+            this.fields.delete(fieldName);
+
+            console.log(`🗑️ Field removed: ${fieldName}`);
         }
     }
 

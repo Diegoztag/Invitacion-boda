@@ -50,6 +50,35 @@ export class Component {
     }
 
     /**
+     * Agrega una clase CSS al elemento del componente
+     * @param {string} className - Nombre de la clase
+     */
+    addClass(className) {
+        if (this.element && className) {
+            this.element.classList.add(className);
+        }
+    }
+
+    /**
+     * Remueve una clase CSS del elemento del componente
+     * @param {string} className - Nombre de la clase
+     */
+    removeClass(className) {
+        if (this.element && className) {
+            this.element.classList.remove(className);
+        }
+    }
+
+    /**
+     * Verifica si el elemento del componente tiene una clase CSS
+     * @param {string} className - Nombre de la clase
+     * @returns {boolean}
+     */
+    hasClass(className) {
+        return this.element ? this.element.classList.contains(className) : false;
+    }
+
+    /**
      * Registra un event listener
      * @param {string} event - Nombre del evento
      * @param {Function} handler - Función manejadora

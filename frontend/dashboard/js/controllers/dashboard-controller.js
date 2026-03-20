@@ -463,17 +463,17 @@ export class DashboardController {
 
         let periodText = '';
         switch (period) {
-        case 'today':
-            periodText = 'hoy';
-            break;
-        case 'last24hours':
-            periodText = 'en las últimas 24 horas';
-            break;
-        case 'lastWeek':
-            periodText = 'en la última semana';
-            break;
-        default:
-            periodText = 'hoy';
+            case 'today':
+                periodText = 'hoy';
+                break;
+            case 'last24hours':
+                periodText = 'en las últimas 24 horas';
+                break;
+            case 'lastWeek':
+                periodText = 'en la última semana';
+                break;
+            default:
+                periodText = 'hoy';
         }
 
         if (confirmations > 0) {
