@@ -58,8 +58,14 @@ class ConfirmationController {
                 });
             }
 
+            // Añadir attendingNames a los datos sanitizados
+            const confirmationData = {
+                ...validation.sanitized,
+                attendingNames: createConfirmationDTO.attendingNames
+            };
+
             // Ejecutar caso de uso
-            const result = await this.confirmAttendanceUseCase.execute(code, validation.sanitized);
+            const result = await this.confirmAttendanceUseCase.execute(code, confirmationData);
 
             if (!result.success) {
                 return res.status(400).json(result);

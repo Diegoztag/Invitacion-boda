@@ -94,15 +94,15 @@ class SecurityMiddleware {
                 'https://localhost:8080'
             ];
 
-            const allowedOrigins =
-                this.config &&
-                this.config.cors &&
-                Array.isArray(this.config.cors.allowedOrigins) &&
-                this.config.cors.allowedOrigins.length > 0
-                    ? this.config.cors.allowedOrigins
-                    : defaultOrigins;
+            // const allowedOrigins =
+            //     this.config &&
+            //     this.config.cors &&
+            //     Array.isArray(this.config.cors.allowedOrigins) &&
+            //     this.config.cors.allowedOrigins.length > 0
+            //         ? this.config.cors.allowedOrigins
+            //         : defaultOrigins;
 
-            const _origin = req.headers.origin;
+            // const _origin = req.headers.origin;
 
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.setHeader(
@@ -399,7 +399,7 @@ class SecurityMiddleware {
      * Manejo de errores específico para rutas
      */
     get errorHandler() {
-        return (error, req, res, next) => {
+        return (error, req, res, _next) => {
             this.logger.error('Route error', {
                 requestId: req.id,
                 path: req.path,

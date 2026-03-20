@@ -68,24 +68,28 @@ class ConfirmAttendanceUseCase {
             // Crear entidad de confirmación
             const confirmation = new Confirmation({
                 code: invitationCode,
-                ...normalizedData
+                willAttend: normalizedData.willAttend,
+                attendingGuests: normalizedData.attendingGuests,
+                attendingNames: normalizedData.attendingNames,
+                phone: normalizedData.phone,
+                dietaryRestrictions: normalizedData.dietaryRestrictions,
+                message: normalizedData.message
             });
 
             // Guardar confirmación
             const savedConfirmation = await this.confirmationRepository.save(confirmation);
 
-            // Actualizar invitación
-            const updatedInvitation = invitation.confirm({
-                attendingGuests: normalizedData.attendingGuests
-            });
-
-            // Actualizar detalles adicionales en la invitación
-            updatedInvitation.updateConfirmation({
-                attendingNames: normalizedData.attendingNames,
-                dietaryRestrictionsNames: normalizedData.dietaryRestrictions, // Map to correct field name if needed, check Invitation.js
-                dietaryRestrictionsDetails: normalizedData.dietaryRestrictionsDetails, // Check if this exists in normalizedData
-                generalMessage: normalizedData.message
-            });
+            // Actualizar invitación y detalles adicionales en un solo paso
+            const updatedInvitation = invitation
+                .confirm({
+                    attendingGuests: normalizedData.attendingGuests
+                })
+                .updateConfirmation({
+                    attendingNames: normalizedData.attendingNames,
+                    dietaryRestrictionsNames: normalizedData.dietaryRestrictions,
+                    dietaryRestrictionsDetails: normalizedData.dietaryRestrictions,
+                    generalMessage: normalizedData.message
+                });
 
             await this.invitationRepository.update(invitationCode, updatedInvitation);
 

@@ -17,7 +17,8 @@
         "format:check": "prettier --check \"**/*.{js,json,md}\"",
         "test:frontend": "npx jest --config=jest.config.frontend.js",
         "test:frontend:watch": "npx jest --config=jest.config.frontend.js --watch",
-        "test:frontend:coverage": "npx jest --config=jest.config.frontend.js --coverage"
+        "test:frontend:coverage": "npx jest --config=jest.config.frontend.js --coverage",
+        "test:backend": "cd backend && npm test"
     },
     "keywords": [
         "wedding",

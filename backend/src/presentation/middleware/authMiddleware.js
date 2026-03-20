@@ -148,7 +148,7 @@ class AuthMiddleware {
                     error: 'Credenciales inválidas'
                 });
             }
-        } catch (error) {
+        } catch (_error) {
             endOperation({ authenticated: false, reason: 'basic_auth_error' });
             return res.status(401).json({
                 success: false,

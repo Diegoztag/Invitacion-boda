@@ -63,7 +63,7 @@ class CsvStorage {
             }
 
             await fs.access(filePath);
-        } catch (error) {
+        } catch (_error) {
             // El archivo no existe, crearlo con headers
             const csvContent = stringify([headers]);
             await fs.writeFile(filePath, csvContent, 'utf8');

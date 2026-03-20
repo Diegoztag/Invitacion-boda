@@ -23,7 +23,6 @@ const CsvConfirmationRepository = require('./infrastructure/repositories/CsvConf
 
 // Importar casos de uso
 const CreateInvitationUseCase = require('./application/usecases/CreateInvitationUseCase');
-const GetInvitationUseCase = require('./application/usecases/GetInvitationUseCase');
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
 
@@ -72,7 +71,6 @@ class Server {
             validationService,
             logger
         );
-        const getInvitationUseCase = new GetInvitationUseCase(invitationRepository, logger);
         const confirmAttendanceUseCase = new ConfirmAttendanceUseCase(
             invitationRepository,
             confirmationRepository,
@@ -114,9 +112,6 @@ class Server {
             singleton: true
         });
         this.container.register('createInvitationUseCase', () => createInvitationUseCase, {
-            singleton: true
-        });
-        this.container.register('getInvitationUseCase', () => getInvitationUseCase, {
             singleton: true
         });
         this.container.register('confirmAttendanceUseCase', () => confirmAttendanceUseCase, {
@@ -179,9 +174,9 @@ class Server {
         // Servir archivos públicos compartidos (como config.js) desde la raíz
         this.app.use(
             express.static(path.join(__dirname, '../../frontend/public'), {
-                setHeaders: (res, path) => {
+                setHeaders: (res, filePath) => {
                     // Configurar MIME type correcto para archivos JavaScript
-                    if (path.endsWith('.js')) {
+                    if (filePath.endsWith('.js')) {
                         res.setHeader('Content-Type', 'text/javascript');
                     }
                 }

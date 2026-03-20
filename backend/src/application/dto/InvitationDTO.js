@@ -10,18 +10,30 @@
 class CreateInvitationDTO {
     /**
      * @param {object} data
-     * @param {string} data.guestName
+     * @param {string[]} data.guestNames
      * @param {string} data.phone
-     * @param {number} data.passes
-     * @param {number} data.table
-     * @param {Guest[]} data.guests
+     * @param {number} data.numberOfPasses
+     * @param {number} data.adultPasses
+     * @param {number} data.childPasses
+     * @param {number} data.staffPasses
+     * @param {number} data.tableNumber
      */
-    constructor({ guestName, phone, passes, table, guests }) {
-        this.guestName = guestName;
+    constructor({
+        guestNames,
+        phone,
+        numberOfPasses,
+        adultPasses,
+        childPasses,
+        staffPasses,
+        tableNumber
+    }) {
+        this.guestNames = guestNames;
         this.phone = phone;
-        this.passes = passes;
-        this.table = table;
-        this.guests = guests;
+        this.numberOfPasses = numberOfPasses;
+        this.adultPasses = adultPasses;
+        this.childPasses = childPasses;
+        this.staffPasses = staffPasses;
+        this.tableNumber = tableNumber;
     }
 }
 
@@ -31,27 +43,43 @@ class CreateInvitationDTO {
 class UpdateInvitationDTO {
     /**
      * @param {object} data
-     * @param {string} [data.guestName]
+     * @param {string[]} [data.guestNames]
      * @param {string} [data.phone]
-     * @param {number} [data.passes]
-     * @param {number} [data.table]
-     * @param {Guest[]} [data.guests]
+     * @param {number} [data.numberOfPasses]
+     * @param {number} [data.adultPasses]
+     * @param {number} [data.childPasses]
+     * @param {number} [data.staffPasses]
+     * @param {number} [data.tableNumber]
      */
-    constructor({ guestName, phone, passes, table, guests }) {
-        if (guestName) {
-            this.guestName = guestName;
+    constructor({
+        guestNames,
+        phone,
+        numberOfPasses,
+        adultPasses,
+        childPasses,
+        staffPasses,
+        tableNumber
+    }) {
+        if (guestNames) {
+            this.guestNames = guestNames;
         }
         if (phone) {
             this.phone = phone;
         }
-        if (passes) {
-            this.passes = passes;
+        if (numberOfPasses) {
+            this.numberOfPasses = numberOfPasses;
         }
-        if (table) {
-            this.table = table;
+        if (adultPasses) {
+            this.adultPasses = adultPasses;
         }
-        if (guests) {
-            this.guests = guests;
+        if (childPasses) {
+            this.childPasses = childPasses;
+        }
+        if (staffPasses) {
+            this.staffPasses = staffPasses;
+        }
+        if (tableNumber) {
+            this.tableNumber = tableNumber;
         }
     }
 }

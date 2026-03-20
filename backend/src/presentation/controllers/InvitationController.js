@@ -4,7 +4,6 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
-const path = require('path');
 // Importar configuración para validación de límites
 const config = require('../../config');
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');

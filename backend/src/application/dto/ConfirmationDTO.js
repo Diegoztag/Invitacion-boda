@@ -13,12 +13,14 @@ class CreateConfirmationDTO {
     constructor({
         willAttend,
         attendingGuests,
+        attendingNames,
         specialAccommodations,
         dietaryRestrictions,
         message
     }) {
         this.willAttend = willAttend;
         this.attendingGuests = attendingGuests;
+        this.attendingNames = attendingNames;
         this.specialAccommodations = specialAccommodations;
         this.dietaryRestrictions = dietaryRestrictions;
         this.message = message;
