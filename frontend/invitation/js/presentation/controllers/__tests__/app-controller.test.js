@@ -490,8 +490,8 @@ describe('AppController', () => {
             expect(appController.components.size).toBeGreaterThan(0);
 
             // Verificar que CountdownComponent se inicializó
-            const countdownComponents = Array.from(appController.components.values()).filter(
-                comp => comp.constructor.name === 'CountdownComponent'
+            const countdownComponents = Array.from(appController.components.keys()).filter(key =>
+                key.startsWith('countdown-')
             );
             expect(countdownComponents.length).toBe(1);
 
@@ -583,7 +583,10 @@ describe('AppController', () => {
                 init: jest.fn().mockResolvedValue(),
                 loadInvitation: jest.fn().mockResolvedValue({ id: 'test-invitation' })
             };
-            const mockMetaService = { init: jest.fn().mockResolvedValue() };
+            const mockMetaService = {
+                init: jest.fn().mockResolvedValue(),
+                loadDefaultMeta: jest.fn().mockResolvedValue()
+            };
             const mockValidationService = { init: jest.fn().mockResolvedValue() };
 
             mockDIContainer.get.mockImplementation(serviceName => {
@@ -603,11 +606,25 @@ describe('AppController', () => {
                 }
             });
 
+            // Mockear URLSearchParams para simular que hay un ID en la URL
+            const originalURLSearchParams = global.URLSearchParams;
+            global.URLSearchParams = class {
+                get(param) {
+                    if (param === 'id') {
+                        return 'test-invitation';
+                    }
+                    return null;
+                }
+            };
+
             await appController.initializeServices();
             await appController.loadInitialData();
 
-            expect(mockInvitationService.loadInvitation).toHaveBeenCalled();
+            expect(mockInvitationService.loadInvitation).toHaveBeenCalledWith('test-invitation');
             expect(appController.currentInvitation).toEqual({ id: 'test-invitation' });
+
+            // Restaurar URLSearchParams
+            global.URLSearchParams = originalURLSearchParams;
         });
     });
 

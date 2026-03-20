@@ -127,11 +127,25 @@ export class AppController {
 
         // 2. Aplicar configuración y contenido sobre la estructura generada (ConfigurationService)
         this.configurationService = await this.diContainer.get('configurationService');
+        if (this.configurationService && this.configurationService.init) {
+            await this.configurationService.init();
+        }
 
         // 3. Inicializar resto de servicios
         this.invitationService = await this.diContainer.get('invitationService');
+        if (this.invitationService && this.invitationService.init) {
+            await this.invitationService.init();
+        }
+
         this.metaService = await this.diContainer.get('metaService');
+        if (this.metaService && this.metaService.init) {
+            await this.metaService.init();
+        }
+
         this.validationService = await this.diContainer.get('validationService');
+        if (this.validationService && this.validationService.init) {
+            await this.validationService.init();
+        }
 
         console.log('✅ Services initialized');
     }
@@ -839,7 +853,16 @@ export class AppController {
 
         this.isInitialized = false;
         this.isLoading = false;
+        this.isDestroyed = true;
 
         console.log('✅ Application destroyed');
+    }
+
+    /**
+     * Verifica si la aplicación está lista
+     * @returns {boolean}
+     */
+    isReady() {
+        return this.isInitialized && !this.isLoading;
     }
 }
