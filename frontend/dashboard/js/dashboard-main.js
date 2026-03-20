@@ -6,6 +6,7 @@
 import { DashboardController } from './controllers/dashboard-controller.js';
 import { InvitationsController } from './controllers/invitations-controller.js';
 import { NavigationController } from './controllers/navigation-controller.js';
+import { ConfigurationController } from './controllers/configuration-controller.js';
 import { showToast } from './components/dashboard-modal.js';
 import { notificationService } from './services/notification-service.js';
 import { RenderService } from './services/render-service.js';
@@ -14,6 +15,7 @@ class AdminApp {
     constructor() {
         this.dashboardController = null;
         this.invitationsController = null;
+        this.configurationController = null;
         this.navigationController = null;
         this.renderService = null;
         this.isInitialized = false;
@@ -21,8 +23,6 @@ class AdminApp {
 
     async init() {
         try {
-            console.log('🚀 Iniciando Admin App...');
-
             // Verificar autenticación primero
             await this.checkAuthentication();
 
@@ -32,9 +32,7 @@ class AdminApp {
             this.setupErrorHandling();
 
             this.isInitialized = true;
-            console.log('✅ Admin App inicializada correctamente');
-        } catch (error) {
-            console.error('❌ Error inicializando Admin App:', error);
+        } catch {
             showToast('Error al cargar el sistema', 'error');
         }
     }
@@ -43,7 +41,6 @@ class AdminApp {
         const token = localStorage.getItem('dashboardToken');
 
         if (!token) {
-            console.warn('⚠️ No hay token guardado, redirigiendo a login');
             window.location.href = 'login.html';
             return;
         }
@@ -59,23 +56,17 @@ class AdminApp {
             });
 
             if (!response.ok) {
-                console.warn('⚠️ Token inválido o expirado');
                 localStorage.removeItem('dashboardToken');
                 localStorage.removeItem('dashboardUser');
                 window.location.href = 'login.html';
-                return;
             }
-
-            console.log('✅ Autenticación verificada');
-        } catch (error) {
-            console.error('❌ Error verificando autenticación:', error);
+        } catch {
             window.location.href = 'login.html';
         }
     }
 
     initializeDynamicContent() {
         if (!window.WEDDING_CONFIG) {
-            console.warn('WEDDING_CONFIG no disponible');
             return;
         }
 
@@ -108,7 +99,6 @@ class AdminApp {
         }
 
         this.initializeCountdown(config.event.date);
-        console.log('✅ Contenido dinámico inicializado');
     }
 
     initializeCountdown(weddingDate) {
@@ -189,9 +179,13 @@ class AdminApp {
         this.invitationsController = new InvitationsController();
         await this.invitationsController.init();
 
+        this.configurationController = new ConfigurationController();
+        await this.configurationController.init();
+
         this.navigationController = new NavigationController(
             this.dashboardController,
-            this.invitationsController
+            this.invitationsController,
+            this.configurationController
         );
         await this.navigationController.init();
 
@@ -202,6 +196,7 @@ class AdminApp {
         // Global access for backward compatibility
         window.dashboardController = this.dashboardController;
         window.invitationsController = this.invitationsController;
+        window.configurationController = this.configurationController;
         window.navigationController = this.navigationController;
     }
 
@@ -274,14 +269,11 @@ class AdminApp {
     }
 
     setupErrorHandling() {
-        window.addEventListener('unhandledrejection', event => {
-            console.error('Unhandled promise rejection:', event.reason);
+        window.addEventListener('unhandledrejection', () => {
             showToast('Error inesperado en la aplicación', 'error');
         });
 
-        window.addEventListener('error', event => {
-            console.error('Global error:', event.error);
-        });
+        window.addEventListener('error', () => {});
     }
 
     async refreshCurrentSection() {
@@ -303,9 +295,14 @@ class AdminApp {
                         await this.invitationsController.loadInvitationsSectionData();
                     }
                     break;
+                case 'configuracion':
+                    if (this.configurationController) {
+                        await this.configurationController.loadConfiguration();
+                    }
+                    break;
             }
-        } catch (error) {
-            console.error(`Error refreshing ${currentSection}:`, error);
+        } catch {
+            //
         }
     }
 }

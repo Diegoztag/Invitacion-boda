@@ -4,9 +4,10 @@
  */
 
 export class NavigationController {
-    constructor(dashboardController, invitationsController) {
+    constructor(dashboardController, invitationsController, configurationController) {
         this.dashboardController = dashboardController;
         this.invitationsController = invitationsController;
+        this.configurationController = configurationController;
         this.currentSection = 'dashboard';
         this.isInitialized = false;
     }
@@ -66,9 +67,9 @@ export class NavigationController {
         });
 
         // Handle browser back/forward
-        window.addEventListener('popstate', e => {
-            if (e.state && e.state.section) {
-                this.navigateToSection(e.state.section, false);
+        window.addEventListener('popstate', () => {
+            if (history.state && history.state.section) {
+                this.navigateToSection(history.state.section, false);
             } else {
                 this.initializeFromHash();
             }
@@ -101,7 +102,7 @@ export class NavigationController {
         }
 
         // Validate section
-        const validSections = ['dashboard', 'invitations'];
+        const validSections = ['dashboard', 'invitations', 'configuracion'];
         if (!validSections.includes(section)) {
             section = 'dashboard';
         }
@@ -150,7 +151,8 @@ export class NavigationController {
     updatePageTitle(section) {
         const titles = {
             dashboard: 'Dashboard - Admin Boda',
-            invitations: 'Invitaciones - Admin Boda'
+            invitations: 'Invitaciones - Admin Boda',
+            configuracion: 'Configuración - Admin Boda'
         };
 
         document.title = titles[section] || 'Admin Boda';
@@ -160,7 +162,7 @@ export class NavigationController {
      * Oculta todas las secciones
      */
     hideAllSections() {
-        const sections = ['dashboard', 'invitations'];
+        const sections = ['dashboard', 'invitations', 'configuracion'];
         sections.forEach(section => {
             const sectionElement = document.getElementById(section);
             if (sectionElement) {
@@ -190,9 +192,12 @@ export class NavigationController {
                 case 'invitations':
                     await this.loadInvitationsSection();
                     break;
+                case 'configuracion':
+                    await this.loadConfigurationSection();
+                    break;
             }
-        } catch (error) {
-            console.error(`Error loading ${section} section:`, error);
+        } catch {
+            //
         }
 
         // Trigger section-specific initialization if needed
@@ -218,6 +223,15 @@ export class NavigationController {
     }
 
     /**
+     * Carga la sección de configuración
+     */
+    async loadConfigurationSection() {
+        if (this.configurationController) {
+            await this.configurationController.loadConfiguration();
+        }
+    }
+
+    /**
      * Dispara la inicialización específica de la sección
      */
     triggerSectionInit(section) {
@@ -235,6 +249,9 @@ export class NavigationController {
                 break;
             case 'invitations':
                 this.initInvitationsSection();
+                break;
+            case 'configuracion':
+                this.initConfigurationSection();
                 break;
         }
     }
@@ -278,6 +295,17 @@ export class NavigationController {
     }
 
     /**
+     * Inicializa elementos específicos de configuración
+     */
+    initConfigurationSection() {
+        // Focus on the first form element or a specific control
+        const firstInput = document.querySelector('#configuracion .form-control');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
+    }
+
+    /**
      * Obtiene la sección actual
      */
     getCurrentSection() {
@@ -306,11 +334,16 @@ export class NavigationController {
     }
 
     /**
+     * Navega a configuración
+     */
+    goToConfiguration() {
+        this.navigateToSection('configuracion');
+    }
+
+    /**
      * Maneja errores de navegación
      */
-    handleNavigationError(error, section) {
-        console.error(`Navigation error for section ${section}:`, error);
-
+    handleNavigationError(_error, section) {
         // Fallback to dashboard if current section fails
         if (section !== 'dashboard') {
             this.navigateToSection('dashboard');

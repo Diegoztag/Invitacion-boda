@@ -5,7 +5,6 @@
 
 import { adminAPI, APIHelpers } from '../dashboard-api.js';
 import {
-    calculatePaginationInfo,
     updateTablePagination,
     renderTableRow,
     getStatusBadge,
@@ -205,8 +204,7 @@ export class InvitationsController {
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }
-        } catch (error) {
-            console.error('Error loading invitations:', error);
+        } catch {
             showToast('Error al cargar invitaciones', 'error');
             this.displayInvitations([]);
         }
@@ -265,8 +263,7 @@ export class InvitationsController {
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }
-        } catch (error) {
-            console.error('Error loading invitations section data:', error);
+        } catch {
             // Show empty state
             this.updateInvitationStats(0, 0, 0, 0);
         }
@@ -444,8 +441,8 @@ export class InvitationsController {
                 if (result.success) {
                     invitation = result.invitation;
                 }
-            } catch (error) {
-                console.error('Error fetching invitation details:', error);
+            } catch {
+                //
             }
         }
 
@@ -670,9 +667,8 @@ export class InvitationsController {
                 if (result.success) {
                     invitation = result.invitation;
                 }
-            } catch (error) {
-                console.error('Error fetching invitation details:', error);
-                return;
+            } catch {
+                //
             }
         }
 
@@ -741,7 +737,6 @@ export class InvitationsController {
                     throw new Error(result.error || 'Error al desactivar la invitación');
                 }
             } catch (error) {
-                console.error('Error deactivating invitation:', error);
                 showToast(error.message || 'Error al desactivar la invitación', 'error');
             }
         };
@@ -761,9 +756,8 @@ export class InvitationsController {
                 if (result.success) {
                     invitation = result.invitation;
                 }
-            } catch (error) {
-                console.error('Error fetching invitation details:', error);
-                return;
+            } catch {
+                //
             }
         }
 
@@ -809,7 +803,6 @@ export class InvitationsController {
                         throw new Error(result.error || 'Error al activar la invitación');
                     }
                 } catch (error) {
-                    console.error('Error activating invitation:', error);
                     showToast(error.message || 'Error al activar la invitación', 'error');
                 }
             }
@@ -831,9 +824,8 @@ export class InvitationsController {
                 if (result.success) {
                     invitation = result.invitation;
                 }
-            } catch (error) {
-                console.error('Error fetching invitation details:', error);
-                return;
+            } catch {
+                //
             }
         }
 
@@ -853,16 +845,6 @@ export class InvitationsController {
                 let currentInvitationOccupancy = 0;
                 const status = (invitation.status || '').toLowerCase();
 
-                // Debug log para diagnosticar problemas de cálculo
-                console.log('Diagnóstico Edición:', {
-                    code: invitation.code,
-                    originalStatus: invitation.status,
-                    normalizedStatus: status,
-                    numberOfPasses: invitation.numberOfPasses,
-                    confirmedPasses: invitation.confirmedPasses,
-                    currentTotalOccupied: currentTotal
-                });
-
                 if (status === 'confirmed' || status === 'pending') {
                     currentInvitationOccupancy = invitation.numberOfPasses;
                 } else if (status === 'partial') {
@@ -878,14 +860,11 @@ export class InvitationsController {
                         invitation.confirmedPasses || invitation.numberOfPasses || 0;
                 }
 
-                console.log('Ocupación calculada a restar:', currentInvitationOccupancy);
-
                 // Subtract current invitation occupancy because we are editing it
                 baseTotalPasses = Math.max(0, currentTotal - currentInvitationOccupancy);
-                console.log('Base Total Passes calculada:', baseTotalPasses);
             }
-        } catch (error) {
-            console.error('Error fetching stats for validation:', error);
+        } catch {
+            //
         }
 
         window.activeModal = this.editInvitationModal;
@@ -909,7 +888,6 @@ export class InvitationsController {
         }
 
         if (!invitation) {
-            console.error('Invitación no encontrada para generar mensaje');
             return;
         }
 
@@ -949,7 +927,6 @@ export class InvitationsController {
             await navigator.clipboard.writeText(text);
             showToast('Enlace copiado al portapapeles', 'success');
         } catch (err) {
-            console.error('Error al copiar:', err);
             showToast('Error al copiar enlace', 'error');
         }
     }
@@ -959,7 +936,6 @@ export class InvitationsController {
      */
     initCsvUpload() {
         // Esta función se llama desde init() pero los handlers se configuran cuando se abre el modal
-        console.log('CSV upload system ready');
     }
 
     /**
@@ -1276,7 +1252,6 @@ export class InvitationsController {
 
             // Cálculos de límites
             const remainingGlobalSlots = Math.max(0, GLOBAL_TARGET_TOTAL - baseTotalPasses);
-            const effectiveLimit = Math.min(MAX_GUESTS_PER_INVITATION, remainingGlobalSlots);
 
             // Validaciones
             const exceedsGlobal = baseTotalPasses + requestedCount > GLOBAL_TARGET_TOTAL;
@@ -1458,7 +1433,6 @@ export class InvitationsController {
                 throw new Error(result.error || 'Error al crear la invitación');
             }
         } catch (error) {
-            console.error('Error creating invitation:', error);
             showToast(error.message, 'error');
         } finally {
             submitBtn.disabled = false;
@@ -1597,7 +1571,6 @@ export class InvitationsController {
                 throw new Error(result.error || 'Error al actualizar la invitación');
             }
         } catch (error) {
-            console.error('Error updating invitation:', error);
             showToast(error.message, 'error');
         } finally {
             submitBtn.disabled = false;
@@ -1689,8 +1662,6 @@ export class InvitationsController {
             }
             window.selectedCsvFile = null;
         };
-
-        console.log('CSV upload handlers initialized');
     }
 
     /**
@@ -1729,15 +1700,12 @@ export class InvitationsController {
 
         // Store file reference
         window.selectedCsvFile = file;
-
-        console.log('File selected:', file.name);
     }
 
     /**
      * Procesa el archivo CSV usando el backend
      */
     async processCsvFile(file) {
-        const csvResults = document.getElementById('csvResults');
         const uploadBtn = document.getElementById('uploadCsvBtn');
 
         if (uploadBtn) {
@@ -1769,7 +1737,6 @@ export class InvitationsController {
                 throw new Error(result.errors?.[0] || 'Error al procesar las invitaciones');
             }
         } catch (error) {
-            console.error('Error processing CSV:', error);
             this.showCsvResults({ error: error.message }, 'error');
             showToast(error.message || 'Error al procesar el archivo CSV', 'error');
         } finally {
@@ -1820,7 +1787,6 @@ export class InvitationsController {
     toggleFilters() {
         const filtersPanel = document.getElementById('filtersPanel');
         const toggleBtn = document.getElementById('filtersToggleBtn');
-        const backdrop = document.getElementById('filtersBackdrop');
 
         if (!filtersPanel || !toggleBtn) {
             return;
@@ -1913,7 +1879,6 @@ export class InvitationsController {
         this.filtersCloseHandlersSetup = true;
 
         const backdrop = document.getElementById('filtersBackdrop');
-        const filtersPanel = document.getElementById('filtersPanel');
 
         // Close on backdrop click
         this.backdropClickHandler = e => {
@@ -2141,7 +2106,7 @@ export class InvitationsController {
 
         resultsInfo.innerHTML = `
             <i class="fas fa-filter"></i>
-            Mostrando ${resultCount} de ${totalCount} invitaciones
+            Mostrando ${resultCount} de ${this.state.pagination.total} invitaciones
             <span class="clear-filters-link" data-action="clear-filters">Limpiar filtros</span>
         `;
 
@@ -2167,7 +2132,6 @@ export class InvitationsController {
             await navigator.clipboard.writeText(invitationUrl);
             showToast('Enlace de invitación copiado al portapapeles', 'success');
         } catch (err) {
-            console.error('Error al copiar enlace:', err);
             showToast('Error al copiar enlace', 'error');
         }
     }

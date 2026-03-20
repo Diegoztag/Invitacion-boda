@@ -7,7 +7,6 @@ import { adminAPI, APIHelpers } from '../dashboard-api.js';
 import {
     updateStatsUI,
     updateTargetElements,
-    updateConfirmedChangeIndicator,
     getSafeValue,
     renderTableRow
 } from '../dashboard-utils.js';
@@ -25,12 +24,9 @@ export class DashboardController {
      * Data Mapper centralizado - convierte la respuesta del backend a las estructuras que necesita el frontend
      */
     mapStatsData(backendStats) {
-        console.log('🔄 Mapeando datos del backend:', backendStats);
-
         // Extraer datos de la estructura optimizada del backend
         const invitations = backendStats.invitations || {};
         const confirmations = backendStats.confirmations || {};
-        const passDistribution = backendStats.passDistribution || {};
         const rates = backendStats.rates || {};
 
         // Calcular porcentaje de confirmados
@@ -79,9 +75,6 @@ export class DashboardController {
                 attendanceRate: getSafeValue(rates.attendanceRate, 0)
             }
         };
-
-        console.log('📊 Datos mapeados para RenderService:', renderServiceData);
-        console.log('� Datos mapeados para Utils:', utilsData);
 
         return {
             renderService: renderServiceData,
@@ -182,28 +175,22 @@ export class DashboardController {
      */
     async loadDashboardData() {
         try {
-            console.log('🔄 Cargando datos del dashboard...');
             const result = await adminAPI.fetchStats();
-            console.log('📊 Resultado de fetchStats:', result);
 
             if (APIHelpers.isSuccess(result)) {
                 const backendStats = result.data;
-                console.log('📈 Stats recibidas del backend:', backendStats);
 
                 // Usar el Data Mapper centralizado
                 const mappedData = this.mapStatsData(backendStats);
 
                 // Actualizar stats usando RenderService
                 if (window.renderService) {
-                    console.log('🎨 Actualizando dashboard stats con RenderService...');
                     window.renderService.renderDashboardStats(mappedData.renderService);
 
-                    console.log('🎨 Actualizando invitations stats con RenderService...');
                     window.renderService.renderInvitationsStats(mappedData.renderService);
                 }
 
                 // Actualizar stats usando dashboard-utils (para elementos que no usa RenderService)
-                console.log('🔧 Actualizando stats con dashboard-utils...');
                 updateStatsUI(mappedData.utils, ''); // Dashboard principal
                 updateStatsUI(mappedData.utils, 'Stats'); // Sección de invitaciones
 
@@ -228,13 +215,10 @@ export class DashboardController {
 
                 // Load recent confirmations
                 await this.loadRecentConfirmations();
-
-                console.log('✅ Dashboard data loaded successfully');
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }
         } catch (error) {
-            console.error('❌ Error loading dashboard data:', error);
             showToast(APIHelpers.getErrorMessage({ error: error.message }), 'error');
 
             // Show empty state instead of demo data
@@ -333,11 +317,8 @@ export class DashboardController {
      * Actualiza la distribución de pases usando datos del backend (sin cálculos en frontend)
      */
     updatePassDistribution(stats) {
-        console.log('🎯 Actualizando distribución de pases con datos del backend:', stats);
-
         const allowChildren = WEDDING_CONFIG.guests?.allowChildren !== false;
         const passDistribution = stats.passDistribution || {};
-        const distributionPercentages = passDistribution.distributionPercentages || {};
 
         // Usar datos ya procesados del backend - SIN cálculos en frontend
         const adultPasses = passDistribution.activeAdultPasses || 0;
@@ -370,13 +351,6 @@ export class DashboardController {
             }
         }
 
-        console.log('📊 Distribución de pases (recalculado):', {
-            totalActivePasses,
-            adultos: `${adultPasses} (${adultPercent}%)`,
-            niños: `${childPasses} (${childPercent}%)`,
-            staff: `${staffPasses} (${staffPercent}%)`
-        });
-
         // Usar render service para actualizar la UI
         if (window.renderService) {
             window.renderService.renderPassDistribution({
@@ -403,8 +377,7 @@ export class DashboardController {
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }
-        } catch (error) {
-            console.error('Error loading recent confirmations:', error);
+        } catch {
             this.displayRecentConfirmations([]);
         }
     }
@@ -446,8 +419,8 @@ export class DashboardController {
             if (APIHelpers.isSuccess(result)) {
                 return result.confirmations ? result.confirmations.length : 0;
             }
-        } catch (error) {
-            console.error('Error getting confirmations by period:', error);
+        } catch {
+            //
         }
         return 0;
     }
