@@ -6,7 +6,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## 🏗️ Arquitectura y Calidad de Código
 
-- [ ] Desacoplar configuración del backend del `frontend/public/config.js`.
+- [x] Desacoplar configuración del backend del `frontend/public/config.js`.
 - [x] Centralizar y tipar la configuración en `src/config/index.js`.
 - [x] Extraer validaciones de casos de uso a servicios/utilitarias (usar `ValidationService` y/o librería externa).
 - [x] Revisar y simplificar la inyección de dependencias; evitar creación de objetos en el container.
