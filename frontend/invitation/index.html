@@ -244,63 +244,66 @@
             </div>
             
             <!-- Formulario de confirmación -->
-            <form id="rsvpForm" class="rsvp-form" autocomplete="off">
-                <div class="form-group">
-                    <label>¿Asistirás? *</label>
+            <form id="rsvpForm" class="rsvp-form" autocomplete="off" aria-labelledby="rsvpTitle">
+                <div class="form-group" role="group" aria-labelledby="attendanceLabel">
+                    <label id="attendanceLabel">¿Asistirás? *</label>
                     <div class="radio-group">
                         <label class="radio-label checkbox-style">
-                            <input type="checkbox" name="attendance_check" value="si" class="attendance-check">
+                            <input type="checkbox" name="attendance_check" value="si" class="attendance-check" aria-required="true">
                             <span>Sí, con mucho gusto</span>
                         </label>
                         <label class="radio-label checkbox-style">
-                            <input type="checkbox" name="attendance_check" value="no" class="attendance-check">
+                            <input type="checkbox" name="attendance_check" value="no" class="attendance-check" aria-required="true">
                             <span>Lo siento, no podré asistir</span>
                         </label>
                     </div>
-                    <input type="hidden" name="attendance" id="attendanceValue" required>
+                    <input type="hidden" name="attendance" id="attendanceValue" required aria-hidden="true">
                 </div>
                 
-                <div id="attendanceDetails" style="display: none;">
+                <div id="attendanceDetails" style="display: none;" aria-live="polite">
                     <div class="form-group">
                         <label for="attendingGuests">¿Cuántos asistirán? *</label>
-                        <select id="attendingGuests" name="attendingGuests" class="form-control">
+                        <select id="attendingGuests" name="attendingGuests" class="form-control" aria-required="true">
                             <!-- Las opciones se llenarán dinámicamente -->
                         </select>
                     </div>
                     
-                    <div class="form-group" id="attendingNamesGroup" style="display: none;">
-                        <label>Nombres de los asistentes *</label>
-                        <small class="form-text text-muted" style="display: block; margin-bottom: 10px; font-size: 0.85em; color: #666;">Marca con un check los invitados que asistirán</small>
-                        <div id="attendingNamesList">
+                    <div class="form-group" id="attendingNamesGroup" style="display: none;" role="group" aria-labelledby="namesLabel">
+                        <label id="namesLabel">Nombres de los asistentes *</label>
+                        <small id="namesHelp" class="form-text text-muted" style="display: block; margin-bottom: 10px; font-size: 0.85em; color: #666;">Marca con un check los invitados que asistirán</small>
+                        <div id="attendingNamesList" aria-describedby="namesHelp">
                             <!-- Los campos de nombres se agregarán dinámicamente -->
                         </div>
                     </div>
                 </div>
                 
-                <div class="form-group" id="phoneGroup" style="display: none;">
-                    <label for="phone">Teléfono (WhatsApp) <span id="phoneRequired">*</span></label>
+                <div class="form-group" id="phoneGroup" style="display: none;" aria-live="polite">
+                    <label for="phone">Teléfono (WhatsApp) <span id="phoneRequired" aria-hidden="true">*</span></label>
                     <input type="tel" id="phone" name="phone" 
                            pattern="[+]?[0-9]{10,15}" 
                            placeholder="+521234567890"
                            title="Ingrese un número telefónico válido (10-15 dígitos, puede incluir +)"
-                           class="form-control">
-                    <small>Formato: +521234567890 o 1234567890</small>
+                           class="form-control"
+                           aria-describedby="phoneHelp">
+                    <small id="phoneHelp">Formato: +521234567890 o 1234567890</small>
                 </div>
                 
-                <div class="form-group" id="dietaryGroup" style="display: none;">
+                <div class="form-group" id="dietaryGroup" style="display: none;" aria-live="polite">
                     <label for="dietaryRestrictions">Restricciones Alimentarias</label>
                     <input type="text" id="dietaryRestrictions" name="dietaryRestrictions" 
-                           placeholder="Ej: Vegetariano, sin gluten, alergias...">
+                           placeholder="Ej: Vegetariano, sin gluten, alergias..."
+                           aria-label="Restricciones Alimentarias">
                 </div>
                 
                 <div class="form-group">
                     <label for="message">Mensaje para los Novios</label>
                     <textarea id="message" name="message" rows="4" 
-                              placeholder="Comparte tus buenos deseos..."></textarea>
+                              placeholder="Comparte tus buenos deseos..."
+                              aria-label="Mensaje para los Novios"></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-paper-plane"></i> Enviar Confirmación
+                <button type="submit" class="btn btn-primary btn-block" aria-label="Enviar Confirmación">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar Confirmación
                 </button>
             </form>
         </div>
