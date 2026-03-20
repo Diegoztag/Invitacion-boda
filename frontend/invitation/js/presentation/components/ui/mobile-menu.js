@@ -32,6 +32,11 @@ export class MobileMenuComponent {
             return;
         }
 
+        // Inicializar atributos ARIA
+        this.navToggle.setAttribute('aria-expanded', 'false');
+        this.navToggle.setAttribute('aria-controls', 'navMenu');
+        this.navMenu.setAttribute('aria-hidden', 'true');
+
         // Configurar event listeners
         this.setupEventListeners();
 
@@ -105,11 +110,18 @@ export class MobileMenuComponent {
 
         this.isOpen = true;
         this.navToggle.classList.add('active');
+        this.navToggle.setAttribute('aria-expanded', 'true');
         this.navMenu.classList.add('active');
+        this.navMenu.setAttribute('aria-hidden', 'false');
         document.body.classList.add('menu-open');
 
         // Prevenir scroll del body
         document.body.style.overflow = 'hidden';
+
+        // Focus en el primer enlace
+        if (this.navLinks.length > 0) {
+            setTimeout(() => this.navLinks[0].focus(), 100);
+        }
 
         console.log('📱 Mobile menu opened');
     }
@@ -124,11 +136,16 @@ export class MobileMenuComponent {
 
         this.isOpen = false;
         this.navToggle.classList.remove('active');
+        this.navToggle.setAttribute('aria-expanded', 'false');
         this.navMenu.classList.remove('active');
+        this.navMenu.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('menu-open');
 
         // Restaurar scroll del body
         document.body.style.overflow = '';
+
+        // Devolver el foco al botón
+        this.navToggle.focus();
 
         console.log('📱 Mobile menu closed');
     }
