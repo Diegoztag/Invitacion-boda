@@ -207,4 +207,300 @@ describe('ConfirmAttendanceUseCase', () => {
             expect.any(Invitation)
         );
     });
+
+    describe('Validation and Business Rules', () => {
+        test('should fail if confirmationData is not an object', async () => {
+            const result = await useCase.execute('INV001', null);
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Los datos de confirmación son requeridos');
+        });
+
+        test('should fail if willAttend is not a boolean', async () => {
+            const result = await useCase.execute('INV001', { willAttend: 'yes' });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('willAttend debe ser un boolean');
+        });
+
+        test('should fail if attendingGuests is not a non-negative integer', async () => {
+            const result = await useCase.execute('INV001', { attendingGuests: -1 });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('El número de invitados debe ser un entero no negativo');
+
+            const result2 = await useCase.execute('INV001', { attendingGuests: 1.5 });
+            expect(result2.success).toBe(false);
+            expect(result2.error).toBe('El número de invitados debe ser un entero no negativo');
+        });
+
+        test('should fail if attendingNames is not an array', async () => {
+            const result = await useCase.execute('INV001', { attendingNames: 'Juan' });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Los nombres de invitados deben ser un array');
+        });
+
+        test('should fail if phone format is invalid', async () => {
+            mockValidationService.validatePhone.mockReturnValueOnce(false);
+            const result = await useCase.execute('INV001', { phone: 'invalid' });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('El formato del teléfono no es válido');
+        });
+
+        test('should fail if invitation is inactive', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2,
+                status: 'cancelled'
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('No se puede confirmar una invitación inactiva');
+        });
+
+        test('should fail if attendingGuests > 0 when willAttend is false', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const result = await useCase.execute('INV001', {
+                willAttend: false,
+                attendingGuests: 1
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('No se pueden tener invitados si no va a asistir');
+        });
+
+        test('should fail if attendingGuests exceeds numberOfPasses', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 3
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Solo tienes 2 pases disponibles');
+        });
+
+        test('should fail if attendingNames length exceeds attendingGuests', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1,
+                attendingNames: ['Juan', 'Maria']
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('No se pueden tener más nombres que invitados confirmados');
+        });
+
+        test('should fail if message exceeds 500 characters', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const longMessage = 'a'.repeat(501);
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1,
+                message: longMessage
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('El mensaje no puede exceder 500 caracteres');
+        });
+
+        test('should fail if dietaryRestrictions exceeds 200 characters', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+
+            const longRestrictions = 'a'.repeat(201);
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1,
+                dietaryRestrictions: longRestrictions
+            });
+            expect(result.success).toBe(false);
+            expect(result.error).toBe(
+                'Las restricciones dietarias no pueden exceder 200 caracteres'
+            );
+        });
+
+        test('should normalize phone and dietaryRestrictions', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+            mockConfirmationRepository.findByCode.mockResolvedValue(null);
+            mockConfirmationRepository.save.mockResolvedValue(new Confirmation({ code: 'INV001' }));
+            mockInvitationRepository.update.mockResolvedValue(invitation);
+
+            mockValidationService.sanitizePhone = jest.fn().mockReturnValue('1234567890');
+            mockValidationService.sanitizeString = jest.fn().mockImplementation(str => str.trim());
+
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1,
+                phone: ' 123-456-7890 ',
+                dietaryRestrictions: ' Ninguna '
+            });
+
+            expect(result.success).toBe(true);
+            expect(mockValidationService.sanitizePhone).toHaveBeenCalledWith(' 123-456-7890 ');
+            expect(mockValidationService.sanitizeString).toHaveBeenCalledWith(' Ninguna ');
+        });
+    });
+
+    describe('Error Handling', () => {
+        test('should handle errors during execute', async () => {
+            mockInvitationRepository.findByCode.mockRejectedValue(new Error('Database error'));
+
+            const result = await useCase.execute('INV001', {
+                willAttend: true,
+                attendingGuests: 1
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Database error');
+            expect(result.message).toBe('Error al confirmar asistencia');
+            expect(mockLogger.error).toHaveBeenCalled();
+        });
+
+        test('should handle errors during updateConfirmation', async () => {
+            mockInvitationRepository.findByCode.mockRejectedValue(new Error('Database error'));
+
+            const result = await useCase.updateConfirmation('INV001', {
+                willAttend: true,
+                attendingGuests: 1
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Database error');
+            expect(result.message).toBe('Error al actualizar confirmación');
+            expect(mockLogger.error).toHaveBeenCalled();
+        });
+
+        test('should handle errors during cancelConfirmation', async () => {
+            mockInvitationRepository.findByCode.mockRejectedValue(new Error('Database error'));
+
+            const result = await useCase.cancelConfirmation('INV001', 'reason');
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Database error');
+            expect(result.message).toBe('Error al cancelar confirmación');
+            expect(mockLogger.error).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateConfirmation specific cases', () => {
+        test('should fail if invitation not found', async () => {
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+
+            const result = await useCase.updateConfirmation('INV001', {
+                willAttend: true,
+                attendingGuests: 1
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Invitación no encontrada');
+        });
+
+        test('should fail if confirmation not found', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+            mockConfirmationRepository.findByCode.mockResolvedValue(null);
+
+            const result = await useCase.updateConfirmation('INV001', {
+                willAttend: true,
+                attendingGuests: 1
+            });
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('No existe una confirmación para esta invitación');
+        });
+
+        test('should update all fields correctly', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            const existingConfirmation = new Confirmation({
+                code: 'INV001',
+                willAttend: true,
+                attendingGuests: 1,
+                attendingNames: ['Juan Pérez']
+            });
+
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
+            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
+
+            const result = await useCase.updateConfirmation('INV001', {
+                willAttend: false,
+                attendingGuests: 0,
+                phone: '1234567890',
+                dietaryRestrictions: 'None',
+                message: 'Sorry'
+            });
+
+            expect(result.success).toBe(true);
+            expect(mockConfirmationRepository.update).toHaveBeenCalled();
+            expect(mockInvitationRepository.update).toHaveBeenCalled();
+        });
+    });
+
+    describe('cancelConfirmation specific cases', () => {
+        test('should fail if invitation not found', async () => {
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+
+            const result = await useCase.cancelConfirmation('INV001', 'reason');
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Invitación no encontrada');
+        });
+
+        test('should fail if confirmation not found', async () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 2
+            });
+            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
+            mockConfirmationRepository.findByCode.mockResolvedValue(null);
+
+            const result = await useCase.cancelConfirmation('INV001', 'reason');
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('No existe una confirmación para esta invitación');
+        });
+    });
 });
