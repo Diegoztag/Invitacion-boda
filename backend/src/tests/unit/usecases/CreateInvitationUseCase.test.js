@@ -291,15 +291,17 @@ describe('CreateInvitationUseCase', () => {
             });
             mockValidationService.generateInvitationCode.mockReturnValue('INV001');
             mockInvitationRepository.findByCode.mockResolvedValue(null);
-            mockInvitationRepository.findByTable = jest.fn().mockResolvedValue([
-                new Invitation({
-                    code: 'INV002',
-                    guestNames: ['Otro'],
-                    numberOfPasses: 8,
-                    tableNumber: 'Mesa 1',
-                    status: 'pending'
-                })
-            ]);
+
+            const mockInv = new Invitation({
+                code: 'INV002',
+                guestNames: ['Otro'],
+                numberOfPasses: 8,
+                tableNumber: 'Mesa 1',
+                status: 'pending'
+            });
+            mockInv.isActive = jest.fn().mockReturnValue(true);
+
+            mockInvitationRepository.findByTable = jest.fn().mockResolvedValue([mockInv]);
 
             const result = await useCase.execute(invitationData);
 
@@ -309,6 +311,35 @@ describe('CreateInvitationUseCase', () => {
                 'Table capacity exceeded',
                 expect.any(Object)
             );
+        });
+
+        test('should fail if duplicate guest name exists', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez', 'María García'],
+                numberOfPasses: 2
+            };
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+
+            const mockInv = new Invitation({
+                code: 'INV002',
+                guestNames: ['Juan Pérez', 'María García'],
+                numberOfPasses: 2,
+                status: 'pending'
+            });
+            mockInv.isActive = jest.fn().mockReturnValue(true);
+
+            mockInvitationRepository.findByGuestName = jest.fn().mockResolvedValue([mockInv]);
+
+            const result = await useCase.execute(invitationData);
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Error creando invitación');
         });
     });
 
@@ -524,6 +555,44 @@ describe('CreateInvitationUseCase', () => {
 
             expect(result.success).toBeDefined();
             expect(result.errors[0].error).toBe('sequential save error');
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Repository does not support saveBatch, falling back to sequential save'
+            );
+        });
+
+        test('should handle sequential save success when saveBatch is not available', async () => {
+            const invitationsData = [
+                {
+                    guestNames: ['Juan Pérez'],
+                    numberOfPasses: 1
+                }
+            ];
+
+            const savedInv = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 1
+            });
+
+            const useCaseWithoutSaveBatch = new CreateInvitationUseCase(
+                {
+                    save: jest.fn().mockResolvedValue(savedInv),
+                    findByCode: jest.fn().mockResolvedValue(null)
+                },
+                mockValidationService,
+                mockLogger
+            );
+
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationsData[0]
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue('INV001');
+
+            const result = await useCaseWithoutSaveBatch.executeBatch(invitationsData);
+
+            expect(result.success).toBeDefined();
+            expect(result.success[0].invitation.code).toBe('INV001');
             expect(mockLogger.warn).toHaveBeenCalledWith(
                 'Repository does not support saveBatch, falling back to sequential save'
             );

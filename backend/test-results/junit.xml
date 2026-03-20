@@ -1,59 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="27" failures="0" errors="0" time="5.957">
-  <testsuite name="ConfirmAttendanceUseCase" errors="0" failures="0" skipped="0" timestamp="2026-03-20T18:48:29" time="5.284" tests="27">
-    <testcase classname="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending" name="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending" time="0.118">
+<testsuites name="jest tests" tests="43" failures="0" errors="0" time="2.077">
+  <testsuite name="ConfirmAttendanceUseCase" errors="0" failures="0" skipped="0" timestamp="2026-03-20T19:13:15" time="1.823" tests="43">
+    <testcase classname="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending without SSE" name="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending without SSE" time="0.024">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should fail when invitation does not exist" name="ConfirmAttendanceUseCase should fail when invitation does not exist" time="0.006">
+    <testcase classname="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending" name="ConfirmAttendanceUseCase should confirm attendance successfully for positive attending" time="0.003">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should fail when invitation already confirmed" name="ConfirmAttendanceUseCase should fail when invitation already confirmed" time="0.004">
+    <testcase classname="ConfirmAttendanceUseCase should fail when invitation does not exist" name="ConfirmAttendanceUseCase should fail when invitation does not exist" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should enforce validation for required attending guests when willAttend true" name="ConfirmAttendanceUseCase should enforce validation for required attending guests when willAttend true" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase should fail when invitation already confirmed" name="ConfirmAttendanceUseCase should fail when invitation already confirmed" time="0.002">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should fail with invalid invitation code" name="ConfirmAttendanceUseCase should fail with invalid invitation code" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase should fail when confirmation already exists in repository" name="ConfirmAttendanceUseCase should fail when confirmation already exists in repository" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should update existing confirmation successfully" name="ConfirmAttendanceUseCase should update existing confirmation successfully" time="0.007">
+    <testcase classname="ConfirmAttendanceUseCase should enforce validation for required attending guests when willAttend true" name="ConfirmAttendanceUseCase should enforce validation for required attending guests when willAttend true" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase should cancel confirmation successfully" name="ConfirmAttendanceUseCase should cancel confirmation successfully" time="0.007">
+    <testcase classname="ConfirmAttendanceUseCase should fail with invalid invitation code" name="ConfirmAttendanceUseCase should fail with invalid invitation code" time="0">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase should update existing confirmation successfully" name="ConfirmAttendanceUseCase should update existing confirmation successfully" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean" time="0.008">
+    <testcase classname="ConfirmAttendanceUseCase should cancel confirmation successfully" name="ConfirmAttendanceUseCase should cancel confirmation successfully" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitationCode is not provided" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitationCode is not provided" time="0.002">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object" time="0">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if phone format is invalid" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if phone format is invalid" time="0.022">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object (string)" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if confirmationData is not an object (string)" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitation is inactive" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitation is inactive" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitationCode is not a string" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitationCode is not a string" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean" time="0.002">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean (number)" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if willAttend is not a boolean (number)" time="0">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if message exceeds 500 characters" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if message exceeds 500 characters" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array (object)" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames is not an array (object)" time="0.017">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" name="ConfirmAttendanceUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" time="0.005">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if phone format is invalid" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if phone format is invalid" time="0.002">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during execute" name="ConfirmAttendanceUseCase Error Handling should handle errors during execute" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should pass if phone is not provided" name="ConfirmAttendanceUseCase Validation and Business Rules should pass if phone is not provided" time="0.002">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during updateConfirmation" name="ConfirmAttendanceUseCase Error Handling should handle errors during updateConfirmation" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitation is inactive" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if invitation is inactive" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during cancelConfirmation" name="ConfirmAttendanceUseCase Error Handling should handle errors during cancelConfirmation" time="0.004">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" time="0">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if invitation not found" name="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if invitation not found" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if confirmation not found" name="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if confirmation not found" time="0.003">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update all fields correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update all fields correctly" time="0.007">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if message exceeds 500 characters" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if message exceeds 500 characters" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if invitation not found" name="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if invitation not found" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" name="ConfirmAttendanceUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" time="0.001">
     </testcase>
-    <testcase classname="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if confirmation not found" name="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if confirmation not found" time="0.002">
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" name="ConfirmAttendanceUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should normalize empty attendingNames" name="ConfirmAttendanceUseCase Validation and Business Rules should normalize empty attendingNames" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase Validation and Business Rules should normalize message" name="ConfirmAttendanceUseCase Validation and Business Rules should normalize message" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during execute" name="ConfirmAttendanceUseCase Error Handling should handle errors during execute" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during updateConfirmation" name="ConfirmAttendanceUseCase Error Handling should handle errors during updateConfirmation" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase Error Handling should handle errors during cancelConfirmation" name="ConfirmAttendanceUseCase Error Handling should handle errors during cancelConfirmation" time="0.003">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if invitation not found" name="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if invitation not found" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if confirmation not found" name="ConfirmAttendanceUseCase updateConfirmation specific cases should fail if confirmation not found" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update all fields correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update all fields correctly" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update only willAttend correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update only willAttend correctly" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update only willAttend to true correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update only willAttend to true correctly" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should fail to update willAttend to true without attendingGuests" name="ConfirmAttendanceUseCase updateConfirmation specific cases should fail to update willAttend to true without attendingGuests" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update only attendingGuests correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update only attendingGuests correctly" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update attendingNames correctly" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update attendingNames correctly" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase updateConfirmation specific cases should update only message without changing attendance" name="ConfirmAttendanceUseCase updateConfirmation specific cases should update only message without changing attendance" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if invitation not found" name="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if invitation not found" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if confirmation not found" name="ConfirmAttendanceUseCase cancelConfirmation specific cases should fail if confirmation not found" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>
