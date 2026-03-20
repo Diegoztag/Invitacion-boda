@@ -38,7 +38,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 ## 🧩 UX y Accesibilidad
 
 - [x] Validaciones en cliente con mensajes en tiempo real.
-- [ ] Agregar atributos ARIA y roles accesibles en formularios.
+- [x] Agregar atributos ARIA y roles accesibles en formularios.
 - [ ] Optimizar móvil (mobile‑first) y navegación teclado.
 - [ ] Mejorar reconexión de SSE y mensajes de error amigables.
 - [ ] Implementar internacionalización básica (ES/EN).
