@@ -9,6 +9,14 @@ const AuthMiddleware = require('../../../presentation/middleware/authMiddleware'
 let auth;
 let logger;
 
+const createMockLogger = () => ({
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    startOperation: jest.fn(() => jest.fn())
+});
+
 beforeEach(() => {
     logger = createMockLogger();
     auth = new AuthMiddleware(logger);

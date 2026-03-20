@@ -2036,17 +2036,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             const value = <span class="cstat-no" title="statement not covered" >rawData[header] || '';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            switch (header) {</span>
-                case 'guestCount':
-<span class="cstat-no" title="statement not covered" >                    data[header] = value ? parseInt(value, 10) : 0;</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'willAttend':
-<span class="cstat-no" title="statement not covered" >                    data[header] = value === 'true';</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'confirmedAt':
-<span class="cstat-no" title="statement not covered" >                    data[header] = value || null;</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                default:
-<span class="cstat-no" title="statement not covered" >                    data[header] = value;</span>
+            case 'guestCount':
+<span class="cstat-no" title="statement not covered" >                data[header] = value ? parseInt(value, 10) : 0;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'willAttend':
+<span class="cstat-no" title="statement not covered" >                data[header] = value === 'true';</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'confirmedAt':
+<span class="cstat-no" title="statement not covered" >                data[header] = value || null;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            default:
+<span class="cstat-no" title="statement not covered" >                data[header] = value;</span>
             }
         }
 &nbsp;
@@ -2066,14 +2066,14 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             const value = confirmation[header];
 &nbsp;
             switch (header) {
-                case 'willAttend':
-                    data[header] = confirmation.willAttend ? 'true' : 'false';
-                    break;
-                case 'guestCount':
-                    data[header] = value || 0;
-                    break;
-                default:
-                    data[header] = value || '';
+            case 'willAttend':
+                data[header] = confirmation.willAttend ? 'true' : 'false';
+                break;
+            case 'guestCount':
+                data[header] = value || 0;
+                break;
+            default:
+                data[header] = value || '';
             }
         }
 &nbsp;
@@ -2093,17 +2093,17 @@ class CsvConfirmationRepository extends IConfirmationRepository {
             let value = <span class="cstat-no" title="statement not covered" >confirmation[header];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            switch (header) {</span>
-                case 'attendingNames':
-<span class="cstat-no" title="statement not covered" >                    value = confirmation.attendingNames.join('|');</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'willAttend':
-<span class="cstat-no" title="statement not covered" >                    value = confirmation.willAttend ? 'true' : 'false';</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'attendingGuests':
-<span class="cstat-no" title="statement not covered" >                    value = value || 0;</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                default:
-<span class="cstat-no" title="statement not covered" >                    value = value || '';</span>
+            case 'attendingNames':
+<span class="cstat-no" title="statement not covered" >                value = confirmation.attendingNames.join('|');</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'willAttend':
+<span class="cstat-no" title="statement not covered" >                value = confirmation.willAttend ? 'true' : 'false';</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'attendingGuests':
+<span class="cstat-no" title="statement not covered" >                value = value || 0;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            default:
+<span class="cstat-no" title="statement not covered" >                value = value || '';</span>
             }
 &nbsp;
             // Escapar comillas y comas
@@ -2176,7 +2176,7 @@ module.exports = CsvConfirmationRepository;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-20T21:01:36.883Z
+                at 2026-03-20T21:10:39.507Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

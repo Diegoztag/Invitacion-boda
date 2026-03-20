@@ -42,7 +42,7 @@ function configureAuthRoutes(middleware) {
                 token: newToken,
                 expiresIn: '24h'
             });
-        } catch (error) {
+        } catch {
             res.status(500).json({
                 success: false,
                 error: 'Error al refrescar token'

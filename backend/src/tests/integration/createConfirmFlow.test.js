@@ -53,7 +53,6 @@ describe('Integration - Create + Confirm Flow', () => {
             .send(invitationData);
 
         if (response.status !== 201) {
-            console.log(response.body);
         }
 
         expect(response.status).toBe(201);

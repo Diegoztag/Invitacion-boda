@@ -85,14 +85,14 @@ class SecurityMiddleware {
     get cors() {
         return (req, res, next) => {
             // obtener orígenes desde la configuración, si no existe se usa un conjunto seguro por defecto
-            const defaultOrigins = [
-                'http://localhost:3000',
-                'http://localhost:3001', // Browser-sync
-                'http://localhost:8080',
-                'https://localhost:3000',
-                'https://localhost:3001', // Browser-sync HTTPS
-                'https://localhost:8080'
-            ];
+            // const defaultOrigins = [
+            //     'http://localhost:3000',
+            //     'http://localhost:3001', // Browser-sync
+            //     'http://localhost:8080',
+            //     'https://localhost:3000',
+            //     'https://localhost:3001', // Browser-sync HTTPS
+            //     'https://localhost:8080'
+            // ];
 
             // const allowedOrigins =
             //     this.config &&

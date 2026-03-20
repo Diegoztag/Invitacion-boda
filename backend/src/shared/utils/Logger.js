@@ -213,9 +213,9 @@ class Logger {
      * @param {Object} res - Objeto response de Express
      * @param {number} duration - Duración en ms
      */
-    logHttpRequest(req, _res, duration) {
+    logHttpRequest(req, res, duration) {
         const { method, url, ip, headers } = req;
-        const { statusCode } = _res;
+        const { statusCode } = res;
 
         const level = statusCode >= 400 ? 'warn' : 'info';
 
@@ -226,7 +226,7 @@ class Logger {
             duration: `${duration}ms`,
             ip,
             userAgent: headers['user-agent'],
-            contentLength: _res.get('content-length') || 0
+            contentLength: res.get('content-length') || 0
         });
     }
 

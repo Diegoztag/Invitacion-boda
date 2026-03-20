@@ -253,10 +253,9 @@ class Server {
             process.exit(1);
         });
 
-        process.on('unhandledRejection', (reason, promise) => {
+        process.on('unhandledRejection', (reason, _promise) => {
             logger.error('Unhandled Rejection', {
-                reason: reason,
-                promise: promise
+                reason: reason
             });
         });
 
@@ -324,7 +323,7 @@ class Server {
 
         try {
             await fs.access(dataDir);
-        } catch (error) {
+        } catch {
             await fs.mkdir(dataDir, { recursive: true });
         }
     }

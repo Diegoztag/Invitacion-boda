@@ -3026,40 +3026,40 @@ class CsvInvitationRepository extends IInvitationRepository {
             const value = rawData[header];
 &nbsp;
             switch (header) {
-                case 'guestNames':
-                case 'attendingNames':
-                    data[header] = value ? value.split('|') : [];
-                    break;
-                case 'numberOfPasses':
-                case 'confirmedPasses':
-                case 'adultPasses':
-                case 'childPasses':
-                case 'staffPasses':
-                case 'tableNumber':
-                    // CORREGIDO: Manejar correctamente valores 0 del CSV
-                    <span class="missing-if-branch" title="if path not taken" >I</span>if (value === '' || value === null || value === undefined) {
-<span class="cstat-no" title="statement not covered" >                        data[header] = header === 'numberOfPasses' ? 1 : 0;</span>
-                    } else {
-                        const numValue = parseInt(value, 10);
-                        data[header] = isNaN(numValue) ? <span class="branch-0 cbranch-no" title="branch not covered" >0 </span>: numValue;
-                    }
-                    break;
-                case 'createdAt':
-                case 'confirmationDate':
-                case 'cancelledAt':
-                    data[header] = value || null;
-                    break;
-                case 'dietaryRestrictionsNames':
-                case 'dietaryRestrictionsDetails':
-                case 'generalMessage':
-                    data[header] = value || '';
-                    break;
-                case 'status':
-                    // Normalizar status: minúsculas y sin espacios
-                    data[header] = value ? value.toLowerCase().trim() : <span class="branch-1 cbranch-no" title="branch not covered" >'pending';</span>
-                    break;
-                default:
-                    data[header] = value || '';
+            case 'guestNames':
+            case 'attendingNames':
+                data[header] = value ? value.split('|') : [];
+                break;
+            case 'numberOfPasses':
+            case 'confirmedPasses':
+            case 'adultPasses':
+            case 'childPasses':
+            case 'staffPasses':
+            case 'tableNumber':
+                // CORREGIDO: Manejar correctamente valores 0 del CSV
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (value === '' || value === null || value === undefined) {
+<span class="cstat-no" title="statement not covered" >                    data[header] = header === 'numberOfPasses' ? 1 : 0;</span>
+                } else {
+                    const numValue = parseInt(value, 10);
+                    data[header] = isNaN(numValue) ? <span class="branch-0 cbranch-no" title="branch not covered" >0 </span>: numValue;
+                }
+                break;
+            case 'createdAt':
+            case 'confirmationDate':
+            case 'cancelledAt':
+                data[header] = value || null;
+                break;
+            case 'dietaryRestrictionsNames':
+            case 'dietaryRestrictionsDetails':
+            case 'generalMessage':
+                data[header] = value || '';
+                break;
+            case 'status':
+                // Normalizar status: minúsculas y sin espacios
+                data[header] = value ? value.toLowerCase().trim() : <span class="branch-1 cbranch-no" title="branch not covered" >'pending';</span>
+                break;
+            default:
+                data[header] = value || '';
             }
         }
 &nbsp;
@@ -3080,65 +3080,65 @@ class CsvInvitationRepository extends IInvitationRepository {
 &nbsp;
             // Usar getters públicos en lugar de acceso directo a propiedades
             switch (header) {
-                case 'code':
-                    value = invitation.code;
-                    break;
-                case 'guestNames':
-                    data[header] = invitation.guestNames.join('|');
-                    continue;
-                case 'numberOfPasses':
-                    value = invitation.numberOfPasses;
-                    break;
-                case 'phone':
-                    value = invitation.phone;
-                    break;
-                case 'createdAt':
-                    value = invitation.createdAt;
-                    break;
-                case 'confirmedPasses':
-                    value = invitation.confirmedPasses;
-                    break;
-                case 'confirmationDate':
-                    value = invitation.confirmationDate;
-                    break;
-                case 'adultPasses':
-                    value = invitation.adultPasses;
-                    break;
-                case 'childPasses':
-                    value = invitation.childPasses;
-                    break;
-                case 'staffPasses':
-                    value = invitation.staffPasses;
-                    break;
-                case 'tableNumber':
-                    value = invitation.tableNumber;
-                    break;
-                case 'status':
-                    value = invitation.status;
-                    break;
-                case 'cancelledAt':
-                    value = invitation.cancelledAt;
-                    break;
-                case 'cancelledBy':
-                    value = invitation.cancelledBy;
-                    break;
-                case 'cancellationReason':
-                    value = invitation.cancellationReason;
-                    break;
-                case 'attendingNames':
-                    data[header] = invitation.attendingNames.join('|');
-                    continue;
-                case 'dietaryRestrictionsNames':
-                    value = invitation.dietaryRestrictionsNames;
-                    break;
-                case 'dietaryRestrictionsDetails':
-                    value = invitation.dietaryRestrictionsDetails;
-                    break;
-                case 'generalMessage':
-                    value = invitation.generalMessage;
-                    break;
-<span class="branch-19 cbranch-no" title="branch not covered" >                default:</span>
-<span class="cstat-no" title="statement not covered" >                    value = '';</span>
+            case 'code':
+                value = invitation.code;
+                break;
+            case 'guestNames':
+                data[header] = invitation.guestNames.join('|');
+                continue;
+            case 'numberOfPasses':
+                value = invitation.numberOfPasses;
+                break;
+            case 'phone':
+                value = invitation.phone;
+                break;
+            case 'createdAt':
+                value = invitation.createdAt;
+                break;
+            case 'confirmedPasses':
+                value = invitation.confirmedPasses;
+                break;
+            case 'confirmationDate':
+                value = invitation.confirmationDate;
+                break;
+            case 'adultPasses':
+                value = invitation.adultPasses;
+                break;
+            case 'childPasses':
+                value = invitation.childPasses;
+                break;
+            case 'staffPasses':
+                value = invitation.staffPasses;
+                break;
+            case 'tableNumber':
+                value = invitation.tableNumber;
+                break;
+            case 'status':
+                value = invitation.status;
+                break;
+            case 'cancelledAt':
+                value = invitation.cancelledAt;
+                break;
+            case 'cancelledBy':
+                value = invitation.cancelledBy;
+                break;
+            case 'cancellationReason':
+                value = invitation.cancellationReason;
+                break;
+            case 'attendingNames':
+                data[header] = invitation.attendingNames.join('|');
+                continue;
+            case 'dietaryRestrictionsNames':
+                value = invitation.dietaryRestrictionsNames;
+                break;
+            case 'dietaryRestrictionsDetails':
+                value = invitation.dietaryRestrictionsDetails;
+                break;
+            case 'generalMessage':
+                value = invitation.generalMessage;
+                break;
+<span class="branch-19 cbranch-no" title="branch not covered" >            default:</span>
+<span class="cstat-no" title="statement not covered" >                value = '';</span>
             }
 &nbsp;
             // Manejar valores numéricos
@@ -3174,22 +3174,22 @@ class CsvInvitationRepository extends IInvitationRepository {
             let value = <span class="cstat-no" title="statement not covered" >invitation[header];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            switch (header) {</span>
-                case 'guestNames':
-<span class="cstat-no" title="statement not covered" >                    value = invitation.guestNames.join('|');</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'confirmed':
-<span class="cstat-no" title="statement not covered" >                    value = invitation.confirmed ? 'true' : 'false';</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                case 'numberOfPasses':
-                case 'confirmedPasses':
-                case 'adultPasses':
-                case 'childPasses':
-                case 'staffPasses':
-                case 'tableNumber':
-<span class="cstat-no" title="statement not covered" >                    value = value || 0;</span>
-<span class="cstat-no" title="statement not covered" >                    break;</span>
-                default:
-<span class="cstat-no" title="statement not covered" >                    value = value || '';</span>
+            case 'guestNames':
+<span class="cstat-no" title="statement not covered" >                value = invitation.guestNames.join('|');</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'confirmed':
+<span class="cstat-no" title="statement not covered" >                value = invitation.confirmed ? 'true' : 'false';</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            case 'numberOfPasses':
+            case 'confirmedPasses':
+            case 'adultPasses':
+            case 'childPasses':
+            case 'staffPasses':
+            case 'tableNumber':
+<span class="cstat-no" title="statement not covered" >                value = value || 0;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            default:
+<span class="cstat-no" title="statement not covered" >                value = value || '';</span>
             }
 &nbsp;
             // Escapar comillas y comas
@@ -3262,7 +3262,7 @@ module.exports = CsvInvitationRepository;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-20T21:01:36.883Z
+                at 2026-03-20T21:10:39.507Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
