@@ -22,7 +22,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Restringir orígenes CORS desde configuración.
 - [x] Asegurar uso de helmet, rate‑limit y CSP.
 - [x] Añadir sanitización extra en backend y validaciones en frontend (XSS).
-- [ ] Endurecer middleware de autenticación del dashboard (pasar de basic a JWT/OAuth).
+- [x] Endurecer middleware de autenticación del dashboard (pasar de basic a JWT/OAuth).
 - [x] Implementar protección CSRF para formularios POST.
 - [ ] Forzar HTTPS y configurar HSTS con flags de cookies en producción.
 
