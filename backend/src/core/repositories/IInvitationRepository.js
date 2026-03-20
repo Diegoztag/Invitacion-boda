@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 /**
  * Invitation Repository Interface
  * Define el contrato para el repositorio de invitaciones

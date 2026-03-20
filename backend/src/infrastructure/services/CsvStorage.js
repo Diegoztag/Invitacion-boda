@@ -166,7 +166,7 @@ class CsvStorage {
      * Escribe todas las confirmaciones
      * @deprecated No hace nada ya que confirmations.csv no se usa
      */
-    async writeConfirmations(confirmations) {
+    async writeConfirmations(_confirmations) {
         this.logger.debug('writeConfirmations called but ignored (deprecated)');
     }
 
@@ -255,7 +255,7 @@ class CsvStorage {
      * Busca confirmaciones por criterios
      * @deprecated
      */
-    async findConfirmations(criteria = {}) {
+    async findConfirmations(_criteria = {}) {
         return [];
     }
 

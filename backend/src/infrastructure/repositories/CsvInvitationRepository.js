@@ -6,8 +6,6 @@
 
 const IInvitationRepository = require('../../core/repositories/IInvitationRepository');
 const Invitation = require('../../core/entities/Invitation');
-const fs = require('fs').promises;
-const path = require('path');
 
 class CsvInvitationRepository extends IInvitationRepository {
     constructor(csvStorage, logger) {
@@ -660,7 +658,7 @@ class CsvInvitationRepository extends IInvitationRepository {
      * @param {Object} options - Opciones de exportación
      * @returns {Promise<Object>} Datos exportados
      */
-    async exportAll(options = {}) {
+    async exportAll(_options = {}) {
         try {
             const invitations = await this.readAllInvitations();
 

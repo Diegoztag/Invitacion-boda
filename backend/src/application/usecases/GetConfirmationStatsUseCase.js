@@ -44,7 +44,6 @@ class GetConfirmationStatsUseCase {
             const confirmations = await this._getActiveConfirmations();
 
             // Calcular métricas adicionales de confirmaciones
-            const positive = confirmations.filter(conf => conf.isPositive());
             const withDietaryRestrictions = confirmations.filter(conf =>
                 conf.hasDietaryRestrictions()
             ).length;

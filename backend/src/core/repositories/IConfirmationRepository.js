@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 /**
  * Confirmation Repository Interface
  * Define el contrato para el repositorio de confirmaciones

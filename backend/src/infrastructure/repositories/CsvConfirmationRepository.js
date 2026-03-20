@@ -6,8 +6,6 @@
 
 const IConfirmationRepository = require('../../core/repositories/IConfirmationRepository');
 const Confirmation = require('../../core/entities/Confirmation');
-const fs = require('fs').promises;
-const path = require('path');
 
 class CsvConfirmationRepository extends IConfirmationRepository {
     constructor(csvStorage, logger) {
@@ -428,7 +426,7 @@ class CsvConfirmationRepository extends IConfirmationRepository {
      * @param {Object} options - Opciones de exportación
      * @returns {Promise<Object>} Datos exportados
      */
-    async exportAll(options = {}) {
+    async exportAll(_options = {}) {
         try {
             const confirmations = await this.readAllConfirmations();
 

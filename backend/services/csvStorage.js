@@ -22,11 +22,7 @@ class CSVStorageService {
                     'code,guestNames,numberOfPasses,phone,createdAt,confirmed,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason\n';
                 await fs.writeFile(this.invitationsFile, headers);
             }
-
-            console.log('✅ CSV Storage initialized successfully');
-        } catch (error) {
-            console.error('Error initializing CSV storage:', error);
-        }
+        } catch {}
     }
 
     // Parse CSV line (handles commas in quoted fields)
@@ -118,7 +114,6 @@ class CSVStorageService {
                 tableNumber: invitation.tableNumber || null
             };
         } catch (error) {
-            console.error('Error saving invitation:', error);
             throw error;
         }
     }
@@ -188,8 +183,7 @@ class CSVStorageService {
             }
 
             return invitations;
-        } catch (error) {
-            console.error('Error reading invitations:', error);
+        } catch {
             return [];
         }
     }
@@ -232,7 +226,6 @@ class CSVStorageService {
 
             return updatedInvitation;
         } catch (error) {
-            console.error('Error updating invitation:', error);
             throw error;
         }
     }
@@ -262,7 +255,6 @@ class CSVStorageService {
 
             return updatedInvitation;
         } catch (error) {
-            console.error('Error updating confirmation:', error);
             throw error;
         }
     }
@@ -386,7 +378,6 @@ class CSVStorageService {
 
             return invitations[invitationIndex];
         } catch (error) {
-            console.error('Error deactivating invitation:', error);
             throw error;
         }
     }
@@ -416,7 +407,6 @@ class CSVStorageService {
 
             return invitations[invitationIndex];
         } catch (error) {
-            console.error('Error activating invitation:', error);
             throw error;
         }
     }
@@ -529,7 +519,6 @@ class CSVStorageService {
 
             return { imported, errors };
         } catch (error) {
-            console.error('Error importing invitations:', error);
             throw error;
         }
     }

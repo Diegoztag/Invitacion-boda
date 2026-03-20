@@ -102,7 +102,7 @@ class SecurityMiddleware {
                     ? this.config.cors.allowedOrigins
                     : defaultOrigins;
 
-            const origin = req.headers.origin;
+            const _origin = req.headers.origin;
 
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.setHeader(
@@ -437,7 +437,7 @@ class SecurityMiddleware {
      * Manejo global de errores
      */
     get globalErrorHandler() {
-        return (error, req, res, next) => {
+        return (error, req, res, _next) => {
             this.logger.error('Global error', {
                 requestId: req.id,
                 path: req.path,
@@ -447,7 +447,7 @@ class SecurityMiddleware {
             });
 
             if (res.headersSent) {
-                return next(error);
+                return _next(error);
             }
 
             res.status(500).json({

@@ -4,8 +4,6 @@
  * Sigue principios DDD (Domain Driven Design)
  */
 
-const { v4: uuidv4 } = require('crypto');
-
 class Invitation {
     constructor({
         code = null,
@@ -595,9 +593,6 @@ class Invitation {
 
         // Opcional: Log de advertencia si no coinciden, pero NO modificar
         if (totalCalculated !== this._numberOfPasses) {
-            console.warn(
-                `Advertencia: La suma de pases por tipo (${totalCalculated}) no coincide con el total (${this._numberOfPasses}) para invitación ${this._code}`
-            );
         }
     }
 

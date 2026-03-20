@@ -7,6 +7,7 @@
 const path = require('path');
 // Importar configuración para validación de límites
 const config = require('../../config');
+const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 
 class InvitationController {
     constructor(createInvitationUseCase, invitationRepository, validationService, logger) {
@@ -80,8 +81,9 @@ class InvitationController {
         });
 
         try {
+            const createInvitationDTO = new CreateInvitationDTO(req.body);
             // Validar datos de entrada
-            const validation = this.validationService.validateInvitationData(req.body);
+            const validation = this.validationService.validateInvitationData(createInvitationDTO);
 
             if (!validation.isValid) {
                 return res.status(400).json({
@@ -262,10 +264,12 @@ class InvitationController {
                 });
             }
 
+            const updateInvitationDTO = new UpdateInvitationDTO(req.body);
+
             // Validar datos de actualización
             const validation = this.validationService.validateInvitationData({
                 ...existingInvitation.toObject(),
-                ...req.body
+                ...updateInvitationDTO
             });
 
             if (!validation.isValid) {

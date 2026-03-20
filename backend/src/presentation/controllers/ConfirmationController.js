@@ -4,6 +4,11 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
+const {
+    CreateConfirmationDTO,
+    UpdateConfirmationDTO
+} = require('../../application/dto/ConfirmationDTO');
+
 class ConfirmationController {
     constructor(
         confirmAttendanceUseCase,
@@ -41,7 +46,9 @@ class ConfirmationController {
             }
 
             // Validar datos de confirmación
-            const validation = this.validationService.validateConfirmationData(req.body);
+            const createConfirmationDTO = new CreateConfirmationDTO(req.body);
+            const validation =
+                this.validationService.validateConfirmationData(createConfirmationDTO);
 
             if (!validation.isValid) {
                 return res.status(400).json({
@@ -157,7 +164,9 @@ class ConfirmationController {
             }
 
             // Validar datos de actualización
-            const validation = this.validationService.validateConfirmationData(req.body);
+            const updateConfirmationDTO = new UpdateConfirmationDTO(req.body);
+            const validation =
+                this.validationService.validateConfirmationData(updateConfirmationDTO);
 
             if (!validation.isValid) {
                 return res.status(400).json({

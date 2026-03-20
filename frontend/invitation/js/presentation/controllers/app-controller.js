@@ -6,7 +6,6 @@
 import { DIContainer } from '../../config/di-container.js';
 import { EVENTS } from '../../shared/constants/events.js';
 import { SELECTORS } from '../../shared/constants/selectors.js';
-import { DOMUtils } from '../../shared/utils/dom-utils.js';
 
 export class AppController {
     constructor(container, options = {}) {

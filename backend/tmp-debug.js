@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const request = require('supertest');
 const Server = require('./src/server');
 

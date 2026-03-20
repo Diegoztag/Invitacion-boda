@@ -12,7 +12,6 @@ import { MetaService } from '../core/services/meta-service.js';
 import { ValidationService } from '../core/services/validation-service.js';
 
 // Importaciones de controladores
-import { AppController } from '../presentation/controllers/app-controller.js';
 import { NavigationController } from '../presentation/controllers/navigation-controller.js';
 import { RSVPController } from '../presentation/controllers/rsvp-controller.js';
 import { ContentController } from '../presentation/controllers/content-controller.js';
@@ -40,7 +39,7 @@ export function setupDependencies(container) {
     // API Client - Singleton para reutilizar conexiones
     container.register(
         'apiClient',
-        c => {
+        () => {
             const apiConfig = getApiConfig();
             return new ApiClient(apiConfig.baseUrl, apiConfig);
         },
@@ -54,36 +53,22 @@ export function setupDependencies(container) {
     // Invitation Service - Maneja la lógica de negocio de invitaciones
     container.register(
         'invitationService',
-        c => {
-            return new InvitationService(c.resolve('apiClient'));
-        },
+        c => new InvitationService(c.resolve('apiClient')),
         true
     );
 
     // Meta Service - Maneja meta tags dinámicos
-    container.register(
-        'metaService',
-        c => {
-            return new MetaService();
-        },
-        true
-    );
+    container.register('metaService', () => new MetaService(), true);
 
     // Validation Service - Maneja validaciones de formularios
-    container.register(
-        'validationService',
-        c => {
-            return new ValidationService();
-        },
-        true
-    );
+    container.register('validationService', () => new ValidationService(), true);
 
     // ========================================
     // UI COMPONENTS LAYER
     // ========================================
 
     // Countdown Component - Componente de cuenta regresiva
-    container.register('countdownComponent', c => {
+    container.register('countdownComponent', () => {
         const countdownElement = document.getElementById('countdown');
         if (!countdownElement) {
             console.warn('Countdown element not found, skipping registration');
@@ -96,38 +81,29 @@ export function setupDependencies(container) {
     });
 
     // Modal Component - Componente modal reutilizable
-    container.register('modalComponent', c => {
-        return new ModalComponent();
-    });
+    container.register('modalComponent', () => new ModalComponent());
 
     // Loader Component - Componente de carga
-    container.register('loaderComponent', c => {
-        return new LoaderComponent();
-    });
+    container.register('loaderComponent', () => new LoaderComponent());
 
     // ========================================
     // CONTROLLERS LAYER
     // ========================================
 
     // Navigation Controller - Maneja navegación y scroll
-    container.register('navigationController', c => {
-        return new NavigationController();
-    });
+    container.register('navigationController', () => new NavigationController());
 
     // RSVP Controller - Maneja formulario de confirmación
-    container.register('rsvpController', c => {
-        return new RSVPController(c.resolve('invitationService'), c.resolve('validationService'));
-    });
+    container.register(
+        'rsvpController',
+        c => new RSVPController(c.resolve('invitationService'), c.resolve('validationService'))
+    );
 
     // Content Controller - Maneja contenido dinámico
-    container.register('contentController', c => {
-        return new ContentController(c.resolve('metaService'));
-    });
+    container.register('contentController', c => new ContentController(c.resolve('metaService')));
 
     // Carousel Controller - Maneja carousel de fotos
-    container.register('carouselController', c => {
-        return new CarouselController();
-    });
+    container.register('carouselController', () => new CarouselController());
 
     // ========================================
     // MAIN APP CONTROLLER

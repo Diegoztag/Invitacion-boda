@@ -307,14 +307,6 @@ class Server {
                     environment: process.env.NODE_ENV || 'development',
                     timestamp: new Date().toISOString()
                 });
-
-                console.log(`🚀 Servidor iniciado en puerto ${this.port} - Stats verificados`);
-                console.log(`🏠 Inicio: http://localhost:${this.port} → /landing`);
-                console.log(`🎯 Landing: http://localhost:${this.port}/landing`);
-                console.log(`💌 Invitación: http://localhost:${this.port}/invitation`);
-                console.log(`📊 Dashboard: http://localhost:${this.port}/dashboard`);
-                console.log(`🔧 API: http://localhost:${this.port}/api`);
-                console.log(`❤️  Health: http://localhost:${this.port}/health`);
             });
         } catch (error) {
             const logger = this.container.resolve('logger');
@@ -392,17 +384,15 @@ class Server {
 // Crear e iniciar servidor si este archivo es ejecutado directamente
 if (require.main === module) {
     const server = new Server();
-    server.start().catch(console.error);
+    server.start().catch();
 
     // Manejo graceful de shutdown
     process.on('SIGTERM', async () => {
-        console.log('SIGTERM received, shutting down gracefully');
         await server.stop();
         process.exit(0);
     });
 
     process.on('SIGINT', async () => {
-        console.log('SIGINT received, shutting down gracefully');
         await server.stop();
         process.exit(0);
     });

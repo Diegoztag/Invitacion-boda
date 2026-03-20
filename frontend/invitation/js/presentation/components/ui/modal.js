@@ -6,7 +6,6 @@
 import { Component } from '../base/component.js';
 import { EVENTS } from '../../../shared/constants/events.js';
 import { SELECTORS } from '../../../shared/constants/selectors.js';
-import { DOMUtils } from '../../../shared/utils/dom-utils.js';
 import { getConfig } from '../../../config/app-config.js';
 
 export class ModalComponent extends Component {

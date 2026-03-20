@@ -178,26 +178,6 @@ export class Component {
     }
 
     /**
-     * Agrega una clase CSS al elemento
-     * @param {string} className - Nombre de la clase
-     */
-    addClass(className) {
-        if (this.element && className) {
-            this.element.classList.add(className);
-        }
-    }
-
-    /**
-     * Remueve una clase CSS del elemento
-     * @param {string} className - Nombre de la clase
-     */
-    removeClass(className) {
-        if (this.element && className) {
-            this.element.classList.remove(className);
-        }
-    }
-
-    /**
      * Alterna una clase CSS en el elemento
      * @param {string} className - Nombre de la clase
      */
@@ -205,14 +185,5 @@ export class Component {
         if (this.element && className) {
             this.element.classList.toggle(className);
         }
-    }
-
-    /**
-     * Verifica si el elemento tiene una clase CSS
-     * @param {string} className - Nombre de la clase
-     * @returns {boolean}
-     */
-    hasClass(className) {
-        return this.element ? this.element.classList.contains(className) : false;
     }
 }

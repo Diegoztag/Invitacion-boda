@@ -4,7 +4,6 @@
  */
 
 import { Component } from '../base/component.js';
-import { DOMUtils } from '../../../shared/utils/dom-utils.js';
 
 export class LoaderComponent extends Component {
     constructor(element, options = {}) {
