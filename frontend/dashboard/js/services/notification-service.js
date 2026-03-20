@@ -12,6 +12,12 @@ class NotificationService {
         this.panelOpen = false;
         this.backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
 
+        // SSE Reconnection state
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+        this.reconnectTimeout = null;
+        this.isConnected = false;
+
         this.init();
     }
 
@@ -224,29 +230,73 @@ class NotificationService {
             this.eventSource.close();
         }
 
-        this.eventSource = new EventSource(`${this.backendUrl}/notifications/stream`);
+        try {
+            this.eventSource = new EventSource(`${this.backendUrl}/notifications/stream`);
 
-        this.eventSource.onopen = () => {
-            console.log('Conexión SSE establecida');
-        };
-
-        this.eventSource.addEventListener('confirmation', event => {
-            try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'new_confirmation') {
-                    this.handleNewConfirmation(data.invitation);
+            this.eventSource.onopen = () => {
+                console.log('Conexión SSE establecida');
+                if (!this.isConnected && this.reconnectAttempts > 0) {
+                    this.showSystemToast('Conexión restablecida', 'success');
                 }
-            } catch (error) {
-                console.error('Error procesando notificación:', error);
-            }
-        });
+                this.isConnected = true;
+                this.reconnectAttempts = 0;
+            };
 
-        this.eventSource.onerror = error => {
-            console.error('Error en conexión SSE:', error);
-            // Intentar reconectar en 5 segundos si se pierde la conexión
+            this.eventSource.addEventListener('confirmation', event => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'new_confirmation') {
+                        this.handleNewConfirmation(data.invitation);
+                    }
+                } catch (error) {
+                    console.error('Error procesando notificación:', error);
+                }
+            });
+
+            this.eventSource.onerror = error => {
+                console.error('Error en conexión SSE:', error);
+                this.handleConnectionError();
+            };
+        } catch (error) {
+            console.error('Error al iniciar SSE:', error);
+            this.handleConnectionError();
+        }
+    }
+
+    /**
+     * Maneja errores de conexión SSE implementando exponential backoff
+     */
+    handleConnectionError() {
+        if (this.eventSource) {
             this.eventSource.close();
-            setTimeout(() => this.startMonitoring(), 5000);
-        };
+        }
+
+        this.isConnected = false;
+
+        if (this.reconnectAttempts === 0) {
+            this.showSystemToast('Conexión perdida. Intentando reconectar...', 'warning');
+        }
+
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            // Exponential backoff: 2s, 4s, 8s, 16s, 32s
+            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+
+            console.log(
+                `Intentando reconectar en ${delay / 1000} segundos... (Intento ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+            );
+
+            if (this.reconnectTimeout) {
+                clearTimeout(this.reconnectTimeout);
+            }
+
+            this.reconnectTimeout = setTimeout(() => this.startMonitoring(), delay);
+        } else {
+            this.showSystemToast(
+                'No se pudo establecer conexión con el servidor de notificaciones. Por favor, recarga la página más tarde.',
+                'error'
+            );
+        }
     }
 
     /**
@@ -257,6 +307,11 @@ class NotificationService {
             this.eventSource.close();
             this.eventSource = null;
         }
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
+        }
+        this.isConnected = false;
     }
 
     /**
@@ -319,6 +374,43 @@ class NotificationService {
             <button class="toast-action" onclick="window.notificationService.viewConfirmation('${invitation.code}')">
                 Ver
             </button>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Trigger animation
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        // Remove after 5 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+
+    /**
+     * Muestra un toast del sistema (errores, reconexiones)
+     */
+    showSystemToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `notification-toast system-toast ${type}`;
+
+        let icon = 'fa-info-circle';
+        if (type === 'success') {
+            icon = 'fa-check-circle';
+        }
+        if (type === 'warning') {
+            icon = 'fa-exclamation-triangle';
+        }
+        if (type === 'error') {
+            icon = 'fa-times-circle';
+        }
+
+        toast.innerHTML = `
+            <i class="fas ${icon} toast-icon"></i>
+            <div class="toast-content">
+                <div class="toast-message">${message}</div>
+            </div>
         `;
 
         document.body.appendChild(toast);

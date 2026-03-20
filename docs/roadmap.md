@@ -39,8 +39,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 - [x] Validaciones en cliente con mensajes en tiempo real.
 - [x] Agregar atributos ARIA y roles accesibles en formularios.
-- [ ] Optimizar móvil (mobile‑first) y navegación teclado.
-- [ ] Mejorar reconexión de SSE y mensajes de error amigables.
+- [x] Optimizar móvil (mobile‑first) y navegación teclado.
+- [x] Mejorar reconexión de SSE y mensajes de error amigables.
 - [ ] Implementar internacionalización básica (ES/EN).
 - [ ] Revisar contrastes de colores y añadir modo oscuro opcional.
 - [ ] Añadir manejo offline o mensaje de falta de conexión.
