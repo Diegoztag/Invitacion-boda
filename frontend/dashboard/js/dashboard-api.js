@@ -25,7 +25,6 @@ export class AdminAPI {
         const token = localStorage.getItem('dashboardToken');
         if (token) {
             this.headers['Authorization'] = `Bearer ${token}`;
-            console.log('🔐 Autenticación JWT configurada desde localStorage');
             return;
         }
 
@@ -38,14 +37,7 @@ export class AdminAPI {
                 const { username, password } = config.credentials;
                 const credentials = btoa(`${username}:${password}`);
                 this.headers['Authorization'] = `Basic ${credentials}`;
-
-                console.log('🔐 Autenticación básica configurada para el dashboard');
-            } else if (config.authType === 'jwt') {
-                // Para JWT, se configurará dinámicamente después del login
-                console.log('🔐 Autenticación JWT configurada para el dashboard');
             }
-        } else {
-            console.log('🔓 Dashboard configurado sin autenticación');
         }
     }
 
@@ -81,12 +73,9 @@ export class AdminAPI {
     /**
      * Maneja errores de API de forma consistente
      * @param {Error} error - Error capturado
-     * @param {string} context - Contexto del error
      * @returns {Object} Objeto de error formateado
      */
-    handleApiError(error, context = '') {
-        console.error(`API Error${context ? ` in ${context}` : ''}:`, error);
-
+    handleApiError(error) {
         // Determinar tipo de error
         if (error.name === 'NetworkError' || !navigator.onLine) {
             return {
@@ -128,8 +117,6 @@ export class AdminAPI {
     async fetchWithErrorHandling(endpoint, options = {}) {
         try {
             const url = `${this.backendUrl}${endpoint}`;
-            console.log('Fetching:', url, 'with options:', options);
-
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -138,8 +125,6 @@ export class AdminAPI {
                 }
             });
 
-            console.log('Response status:', response.status);
-
             if (!response.ok) {
                 const error = new Error(`HTTP error! status: ${response.status}`);
                 error.status = response.status;
@@ -147,14 +132,11 @@ export class AdminAPI {
             }
 
             const data = await response.json();
-            console.log('Response data:', data);
-
             return {
                 success: true,
                 data
             };
         } catch (error) {
-            console.error('Fetch error:', error);
             return this.handleApiError(error, endpoint);
         }
     }
@@ -376,7 +358,6 @@ export class AdminAPI {
 
             return { success: true };
         } catch (error) {
-            console.error('Download error:', error);
             return this.handleApiError(error, 'download-csv');
         }
     }
@@ -592,9 +573,7 @@ export class AdminAPI {
                 const total =
                     (invitation.adults || 0) + (invitation.children || 0) + (invitation.staff || 0);
                 if (total !== invitation.numberOfPasses) {
-                    console.warn(
-                        `Fila ${i + 1}: La suma de adultos, niños y staff (${total}) no coincide con el total de pases (${invitation.numberOfPasses})`
-                    );
+                    //
                 }
             }
 

@@ -926,7 +926,7 @@ export class InvitationsController {
         try {
             await navigator.clipboard.writeText(text);
             showToast('Enlace copiado al portapapeles', 'success');
-        } catch (err) {
+        } catch {
             showToast('Error al copiar enlace', 'error');
         }
     }
@@ -1163,7 +1163,6 @@ export class InvitationsController {
                 if (e.target.classList.contains('guest-attendance-check')) {
                     const checkboxes =
                         guestFieldsContainer.querySelectorAll('.guest-attendance-check');
-                    const total = checkboxes.length;
                     const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
                     const statusSelect = document.getElementById('editStatus');
 
@@ -2131,7 +2130,7 @@ export class InvitationsController {
         try {
             await navigator.clipboard.writeText(invitationUrl);
             showToast('Enlace de invitación copiado al portapapeles', 'success');
-        } catch (err) {
+        } catch {
             showToast('Error al copiar enlace', 'error');
         }
     }

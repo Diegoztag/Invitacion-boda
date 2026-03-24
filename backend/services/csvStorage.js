@@ -525,3 +525,4 @@ class CSVStorageService {
 }
 
 module.exports = new CSVStorageService();
+module.exports.CSVStorageService = CSVStorageService;

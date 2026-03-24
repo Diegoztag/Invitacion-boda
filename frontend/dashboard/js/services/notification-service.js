@@ -234,7 +234,6 @@ class NotificationService {
             this.eventSource = new EventSource(`${this.backendUrl}/notifications/stream`);
 
             this.eventSource.onopen = () => {
-                console.log('Conexión SSE establecida');
                 if (!this.isConnected && this.reconnectAttempts > 0) {
                     this.showSystemToast('Conexión restablecida', 'success');
                 }
@@ -249,16 +248,14 @@ class NotificationService {
                         this.handleNewConfirmation(data.invitation);
                     }
                 } catch (error) {
-                    console.error('Error procesando notificación:', error);
+                    //
                 }
             });
 
-            this.eventSource.onerror = error => {
-                console.error('Error en conexión SSE:', error);
+            this.eventSource.onerror = () => {
                 this.handleConnectionError();
             };
         } catch (error) {
-            console.error('Error al iniciar SSE:', error);
             this.handleConnectionError();
         }
     }
@@ -281,10 +278,6 @@ class NotificationService {
             this.reconnectAttempts++;
             // Exponential backoff: 2s, 4s, 8s, 16s, 32s
             const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-
-            console.log(
-                `Intentando reconectar en ${delay / 1000} segundos... (Intento ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
-            );
 
             if (this.reconnectTimeout) {
                 clearTimeout(this.reconnectTimeout);
@@ -483,7 +476,7 @@ class NotificationService {
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.5);
                 } catch (e) {
-                    console.log('Audio not supported');
+                    //
                 }
             }
         };

@@ -289,10 +289,10 @@ export function debounce(func, wait) {
  */
 export function escapeHtml(text) {
     const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
+        '&': '&',
+        '<': '<',
+        '>': '>',
+        '"': '"',
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, m => map[m]);
@@ -316,7 +316,6 @@ export function getSafeValue(value, fallback = 0) {
 export function updateStatsUI(stats, suffix = '') {
     // Validar que stats existe y es un objeto
     if (!stats || typeof stats !== 'object') {
-        console.warn('updateStatsUI: stats is not a valid object', stats);
         return;
     }
 
@@ -341,7 +340,6 @@ export function updateStatsUI(stats, suffix = '') {
             totalValue = getSafeValue(invitations.totalPasses, getSafeValue(invitations.total));
         }
         totalInvitationsEl.textContent = totalValue;
-        console.log(`Updated totalInvitations${suffix}:`, totalValue);
     }
 
     if (confirmedPassesEl) {
@@ -358,7 +356,6 @@ export function updateStatsUI(stats, suffix = '') {
             confirmedValue = getSafeValue(confirmations.totalConfirmedGuests);
         }
         confirmedPassesEl.textContent = confirmedValue;
-        console.log(`Updated confirmedPasses${suffix}:`, confirmedValue);
     }
 
     if (pendingInvitationsEl) {
@@ -377,7 +374,6 @@ export function updateStatsUI(stats, suffix = '') {
             );
         }
         pendingInvitationsEl.textContent = pendingValue;
-        console.log(`Updated pendingInvitations${suffix}:`, pendingValue);
     }
 
     if (cancelledPassesEl) {
@@ -386,7 +382,6 @@ export function updateStatsUI(stats, suffix = '') {
         const cancelledValue = getSafeValue(invitations.cancelled, 0);
 
         cancelledPassesEl.textContent = cancelledValue;
-        console.log(`Updated cancelledPasses${suffix}:`, cancelledValue);
     }
 
     // Actualizar elementos adicionales si existen
@@ -441,8 +436,6 @@ export function updateTargetElements(targets) {
     if (targetTotalEl) {
         targetTotalEl.textContent = getSafeValue(targetTotal, 250);
     }
-
-    console.log('Updated target elements:', { targetTotal });
 }
 
 /**
@@ -647,7 +640,6 @@ export function renderTableRow(invitation, tableType = 'invitations', index = 0)
 function renderInvitationRow(invitation, index = 0) {
     // Validaciones defensivas
     if (!invitation) {
-        console.warn('renderInvitationRow: invitation is null or undefined');
         return '<tr><td colspan="6">Error: Invitación no válida</td></tr>';
     }
 
@@ -736,7 +728,6 @@ function renderInvitationRow(invitation, index = 0) {
 function renderRecentConfirmationRow(invitation, index) {
     // Validaciones defensivas
     if (!invitation) {
-        console.warn('renderRecentConfirmationRow: invitation is null or undefined');
         return '<tr><td colspan="6">Error: Invitación no válida</td></tr>';
     }
 
@@ -761,9 +752,6 @@ function renderRecentConfirmationRow(invitation, index) {
 
     // Si no hay nombres válidos, usar el código como fallback
     if (!hasValidNames) {
-        console.info(
-            `renderRecentConfirmationRow: No valid guest names for invitation ${invitationCode}, using code as fallback`
-        );
         guestNames = [`Invitación ${invitationCode}`];
     }
 
@@ -832,7 +820,6 @@ function renderRecentConfirmationRow(invitation, index) {
 function renderCreateSectionRow(invitation, index) {
     // Validaciones defensivas
     if (!invitation) {
-        console.warn('renderCreateSectionRow: invitation is null or undefined');
         return '<tr><td colspan="5">Error: Invitación no válida</td></tr>';
     }
 

@@ -8,7 +8,12 @@ module.exports = {
     testEnvironment: 'node',
 
     // Directorios de tests
-    testMatch: ['**/src/tests/**/*.test.js', '**/src/tests/**/*.spec.js'],
+    testMatch: [
+        '**/src/tests/**/*.test.js',
+        '**/src/tests/**/*.spec.js',
+        '**/tests/**/*.test.js',
+        '**/tests/**/*.spec.js'
+    ],
 
     // Directorios a ignorar
     testPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/'],
@@ -53,7 +58,7 @@ module.exports = {
     },
 
     // Setup files
-    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js', '<rootDir>/tests/setup.js'],
 
     // Module paths
     moduleDirectories: ['node_modules', 'src'],
@@ -87,5 +92,5 @@ module.exports = {
     ],
 
     // Variables de entorno para tests
-    setupFiles: ['<rootDir>/src/tests/env.js']
+    setupFiles: ['<rootDir>/src/tests/env.js', '<rootDir>/tests/env.js']
 };
