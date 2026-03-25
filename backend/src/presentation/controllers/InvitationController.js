@@ -13,12 +13,14 @@ class InvitationController {
     constructor(
         createInvitationUseCase,
         getInvitationUseCase,
+        getInvitationsUseCase,
         invitationRepository,
         validationService,
         logger
     ) {
         this.createInvitationUseCase = createInvitationUseCase;
         this.getInvitationUseCase = getInvitationUseCase;
+        this.getInvitationsUseCase = getInvitationsUseCase;
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.logger = logger;
@@ -144,24 +146,6 @@ class InvitationController {
                 includeInactive = 'false'
             } = req.query;
 
-            // Validar parámetros de paginación
-            const pageNum = parseInt(page, 10);
-            const limitNum = parseInt(limit, 10);
-
-            if (isNaN(pageNum) || pageNum < 1) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Número de página inválido'
-                });
-            }
-
-            if (isNaN(limitNum) || limitNum < 1 || limitNum > 1000) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Límite inválido (1-1000)'
-                });
-            }
-
             // Construir filtros
             const filters = {};
             if (status) {
@@ -184,33 +168,26 @@ class InvitationController {
             }
 
             // Construir opciones de ordenamiento
-            const sort = {
-                field: sortBy,
-                direction: sortOrder
-            };
+            const sort = { field: sortBy, direction: sortOrder };
 
-            // Obtener invitaciones paginadas
-            const result = await this.invitationRepository.findPaginated(
-                pageNum,
-                limitNum,
+            const result = await this.getInvitationsUseCase.execute(
+                page,
+                limit,
                 filters,
                 sort,
                 includeInactive === 'true'
             );
+
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
             endOperation({
                 count: result.data.length,
                 total: result.pagination.total
             });
 
-            // Convertir entidades a objetos planos
-            const serializedData = result.data.map(invitation => invitation.toObject());
-
-            res.json({
-                success: true,
-                data: serializedData,
-                pagination: result.pagination
-            });
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
