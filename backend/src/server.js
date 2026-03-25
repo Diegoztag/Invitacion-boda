@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Cargar configuración centralizada
 const config = require('./config');
@@ -141,6 +142,7 @@ class Server {
         // Middleware básico de Express
         this.app.use(express.json({ limit: '10mb' }));
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cookieParser());
 
         // Configurar middleware personalizado
         const middleware = configureMiddleware({ validationService, logger, config });
@@ -205,6 +207,9 @@ class Server {
         this.app.get('/', (req, res) => {
             res.redirect('/landing');
         });
+
+        // Ruta para obtener el token CSRF
+        this.app.get('/api/csrf-token', middleware.csrfProtection, middleware.sendCsrfToken);
 
         // Configurar rutas principales
         const routes = configureRoutes(controllers, middleware);

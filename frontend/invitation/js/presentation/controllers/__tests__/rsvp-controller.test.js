@@ -87,7 +87,9 @@ describe('RSVPController', () => {
                 destroy: jest.fn(),
                 validateForm: jest.fn().mockResolvedValue(true)
             };
-            global.import.mockResolvedValue({ FormValidatorComponent: jest.fn().mockReturnValue(mockFormValidator) });
+            global.import.mockResolvedValue({
+                FormValidatorComponent: jest.fn().mockReturnValue(mockFormValidator)
+            });
 
             await rsvpController.init();
 

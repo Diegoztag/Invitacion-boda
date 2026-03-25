@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
+const csurf = require('csurf');
 
 class SecurityMiddleware {
     constructor(validationService, logger, config = {}) {
@@ -498,6 +499,26 @@ class SecurityMiddleware {
 
         return value;
     }
+
+    /**
+     * CSRF protection middleware
+     */
+    get csrfProtection() {
+        return csurf({
+            cookie: {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            }
+        });
+    }
+
+    /**
+     * Middleware to send CSRF token to the client
+     */
+    sendCsrfToken = (req, res) => {
+        res.json({ csrfToken: req.csrfToken() });
+    };
 }
 
 module.exports = SecurityMiddleware;

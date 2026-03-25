@@ -623,15 +623,6 @@ export class AdminAPI {
 }
 
 /**
- * Factory function para crear instancia de API
- * @param {string} backendUrl - URL del backend
- * @returns {AdminAPI} Instancia de AdminAPI
- */
-export function createAdminAPI(backendUrl) {
-    return new AdminAPI(backendUrl);
-}
-
-/**
  * Instancia global de AdminAPI
  * Se inicializa con la configuración del backend
  */

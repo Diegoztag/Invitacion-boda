@@ -1,11 +1,10 @@
-# Guía de Configuración y Desarrollo
+# 🛠️ Guía de Configuración y Desarrollo
 
 ## Requisitos del Sistema
 
 - **Node.js**: v14.0.0 o superior
 - **npm**: v6.0.0 o superior
 - **Git**: Para control de versiones
-- **Editor de código**: VS Code recomendado
 
 ## Instalación
 
@@ -18,170 +17,72 @@ cd invitacion-boda
 
 ### 2. Instalar Dependencias
 
+Desde la raíz del proyecto, ejecuta:
+
 ```bash
-cd backend
 npm install
-cd ..
 ```
+
+Este comando instalará las dependencias tanto del `frontend` como del `backend` gracias al script `postinstall`.
 
 ### 3. Configurar Variables de Entorno
 
-```bash
-cd backend
-cp .env.example .env
-```
-
-Editar `.env` con tus valores:
+1.  Navega a la carpeta del backend:
+    ```bash
+    cd backend
+    ```
+2.  Copia el archivo de ejemplo:
+    ```bash
+    cp .env.example .env
+    ```
+3.  Edita el archivo `.env` con tus valores:
 
 ```env
-# Puerto del servidor
+# Puerto en el que correrá el servidor backend
 PORT=3000
 
-# Credenciales del panel de administración
+# Credenciales para el panel de administración
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=tu_contraseña_segura_aqui
-
-# Configuración de WhatsApp (opcional)
-WHATSAPP_API_URL=https://api.whatsapp.com/
-WHATSAPP_TOKEN=tu_token_aqui
 ```
 
-## Desarrollo con Live Reload
-
-Este proyecto incluye un ambiente de desarrollo unificado con live reload integrado.
+## Desarrollo
 
 ### Ejecutar en Modo Desarrollo
 
+Desde la **raíz del proyecto**, ejecuta:
+
 ```bash
 npm run dev
-# o
-npm start
 ```
 
-Esto ejecutará:
+Este comando utiliza `concurrently` para lanzar dos procesos simultáneamente:
 
-- Frontend y Backend en el mismo puerto: http://localhost:3000
-- Live reload integrado que actualiza automáticamente el navegador
-- API disponible en http://localhost:3000/api
+1.  **Servidor Backend**: Inicia el servidor de Node.js en modo de desarrollo (`nodemon`) en `http://localhost:3000`. Se reiniciará automáticamente si detecta cambios en los archivos del `backend`.
+2.  **Browser-Sync**: Inicia un servidor de desarrollo para el `frontend`.
+    - **Proxy**: Redirige las peticiones al `backend` en `localhost:3000`.
+    - **Live Reload**: Monitorea los archivos del `frontend` (HTML, CSS, JS) y recarga el navegador automáticamente cuando detecta cambios.
 
-### Características del Live Reload
+### Acceso a la Aplicación
 
-- **Servidor unificado**: Todo corre en el puerto 3000
-- **Recarga automática**: Cualquier cambio en archivos HTML, CSS, JS se reflejará automáticamente
-- **Sin necesidad de F5**: El navegador se actualiza solo cuando guardas cambios
-- **Nodemon para el backend**: Los cambios en el servidor también reinician automáticamente
+- **Página de Invitación**: `http://localhost:3001` (servido por Browser-Sync)
+- **API del Backend**: `http://localhost:3000/api`
 
-## Scripts Disponibles
+## Scripts Disponibles (desde la raíz)
 
-```json
-{
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "test": "jest",
-    "lint": "eslint .",
-    "format": "prettier --write ."
-}
-```
-
-## Estructura del Proyecto
-
-```
-invitacion-boda/
-├── backend/
-│   ├── server.js           # Servidor Express principal
-│   ├── services/           # Lógica de negocio
-│   │   ├── csvStorage.js   # Manejo de archivos CSV
-│   │   └── invitationService.js
-│   └── package.json
-├── admin/
-│   ├── js/                 # JavaScript del panel admin
-│   │   ├── components/     # Componentes reutilizables
-│   │   ├── services/       # Servicios
-│   │   └── admin-*.js      # Módulos específicos
-│   └── css/                # Estilos del panel admin
-├── data/                   # Archivos CSV (generados)
-├── docs/                   # Documentación
-├── admin.html              # Panel de administración
-├── index.html              # Página de invitación
-├── app.js                  # Lógica de la invitación
-├── admin.js                # Lógica del panel admin
-└── config.js               # Configuración global
-
-```
-
-## Configuración del Editor
-
-### VS Code - Extensiones Recomendadas
-
-- **ESLint**: Linting de JavaScript
-- **Prettier**: Formateo de código
-- **Live Server**: Preview local (alternativa)
-- **GitLens**: Mejor integración con Git
-
-### Configuración Recomendada (.vscode/settings.json)
-
-```json
-{
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
-    },
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1000
-}
-```
-
-## Troubleshooting
-
-### El servidor no inicia
-
-1. Verificar que el puerto 3000 esté libre:
-
-    ```bash
-    # Windows
-    netstat -ano | findstr :3000
-
-    # Linux/Mac
-    lsof -i :3000
-    ```
-
-2. Matar proceso si es necesario:
-
-    ```bash
-    # Windows
-    taskkill /PID <PID> /F
-
-    # Linux/Mac
-    kill -9 <PID>
-    ```
-
-### Los cambios no se reflejan
-
-1. Limpiar caché del navegador (Ctrl+F5)
-2. Verificar que nodemon esté corriendo
-3. Revisar la consola por errores
-
-### Errores de permisos en data/
-
-```bash
-# Windows (como administrador)
-icacls data /grant Everyone:F
-
-# Linux/Mac
-chmod 755 data
-```
-
-### El live reload no funciona
-
-1. Verificar que el WebSocket esté conectado (ver consola del navegador)
-2. Desactivar extensiones del navegador que puedan interferir
-3. Probar en modo incógnito
+- `npm run dev`: Inicia el entorno de desarrollo completo.
+- `npm start`: Inicia solo el servidor del backend en modo producción.
+- `npm run test:frontend`: Ejecuta las pruebas del frontend.
+- `npm run test:backend`: Ejecuta las pruebas del backend.
+- `npm run lint`: Revisa el código en busca de errores de estilo.
+- `npm run format`: Formatea el código con Prettier.
 
 ## Debugging
 
-### Debug en VS Code
+### Debugging del Backend en VS Code
 
-1. Crear archivo `.vscode/launch.json`:
+1.  Asegúrate de tener la extensión "Debugger for Chrome" o similar si es necesario.
+2.  Crea o edita el archivo `.vscode/launch.json` en la raíz del proyecto:
 
 ```json
 {
@@ -190,40 +91,23 @@ chmod 755 data
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug Server",
-            "skipFiles": ["<node_internals>/**"],
-            "program": "${workspaceFolder}/backend/server.js",
-            "envFile": "${workspaceFolder}/backend/.env"
+            "name": "Debug Backend",
+            "program": "${workspaceFolder}/backend/src/server.js",
+            "runtimeExecutable": "nodemon",
+            "envFile": "${workspaceFolder}/backend/.env",
+            "restart": true,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
 ```
 
-2. Presionar F5 para iniciar debugging
+3.  Ve a la pestaña "Run and Debug" en VS Code, selecciona "Debug Backend" y presiona F5.
 
-### Logs de Desarrollo
+## Troubleshooting
 
-Los logs se muestran en la consola. Para más detalle:
-
-```javascript
-// En server.js
-const DEBUG = process.env.DEBUG === 'true';
-
-if (DEBUG) {
-    console.log('Información detallada...');
-}
-```
-
-## Mejores Prácticas de Desarrollo
-
-1. **Commits frecuentes**: Hacer commits pequeños y descriptivos
-2. **Branch por feature**: Crear una rama para cada funcionalidad
-3. **Pull requests**: Revisar código antes de merge a main
-4. **Tests**: Escribir tests para nuevas funcionalidades
-5. **Documentación**: Actualizar docs al agregar features
-
-## Enlaces Útiles
-
-- [Documentación de Express](https://expressjs.com/)
-- [Guía de Node.js](https://nodejs.org/docs/)
-- [MDN Web Docs](https://developer.mozilla.org/)
+- **El puerto 3000 o 3001 está en uso**:
+    - Usa `npx kill-port 3000` o `npx kill-port 3001` para liberar el puerto.
+- **Errores de permisos en la carpeta `data/`**:
+    - Asegúrate de que el proceso de Node.js tenga permisos de escritura en la carpeta `data/` dentro del `backend`.

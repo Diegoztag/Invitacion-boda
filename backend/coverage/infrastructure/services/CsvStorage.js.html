@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.65% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/103</span>
+                <span class='fraction'>12/103</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.11% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>2/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.54% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>1/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">12% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>12/100</span>
             </div>
         
             
@@ -381,30 +381,30 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -688,36 +688,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * CSV Storage Service
  * Servicio de almacenamiento CSV para Clean Architecture
  */
 &nbsp;
-const fs = <span class="cstat-no" title="statement not covered" >require('fs').promises;</span>
-const path = <span class="cstat-no" title="statement not covered" >require('path');</span>
-const { parse } = <span class="cstat-no" title="statement not covered" >require('csv-parse/sync');</span>
-const { stringify } = <span class="cstat-no" title="statement not covered" >require('csv-stringify/sync');</span>
+const fs = require('fs').promises;
+const path = require('path');
+const { parse } = require('csv-parse/sync');
+const { stringify } = require('csv-stringify/sync');
 &nbsp;
 class CsvStorage {
-<span class="fstat-no" title="function not covered" >    co</span>nstructor(logger) {
-<span class="cstat-no" title="statement not covered" >        this.logger = logger;</span>
+    constructor(logger) {
+        this.logger = logger;
 &nbsp;
         // Permitir sobreescritura de rutas de archivos mediante variables de entorno (útil para tests)
-        const defaultDataPath = <span class="cstat-no" title="statement not covered" >path.join(__dirname, '../../../data');</span>
-        const invitationsPath = <span class="cstat-no" title="statement not covered" >process.env.CSV_INVITATIONS_PATH</span>
+        const defaultDataPath = path.join(__dirname, '../../../data');
+        const invitationsPath = process.env.CSV_INVITATIONS_PATH
             ? path.resolve(process.env.CSV_INVITATIONS_PATH)
-            : path.join(defaultDataPath, 'invitations.csv');
-        const confirmationsPath = <span class="cstat-no" title="statement not covered" >process.env.CSV_CONFIRMATIONS_PATH</span>
+            : <span class="branch-1 cbranch-no" title="branch not covered" >path.join(defaultDataPath, 'invitations.csv');</span>
+        const confirmationsPath = process.env.CSV_CONFIRMATIONS_PATH
             ? path.resolve(process.env.CSV_CONFIRMATIONS_PATH)
-            : path.join(defaultDataPath, 'confirmations.csv');
+            : <span class="branch-1 cbranch-no" title="branch not covered" >path.join(defaultDataPath, 'confirmations.csv');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.invitationsFile = invitationsPath;</span>
-<span class="cstat-no" title="statement not covered" >        this.confirmationsFile = confirmationsPath;</span>
+        this.invitationsFile = invitationsPath;
+        this.confirmationsFile = confirmationsPath;
 &nbsp;
         // Usar la carpeta del archivo de invitaciones como base para el storage.
         // Si se usan rutas personalizadas, puede ser diferente a `../data`.
-<span class="cstat-no" title="statement not covered" >        this.dataPath = path.dirname(this.invitationsFile);</span>
+        this.dataPath = path.dirname(this.invitationsFile);
     }
 &nbsp;
     /**
@@ -1001,7 +1001,7 @@ class CsvStorage {
     }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = CsvStorage;</span>
+module.exports = CsvStorage;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1009,7 +1009,7 @@ class CsvStorage {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-24T20:19:12.683Z
+                at 2026-03-25T17:09:36.681Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

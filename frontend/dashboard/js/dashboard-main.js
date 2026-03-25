@@ -8,7 +8,6 @@ import { InvitationsController } from './controllers/invitations-controller.js';
 import { NavigationController } from './controllers/navigation-controller.js';
 import { ConfigurationController } from './controllers/configuration-controller.js';
 import { showToast } from './components/dashboard-modal.js';
-import { notificationService } from './services/notification-service.js';
 import { RenderService } from './services/render-service.js';
 
 class AdminApp {
@@ -188,10 +187,6 @@ class AdminApp {
             this.configurationController
         );
         await this.navigationController.init();
-
-        const invitationsData = await this.invitationsController.getInvitationsData();
-        notificationService.loadInitialNotifications(invitationsData);
-        notificationService.startMonitoring();
 
         // Global access for backward compatibility
         window.dashboardController = this.dashboardController;

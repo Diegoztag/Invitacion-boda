@@ -9,31 +9,6 @@ import {
 
 /**
  * Calcula los pases cancelados de una invitación
- * @param {Object} invitation - Datos de la invitación
- * @returns {number} Número de pases cancelados
- */
-function calculateCancelledPasses(invitation) {
-    if (!invitation) {
-        return 0;
-    }
-
-    // Si la invitación está cancelada, todos los pases están cancelados
-    if (invitation.status === 'cancelled') {
-        return invitation.numberOfPasses || 0;
-    }
-
-    // Si está confirmada parcialmente, calcular pases no confirmados
-    if (invitation.status === 'partial') {
-        const numberOfPasses = invitation.numberOfPasses || 0;
-        const confirmedPasses = invitation.confirmedPasses || 0;
-        return Math.max(0, numberOfPasses - confirmedPasses);
-    }
-
-    return 0;
-}
-
-/**
- * Obtiene las iniciales de un nombre
  * @param {string} fullName - Nombre completo
  * @param {number} maxLength - Máximo de caracteres (default: 2)
  * @returns {string} Iniciales en mayúsculas

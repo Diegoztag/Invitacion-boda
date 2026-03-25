@@ -1,7 +1,7 @@
 /**
  * Authentication Middleware
- * Middleware para autenticación y autorización
- * Implementa seguridad básica para rutas administrativas
+ * Middleware para autenticaciรณn y autorizaciรณn
+ * Implementa seguridad bรกsica para rutas administrativas
  */
 
 const jwt = require('jsonwebtoken');
@@ -9,13 +9,21 @@ const jwt = require('jsonwebtoken');
 class AuthMiddleware {
     constructor(logger) {
         this.logger = logger;
-        this.secretKey = process.env.JWT_SECRET || 'wedding-invitation-secret-key';
-        this.adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET no estรก definido en las variables de entorno');
+        }
+        if (!process.env.ADMIN_PASSWORD) {
+            throw new Error('ADMIN_PASSWORD no estรก definido en las variables de entorno');
+        }
+
+        this.secretKey = process.env.JWT_SECRET;
+        this.adminPassword = process.env.ADMIN_PASSWORD;
     }
 
     /**
-     * Middleware de autenticación básica
-     * Verifica token JWT o credenciales básicas
+     * Middleware de autenticaciรณn bรกsica
+     * Verifica token JWT o credenciales bรกsicas
      */
     authenticate = (req, res, next) => {
         const endOperation = this.logger.startOperation('authenticate', {
@@ -25,14 +33,14 @@ class AuthMiddleware {
         });
 
         try {
-            // Verificar header de autorización
+            // Verificar header de autorizaciรณn
             const authHeader = req.headers.authorization;
 
             if (!authHeader) {
                 endOperation({ authenticated: false, reason: 'no_auth_header' });
                 return res.status(401).json({
                     success: false,
-                    error: 'Token de autorización requerido'
+                    error: 'Token de autorizaciรณn requerido'
                 });
             }
 
@@ -51,7 +59,7 @@ class AuthMiddleware {
             endOperation({ authenticated: false, reason: 'invalid_auth_type' });
             return res.status(401).json({
                 success: false,
-                error: 'Tipo de autorización no válido'
+                error: 'Tipo de autorizaciรณn no vรกlido'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -63,7 +71,7 @@ class AuthMiddleware {
 
             return res.status(500).json({
                 success: false,
-                error: 'Error interno de autenticación'
+                error: 'Error interno de autenticaciรณn'
             });
         }
     };
@@ -80,7 +88,7 @@ class AuthMiddleware {
         try {
             const decoded = jwt.verify(token, this.secretKey);
 
-            // Verificar expiración
+            // Verificar expiraciรณn
             if (decoded.exp && Date.now() >= decoded.exp * 1000) {
                 endOperation({ authenticated: false, reason: 'token_expired' });
                 return res.status(401).json({
@@ -89,7 +97,7 @@ class AuthMiddleware {
                 });
             }
 
-            // Agregar información del usuario al request
+            // Agregar informaciรณn del usuario al request
             req.user = {
                 id: decoded.id || 'admin',
                 role: decoded.role || 'admin',
@@ -104,7 +112,7 @@ class AuthMiddleware {
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({
                     success: false,
-                    error: 'Token inválido'
+                    error: 'Token invรกlido'
                 });
             }
 
@@ -120,7 +128,7 @@ class AuthMiddleware {
     }
 
     /**
-     * Verifica autenticación básica
+     * Verifica autenticaciรณn bรกsica
      * @param {string} credentials - Credenciales codificadas en base64
      * @param {Object} req - Request object
      * @param {Object} res - Response object
@@ -145,14 +153,14 @@ class AuthMiddleware {
                 endOperation({ authenticated: false, reason: 'invalid_credentials' });
                 return res.status(401).json({
                     success: false,
-                    error: 'Credenciales inválidas'
+                    error: 'Credenciales invรกlidas'
                 });
             }
         } catch {
             endOperation({ authenticated: false, reason: 'basic_auth_error' });
             return res.status(401).json({
                 success: false,
-                error: 'Error en autenticación básica'
+                error: 'Error en autenticaciรณn bรกsica'
             });
         }
     }
@@ -175,7 +183,7 @@ class AuthMiddleware {
     }
 
     /**
-     * Middleware para verificar permisos específicos
+     * Middleware para verificar permisos especรญficos
      * @param {Array<string>} requiredPermissions - Permisos requeridos
      * @returns {Function} Middleware function
      */
@@ -220,7 +228,7 @@ class AuthMiddleware {
 
                 return res.status(500).json({
                     success: false,
-                    error: 'Error interno de autorización'
+                    error: 'Error interno de autorizaciรณn'
                 });
             }
         };
@@ -229,6 +237,7 @@ class AuthMiddleware {
     /**
      * Endpoint para login y obtener token
      * POST /auth/login
+     * @todo Implementar rate limiting para prevenir ataques de fuerza bruta
      */
     login = (req, res) => {
         const endOperation = this.logger.startOperation('login', {
@@ -242,7 +251,7 @@ class AuthMiddleware {
                 endOperation({ success: false, reason: 'missing_credentials' });
                 return res.status(400).json({
                     success: false,
-                    error: 'Usuario y contraseña requeridos'
+                    error: 'Usuario y contraseรฑa requeridos'
                 });
             }
 
@@ -266,7 +275,7 @@ class AuthMiddleware {
             endOperation({ success: false, reason: 'invalid_credentials' });
             return res.status(401).json({
                 success: false,
-                error: 'Credenciales inválidas'
+                error: 'Credenciales invรกlidas'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -297,7 +306,7 @@ class AuthMiddleware {
                 endOperation({ valid: false });
                 return res.status(401).json({
                     success: false,
-                    error: 'Token inválido'
+                    error: 'Token invรกlido'
                 });
             }
 

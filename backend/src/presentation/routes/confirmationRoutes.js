@@ -22,6 +22,7 @@ function configureConfirmationRoutes(confirmationController, middleware) {
     // Rutas públicas para confirmación de asistencia
     router.post(
         '/:code',
+        middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -36,6 +37,7 @@ function configureConfirmationRoutes(confirmationController, middleware) {
 
     router.put(
         '/:code',
+        middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -103,6 +105,7 @@ function configureConfirmationRoutes(confirmationController, middleware) {
 
     router.delete(
         '/:code',
+        middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
         confirmationController.cancelConfirmation.bind(confirmationController)

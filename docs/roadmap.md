@@ -11,9 +11,18 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Extraer validaciones de casos de uso a servicios/utilitarias (usar `ValidationService` y/o librería externa).
 - [x] Revisar y simplificar la inyección de dependencias; evitar creación de objetos en el container.
 - [x] Eliminar valores "hard‑coded" (p. ej. `maxPassesPerTable = 10`) y moverlos a configuración.
-- [ ] Normalizar nomenclatura y DTOs entre capas.
+- [x] Normalizar nomenclatura y DTOs entre capas.
 - [x] Evitar imports cruzados entre frontend y backend; usar contratos o variables de entorno.
 - [ ] Definir estrategia incremental para migración a TypeScript (ver `docs/MIGRATION_ROADMAP.md`).
+- [ ] **Refactorizar `AppController`**: Dividir el método `init` en métodos más pequeños y abstraer la inicialización de componentes a una `ComponentFactory`.
+- [ ] **Refactorizar `RSVPController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
+- [ ] **Introducir Capa de `Facades` en Frontend**: Crear una capa de `facades` o casos de uso del frontend para mediar entre los controladores y los servicios del dominio.
+- [ ] **Abstraer la Lógica de Consulta del Backend**: Crear un servicio de `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores del backend.
+- [ ] **Mover Lógica de Negocio a Casos de Uso del Backend**: Refactorizar los controladores del backend para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`).
+- [ ] **Desacoplar Controladores de Repositorios en Backend**: Crear casos de uso para todas las operaciones de lectura y utilizarlos en los controladores en lugar de los repositorios.
+- [ ] **Centralizar Utilidades del Backend**: Extraer el código duplicado (ej. `convertToCSV`) a un módulo de utilidades compartidas.
+- [ ] **Refinar Casos de Uso del Backend**: Dividir los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
+- [ ] **Asegurar Endpoint de Notificaciones**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones.
 
 ## 🔒 Seguridad y Dependencias
 
@@ -25,6 +34,10 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Endurecer middleware de autenticación del dashboard (pasar de basic a JWT/OAuth).
 - [x] Implementar protección CSRF para formularios POST.
 - [ ] Forzar HTTPS y configurar HSTS con flags de cookies en producción.
+- [ ] **Fortalecer la Gestión de Secretos**: Eliminar credenciales y secretos hardcodeados de `authMiddleware.js` y forzar su configuración a través de variables de entorno.
+- [ ] **Implementar Rate Limiting**: Añadir `rate limiting` al endpoint de `login` para prevenir ataques de fuerza bruta.
+- [ ] **Integrar Protección CSRF**: Integrar el `validateMiddleware` de CSRF en todas las rutas POST, PUT, DELETE y PATCH.
+- [ ] **Forzar HTTPS en Producción**: Añadir un middleware que fuerce HTTPS y configure HSTS.
 
 ## ✅ Pruebas y Cobertura
 
@@ -34,6 +47,10 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] Implementar suite e2e (Cypress o similar) que cubra frontend público y dashboard.
 - [ ] Automatizar ejecución de tests, lint y audit en CI; bloquear merges si fallan.
 - [x] Configurar ESLint y Prettier como hooks (`husky` + `lint-staged`).
+- [ ] **Mejorar la Estrategia de Cobertura**: Aumentar los umbrales de cobertura en las configuraciones de Jest para asegurar que las partes críticas del sistema estén bien probadas.
+- [ ] **Separar los Tipos de Pruebas**: Crear configuraciones de Jest separadas para tests unitarios y de integración para acelerar el ciclo de desarrollo.
+- [ ] **Implementar Pruebas End-to-End (E2E)**: Añadir una suite de pruebas E2E con Cypress o Playwright para validar los flujos de usuario completos.
+- [ ] **Consolidar la Configuración de Jest**: Refactorizar los archivos de configuración de Jest para eliminar duplicados y simplificar el mantenimiento.
 
 ## 🧩 UX y Accesibilidad
 
@@ -65,7 +82,10 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## 💼 Lógica de Negocio
 
-- [ ] Mejorar detección de invitaciones duplicadas (usar todos los nombres y telefonos).
+- [ ] **Mejorar Detección de Duplicados**: Implementar una lógica más robusta para detectar invitaciones duplicadas, considerando todos los nombres de los invitados.
+- [ ] **Asegurar la Transaccionalidad**: Refactorizar los casos de uso de escritura (`CreateInvitation` y `ConfirmAttendance`) para que sean transaccionales.
+- [ ] **Optimizar Consultas de Datos**: Mejorar la eficiencia de las consultas en `GetConfirmationStatsUseCase` para evitar obtener grandes cantidades de datos en memoria.
+- [ ] **Refactorizar y Simplificar Casos de Uso**: Mover la lógica de negocio de los casos de uso a las entidades o a servicios de dominio.
 - [ ] Permitir reconfirmación configurable y edición de datos.
 - [ ] Diferenciar cancelación de no‑asistencia y liberar pases.
 - [ ] Hacer capacidad de mesa configurable por evento.

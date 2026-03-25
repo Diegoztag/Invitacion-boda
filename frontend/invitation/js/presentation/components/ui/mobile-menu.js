@@ -20,15 +20,12 @@ export class MobileMenuComponent {
             return;
         }
 
-        console.log('📱 Initializing MobileMenuComponent...');
-
         // Obtener elementos del DOM
         this.navToggle = document.getElementById('navToggle');
         this.navMenu = document.getElementById('navMenu');
         this.navLinks = document.querySelectorAll('.nav-link');
 
         if (!this.navToggle || !this.navMenu) {
-            console.warn('Mobile menu elements not found');
             return;
         }
 
@@ -41,7 +38,6 @@ export class MobileMenuComponent {
         this.setupEventListeners();
 
         this.isInitialized = true;
-        console.log('✅ MobileMenuComponent initialized');
     }
 
     /**
@@ -122,8 +118,6 @@ export class MobileMenuComponent {
         if (this.navLinks.length > 0) {
             setTimeout(() => this.navLinks[0].focus(), 100);
         }
-
-        console.log('📱 Mobile menu opened');
     }
 
     /**
@@ -146,8 +140,6 @@ export class MobileMenuComponent {
 
         // Devolver el foco al botón
         this.navToggle.focus();
-
-        console.log('📱 Mobile menu closed');
     }
 
     /**
@@ -166,11 +158,14 @@ export class MobileMenuComponent {
             this.close();
         }
 
+        // Remove event listeners if they were added
+        if (this.navToggle) {
+            this.navToggle.removeEventListener('click', this.toggle);
+        }
+
         this.navToggle = null;
         this.navMenu = null;
         this.navLinks = [];
         this.isInitialized = false;
-
-        console.log('🗑️ MobileMenuComponent destroyed');
     }
 }

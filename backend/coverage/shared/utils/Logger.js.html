@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">12.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>10/80</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">21.42% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/56</span>
+                <span class='fraction'>12/56</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.34% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>1/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">12.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>10/80</span>
             </div>
         
             
@@ -450,15 +450,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -467,7 +467,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -476,7 +476,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -818,7 +818,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable no-console */
 /**
  * Logger Service
@@ -827,16 +827,16 @@
  */
 &nbsp;
 class Logger {
-<span class="fstat-no" title="function not covered" >    co</span>nstructor(options = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> {
-<span class="cstat-no" title="statement not covered" >        this.level = options.level || 'info';</span>
-<span class="cstat-no" title="statement not covered" >        this.enableConsole = options.enableConsole !== false;</span>
-<span class="cstat-no" title="statement not covered" >        this.enableFile = options.enableFile || false;</span>
-<span class="cstat-no" title="statement not covered" >        this.filePath = options.filePath || './logs/app.log';</span>
-<span class="cstat-no" title="statement not covered" >        this.format = options.format || 'json';</span>
-<span class="cstat-no" title="statement not covered" >        this.serviceName = options.serviceName || 'wedding-app';</span>
+    constructor(options = {}) {
+        this.level = options.level || 'info';
+        this.enableConsole = options.enableConsole !== false;
+        this.enableFile = options.enableFile || false;
+        this.filePath = options.filePath || './logs/app.log';
+        this.format = options.format || 'json';
+        this.serviceName = options.serviceName || 'wedding-app';
 &nbsp;
         // Niveles de logging
-<span class="cstat-no" title="statement not covered" >        this.levels = {</span>
+        this.levels = {
             error: 0,
             warn: 1,
             info: 2,
@@ -845,7 +845,7 @@ class Logger {
         };
 &nbsp;
         // Colores para consola
-<span class="cstat-no" title="statement not covered" >        this.colors = {</span>
+        this.colors = {
             error: '\x1b[31m', // Rojo
             warn: '\x1b[33m', // Amarillo
             info: '\x1b[36m', // Cian
@@ -854,7 +854,7 @@ class Logger {
             reset: '\x1b[0m'
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.currentLevel = this.levels[this.level] || this.levels.info;</span>
+        this.currentLevel = this.levels[this.level] || <span class="branch-1 cbranch-no" title="branch not covered" >this.levels.info;</span>
     }
 &nbsp;
     /**
@@ -1196,7 +1196,7 @@ class Logger {
     }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = Logger;</span>
+module.exports = Logger;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1204,7 +1204,7 @@ class Logger {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-24T20:19:12.683Z
+                at 2026-03-25T17:09:36.681Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

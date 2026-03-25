@@ -14,13 +14,18 @@ function configureAuthRoutes(middleware) {
     const router = express.Router();
 
     // POST /auth/login - Obtener token JWT
-    router.post('/login', middleware.authRateLimit, middleware.authMiddleware.login);
+    router.post(
+        '/login',
+        middleware.authRateLimit,
+        middleware.csrfProtection,
+        middleware.authMiddleware.login
+    );
 
     // GET /auth/verify - Verificar token JWT válido
     router.get('/verify', middleware.authenticate, middleware.authMiddleware.verify);
 
     // POST /auth/logout - Logout (cliente debe limpiar token)
-    router.post('/logout', middleware.authenticate, (req, res) => {
+    router.post('/logout', middleware.authenticate, middleware.csrfProtection, (req, res) => {
         res.json({
             success: true,
             message: 'Sesión cerrada correctamente. Por favor limpia el token en el cliente.'

@@ -322,21 +322,50 @@ validateEmail(email) {
 }
 ```
 
-### **🔴 VULNERABILIDADES PENDIENTES**
+### **🔴 VULNERABILIDADES PENDIENTES (Revisión 24/03/2026)**
 
-1. **Sin autenticación admin** - Sigue siendo crítico
-2. **Sin HTTPS obligatorio** - Pendiente de configuración
-3. **Rate limiting básico** - Necesita mejoras
+1.  **Gestión de Secretos Débil**:
+    - **Credenciales por Defecto**: La contraseña de administrador (`admin123`) y el secreto de JWT están hardcodeados como valores por defecto en `authMiddleware.js`.
+    - **Recomendación**: Eliminar los valores por defecto y forzar la configuración a través de variables de entorno. Utilizar un secreto de JWT largo y aleatorio.
+
+2.  **Falta de Rate Limiting**:
+    - **Vulnerabilidad**: El endpoint de `login` no tiene protección contra ataques de fuerza bruta.
+    - **Recomendación**: Implementar un middleware de `rate limiting` (ej. `express-rate-limit`) en las rutas de autenticación.
+
+3.  **Protección CSRF no Integrada**:
+    - **Estado**: Existe un `csrf.js` con una implementación robusta, pero no se está utilizando en las rutas que modifican datos.
+    - **Recomendación**: Integrar el `validateMiddleware` de CSRF en todas las rutas POST, PUT, DELETE y PATCH.
+
+4.  **Falta de HTTPS Obligatorio**:
+    - **Vulnerabilidad**: La aplicación no redirige el tráfico HTTP a HTTPS en producción.
+    - **Recomendación**: Añadir un middleware que fuerce HTTPS y configure HSTS.
 
 ---
 
 ## 🧪 ANÁLISIS DE TESTING
 
-### **🟡 ESTADO ACTUAL DE TESTING**
+### **🟡 ESTADO ACTUAL DE TESTING (Revisión 24/03/2026)**
 
-- 🔴 **Sin tests unitarios** - Pero ahora es FÁCIL implementar
-- 🔴 **Sin tests de integración** - Arquitectura preparada
-- 🟢 **Testabilidad**: 100% - Cada módulo es testeable independientemente
+- 🟢 **Buena Base de Pruebas Unitarias**: Existe una configuración de Jest tanto para el frontend como para el backend, con pruebas unitarias para las partes críticas del sistema.
+- 🟡 **Cobertura de Código Mejorable**:
+    - **Frontend**: Los umbrales de cobertura para los controladores son bajos (`60%`), lo que podría indicar que la lógica compleja no está siendo probada.
+    - **Backend**: El umbral de cobertura global está en `0`, lo que puede ocultar la falta de pruebas en nuevos módulos.
+- 🔴 **Falta de Separación de Tipos de Pruebas**: No hay una distinción clara entre tests unitarios y de integración, lo que puede ralentizar el ciclo de desarrollo.
+- 🔴 **Sin Pruebas End-to-End (E2E)**: No hay una suite de pruebas E2E para validar los flujos de usuario completos.
+
+### **🚀 OPORTUNIDADES DE MEJORA EN TESTING**
+
+1.  **Mejorar la Estrategia de Cobertura**:
+    - **Recomendación**: Aumentar gradualmente los umbrales de cobertura para todas las capas del sistema. Establecer un umbral global mínimo para el backend.
+
+2.  **Separar los Tipos de Pruebas**:
+    - **Recomendación**: Crear configuraciones de Jest separadas para tests unitarios y de integración. Utilizar scripts de `npm` distintos para ejecutar cada suite. Esto permitirá ejecutar los tests unitarios rápidamente durante el desarrollo y los de integración en un entorno de CI.
+
+3.  **Implementar Pruebas End-to-End (E2E)**:
+    - **Recomendación**: Implementar una suite de pruebas E2E utilizando una herramienta como Cypress o Playwright. Esto permitirá probar los flujos de usuario completos, desde la interacción en el frontend hasta la persistencia de datos en el backend.
+
+4.  **Consolidar la Configuración de Jest**:
+    - **Recomendación**: Eliminar las rutas duplicadas en la configuración de Jest del backend para evitar redundancias y posibles errores.
 
 ### **✅ VENTAJAS PARA TESTING**
 
@@ -386,4 +415,82 @@ describe('RSVPController', () => {
 
 ---
 
-## 📊
+## 🎨 ANÁLISIS DE ARQUITECTURA Y CALIDAD DE CÓDIGO (FRONTEND) (Revisión 24/03/2026)
+
+### **🟡 ESTADO ACTUAL DE LA ARQUITECTURA FRONTEND**
+
+- 🟢 **Orquestación Centralizada**: `AppController` actúa como un excelente punto de entrada y orquestador para toda la aplicación.
+- 🟢 **Controladores Especializados**: Existen controladores bien definidos para cada una de las principales funcionalidades (`Navigation`, `Content`, `RSVP`, etc.).
+- 🟡 **Alta Complejidad en Controladores**: Algunos controladores, como `AppController` y `RSVPController`, tienen una alta complejidad ciclomática y métodos muy largos.
+- 🔴 **Acoplamiento con el DOM**: Los controladores están fuertemente acoplados a la estructura del DOM, lo que dificulta las pruebas unitarias y la reutilización.
+- 🔴 **Lógica de UI Mezclada con Lógica de Negocio**: La lógica para manipular el DOM y responder a eventos de UI está mezclada con la lógica de negocio de la aplicación.
+
+### **🚀 OPORTUNIDADES DE MEJORA EN LA ARQUITECTURA FRONTEND**
+
+1.  **Refactorizar `AppController`**:
+    - **Recomendación**: Dividir el método `init` en métodos más pequeños y enfocados. Abstraer la lógica de inicialización de componentes a una `ComponentFactory` o un servicio similar para reducir la complejidad y mejorar la cohesión.
+
+2.  **Refactorizar `RSVPController`**:
+    - **Recomendación**: Desacoplar el controlador de los servicios del dominio (`invitationService`, `validationService`) utilizando una capa de abstracción (ej. un `facade` o un caso de uso del frontend). Utilizar un enfoque más declarativo para la manipulación del DOM, posiblemente a través de un motor de plantillas o una librería de UI ligera.
+
+3.  **Mejorar la Arquitectura General**:
+    - **Recomendación**: Introducir una capa de `facades` o casos de uso del frontend para mediar entre los controladores de la capa de presentación y los servicios de la capa de dominio. Esto reducirá el acoplamiento y mejorará la separación de responsabilidades.
+
+---
+
+## 💼 ANÁLISIS DE LÓGICA DE NEGOCIO (Revisión 24/03/2026)
+
+### **🟡 ESTADO ACTUAL DE LA LÓGICA DE NEGOCIO**
+
+- 🟢 **Casos de Uso Bien Definidos**: La lógica de negocio está encapsulada en casos de uso claros (`CreateInvitation`, `ConfirmAttendance`, etc.).
+- 🟢 **Validaciones Robustas**: Existen validaciones de entrada, de estado y de reglas de negocio.
+- 🟡 **Detección de Duplicados Débil**: La detección de invitaciones duplicadas se basa solo en el primer nombre del invitado, lo que puede permitir la creación de duplicados.
+- 🔴 **Falta de Transaccionalidad**: Las operaciones de escritura que involucran múltiples pasos (ej. guardar confirmación y luego actualizar invitación) no son transaccionales, lo que podría dejar la base de datos en un estado inconsistente si uno de los pasos falla.
+- 🟡 **Ineficiencia en Consultas**: Algunos casos de uso, como `GetConfirmationStatsUseCase`, obtienen grandes cantidades de datos en memoria para luego filtrarlos, lo cual no es escalable.
+
+### **🚀 OPORTUNIDADES DE MEJORA EN LÓGICA DE NEGOCIO**
+
+1.  **Mejorar la Detección de Duplicados**:
+    - **Recomendación**: Implementar una lógica más robusta para detectar invitaciones duplicadas, considerando todos los nombres de los invitados y, opcionalmente, el número de teléfono.
+
+2.  **Asegurar la Transaccionalidad**:
+    - **Recomendación**: Refactorizar los casos de uso de escritura para que sean transaccionales. Si se sigue utilizando CSV, esto podría implicar la creación de archivos temporales y un mecanismo de "commit/rollback". Si se migra a una base de datos, se deberían utilizar las transacciones que esta provea.
+
+3.  **Optimizar las Consultas de Datos**:
+    - **Recomendación**: Modificar los repositorios para que puedan realizar consultas más complejas y eficientes, evitando la necesidad de filtrar grandes volúmenes de datos en memoria.
+
+4.  **Refactorizar y Simplificar**:
+    - **Recomendación**: Mover la lógica de negocio que actualmente reside en los casos de uso hacia las entidades del dominio o a servicios de dominio especializados. Esto mantendrá los casos de uso más limpios y centrados en la orquestación de las operaciones.
+
+---
+
+## 🏛️ ANÁLISIS DE ARQUITECTURA Y CALIDAD DE CÓDIGO (BACKEND) (Revisión 24/03/2026)
+
+### **🟡 ESTADO ACTUAL DE LA ARQUITECTURA BACKEND**
+
+- 🟢 **Adherencia a Clean Architecture**: Los controladores delegan la lógica de negocio a los casos de uso y el acceso a datos a los repositorios, siguiendo los principios de Clean Architecture.
+- 🟢 **Separación de Responsabilidades**: Cada controlador y caso de uso tiene una responsabilidad bien definida.
+- 🟡 **Complejidad en Controladores**: Algunos métodos en los controladores, como `getInvitations` y `getConfirmations`, tienen una lógica de filtrado y paginación compleja que podría ser abstraída.
+- 🔴 **Lógica de Negocio en Controladores**: Hay instancias de lógica de negocio dentro de los controladores (ej. validación de cupo en `restoreInvitation`), que deberían residir en los casos de uso.
+- 🔴 **Acoplamiento con Repositorios**: Los controladores están directamente acoplados a los repositorios para operaciones de lectura, en lugar de utilizar casos de uso para todas las interacciones con la capa de datos.
+- 🔴 **Duplicación de Código**: Existe código duplicado, como la función `convertToCSV`, que debería ser extraído a una utilidad compartida.
+
+### **🚀 OPORTUNIDADES DE MEJORA EN LA ARQUITECTURA BACKEND**
+
+1.  **Abstraer la Lógica de Consulta**:
+    - **Recomendación**: Crear un servicio o una clase especializada (`QueryBuilder` o similar) para manejar la construcción de filtros, paginación y ordenamiento en los métodos `getInvitations` y `getConfirmations`. Esto simplificará los controladores y hará la lógica de consulta más reutilizable y testeable.
+
+2.  **Mover la Lógica de Negocio a los Casos de Uso**:
+    - **Recomendación**: Refactorizar los controladores para mover cualquier lógica de negocio a los casos de uso correspondientes. Por ejemplo, crear un `RestoreInvitationUseCase` que contenga la lógica de validación de cupo.
+
+3.  **Desacoplar Controladores de Repositorios**:
+    - **Recomendación**: Crear casos de uso específicos para todas las operaciones de lectura (ej. `GetInvitationUseCase`, `GetConfirmationsUseCase`) y utilizarlos en los controladores en lugar de interactuar directamente con los repositorios.
+
+4.  **Centralizar Utilidades**:
+    - **Recomendación**: Extraer el código duplicado, como la función `convertToCSV`, a un módulo de utilidades compartidas para mejorar la mantenibilidad y reducir la duplicación.
+
+5.  **Refinar los Casos de Uso**:
+    - **Recomendación**: Dividir los casos de uso que tienen múltiples responsabilidades en casos de uso más pequeños y enfocados. Por ejemplo, dividir `ConfirmAttendanceUseCase` en `CreateConfirmationUseCase`, `UpdateConfirmationUseCase` y `CancelConfirmationUseCase`.
+
+6.  **Asegurar Endpoints Sensibles**:
+    - **Recomendación**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones (`/api/notifications/subscribe`) para asegurar que solo los clientes autorizados puedan acceder a él.

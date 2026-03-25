@@ -2134,11 +2134,4 @@ export class InvitationsController {
             showToast('Error al copiar enlace', 'error');
         }
     }
-
-    /**
-     * Obtiene los datos de invitaciones para otros servicios
-     */
-    getInvitationsData() {
-        return this.currentInvitations;
-    }
 }

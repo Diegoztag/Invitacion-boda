@@ -56,11 +56,8 @@ export class AppController {
      */
     async init() {
         if (this.isInitialized) {
-            console.warn('App already initialized');
             return;
         }
-
-        console.log('🚀 Initializing Wedding Invitation App...');
 
         if (this.options.enablePerformanceMonitoring) {
             this.performanceMetrics.initStartTime = performance.now();
@@ -95,8 +92,6 @@ export class AppController {
             this.isInitialized = true;
             this.isLoading = false;
 
-            console.log('✅ Wedding Invitation App initialized successfully');
-
             // Emitir evento de aplicación lista
             this.emit(EVENTS.APP.READY, {
                 loadTime: this.performanceMetrics.loadTime,
@@ -104,7 +99,6 @@ export class AppController {
             });
         } catch (error) {
             this.isLoading = false;
-            console.error('❌ Failed to initialize app:', error);
             this.handleInitializationError(error);
             throw error;
         }
@@ -114,8 +108,6 @@ export class AppController {
      * Inicializa servicios principales
      */
     async initializeServices() {
-        console.log('🔧 Initializing services...');
-
         // Inicializar DI Container
         this.diContainer = DIContainer.getInstance();
         await this.diContainer.init();
@@ -145,16 +137,12 @@ export class AppController {
         if (this.validationService && this.validationService.init) {
             await this.validationService.init();
         }
-
-        console.log('✅ Services initialized');
     }
 
     /**
      * Inicializa componentes UI base
      */
     async initializeBaseComponents() {
-        console.log('🎨 Initializing base UI components...');
-
         // Countdown Component
         const countdownElements = this.container.querySelectorAll('[data-countdown]');
         for (const element of countdownElements) {
@@ -165,7 +153,7 @@ export class AppController {
                 await countdown.init();
                 this.components.set(`countdown-${element.id || Date.now()}`, countdown);
             } catch (error) {
-                console.warn('Could not initialize countdown component:', error);
+                //
             }
         }
 
@@ -178,7 +166,7 @@ export class AppController {
                 await modal.init();
                 this.components.set(`modal-${element.id || Date.now()}`, modal);
             } catch (error) {
-                console.warn('Could not initialize modal component:', error);
+                //
             }
         }
 
@@ -189,7 +177,7 @@ export class AppController {
             mobileMenu.init();
             this.components.set('mobile-menu', mobileMenu);
         } catch (error) {
-            console.warn('Could not initialize mobile menu component:', error);
+            //
         }
 
         // Loader Components
@@ -201,19 +189,15 @@ export class AppController {
                 await loader.init();
                 this.components.set(`loader-${element.id || Date.now()}`, loader);
             } catch (error) {
-                console.warn('Could not initialize loader component:', error);
+                //
             }
         }
-
-        console.log(`✅ Initialized ${this.components.size} base components`);
     }
 
     /**
      * Inicializa controladores principales
      */
     async initializeControllers() {
-        console.log('🎮 Initializing controllers...');
-
         // Navigation Controller
         try {
             const { NavigationController } = await import('./navigation-controller.js');
@@ -224,7 +208,7 @@ export class AppController {
             });
             await this.navigationController.init();
         } catch (error) {
-            console.warn('Could not initialize navigation controller:', error);
+            //
         }
 
         // Content Controller
@@ -236,7 +220,7 @@ export class AppController {
             });
             await this.contentController.init();
         } catch (error) {
-            console.warn('Could not initialize content controller:', error);
+            //
         }
 
         // RSVP Controller
@@ -258,7 +242,7 @@ export class AppController {
                 );
                 await this.rsvpController.init();
             } catch (error) {
-                console.warn('Could not initialize RSVP controller:', error);
+                //
             }
         }
 
@@ -285,7 +269,7 @@ export class AppController {
                 await carousel.init();
                 this.components.set(`carousel-${element.id || Date.now()}`, carousel);
             } catch (error) {
-                console.warn('Could not initialize carousel controller:', error);
+                //
             }
         }
 
@@ -295,18 +279,14 @@ export class AppController {
             this.scrollAnimationController = new ScrollAnimationController(this.container);
             await this.scrollAnimationController.init();
         } catch (error) {
-            console.warn('Could not initialize scroll animation controller:', error);
+            //
         }
-
-        console.log('✅ Controllers initialized');
     }
 
     /**
      * Configura event listeners globales
      */
     setupGlobalEventListeners() {
-        console.log('🔗 Setting up global event listeners...');
-
         // Error handling
         const errorHandler = event => {
             this.handleGlobalError(event.error || event.reason, event);
@@ -362,16 +342,12 @@ export class AppController {
                 this.handleInvitationLoaded(data);
             });
         }
-
-        console.log('✅ Global event listeners configured');
     }
 
     /**
      * Carga datos iniciales de la aplicación
      */
     async loadInitialData() {
-        console.log('📊 Loading initial data...');
-
         try {
             // Cargar configuración de meta tags
             if (this.metaService) {
@@ -387,11 +363,8 @@ export class AppController {
                     this.currentInvitation =
                         await this.invitationService.loadInvitation(invitationId);
                     if (this.currentInvitation) {
-                        console.log('📨 AppController loaded invitation, updating components...');
-
                         // Actualizar RSVP Controller explícitamente
                         if (this.rsvpController) {
-                            console.log('🔄 Updating RSVP Controller with loaded invitation');
                             this.rsvpController.populateFormWithInvitation(this.currentInvitation);
                             this.rsvpController.currentInvitation = this.currentInvitation;
                         }
@@ -401,14 +374,12 @@ export class AppController {
                         });
                     }
                 } catch (error) {
-                    console.warn('Could not load invitation:', error);
+                    //
                 }
             }
         } catch (error) {
-            console.warn('Error loading initial data:', error);
+            //
         }
-
-        console.log('✅ Initial data loaded');
     }
 
     /**
@@ -419,10 +390,6 @@ export class AppController {
             this.performanceMetrics.initEndTime = performance.now();
             this.performanceMetrics.loadTime =
                 this.performanceMetrics.initEndTime - this.performanceMetrics.initStartTime;
-
-            console.log(
-                `⏱️ App initialization took ${this.performanceMetrics.loadTime.toFixed(2)}ms`
-            );
         }
 
         // Remover loader de página si existe
@@ -434,7 +401,6 @@ export class AppController {
         // Debug mode
         if (this.options.enableDebugMode) {
             window.WeddingApp = this;
-            console.log('🐛 Debug mode enabled. App available as window.WeddingApp');
         }
     }
 
@@ -462,8 +428,6 @@ export class AppController {
                 }, 500);
             }
         });
-
-        console.log('🎭 Loader hidden');
     }
 
     /**
@@ -489,8 +453,6 @@ export class AppController {
      * @param {Error} error - Error ocurrido
      */
     handleInitializationError(error) {
-        console.error('App initialization failed:', error);
-
         // Mostrar mensaje de error al usuario
         const errorMessage = document.createElement('div');
         errorMessage.className = 'app-error-message';
@@ -535,8 +497,6 @@ export class AppController {
             ...context
         };
 
-        console.error(`[${type}]`, errorInfo);
-
         // Aquí se podría enviar a un servicio de logging externo
         // this.sendErrorToService(errorInfo);
     }
@@ -546,8 +506,6 @@ export class AppController {
      * @param {Object} data - Datos del cambio de sección
      */
     handleSectionChange(data) {
-        console.log(`📍 Section changed: ${data.previous} → ${data.current}`);
-
         // Actualizar meta tags según la sección
         if (this.metaService) {
             this.metaService.updateForSection(data.current);
@@ -562,8 +520,6 @@ export class AppController {
      * @param {Object} data - Datos del RSVP
      */
     handleRSVPSubmitted(data) {
-        console.log('✅ RSVP submitted successfully');
-
         // Actualizar estado de la aplicación
         if (data.result && data.result.invitation) {
             this.currentInvitation = data.result.invitation;
@@ -578,8 +534,6 @@ export class AppController {
      * @param {Object} data - Datos de la invitación
      */
     handleInvitationLoaded(data) {
-        console.log('📨 Invitation loaded');
-
         this.currentInvitation = data.invitation;
 
         // Actualizar contenido dinámico si existe el controlador
@@ -768,7 +722,7 @@ export class AppController {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error(`Error in app event listener for ${event}:`, error);
+                    //
                 }
             });
         }
@@ -784,20 +738,14 @@ export class AppController {
      * Reinicia la aplicación
      */
     async restart() {
-        console.log('🔄 Restarting application...');
-
         await this.destroy();
         await this.init();
-
-        console.log('✅ Application restarted');
     }
 
     /**
      * Destruye la aplicación y limpia recursos
      */
     async destroy() {
-        console.log('🗑️ Destroying application...');
-
         // Destruir controladores
         if (this.navigationController) {
             this.navigationController.destroy();
@@ -853,8 +801,6 @@ export class AppController {
         this.isInitialized = false;
         this.isLoading = false;
         this.isDestroyed = true;
-
-        console.log('✅ Application destroyed');
     }
 
     /**

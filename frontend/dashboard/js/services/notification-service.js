@@ -547,13 +547,6 @@ class NotificationService {
     }
 
     /**
-     * Obtiene el número de confirmaciones no vistas
-     */
-    getUnseenCount() {
-        return this.notifications.filter(n => !n.read).length;
-    }
-
-    /**
      * Carga las notificaciones iniciales
      * @param {Array} invitations - Array de invitaciones para inicializar
      */

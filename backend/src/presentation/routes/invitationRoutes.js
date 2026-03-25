@@ -65,6 +65,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.post(
         '/import',
         middleware.authenticate,
+        middleware.csrfProtection,
         middleware.validateBody,
         middleware.sanitizeInput,
         invitationController.importInvitations.bind(invitationController)
@@ -86,6 +87,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.post(
         '/',
         middleware.authenticate,
+        middleware.csrfProtection,
         middleware.validateBody,
         middleware.sanitizeInput,
         invitationController.createInvitation.bind(invitationController)
@@ -101,6 +103,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.put(
         '/:code/activate',
         middleware.authenticate,
+        middleware.csrfProtection,
         middleware.validateParams,
         invitationController.restoreInvitation.bind(invitationController)
     );
@@ -116,6 +119,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.put(
         '/:code',
         middleware.authenticate,
+        middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
@@ -126,6 +130,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.delete(
         '/:code',
         middleware.authenticate,
+        middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
         invitationController.deleteInvitation.bind(invitationController)
