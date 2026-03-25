@@ -14,6 +14,7 @@ class InvitationController {
         createInvitationUseCase,
         getInvitationUseCase,
         getInvitationsUseCase,
+        searchInvitationsByNameUseCase,
         invitationRepository,
         validationService,
         logger
@@ -21,6 +22,7 @@ class InvitationController {
         this.createInvitationUseCase = createInvitationUseCase;
         this.getInvitationUseCase = getInvitationUseCase;
         this.getInvitationsUseCase = getInvitationsUseCase;
+        this.searchInvitationsByNameUseCase = searchInvitationsByNameUseCase;
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.logger = logger;
@@ -619,21 +621,19 @@ class InvitationController {
         try {
             const { name } = req.params;
 
-            if (!name || name.trim().length < 2) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'El nombre debe tener al menos 2 caracteres'
-                });
+            const result = await this.searchInvitationsByNameUseCase.execute(name);
+
+            if (!result.success) {
+                return res.status(400).json(result);
             }
 
-            const invitations = await this.invitationRepository.findByGuestName(name);
+            endOperation({ found: result.count });
 
-            endOperation({ found: invitations.length });
-
+            // Renombrar 'data' a 'invitations' para mantener la consistencia de la API
             res.json({
                 success: true,
-                invitations: invitations.map(inv => inv.toObject()),
-                count: invitations.length
+                invitations: result.data,
+                count: result.count
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');

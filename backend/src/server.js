@@ -26,6 +26,7 @@ const CsvConfirmationRepository = require('./infrastructure/repositories/CsvConf
 const CreateInvitationUseCase = require('./application/usecases/CreateInvitationUseCase');
 const GetInvitationUseCase = require('./application/usecases/GetInvitationUseCase');
 const GetInvitationsUseCase = require('./application/usecases/GetInvitationsUseCase');
+const SearchInvitationsByNameUseCase = require('./application/usecases/SearchInvitationsByNameUseCase');
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
 
@@ -92,12 +93,17 @@ class Server {
             logger
         );
         const getInvitationsUseCase = new GetInvitationsUseCase(invitationRepository, logger);
+        const searchInvitationsByNameUseCase = new SearchInvitationsByNameUseCase(
+            invitationRepository,
+            logger
+        );
 
         // 4. Instanciar controladores
         const invitationController = new InvitationController(
             createInvitationUseCase,
             getInvitationUseCase,
             getInvitationsUseCase,
+            searchInvitationsByNameUseCase,
             invitationRepository,
             validationService,
             logger
@@ -137,6 +143,13 @@ class Server {
         this.container.register('getInvitationsUseCase', () => getInvitationsUseCase, {
             singleton: true
         });
+        this.container.register(
+            'searchInvitationsByNameUseCase',
+            () => searchInvitationsByNameUseCase,
+            {
+                singleton: true
+            }
+        );
         this.container.register('invitationController', () => invitationController, {
             singleton: true
         });
