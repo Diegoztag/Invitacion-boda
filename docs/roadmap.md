@@ -23,6 +23,20 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] **Centralizar Utilidades del Backend**: Extraer el código duplicado (ej. `convertToCSV`) a un módulo de utilidades compartidas.
 - [ ] **Refinar Casos de Uso del Backend**: Dividir los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
 - [ ] **Asegurar Endpoint de Notificaciones**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones.
+- [ ] **Refactorizar `InvitationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
+- [ ] **Crear Casos de Uso para Operaciones de Lectura en `Invitation`**: Implementar `GetInvitationUseCase`, `GetInvitationsUseCase`, y `SearchInvitationsByNameUseCase` para manejar la lógica de consulta.
+- [ ] **Crear `RestoreInvitationUseCase`**: Mover la lógica de negocio de la restauración de invitaciones del controlador a un caso de uso dedicado.
+- [x] **Centralizar Utilidades de Formato**: Mover la función `convertToCSV` del `InvitationController` a un módulo de utilidades compartido en `src/shared/utils`.
+- [ ] **Refactorizar `ConfirmationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
+- [ ] **Crear Casos de Uso para Operaciones de Lectura en `Confirmation`**: Implementar `GetConfirmationUseCase`, `GetConfirmationsUseCase`, y otros casos de uso específicos para manejar la lógica de consulta de forma eficiente.
+- [ ] **Consolidar Lógica de Estadísticas en `GetConfirmationStatsUseCase`**: Refactorizar el caso de uso para que sea la única fuente de datos agregados de confirmaciones.
+- [ ] **Dividir Casos de Uso con Múltiples Responsabilidades**: Refactorizar `ConfirmAttendanceUseCase` en casos de uso más pequeños y enfocados (`ConfirmAttendanceUseCase`, `UpdateConfirmationUseCase`, `CancelConfirmationUseCase`).
+- [ ] **Implementar Patrón de Unidad de Trabajo (Unit of Work)**: Asegurar la atomicidad de las operaciones en la base de datos que involucran múltiples repositorios (ej. al confirmar una asistencia).
+- [ ] **Mejorar Manejo de Errores con Excepciones Personalizadas**: Introducir excepciones específicas (`NotFoundException`, `BusinessRuleException`) para un manejo de errores más claro y granular.
+- [ ] **Enriquecer Entidades del Dominio**: Mover más lógica de negocio y validaciones a las entidades (`Invitation`, `Confirmation`) para que sean modelos de dominio más ricos.
+- [ ] **Refactorizar `AppController` para Reducir Complejidad**: Dividir el método `init` y extraer la lógica de inicialización de componentes a una `ComponentFactory`.
+- [ ] **Introducir un `AppStateService` para Gestión de Estado en Frontend**: Centralizar el estado global de la aplicación para un manejo más predecible y escalable.
+- [ ] **Implementar un Enfoque Declarativo para Inicialización de Componentes**: Usar un mapa de configuración para asociar selectores de CSS con clases de componentes, en lugar de `querySelectorAll`.
 
 ## 🔒 Seguridad y Dependencias
 

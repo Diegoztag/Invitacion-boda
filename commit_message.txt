@@ -1,1 +1,1 @@
-docs: consolidar roadmap.md y eliminar TECHNICAL_ROADMAP.md
+refactor: centralize CSV conversion utility

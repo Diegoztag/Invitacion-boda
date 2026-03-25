@@ -8,6 +8,7 @@ const {
     CreateConfirmationDTO,
     UpdateConfirmationDTO
 } = require('../../application/dto/ConfirmationDTO');
+const { convertToCSV } = require('../../shared/utils/csv-formatter');
 
 class ConfirmationController {
     constructor(
@@ -594,8 +595,8 @@ class ConfirmationController {
                 res.setHeader('Content-Type', 'text/csv');
                 res.setHeader('Content-Disposition', 'attachment; filename=confirmations.csv');
 
-                // Convertir a CSV (implementación simplificada)
-                const csvData = this.convertToCSV(result.data);
+                // Convertir a CSV
+                const csvData = convertToCSV(result.data);
                 res.send(csvData);
             } else {
                 res.json({
@@ -694,34 +695,6 @@ class ConfirmationController {
                 error: 'Error interno del servidor'
             });
         }
-    }
-
-    /**
-     * Convierte datos a formato CSV
-     * @param {Array} data - Datos a convertir
-     * @returns {string} CSV string
-     * @private
-     */
-    convertToCSV(data) {
-        if (!data || data.length === 0) {
-            return '';
-        }
-
-        const headers = Object.keys(data[0]);
-        const csvRows = [headers.join(',')];
-
-        for (const row of data) {
-            const values = headers.map(header => {
-                const value = row[header];
-                if (Array.isArray(value)) {
-                    return `"${value.join('|')}"`;
-                }
-                return `"${value || ''}"`;
-            });
-            csvRows.push(values.join(','));
-        }
-
-        return csvRows.join('\n');
     }
 }
 
