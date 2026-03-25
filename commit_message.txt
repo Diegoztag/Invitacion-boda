@@ -1,0 +1,1 @@
+docs: consolidar roadmap.md y eliminar TECHNICAL_ROADMAP.md
