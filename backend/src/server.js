@@ -24,6 +24,7 @@ const CsvConfirmationRepository = require('./infrastructure/repositories/CsvConf
 
 // Importar casos de uso
 const CreateInvitationUseCase = require('./application/usecases/CreateInvitationUseCase');
+const GetInvitationUseCase = require('./application/usecases/GetInvitationUseCase');
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
 
@@ -84,10 +85,16 @@ class Server {
             invitationRepository,
             logger
         );
+        const getInvitationUseCase = new GetInvitationUseCase(
+            invitationRepository,
+            validationService,
+            logger
+        );
 
         // 4. Instanciar controladores
         const invitationController = new InvitationController(
             createInvitationUseCase,
+            getInvitationUseCase,
             invitationRepository,
             validationService,
             logger
@@ -119,6 +126,9 @@ class Server {
             singleton: true
         });
         this.container.register('getConfirmationStatsUseCase', () => getConfirmationStatsUseCase, {
+            singleton: true
+        });
+        this.container.register('getInvitationUseCase', () => getInvitationUseCase, {
             singleton: true
         });
         this.container.register('invitationController', () => invitationController, {

@@ -10,8 +10,15 @@ const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
 
 class InvitationController {
-    constructor(createInvitationUseCase, invitationRepository, validationService, logger) {
+    constructor(
+        createInvitationUseCase,
+        getInvitationUseCase,
+        invitationRepository,
+        validationService,
+        logger
+    ) {
         this.createInvitationUseCase = createInvitationUseCase;
+        this.getInvitationUseCase = getInvitationUseCase;
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.logger = logger;
@@ -30,30 +37,16 @@ class InvitationController {
         try {
             const { code } = req.params;
 
-            // Validar código
-            if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
-            }
+            const result = await this.getInvitationUseCase.execute(code);
 
-            // Buscar invitación
-            const invitation = await this.invitationRepository.findByCode(code);
-
-            if (!invitation) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Invitación no encontrada'
-                });
+            if (!result.success) {
+                const statusCode = result.error === 'Invitación no encontrada' ? 404 : 400;
+                return res.status(statusCode).json(result);
             }
 
             endOperation({ found: true });
 
-            res.json({
-                success: true,
-                invitation: invitation.toObject()
-            });
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
