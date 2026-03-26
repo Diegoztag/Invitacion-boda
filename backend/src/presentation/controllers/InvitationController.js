@@ -15,6 +15,7 @@ class InvitationController {
         getInvitationUseCase,
         getInvitationsUseCase,
         searchInvitationsByNameUseCase,
+        restoreInvitationUseCase,
         invitationRepository,
         validationService,
         logger
@@ -23,6 +24,7 @@ class InvitationController {
         this.getInvitationUseCase = getInvitationUseCase;
         this.getInvitationsUseCase = getInvitationsUseCase;
         this.searchInvitationsByNameUseCase = searchInvitationsByNameUseCase;
+        this.restoreInvitationUseCase = restoreInvitationUseCase;
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.logger = logger;
@@ -350,53 +352,18 @@ class InvitationController {
         try {
             const { code } = req.params;
 
-            // Validar código
-            if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
+            const result = await this.restoreInvitationUseCase.execute(code);
+
+            if (!result.success) {
+                const statusCode = result.error === 'Invitación no encontrada' ? 404 : 400;
+                return res.status(statusCode).json(result);
             }
-
-            // 1. Buscar la invitación (incluso si está inactiva)
-            const invitation = await this.invitationRepository.findByCode(code);
-
-            if (!invitation) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Invitación no encontrada'
-                });
-            }
-
-            // Si ya está activa, no hacer nada
-            if (invitation.status !== 'inactive') {
-                return res.status(400).json({
-                    success: false,
-                    error: 'La invitación ya está activa'
-                });
-            }
-
-            // 2. Validar cupo
-            const stats = await this.invitationRepository.getStats();
-            const currentOccupied = stats.occupiedPasses;
-            const targetTotal = config.guests.targetTotal;
-            const invitationPasses = invitation.numberOfPasses;
-
-            if (currentOccupied + invitationPasses > targetTotal) {
-                return res.status(400).json({
-                    success: false,
-                    error: `No se puede activar: Excedería el límite de ${targetTotal} invitados (Actual: ${currentOccupied}, Invitación: ${invitationPasses})`
-                });
-            }
-
-            // 3. Restaurar
-            const result = await this.invitationRepository.restore(code);
 
             endOperation({ restored: true });
 
             res.json({
                 success: true,
-                invitation: result.toObject(),
+                invitation: result.data,
                 message: 'Invitación activada exitosamente'
             });
         } catch (error) {

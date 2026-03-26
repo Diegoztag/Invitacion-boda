@@ -27,6 +27,7 @@ const CreateInvitationUseCase = require('./application/usecases/CreateInvitation
 const GetInvitationUseCase = require('./application/usecases/GetInvitationUseCase');
 const GetInvitationsUseCase = require('./application/usecases/GetInvitationsUseCase');
 const SearchInvitationsByNameUseCase = require('./application/usecases/SearchInvitationsByNameUseCase');
+const RestoreInvitationUseCase = require('./application/usecases/RestoreInvitationUseCase');
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
 
@@ -97,6 +98,11 @@ class Server {
             invitationRepository,
             logger
         );
+        const restoreInvitationUseCase = new RestoreInvitationUseCase(
+            invitationRepository,
+            validationService,
+            logger
+        );
 
         // 4. Instanciar controladores
         const invitationController = new InvitationController(
@@ -104,6 +110,7 @@ class Server {
             getInvitationUseCase,
             getInvitationsUseCase,
             searchInvitationsByNameUseCase,
+            restoreInvitationUseCase,
             invitationRepository,
             validationService,
             logger
@@ -150,6 +157,9 @@ class Server {
                 singleton: true
             }
         );
+        this.container.register('restoreInvitationUseCase', () => restoreInvitationUseCase, {
+            singleton: true
+        });
         this.container.register('invitationController', () => invitationController, {
             singleton: true
         });
