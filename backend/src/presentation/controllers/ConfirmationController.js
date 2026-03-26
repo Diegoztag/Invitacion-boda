@@ -14,13 +14,17 @@ class ConfirmationController {
     constructor(
         confirmAttendanceUseCase,
         getConfirmationStatsUseCase,
-        confirmationRepository,
+        getConfirmationUseCase,
+        getConfirmationsUseCase,
+        searchConfirmationsByNameUseCase,
         validationService,
         logger
     ) {
         this.confirmAttendanceUseCase = confirmAttendanceUseCase;
         this.getConfirmationStatsUseCase = getConfirmationStatsUseCase;
-        this.confirmationRepository = confirmationRepository;
+        this.getConfirmationUseCase = getConfirmationUseCase;
+        this.getConfirmationsUseCase = getConfirmationsUseCase;
+        this.searchConfirmationsByNameUseCase = searchConfirmationsByNameUseCase;
         this.validationService = validationService;
         this.logger = logger;
     }
@@ -108,44 +112,23 @@ class ConfirmationController {
 
         try {
             const { code } = req.params;
+            const result = await this.getConfirmationUseCase.execute(code);
 
-            // Validar código
-            if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
-            }
-
-            // Buscar confirmación
-            const confirmation = await this.confirmationRepository.findByCode(code);
-
-            if (!confirmation) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Confirmación no encontrada'
-                });
+            if (!result.success) {
+                const statusCode = result.error === 'Confirmación no encontrada' ? 404 : 400;
+                return res.status(statusCode).json(result);
             }
 
             endOperation({ found: true });
-
-            res.json({
-                success: true,
-                confirmation: confirmation.toObject()
-            });
+            res.json({ success: true, confirmation: result.data });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting confirmation', {
+            this.logger.error('Error en getConfirmation', {
                 code: req.params.code,
                 error: error.message,
                 stack: error.stack
             });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            res.status(500).json({ success: false, error: 'Error interno del servidor' });
         }
     }
 
@@ -281,51 +264,20 @@ class ConfirmationController {
                 sortOrder = 'desc'
             } = req.query;
 
-            // Validar parámetros de paginación
-            const pageNum = parseInt(page, 10);
-            const limitNum = parseInt(limit, 10);
-
-            if (isNaN(pageNum) || pageNum < 1) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Número de página inválido'
-                });
-            }
-
-            if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Límite inválido (1-100)'
-                });
-            }
-
-            // Construir filtros
             const filters = {};
             if (willAttend !== undefined) {
                 filters.willAttend = willAttend === 'true';
             }
-
-            // Construir opciones de ordenamiento
-            const sort = {
-                field: sortBy,
-                direction: sortOrder
-            };
-
-            // Obtener confirmaciones paginadas
-            const result = await this.confirmationRepository.findPaginated(
-                pageNum,
-                limitNum,
-                filters,
-                sort
-            );
-
-            // Aplicar búsqueda si se proporciona
             if (search) {
-                const searchResults = await this.confirmationRepository.findByGuestName(search);
-                result.data = result.data.filter(confirmation =>
-                    searchResults.some(sr => sr.code === confirmation.code)
-                );
-                result.pagination.total = result.data.length;
+                filters.search = search;
+            }
+
+            const sort = { field: sortBy, direction: sortOrder };
+
+            const result = await this.getConfirmationsUseCase.execute(page, limit, filters, sort);
+
+            if (!result.success) {
+                return res.status(400).json(result);
             }
 
             endOperation({
@@ -335,21 +287,17 @@ class ConfirmationController {
 
             res.json({
                 success: true,
-                ...result
+                confirmations: result.data,
+                pagination: result.pagination
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting confirmations', {
+            this.logger.error('Error en getConfirmations', {
                 query: req.query,
                 error: error.message,
                 stack: error.stack
             });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            res.status(500).json({ success: false, error: 'Error interno del servidor' });
         }
     }
 
@@ -631,36 +579,27 @@ class ConfirmationController {
 
         try {
             const { name } = req.params;
+            const result = await this.searchConfirmationsByNameUseCase.execute(name);
 
-            if (!name || name.trim().length < 2) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'El nombre debe tener al menos 2 caracteres'
-                });
+            if (!result.success) {
+                return res.status(400).json(result);
             }
 
-            const confirmations = await this.confirmationRepository.findByGuestName(name);
-
-            endOperation({ found: confirmations.length });
+            endOperation({ found: result.count });
 
             res.json({
                 success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length
+                confirmations: result.data,
+                count: result.count
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error searching confirmations by name', {
+            this.logger.error('Error en searchByName', {
                 name: req.params.name,
                 error: error.message,
                 stack: error.stack
             });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            res.status(500).json({ success: false, error: 'Error interno del servidor' });
         }
     }
 

@@ -30,6 +30,9 @@ const SearchInvitationsByNameUseCase = require('./application/usecases/SearchInv
 const RestoreInvitationUseCase = require('./application/usecases/RestoreInvitationUseCase');
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
+const GetConfirmationUseCase = require('./application/usecases/GetConfirmationUseCase');
+const GetConfirmationsUseCase = require('./application/usecases/GetConfirmationsUseCase');
+const SearchConfirmationsByNameUseCase = require('./application/usecases/SearchConfirmationsByNameUseCase');
 
 // Importar controladores
 const InvitationController = require('./presentation/controllers/InvitationController');
@@ -88,6 +91,16 @@ class Server {
             invitationRepository,
             logger
         );
+        const getConfirmationUseCase = new GetConfirmationUseCase(
+            confirmationRepository,
+            validationService,
+            logger
+        );
+        const getConfirmationsUseCase = new GetConfirmationsUseCase(confirmationRepository, logger);
+        const searchConfirmationsByNameUseCase = new SearchConfirmationsByNameUseCase(
+            confirmationRepository,
+            logger
+        );
         const getInvitationUseCase = new GetInvitationUseCase(
             invitationRepository,
             validationService,
@@ -118,7 +131,9 @@ class Server {
         const confirmationController = new ConfirmationController(
             confirmAttendanceUseCase,
             getConfirmationStatsUseCase,
-            confirmationRepository,
+            getConfirmationUseCase,
+            getConfirmationsUseCase,
+            searchConfirmationsByNameUseCase,
             validationService,
             logger
         );
@@ -144,6 +159,19 @@ class Server {
         this.container.register('getConfirmationStatsUseCase', () => getConfirmationStatsUseCase, {
             singleton: true
         });
+        this.container.register('getConfirmationUseCase', () => getConfirmationUseCase, {
+            singleton: true
+        });
+        this.container.register('getConfirmationsUseCase', () => getConfirmationsUseCase, {
+            singleton: true
+        });
+        this.container.register(
+            'searchConfirmationsByNameUseCase',
+            () => searchConfirmationsByNameUseCase,
+            {
+                singleton: true
+            }
+        );
         this.container.register('getInvitationUseCase', () => getInvitationUseCase, {
             singleton: true
         });
