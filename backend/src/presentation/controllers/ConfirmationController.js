@@ -13,6 +13,8 @@ const { convertToCSV } = require('../../shared/utils/csv-formatter');
 class ConfirmationController {
     constructor(
         confirmAttendanceUseCase,
+        updateConfirmationUseCase,
+        cancelConfirmationUseCase,
         getConfirmationStatsUseCase,
         getConfirmationUseCase,
         getConfirmationsUseCase,
@@ -21,6 +23,8 @@ class ConfirmationController {
         logger
     ) {
         this.confirmAttendanceUseCase = confirmAttendanceUseCase;
+        this.updateConfirmationUseCase = updateConfirmationUseCase;
+        this.cancelConfirmationUseCase = cancelConfirmationUseCase;
         this.getConfirmationStatsUseCase = getConfirmationStatsUseCase;
         this.getConfirmationUseCase = getConfirmationUseCase;
         this.getConfirmationsUseCase = getConfirmationsUseCase;
@@ -167,10 +171,7 @@ class ConfirmationController {
             }
 
             // Ejecutar actualización
-            const result = await this.confirmAttendanceUseCase.updateConfirmation(
-                code,
-                validation.sanitized
-            );
+            const result = await this.updateConfirmationUseCase.execute(code, validation.sanitized);
 
             if (!result.success) {
                 return res.status(400).json(result);
@@ -219,7 +220,7 @@ class ConfirmationController {
             }
 
             // Ejecutar cancelación
-            const result = await this.confirmAttendanceUseCase.cancelConfirmation(code, reason);
+            const result = await this.cancelConfirmationUseCase.execute(code, reason);
 
             if (!result.success) {
                 return res.status(400).json(result);
