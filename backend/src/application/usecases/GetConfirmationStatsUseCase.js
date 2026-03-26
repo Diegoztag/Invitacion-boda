@@ -134,7 +134,7 @@ class GetConfirmationStatsUseCase {
      * Obtiene confirmaciones positivas
      * @returns {Object} Resultado de la operación
      */
-    async executeGetPositive() {
+    async getPositiveConfirmations() {
         const endOperation = this.logger.startOperation('getPositiveConfirmations');
 
         try {
@@ -168,7 +168,7 @@ class GetConfirmationStatsUseCase {
      * Obtiene confirmaciones negativas
      * @returns {Object} Resultado de la operación
      */
-    async executeGetNegative() {
+    async getNegativeConfirmations() {
         const endOperation = this.logger.startOperation('getNegativeConfirmations');
 
         try {
@@ -202,7 +202,7 @@ class GetConfirmationStatsUseCase {
      * Obtiene confirmaciones con restricciones dietarias
      * @returns {Object} Resultado de la operación
      */
-    async executeGetWithDietaryRestrictions() {
+    async getConfirmationsWithDietaryRestrictions() {
         const endOperation = this.logger.startOperation('getConfirmationsWithDietaryRestrictions');
 
         try {
@@ -236,7 +236,7 @@ class GetConfirmationStatsUseCase {
      * Obtiene confirmaciones con mensajes
      * @returns {Object} Resultado de la operación
      */
-    async executeGetWithMessages() {
+    async getConfirmationsWithMessages() {
         const endOperation = this.logger.startOperation('getConfirmationsWithMessages');
 
         try {
@@ -268,44 +268,38 @@ class GetConfirmationStatsUseCase {
 
     /**
      * Obtiene confirmaciones recientes
-     * @param {number} days - Número de días hacia atrás
+     * @param {number} hours - Número de horas hacia atrás
      * @returns {Object} Resultado de la operación
      */
-    async executeGetRecent(days = 7) {
-        const endOperation = this.logger.startOperation('getRecentConfirmations', { days });
+    async getRecentConfirmations(hours = 24) {
+        const endOperation = this.logger.startOperation('getRecentConfirmations', { hours });
 
         try {
-            if (days < 1 || days > 365) {
-                endOperation({ success: false, reason: 'invalid_days' });
+            if (hours < 1 || hours > 168) {
+                // Max 1 semana
+                endOperation({ success: false, reason: 'invalid_hours' });
                 return {
                     success: false,
-                    error: 'Número de días debe estar entre 1 y 365'
+                    error: 'Número de horas debe estar entre 1 y 168'
                 };
             }
 
-            const allConfirmations = await this._getActiveConfirmations();
+            const confirmations = await this.confirmationRepository.findRecent(hours);
 
-            const cutoffDate = new Date();
-            cutoffDate.setDate(cutoffDate.getDate() - days);
-
-            const confirmations = allConfirmations.filter(
-                conf => new Date(conf.confirmedAt) > cutoffDate
-            );
-
-            endOperation({ success: true, count: confirmations.length, days });
+            endOperation({ success: true, count: confirmations.length, hours });
 
             return {
                 success: true,
                 confirmations: confirmations.map(confirmation => confirmation.toObject()),
                 count: confirmations.length,
-                days,
-                message: `${confirmations.length} confirmaciones en los últimos ${days} días`
+                hours,
+                message: `${confirmations.length} confirmaciones en las últimas ${hours} horas`
             };
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
             this.logger.error('Error getting recent confirmations', {
-                days,
+                hours,
                 error: error.message,
                 stack: error.stack
             });
@@ -321,7 +315,7 @@ class GetConfirmationStatsUseCase {
      * Obtiene el total de invitados confirmados
      * @returns {Object} Resultado de la operación
      */
-    async executeGetTotalGuests() {
+    async getTotalConfirmedGuests() {
         const endOperation = this.logger.startOperation('getTotalConfirmedGuests');
 
         try {
@@ -359,7 +353,7 @@ class GetConfirmationStatsUseCase {
      * @param {string} format - Formato de exportación
      * @returns {Object} Resultado de la operación
      */
-    async executeExport(format = 'csv') {
+    async exportAll(format = 'csv') {
         const endOperation = this.logger.startOperation('exportConfirmations', { format });
 
         try {

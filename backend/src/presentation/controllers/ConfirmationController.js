@@ -345,15 +345,15 @@ class ConfirmationController {
         });
 
         try {
-            const confirmations = await this.getConfirmationStatsUseCase.getPositiveConfirmations();
+            const result = await this.getConfirmationStatsUseCase.getPositiveConfirmations();
 
-            endOperation({ found: confirmations.length });
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
-            res.json({
-                success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length
-            });
+            endOperation({ found: result.count });
+
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
@@ -379,15 +379,15 @@ class ConfirmationController {
         });
 
         try {
-            const confirmations = await this.getConfirmationStatsUseCase.getNegativeConfirmations();
+            const result = await this.getConfirmationStatsUseCase.getNegativeConfirmations();
 
-            endOperation({ found: confirmations.length });
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
-            res.json({
-                success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length
-            });
+            endOperation({ found: result.count });
+
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
@@ -413,15 +413,16 @@ class ConfirmationController {
         });
 
         try {
-            const confirmations = await this.confirmationRepository.findWithDietaryRestrictions();
+            const result =
+                await this.getConfirmationStatsUseCase.getConfirmationsWithDietaryRestrictions();
 
-            endOperation({ found: confirmations.length });
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
-            res.json({
-                success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length
-            });
+            endOperation({ found: result.count });
+
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
@@ -447,15 +448,15 @@ class ConfirmationController {
         });
 
         try {
-            const confirmations = await this.confirmationRepository.findWithMessages();
+            const result = await this.getConfirmationStatsUseCase.getConfirmationsWithMessages();
 
-            endOperation({ found: confirmations.length });
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
-            res.json({
-                success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length
-            });
+            endOperation({ found: result.count });
+
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
@@ -484,27 +485,18 @@ class ConfirmationController {
             const { hours = 24 } = req.query;
             const hoursNum = parseInt(hours, 10);
 
-            if (isNaN(hoursNum) || hoursNum < 1 || hoursNum > 168) {
-                // Max 1 semana
-                return res.status(400).json({
-                    success: false,
-                    error: 'Horas inválidas (1-168)'
-                });
+            const result = await this.getConfirmationStatsUseCase.getRecentConfirmations(hoursNum);
+
+            if (!result.success) {
+                return res.status(400).json(result);
             }
 
-            const confirmations = await this.confirmationRepository.findRecent(hoursNum);
-
             endOperation({
-                found: confirmations.length,
-                hours: hoursNum
+                found: result.count,
+                hours: result.hours
             });
 
-            res.json({
-                success: true,
-                confirmations: confirmations.map(conf => conf.toObject()),
-                count: confirmations.length,
-                hours: hoursNum
-            });
+            res.json(result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
@@ -531,9 +523,13 @@ class ConfirmationController {
         });
 
         try {
-            const { format = 'json' } = req.query;
+            const { format = 'csv' } = req.query;
 
-            const result = await this.confirmationRepository.exportAll();
+            const result = await this.getConfirmationStatsUseCase.exportAll(format);
+
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
 
             endOperation({
                 exported: result.count,
@@ -543,15 +539,10 @@ class ConfirmationController {
             if (format === 'csv') {
                 res.setHeader('Content-Type', 'text/csv');
                 res.setHeader('Content-Disposition', 'attachment; filename=confirmations.csv');
-
-                // Convertir a CSV
                 const csvData = convertToCSV(result.data);
                 res.send(csvData);
             } else {
-                res.json({
-                    success: true,
-                    ...result
-                });
+                res.json(result);
             }
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -614,13 +605,17 @@ class ConfirmationController {
         });
 
         try {
-            const total = await this.confirmationRepository.getTotalConfirmedGuests();
+            const result = await this.getConfirmationStatsUseCase.getTotalConfirmedGuests();
 
-            endOperation({ totalGuests: total });
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
+
+            endOperation({ totalGuests: result.total });
 
             res.json({
                 success: true,
-                totalConfirmedGuests: total
+                totalConfirmedGuests: result.total
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
