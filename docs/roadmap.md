@@ -27,8 +27,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Crear Casos de Uso para Operaciones de Lectura en `Invitation`**: Implementar `GetInvitationUseCase`, `GetInvitationsUseCase`, y `SearchInvitationsByNameUseCase` para manejar la lógica de consulta.
 - [x] **Crear `RestoreInvitationUseCase`**: Mover la lógica de negocio de la restauración de invitaciones del controlador a un caso de uso dedicado.
 - [x] **Centralizar Utilidades de Formato**: Mover la función `convertToCSV` del `InvitationController` a un módulo de utilidades compartido en `src/shared/utils`.
-- [ ] **Refactorizar `ConfirmationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
-- [ ] **Crear Casos de Uso para Operaciones de Lectura en `Confirmation`**: Implementar `GetConfirmationUseCase`, `GetConfirmationsUseCase`, y otros casos de uso específicos para manejar la lógica de consulta de forma eficiente.
+- [x] **Refactorizar `ConfirmationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
+- [x] **Crear Casos de Uso para Operaciones de Lectura en `Confirmation`**: Implementar `GetConfirmationUseCase`, `GetConfirmationsUseCase`, y otros casos de uso específicos para manejar la lógica de consulta de forma eficiente.
 - [ ] **Consolidar Lógica de Estadísticas en `GetConfirmationStatsUseCase`**: Refactorizar el caso de uso para que sea la única fuente de datos agregados de confirmaciones.
 - [ ] **Dividir Casos de Uso con Múltiples Responsabilidades**: Refactorizar `ConfirmAttendanceUseCase` en casos de uso más pequeños y enfocados (`ConfirmAttendanceUseCase`, `UpdateConfirmationUseCase`, `CancelConfirmationUseCase`).
 - [ ] **Implementar Patrón de Unidad de Trabajo (Unit of Work)**: Asegurar la atomicidad de las operaciones en la base de datos que involucran múltiples repositorios (ej. al confirmar una asistencia).
