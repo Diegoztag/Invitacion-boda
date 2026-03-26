@@ -20,12 +20,12 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] **Abstraer la Lógica de Consulta del Backend**: Crear un servicio de `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores del backend.
 - [ ] **Mover Lógica de Negocio a Casos de Uso del Backend**: Refactorizar los controladores del backend para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`).
 - [ ] **Desacoplar Controladores de Repositorios en Backend**: Crear casos de uso para todas las operaciones de lectura y utilizarlos en los controladores en lugar de los repositorios.
-- [ ] **Centralizar Utilidades del Backend**: Extraer el código duplicado (ej. `convertToCSV`) a un módulo de utilidades compartidas.
+- [x] **Centralizar Utilidades del Backend**: Extraer el código duplicado (ej. `convertToCSV`) a un módulo de utilidades compartidas.
 - [ ] **Refinar Casos de Uso del Backend**: Dividir los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
 - [ ] **Asegurar Endpoint de Notificaciones**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones.
-- [ ] **Refactorizar `InvitationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
-- [ ] **Crear Casos de Uso para Operaciones de Lectura en `Invitation`**: Implementar `GetInvitationUseCase`, `GetInvitationsUseCase`, y `SearchInvitationsByNameUseCase` para manejar la lógica de consulta.
-- [ ] **Crear `RestoreInvitationUseCase`**: Mover la lógica de negocio de la restauración de invitaciones del controlador a un caso de uso dedicado.
+- [x] **Refactorizar `InvitationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
+- [x] **Crear Casos de Uso para Operaciones de Lectura en `Invitation`**: Implementar `GetInvitationUseCase`, `GetInvitationsUseCase`, y `SearchInvitationsByNameUseCase` para manejar la lógica de consulta.
+- [x] **Crear `RestoreInvitationUseCase`**: Mover la lógica de negocio de la restauración de invitaciones del controlador a un caso de uso dedicado.
 - [x] **Centralizar Utilidades de Formato**: Mover la función `convertToCSV` del `InvitationController` a un módulo de utilidades compartido en `src/shared/utils`.
 - [ ] **Refactorizar `ConfirmationController` para usar Casos de Uso**: Desacoplar el controlador de los repositorios, delegando toda la lógica de negocio y de acceso a datos a los casos de uso.
 - [ ] **Crear Casos de Uso para Operaciones de Lectura en `Confirmation`**: Implementar `GetConfirmationUseCase`, `GetConfirmationsUseCase`, y otros casos de uso específicos para manejar la lógica de consulta de forma eficiente.
