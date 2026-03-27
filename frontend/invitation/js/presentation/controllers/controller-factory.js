@@ -55,10 +55,15 @@ export class ControllerFactory {
     static async createRSVPController(container, invitationService, validationService) {
         try {
             const { RSVPController } = await import('./rsvp-controller.js');
-            const controller = new RSVPController(container, invitationService, validationService, {
+            const { RSVPService } = await import('../../core/services/rsvp-service.js');
+
+            const rsvpService = new RSVPService(invitationService, validationService);
+
+            const controller = new RSVPController(container, rsvpService, validationService, {
                 autoSave: true,
                 showConfirmation: true,
-                enableValidation: true
+                enableValidation: true,
+                allowReconfirmation: window.WEDDING_CONFIG?.rsvpForm?.allowReconfirmation ?? false
             });
             await controller.init();
             return controller;

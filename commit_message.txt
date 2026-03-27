@@ -1,1 +1,1 @@
-refactor(frontend): refactor AppController to use component and controller factories
+refactor(rsvp): Decouple RSVPController logic into RSVPService and RSVPUI
