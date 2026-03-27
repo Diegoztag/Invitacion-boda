@@ -4,8 +4,6 @@
  * Sigue principios SOLID: Single Responsibility
  */
 
-const crypto = require('crypto');
-
 class ValidationService {
     constructor(config, logger) {
         this.config = config;
@@ -433,14 +431,6 @@ class ValidationService {
     validateConfirmationData(data) {
         const rules = this.getConfirmationValidationRules();
         return this.validateObject(data, rules);
-    }
-
-    /**
-     * Genera un código de invitación aleatorio
-     * @returns {string}
-     */
-    generateInvitationCode() {
-        return crypto.randomBytes(4).toString('hex');
     }
 }
 

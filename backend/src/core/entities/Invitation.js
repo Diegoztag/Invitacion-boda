@@ -4,6 +4,7 @@
  * Sigue principios DDD (Domain Driven Design)
  */
 
+const crypto = require('crypto');
 const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 const ValidationException = require('../../shared/exceptions/ValidationException');
 
@@ -224,7 +225,7 @@ class Invitation {
      * @returns {string}
      */
     generateCode() {
-        return require('crypto').randomBytes(4).toString('hex');
+        return crypto.randomBytes(4).toString('hex');
     }
 
     /**

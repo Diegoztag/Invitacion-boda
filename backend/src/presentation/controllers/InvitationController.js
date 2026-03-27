@@ -4,12 +4,11 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
+import BaseController from './BaseController.js';
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
-const NotFoundException = require('../../shared/exceptions/NotFoundException');
-const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
-class InvitationController {
+class InvitationController extends BaseController {
     constructor(
         createInvitationUseCase,
         getInvitationUseCase,
@@ -22,6 +21,7 @@ class InvitationController {
         config,
         logger
     ) {
+        super(logger);
         this.createInvitationUseCase = createInvitationUseCase;
         this.getInvitationUseCase = getInvitationUseCase;
         this.getInvitationsUseCase = getInvitationsUseCase;
@@ -31,14 +31,13 @@ class InvitationController {
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.config = config;
-        this.logger = logger;
     }
 
     /**
      * Obtiene una invitaciรณn por cรณdigo
      * GET /api/invitations/:code
      */
-    async getInvitation(req, res) {
+    async getInvitation(req, res, next) {
         const endOperation = this.logger.startOperation('getInvitation', {
             code: req.params.code,
             ip: req.ip
@@ -48,28 +47,10 @@ class InvitationController {
             const { code } = req.params;
             const invitation = await this.getInvitationUseCase.execute(code);
             endOperation({ found: true });
-            res.json({ success: true, invitation });
+            this.sendSuccess(res, { invitation });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            if (error instanceof NotFoundException) {
-                return res.status(404).json({ success: false, error: error.message });
-            }
-
-            if (error instanceof BusinessRuleException) {
-                return res.status(400).json({ success: false, error: error.message });
-            }
-
-            this.logger.error('Error getting invitation', {
-                code: req.params.code,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -77,7 +58,7 @@ class InvitationController {
      * Crea una nueva invitaciรณn
      * POST /api/invitations
      */
-    async createInvitation(req, res) {
+    async createInvitation(req, res, next) {
         const endOperation = this.logger.startOperation('createInvitation', {
             ip: req.ip,
             userAgent: req.get('User-Agent')
@@ -89,18 +70,14 @@ class InvitationController {
             const validation = this.validationService.validateInvitationData(createInvitationDTO);
 
             if (!validation.isValid) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Datos de invitaciรณn invรกlidos',
-                    details: validation.errors
-                });
+                return this.sendError(res, new Error('Datos de invitaciรณn invรกlidos'), next);
             }
 
             // Ejecutar caso de uso
             const result = await this.createInvitationUseCase.execute(validation.sanitized);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -109,23 +86,17 @@ class InvitationController {
             });
 
             // Convertir entidad a objeto plano para no exponer getters/protรณtipo
-            res.status(201).json({
-                ...result,
-                invitation: result.invitation.toObject()
-            });
+            this.sendSuccess(
+                res,
+                {
+                    ...result,
+                    invitation: result.invitation.toObject()
+                },
+                201
+            );
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error creating invitation', {
-                body: req.body,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -133,7 +104,7 @@ class InvitationController {
      * Obtiene todas las invitaciones con filtros y paginaciรณn
      * GET /api/invitations
      */
-    async getInvitations(req, res) {
+    async getInvitations(req, res, next) {
         const endOperation = this.logger.startOperation('getInvitations', {
             query: req.query,
             ip: req.ip
@@ -187,7 +158,7 @@ class InvitationController {
             );
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -195,20 +166,10 @@ class InvitationController {
                 total: result.pagination.total
             });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting invitations', {
-                query: req.query,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -216,7 +177,7 @@ class InvitationController {
      * Actualiza una invitaciรณn
      * PUT /api/invitations/:code
      */
-    async updateInvitation(req, res) {
+    async updateInvitation(req, res, next) {
         const endOperation = this.logger.startOperation('updateInvitation', {
             code: req.params.code,
             ip: req.ip
@@ -227,19 +188,13 @@ class InvitationController {
 
             // Validar cรณdigo
             if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Cรณdigo de invitaciรณn invรกlido'
-                });
+                return this.sendError(res, new Error('Cรณdigo de invitaciรณn invรกlido'), next);
             }
 
             // Buscar invitaciรณn existente
             const existingInvitation = await this.invitationRepository.findByCode(code);
             if (!existingInvitation) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Invitaciรณn no encontrada'
-                });
+                return this.sendError(res, new Error('Invitaciรณn no encontrada'), next);
             }
 
             const updateInvitationDTO = new UpdateInvitationDTO(req.body);
@@ -251,11 +206,7 @@ class InvitationController {
             });
 
             if (!validation.isValid) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Datos de actualizaciรณn invรกlidos',
-                    details: validation.errors
-                });
+                return this.sendError(res, new Error('Datos de actualizaciรณn invรกlidos'), next);
             }
 
             // Crear invitaciรณn actualizada
@@ -267,25 +218,13 @@ class InvitationController {
 
             endOperation({ updated: true });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 invitation: result.toObject(),
                 message: 'Invitaciรณn actualizada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error updating invitation', {
-                code: req.params.code,
-                body: req.body,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -293,7 +232,7 @@ class InvitationController {
      * Elimina una invitaciรณn (soft delete)
      * DELETE /api/invitations/:code
      */
-    async deleteInvitation(req, res) {
+    async deleteInvitation(req, res, next) {
         const endOperation = this.logger.startOperation('deleteInvitation', {
             code: req.params.code,
             ip: req.ip
@@ -308,31 +247,12 @@ class InvitationController {
 
             endOperation({ deleted: true });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 message: 'Invitación desactivada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            if (error instanceof NotFoundException) {
-                return res.status(404).json({ success: false, error: error.message });
-            }
-
-            if (error instanceof BusinessRuleException) {
-                return res.status(400).json({ success: false, error: error.message });
-            }
-
-            this.logger.error('Error deleting invitation', {
-                code: req.params.code,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -340,7 +260,7 @@ class InvitationController {
      * Restaura (activa) una invitaciรณn previamente eliminada
      * PUT /api/invitations/:code/activate
      */
-    async restoreInvitation(req, res) {
+    async restoreInvitation(req, res, next) {
         const endOperation = this.logger.startOperation('restoreInvitation', {
             code: req.params.code,
             ip: req.ip
@@ -353,32 +273,13 @@ class InvitationController {
 
             endOperation({ restored: true });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 invitation: restoredInvitation,
                 message: 'Invitación activada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            if (error instanceof NotFoundException) {
-                return res.status(404).json({ success: false, error: error.message });
-            }
-
-            if (error instanceof BusinessRuleException) {
-                return res.status(400).json({ success: false, error: error.message });
-            }
-
-            this.logger.error('Error restoring invitation', {
-                code: req.params.code,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -386,7 +287,7 @@ class InvitationController {
      * Obtiene estadรญsticas de invitaciones
      * GET /api/stats
      */
-    async getStats(req, res) {
+    async getStats(req, res, next) {
         const endOperation = this.logger.startOperation('getInvitationStats', {
             ip: req.ip
         });
@@ -412,8 +313,7 @@ class InvitationController {
             endOperation({ statsGenerated: true });
 
             // Estructura optimizada sin duplicaciones
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 stats: {
                     invitations: {
                         total: invitationStats.total,
@@ -468,16 +368,7 @@ class InvitationController {
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting invitation stats', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -485,7 +376,7 @@ class InvitationController {
      * Importa invitaciones desde CSV
      * POST /api/invitations/import
      */
-    async importInvitations(req, res) {
+    async importInvitations(req, res, next) {
         const endOperation = this.logger.startOperation('importInvitations', {
             ip: req.ip
         });
@@ -494,10 +385,7 @@ class InvitationController {
             const { invitations } = req.body;
 
             if (!Array.isArray(invitations) || invitations.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Se requiere un array de invitaciones'
-                });
+                return this.sendError(res, new Error('Se requiere un array de invitaciones'), next);
             }
 
             // Ejecutar importaciรณn en lote
@@ -508,23 +396,13 @@ class InvitationController {
                 failed: result.errors.length
             });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 result,
                 message: `Importaciรณn completada: ${result.success.length} exitosas, ${result.errors.length} fallidas`
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error importing invitations', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -532,7 +410,7 @@ class InvitationController {
      * Exporta invitaciones
      * GET /api/invitations/export
      */
-    async exportInvitations(req, res) {
+    async exportInvitations(req, res, next) {
         const endOperation = this.logger.startOperation('exportInvitations', {
             ip: req.ip
         });
@@ -555,23 +433,11 @@ class InvitationController {
                 const csvData = convertToCSV(result.data);
                 res.send(csvData);
             } else {
-                res.json({
-                    success: true,
-                    ...result
-                });
+                this.sendSuccess(res, result);
             }
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error exporting invitations', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -579,7 +445,7 @@ class InvitationController {
      * Busca invitaciones por nombre
      * GET /api/invitations/search/:name
      */
-    async searchByName(req, res) {
+    async searchByName(req, res, next) {
         const endOperation = this.logger.startOperation('searchInvitationsByName', {
             name: req.params.name,
             ip: req.ip
@@ -591,30 +457,19 @@ class InvitationController {
             const result = await this.searchInvitationsByNameUseCase.execute(name);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
             // Renombrar 'data' a 'invitations' para mantener la consistencia de la API
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 invitations: result.data,
                 count: result.count
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error searching invitations by name', {
-                name: req.params.name,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 }

@@ -137,7 +137,7 @@ export class AdminAPI {
                 data
             };
         } catch (error) {
-            return this.handleApiError(error, endpoint);
+            return this.handleApiError(error);
         }
     }
 

@@ -8,6 +8,15 @@ const express = require('express');
 const router = express.Router();
 
 /**
+ * Envuelve un método del controlador para asegurar que `next` se pase correctamente.
+ * @param {Function} fn - El método del controlador.
+ * @returns {Function} Un manejador de ruta de Express.
+ */
+const asyncHandler = fn => (req, res, next) => {
+    return Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+/**
  * Configura las rutas de invitaciones
  * @param {InvitationController} invitationController - Controlador de invitaciones
  * @param {Object} middleware - Middleware de seguridad y validación
@@ -27,7 +36,7 @@ function configureInvitationRoutes(invitationController, middleware) {
     router.get(
         '/search/:name',
         middleware.validateParams,
-        invitationController.searchByName.bind(invitationController)
+        asyncHandler(invitationController.searchByName.bind(invitationController))
     );
 
     // DEBUG ENDPOINT - TEMPORAL (Pública)
@@ -58,7 +67,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         '/export',
         middleware.authenticate,
         middleware.validateQuery,
-        invitationController.exportInvitations.bind(invitationController)
+        asyncHandler(invitationController.exportInvitations.bind(invitationController))
     );
 
     // Importación masiva (Privada)
@@ -68,7 +77,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         middleware.csrfProtection,
         middleware.validateBody,
         middleware.sanitizeInput,
-        invitationController.importInvitations.bind(invitationController)
+        asyncHandler(invitationController.importInvitations.bind(invitationController))
     );
 
     // ==========================================
@@ -80,7 +89,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         '/',
         middleware.authenticate,
         middleware.validateQuery,
-        invitationController.getInvitations.bind(invitationController)
+        asyncHandler(invitationController.getInvitations.bind(invitationController))
     );
 
     // Crear nueva (Privada)
@@ -90,7 +99,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         middleware.csrfProtection,
         middleware.validateBody,
         middleware.sanitizeInput,
-        invitationController.createInvitation.bind(invitationController)
+        asyncHandler(invitationController.createInvitation.bind(invitationController))
     );
 
     // ==========================================
@@ -105,14 +114,14 @@ function configureInvitationRoutes(invitationController, middleware) {
         middleware.authenticate,
         middleware.csrfProtection,
         middleware.validateParams,
-        invitationController.restoreInvitation.bind(invitationController)
+        asyncHandler(invitationController.restoreInvitation.bind(invitationController))
     );
 
     // Obtener una (Pública)
     router.get(
         '/:code',
         middleware.validateParams,
-        invitationController.getInvitation.bind(invitationController)
+        asyncHandler(invitationController.getInvitation.bind(invitationController))
     );
 
     // Actualizar (Privada)
@@ -123,7 +132,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
-        invitationController.updateInvitation.bind(invitationController)
+        asyncHandler(invitationController.updateInvitation.bind(invitationController))
     );
 
     // Eliminar (Privada)
@@ -133,7 +142,7 @@ function configureInvitationRoutes(invitationController, middleware) {
         middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
-        invitationController.deleteInvitation.bind(invitationController)
+        asyncHandler(invitationController.deleteInvitation.bind(invitationController))
     );
 
     // Manejo de errores específico para invitaciones

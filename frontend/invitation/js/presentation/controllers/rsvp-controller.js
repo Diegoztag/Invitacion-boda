@@ -42,11 +42,7 @@ export class RSVPController {
 
     setupEventListeners() {
         this.ui.form.addEventListener('submit', this.handleFormSubmit.bind(this));
-
-        const attendanceChecks = this.ui.form.querySelectorAll('.attendance-check');
-        attendanceChecks.forEach(check => {
-            check.addEventListener('change', e => this.handleAttendanceChange(e.target.value));
-        });
+        this.ui.form.addEventListener('change', this.handleFormChange.bind(this));
     }
 
     async loadInitialData() {
@@ -75,6 +71,12 @@ export class RSVPController {
             }
         }
         this.ui.showForm();
+    }
+
+    handleFormChange(e) {
+        if (e.target.classList.contains('attendance-check')) {
+            this.handleAttendanceChange(e.target.value);
+        }
     }
 
     handleAttendanceChange(value) {

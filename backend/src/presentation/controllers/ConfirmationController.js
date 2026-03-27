@@ -4,13 +4,14 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
+import BaseController from './BaseController.js';
 const {
     CreateConfirmationDTO,
     UpdateConfirmationDTO
 } = require('../../application/dto/ConfirmationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
 
-class ConfirmationController {
+class ConfirmationController extends BaseController {
     constructor(
         confirmAttendanceUseCase,
         updateConfirmationUseCase,
@@ -23,6 +24,7 @@ class ConfirmationController {
         config,
         logger
     ) {
+        super(logger);
         this.confirmAttendanceUseCase = confirmAttendanceUseCase;
         this.updateConfirmationUseCase = updateConfirmationUseCase;
         this.cancelConfirmationUseCase = cancelConfirmationUseCase;
@@ -32,14 +34,13 @@ class ConfirmationController {
         this.searchConfirmationsByNameUseCase = searchConfirmationsByNameUseCase;
         this.validationService = validationService;
         this.config = config;
-        this.logger = logger;
     }
 
     /**
      * Confirma asistencia a una invitación
      * POST /api/confirmations/:code
      */
-    async confirmAttendance(req, res) {
+    async confirmAttendance(req, res, next) {
         const endOperation = this.logger.startOperation('confirmAttendance', {
             code: req.params.code,
             ip: req.ip
@@ -50,10 +51,7 @@ class ConfirmationController {
 
             // Validar código
             if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
+                return this.sendError(res, new Error('Código de invitación inválido'), next);
             }
 
             // Validar datos de confirmación
@@ -62,11 +60,7 @@ class ConfirmationController {
                 this.validationService.validateConfirmationData(createConfirmationDTO);
 
             if (!validation.isValid) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Datos de confirmación inválidos',
-                    details: validation.errors
-                });
+                return this.sendError(res, new Error('Datos de confirmación inválidos'), next);
             }
 
             // Añadir attendingNames a los datos sanitizados
@@ -79,7 +73,7 @@ class ConfirmationController {
             const result = await this.confirmAttendanceUseCase.execute(code, confirmationData);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -88,21 +82,10 @@ class ConfirmationController {
                 attendingGuests: validation.sanitized.attendingGuests || 0
             });
 
-            res.status(201).json(result);
+            this.sendSuccess(res, result, 201);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error confirming attendance', {
-                code: req.params.code,
-                body: req.body,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -110,7 +93,7 @@ class ConfirmationController {
      * Obtiene una confirmación por código
      * GET /api/confirmations/:code
      */
-    async getConfirmation(req, res) {
+    async getConfirmation(req, res, next) {
         const endOperation = this.logger.startOperation('getConfirmation', {
             code: req.params.code,
             ip: req.ip
@@ -121,20 +104,14 @@ class ConfirmationController {
             const result = await this.getConfirmationUseCase.execute(code);
 
             if (!result.success) {
-                const statusCode = result.error === 'Confirmación no encontrada' ? 404 : 400;
-                return res.status(statusCode).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: true });
-            res.json({ success: true, confirmation: result.data });
+            this.sendSuccess(res, { confirmation: result.data });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            this.logger.error('Error en getConfirmation', {
-                code: req.params.code,
-                error: error.message,
-                stack: error.stack
-            });
-            res.status(500).json({ success: false, error: 'Error interno del servidor' });
+            this.sendError(res, error, next);
         }
     }
 
@@ -142,7 +119,7 @@ class ConfirmationController {
      * Actualiza una confirmación existente
      * PUT /api/confirmations/:code
      */
-    async updateConfirmation(req, res) {
+    async updateConfirmation(req, res, next) {
         const endOperation = this.logger.startOperation('updateConfirmation', {
             code: req.params.code,
             ip: req.ip
@@ -153,10 +130,7 @@ class ConfirmationController {
 
             // Validar código
             if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
+                return this.sendError(res, new Error('Código de invitación inválido'), next);
             }
 
             // Validar datos de actualización
@@ -165,37 +139,22 @@ class ConfirmationController {
                 this.validationService.validateConfirmationData(updateConfirmationDTO);
 
             if (!validation.isValid) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Datos de actualización inválidos',
-                    details: validation.errors
-                });
+                return this.sendError(res, new Error('Datos de actualización inválidos'), next);
             }
 
             // Ejecutar actualización
             const result = await this.updateConfirmationUseCase.execute(code, validation.sanitized);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ updated: true });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error updating confirmation', {
-                code: req.params.code,
-                body: req.body,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -203,7 +162,7 @@ class ConfirmationController {
      * Cancela una confirmación
      * DELETE /api/confirmations/:code
      */
-    async cancelConfirmation(req, res) {
+    async cancelConfirmation(req, res, next) {
         const endOperation = this.logger.startOperation('cancelConfirmation', {
             code: req.params.code,
             ip: req.ip
@@ -215,35 +174,22 @@ class ConfirmationController {
 
             // Validar código
             if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Código de invitación inválido'
-                });
+                return this.sendError(res, new Error('Código de invitación inválido'), next);
             }
 
             // Ejecutar cancelación
             const result = await this.cancelConfirmationUseCase.execute(code, reason);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ cancelled: true });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error cancelling confirmation', {
-                code: req.params.code,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -251,7 +197,7 @@ class ConfirmationController {
      * Obtiene todas las confirmaciones con filtros y paginación
      * GET /api/confirmations
      */
-    async getConfirmations(req, res) {
+    async getConfirmations(req, res, next) {
         const endOperation = this.logger.startOperation('getConfirmations', {
             query: req.query,
             ip: req.ip
@@ -280,7 +226,7 @@ class ConfirmationController {
             const result = await this.getConfirmationsUseCase.execute(page, limit, filters, sort);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -288,19 +234,13 @@ class ConfirmationController {
                 total: result.pagination.total
             });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 confirmations: result.data,
                 pagination: result.pagination
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            this.logger.error('Error en getConfirmations', {
-                query: req.query,
-                error: error.message,
-                stack: error.stack
-            });
-            res.status(500).json({ success: false, error: 'Error interno del servidor' });
+            this.sendError(res, error, next);
         }
     }
 
@@ -308,7 +248,7 @@ class ConfirmationController {
      * Obtiene estadísticas de confirmaciones
      * GET /api/confirmations/stats
      */
-    async getStats(req, res) {
+    async getStats(req, res, next) {
         const endOperation = this.logger.startOperation('getConfirmationStats', {
             ip: req.ip
         });
@@ -318,22 +258,10 @@ class ConfirmationController {
 
             endOperation({ statsGenerated: true });
 
-            res.json({
-                success: true,
-                stats
-            });
+            this.sendSuccess(res, { stats });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting confirmation stats', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -341,7 +269,7 @@ class ConfirmationController {
      * Obtiene confirmaciones positivas (que van a asistir)
      * GET /api/confirmations/positive
      */
-    async getPositiveConfirmations(req, res) {
+    async getPositiveConfirmations(req, res, next) {
         const endOperation = this.logger.startOperation('getPositiveConfirmations', {
             ip: req.ip
         });
@@ -350,24 +278,15 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.getPositiveConfirmations();
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting positive confirmations', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -375,7 +294,7 @@ class ConfirmationController {
      * Obtiene confirmaciones negativas (que no van a asistir)
      * GET /api/confirmations/negative
      */
-    async getNegativeConfirmations(req, res) {
+    async getNegativeConfirmations(req, res, next) {
         const endOperation = this.logger.startOperation('getNegativeConfirmations', {
             ip: req.ip
         });
@@ -384,24 +303,15 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.getNegativeConfirmations();
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting negative confirmations', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -409,7 +319,7 @@ class ConfirmationController {
      * Obtiene confirmaciones con restricciones dietarias
      * GET /api/confirmations/dietary-restrictions
      */
-    async getConfirmationsWithDietaryRestrictions(req, res) {
+    async getConfirmationsWithDietaryRestrictions(req, res, next) {
         const endOperation = this.logger.startOperation('getConfirmationsWithDietaryRestrictions', {
             ip: req.ip
         });
@@ -419,24 +329,15 @@ class ConfirmationController {
                 await this.getConfirmationStatsUseCase.getConfirmationsWithDietaryRestrictions();
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting confirmations with dietary restrictions', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -444,7 +345,7 @@ class ConfirmationController {
      * Obtiene confirmaciones con mensajes para los novios
      * GET /api/confirmations/messages
      */
-    async getConfirmationsWithMessages(req, res) {
+    async getConfirmationsWithMessages(req, res, next) {
         const endOperation = this.logger.startOperation('getConfirmationsWithMessages', {
             ip: req.ip
         });
@@ -453,24 +354,15 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.getConfirmationsWithMessages();
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting confirmations with messages', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -478,7 +370,7 @@ class ConfirmationController {
      * Obtiene confirmaciones recientes
      * GET /api/confirmations/recent
      */
-    async getRecentConfirmations(req, res) {
+    async getRecentConfirmations(req, res, next) {
         const endOperation = this.logger.startOperation('getRecentConfirmations', {
             ip: req.ip
         });
@@ -490,7 +382,7 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.getRecentConfirmations(hoursNum);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -498,20 +390,10 @@ class ConfirmationController {
                 hours: result.hours
             });
 
-            res.json(result);
+            this.sendSuccess(res, result);
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting recent confirmations', {
-                query: req.query,
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -519,7 +401,7 @@ class ConfirmationController {
      * Exporta confirmaciones
      * GET /api/confirmations/export
      */
-    async exportConfirmations(req, res) {
+    async exportConfirmations(req, res, next) {
         const endOperation = this.logger.startOperation('exportConfirmations', {
             ip: req.ip
         });
@@ -530,7 +412,7 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.exportAll(format);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({
@@ -544,20 +426,11 @@ class ConfirmationController {
                 const csvData = convertToCSV(result.data);
                 res.send(csvData);
             } else {
-                res.json(result);
+                this.sendSuccess(res, result);
             }
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error exporting confirmations', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 
@@ -565,7 +438,7 @@ class ConfirmationController {
      * Busca confirmaciones por nombre
      * GET /api/confirmations/search/:name
      */
-    async searchByName(req, res) {
+    async searchByName(req, res, next) {
         const endOperation = this.logger.startOperation('searchConfirmationsByName', {
             name: req.params.name,
             ip: req.ip
@@ -576,24 +449,18 @@ class ConfirmationController {
             const result = await this.searchConfirmationsByNameUseCase.execute(name);
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ found: result.count });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 confirmations: result.data,
                 count: result.count
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-            this.logger.error('Error en searchByName', {
-                name: req.params.name,
-                error: error.message,
-                stack: error.stack
-            });
-            res.status(500).json({ success: false, error: 'Error interno del servidor' });
+            this.sendError(res, error, next);
         }
     }
 
@@ -601,7 +468,7 @@ class ConfirmationController {
      * Obtiene el total de invitados confirmados
      * GET /api/confirmations/total-guests
      */
-    async getTotalConfirmedGuests(req, res) {
+    async getTotalConfirmedGuests(req, res, next) {
         const endOperation = this.logger.startOperation('getTotalConfirmedGuests', {
             ip: req.ip
         });
@@ -610,27 +477,17 @@ class ConfirmationController {
             const result = await this.getConfirmationStatsUseCase.getTotalConfirmedGuests();
 
             if (!result.success) {
-                return res.status(400).json(result);
+                return this.sendError(res, new Error(result.error), next);
             }
 
             endOperation({ totalGuests: result.total });
 
-            res.json({
-                success: true,
+            this.sendSuccess(res, {
                 totalConfirmedGuests: result.total
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error getting total confirmed guests', {
-                error: error.message,
-                stack: error.stack
-            });
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor'
-            });
+            this.sendError(res, error, next);
         }
     }
 }

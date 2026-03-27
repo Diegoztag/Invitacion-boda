@@ -84,7 +84,7 @@ class AuthMiddleware {
      * @param {Function} next - Next middleware
      * @param {Function} endOperation - Logger operation
      */
-    verifyJWT(token, req, res, next, endOperation) {
+    verifyJWT(token, req, _res, next, endOperation) {
         try {
             const decoded = jwt.verify(token, this.secretKey);
 

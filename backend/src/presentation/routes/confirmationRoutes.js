@@ -8,6 +8,15 @@ const express = require('express');
 const router = express.Router();
 
 /**
+ * Envuelve un método del controlador para asegurar que `next` se pase correctamente.
+ * @param {Function} fn - El método del controlador.
+ * @returns {Function} Un manejador de ruta de Express.
+ */
+const asyncHandler = fn => (req, res, next) => {
+    return Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+/**
  * Configura las rutas de confirmaciones
  * @param {ConfirmationController} confirmationController - Controlador de confirmaciones
  * @param {Object} middleware - Middleware de seguridad y validación
@@ -26,13 +35,13 @@ function configureConfirmationRoutes(confirmationController, middleware) {
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
-        confirmationController.confirmAttendance.bind(confirmationController)
+        asyncHandler(confirmationController.confirmAttendance.bind(confirmationController))
     );
 
     router.get(
         '/:code',
         middleware.validateParams,
-        confirmationController.getConfirmation.bind(confirmationController)
+        asyncHandler(confirmationController.getConfirmation.bind(confirmationController))
     );
 
     router.put(
@@ -41,66 +50,75 @@ function configureConfirmationRoutes(confirmationController, middleware) {
         middleware.validateParams,
         middleware.validateBody,
         middleware.sanitizeInput,
-        confirmationController.updateConfirmation.bind(confirmationController)
+        asyncHandler(confirmationController.updateConfirmation.bind(confirmationController))
     );
 
     // Rutas administrativas (requieren autenticación)
     router.use(middleware.authenticate);
 
     // Estadísticas (debe ir antes de las rutas con parámetros)
-    router.get('/stats', confirmationController.getStats.bind(confirmationController));
+    router.get(
+        '/stats',
+        asyncHandler(confirmationController.getStats.bind(confirmationController))
+    );
 
     // Confirmaciones por tipo
     router.get(
         '/positive',
-        confirmationController.getPositiveConfirmations.bind(confirmationController)
+        asyncHandler(confirmationController.getPositiveConfirmations.bind(confirmationController))
     );
 
     router.get(
         '/negative',
-        confirmationController.getNegativeConfirmations.bind(confirmationController)
+        asyncHandler(confirmationController.getNegativeConfirmations.bind(confirmationController))
     );
 
     router.get(
         '/dietary-restrictions',
-        confirmationController.getConfirmationsWithDietaryRestrictions.bind(confirmationController)
+        asyncHandler(
+            confirmationController.getConfirmationsWithDietaryRestrictions.bind(
+                confirmationController
+            )
+        )
     );
 
     router.get(
         '/messages',
-        confirmationController.getConfirmationsWithMessages.bind(confirmationController)
+        asyncHandler(
+            confirmationController.getConfirmationsWithMessages.bind(confirmationController)
+        )
     );
 
     router.get(
         '/recent',
         middleware.validateQuery,
-        confirmationController.getRecentConfirmations.bind(confirmationController)
+        asyncHandler(confirmationController.getRecentConfirmations.bind(confirmationController))
     );
 
     router.get(
         '/total-guests',
-        confirmationController.getTotalConfirmedGuests.bind(confirmationController)
+        asyncHandler(confirmationController.getTotalConfirmedGuests.bind(confirmationController))
     );
 
     // Exportación
     router.get(
         '/export',
         middleware.validateQuery,
-        confirmationController.exportConfirmations.bind(confirmationController)
+        asyncHandler(confirmationController.exportConfirmations.bind(confirmationController))
     );
 
     // Búsqueda
     router.get(
         '/search/:name',
         middleware.validateParams,
-        confirmationController.searchByName.bind(confirmationController)
+        asyncHandler(confirmationController.searchByName.bind(confirmationController))
     );
 
     // CRUD Operations
     router.get(
         '/',
         middleware.validateQuery,
-        confirmationController.getConfirmations.bind(confirmationController)
+        asyncHandler(confirmationController.getConfirmations.bind(confirmationController))
     );
 
     router.delete(
@@ -108,7 +126,7 @@ function configureConfirmationRoutes(confirmationController, middleware) {
         middleware.csrfProtection,
         middleware.validateParams,
         middleware.validateBody,
-        confirmationController.cancelConfirmation.bind(confirmationController)
+        asyncHandler(confirmationController.cancelConfirmation.bind(confirmationController))
     );
 
     // Manejo de errores específico para confirmaciones

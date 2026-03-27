@@ -5,7 +5,6 @@
 
 import { DIContainer } from '../../config/di-container.js';
 import { EVENTS } from '../../shared/constants/events.js';
-import { SELECTORS } from '../../shared/constants/selectors.js';
 import { ComponentFactory } from '../components/component-factory.js';
 import { ControllerFactory } from './controller-factory.js';
 
@@ -301,11 +300,11 @@ export class AppController {
                         });
                     }
                 } catch (error) {
-                    //
+                    console.error('Error loading invitation:', error);
                 }
             }
         } catch (error) {
-            //
+            console.error('Error loading initial data:', error);
         }
     }
 
@@ -414,16 +413,6 @@ export class AppController {
      * @param {Object} context - Contexto adicional
      */
     logError(type, error, context = {}) {
-        const errorInfo = {
-            type,
-            message: error?.message || 'Unknown error',
-            stack: error?.stack,
-            timestamp: new Date().toISOString(),
-            url: window.location.href,
-            userAgent: navigator.userAgent,
-            ...context
-        };
-
         // Aquí se podría enviar a un servicio de logging externo
         // this.sendErrorToService(errorInfo);
     }
@@ -649,7 +638,7 @@ export class AppController {
                 try {
                     callback(data);
                 } catch (error) {
-                    //
+                    console.error(`Error in event listener for ${event}:`, error);
                 }
             });
         }

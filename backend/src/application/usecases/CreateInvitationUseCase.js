@@ -40,44 +40,7 @@ class CreateInvitationUseCase {
                 message: 'Invitación creada exitosamente'
             };
         } catch (error) {
-            // Log de error
-            this.logger.error('Error creating invitation', {
-                error: error.message,
-                invitationData
-            });
-
-            // mapear mensajes específicos (por defecto, generalizamos)
-            let errorMsg = 'Error creando invitación';
-
-            if (error.message === 'Datos de invitación son requeridos') {
-                errorMsg = 'Datos de invitación son requeridos';
-            } else if (error.message === 'Datos de invitación inválidos') {
-                errorMsg = 'Datos de invitación inválidos';
-            } else if (error.message.includes('Validation service')) {
-                errorMsg = 'Error validando datos de invitación';
-            } else if (error.message.includes('No se pudo generar un código único')) {
-                // intentar recuperar el código generado por el servicio
-                let code = '';
-                try {
-                    code = this.validationService.generateInvitationCode();
-                } catch {}
-                errorMsg = `Ya existe una invitación con el código ${code}`;
-            } else if (
-                error.message.includes('generar') ||
-                error.message === 'Error generando código de invitación'
-            ) {
-                errorMsg = 'Error generando código de invitación';
-            }
-
-            const result = {
-                success: false,
-                error: errorMsg,
-                message: 'Error al crear la invitación'
-            };
-            if (error.details) {
-                result.details = error.details;
-            }
-            return result;
+            return this.handleCreateError(error, invitationData);
         }
     }
 
@@ -143,34 +106,26 @@ class CreateInvitationUseCase {
         const normalized = { ...invitationData };
 
         // Normalizar nombres de invitados
-        const sanitize = str => {
-            if (
-                this.validationService &&
-                typeof this.validationService.sanitizeString === 'function'
-            ) {
-                return this.validationService.sanitizeString(str);
-            }
-            return str;
-        };
+        const sanitize =
+            this.validationService && typeof this.validationService.sanitizeString === 'function'
+                ? this.validationService.sanitizeString
+                : str => str;
 
-        if (Array.isArray(normalized.guestNames)) {
-            normalized.guestNames = normalized.guestNames.map(name => sanitize(name.trim()));
-        } else {
-            // Si es un string, dividir por "y" y limpiar
-            normalized.guestNames = normalized.guestNames
-                .split(/\s+y\s+/i)
-                .map(name => sanitize(name.trim()))
-                .filter(name => name.length > 0);
-        }
+        const guestNames = Array.isArray(normalized.guestNames)
+            ? normalized.guestNames
+            : String(normalized.guestNames)
+                  .split(/\s+y\s+/i)
+                  .filter(name => name.trim().length > 0);
+
+        normalized.guestNames = guestNames.map(name => sanitize(name.trim()));
 
         // Normalizar teléfono
-        if (normalized.phone) {
-            if (
-                this.validationService &&
-                typeof this.validationService.sanitizePhone === 'function'
-            ) {
-                normalized.phone = this.validationService.sanitizePhone(normalized.phone);
-            } // else leave as-is
+        if (
+            normalized.phone &&
+            this.validationService &&
+            typeof this.validationService.sanitizePhone === 'function'
+        ) {
+            normalized.phone = this.validationService.sanitizePhone(normalized.phone);
         }
 
         // Establecer valores por defecto para pases específicos
@@ -415,6 +370,50 @@ class CreateInvitationUseCase {
             }
         }
         throw new Error(`No se pudo generar un código único después de ${maxAttempts} intentos`);
+    }
+
+    /**
+     * Maneja los errores durante la creación de la invitación.
+     * @param {Error} error - El error capturado.
+     * @param {Object} invitationData - Los datos de la invitación que causaron el error.
+     * @returns {Object} Un objeto de resultado de error estandarizado.
+     * @private
+     */
+    handleCreateError(error, invitationData) {
+        this.logger.error('Error creating invitation', {
+            error: error.message,
+            stack: error.stack,
+            invitationData
+        });
+
+        const errorMappings = {
+            'Datos de invitación son requeridos': 'Datos de invitación son requeridos',
+            'Datos de invitación inválidos': 'Datos de invitación inválidos',
+            'Validation service': 'Error validando datos de invitación',
+            'No se pudo generar un código único': 'Ya existe una invitación con el código generado',
+            generar: 'Error generando código de invitación',
+            'Error generando código de invitación': 'Error generando código de invitación'
+        };
+
+        let errorMessage = 'Error creando invitación';
+        for (const key in errorMappings) {
+            if (error.message.includes(key)) {
+                errorMessage = errorMappings[key];
+                break;
+            }
+        }
+
+        const result = {
+            success: false,
+            error: errorMessage,
+            message: 'Error al crear la invitación'
+        };
+
+        if (error.details) {
+            result.details = error.details;
+        }
+
+        return result;
     }
 }
 

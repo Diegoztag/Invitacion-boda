@@ -35,82 +35,22 @@ class ConfirmAttendanceUseCase {
      */
     async execute(invitationCode, confirmationData) {
         try {
-            // Validar datos de entrada
             this.validateInput(invitationCode, confirmationData);
 
-            // Buscar la invitación
-            const invitation = await this.invitationRepository.findByCode(invitationCode);
-            if (!invitation) {
-                throw new Error('Invitación no encontrada');
-            }
-
-            // Validar estado de la invitación
-            this.validateInvitationState(invitation);
-
-            // Verificar si la invitación ya está confirmada (o parcialmente confirmada)
-            if (invitation.isConfirmed()) {
-                throw new Error('Esta invitación ya ha sido confirmada');
-            }
-
-            // Verificar si ya existe una confirmación (repositorios legacy)
-            const existingConfirmation =
-                await this.confirmationRepository.findByCode(invitationCode);
-            if (existingConfirmation) {
-                throw new Error('Esta invitación ya ha sido confirmada');
-            }
-
-            // Normalizar datos de confirmación
+            const invitation = await this.findAndValidateInvitation(invitationCode);
             const normalizedData = this.normalizeConfirmationData(confirmationData);
-
-            // Validar reglas de negocio
             this.validateBusinessRules(invitation, normalizedData);
 
-            // Crear entidad de confirmación
-            const confirmation = new Confirmation({
-                code: invitationCode,
-                willAttend: normalizedData.willAttend,
-                attendingGuests: normalizedData.attendingGuests,
-                attendingNames: normalizedData.attendingNames,
-                phone: normalizedData.phone,
-                dietaryRestrictions: normalizedData.dietaryRestrictions,
-                message: normalizedData.message,
-                totalPasses: invitation.numberOfPasses
-            });
+            const savedConfirmation = await this.createAndSaveConfirmation(
+                invitation,
+                normalizedData
+            );
 
-            // Guardar confirmación
-            const savedConfirmation = await this.confirmationRepository.save(confirmation);
-
-            // Actualizar invitación y detalles adicionales en un solo paso
-            const updatedInvitation = invitation
-                .confirm({
-                    attendingGuests: normalizedData.attendingGuests
-                })
-                .updateConfirmation({
-                    attendingNames: normalizedData.attendingNames,
-                    dietaryRestrictionsNames: normalizedData.dietaryRestrictions,
-                    dietaryRestrictionsDetails: normalizedData.dietaryRestrictions,
-                    generalMessage: normalizedData.message
-                });
-
-            await this.invitationRepository.update(invitationCode, updatedInvitation);
-
-            // Log de éxito
-            this.logger.info('Attendance confirmed successfully', {
-                invitationCode,
-                willAttend: normalizedData.willAttend,
-                attendingGuests: normalizedData.attendingGuests,
-                guestNames: invitation.getGuestNamesString()
-            });
-
-            // Notificar vía SSE
-            if (this.sseService) {
-                this.sseService.notify('confirmation', {
-                    type: 'new_confirmation',
-                    invitation: updatedInvitation.toObject(),
-                    confirmation: savedConfirmation.toObject(),
-                    timestamp: new Date().toISOString()
-                });
-            }
+            const updatedInvitation = await this.updateInvitationAndNotify(
+                invitation,
+                savedConfirmation,
+                normalizedData
+            );
 
             return {
                 success: true,
@@ -121,18 +61,7 @@ class ConfirmAttendanceUseCase {
                     : 'Confirmación de no asistencia registrada'
             };
         } catch (error) {
-            // Log de error
-            this.logger.error('Error confirming attendance', {
-                invitationCode,
-                error: error.message,
-                confirmationData
-            });
-
-            return {
-                success: false,
-                error: error.message,
-                message: 'Error al confirmar asistencia'
-            };
+            return this.handleConfirmError(error, invitationCode, confirmationData);
         }
     }
 
@@ -272,6 +201,118 @@ class ConfirmAttendanceUseCase {
         if (normalizedData.dietaryRestrictions && normalizedData.dietaryRestrictions.length > 200) {
             throw new Error('Las restricciones dietarias no pueden exceder 200 caracteres');
         }
+    }
+
+    /**
+     * Busca y valida la invitación.
+     * @param {string} invitationCode - Código de la invitación.
+     * @returns {Promise<Invitation>} La entidad de la invitación.
+     * @private
+     */
+    async findAndValidateInvitation(invitationCode) {
+        const invitation = await this.invitationRepository.findByCode(invitationCode);
+        if (!invitation) {
+            throw new Error('Invitación no encontrada');
+        }
+
+        this.validateInvitationState(invitation);
+
+        if (invitation.isConfirmed()) {
+            throw new Error('Esta invitación ya ha sido confirmada');
+        }
+
+        const existingConfirmation = await this.confirmationRepository.findByCode(invitationCode);
+        if (existingConfirmation) {
+            throw new Error('Esta invitación ya ha sido confirmada');
+        }
+
+        return invitation;
+    }
+
+    /**
+     * Crea y guarda la confirmación.
+     * @param {Invitation} invitation - La entidad de la invitación.
+     * @param {Object} normalizedData - Los datos de confirmación normalizados.
+     * @returns {Promise<Confirmation>} La entidad de la confirmación guardada.
+     * @private
+     */
+    async createAndSaveConfirmation(invitation, normalizedData) {
+        const confirmation = new Confirmation({
+            code: invitation.code,
+            willAttend: normalizedData.willAttend,
+            attendingGuests: normalizedData.attendingGuests,
+            attendingNames: normalizedData.attendingNames,
+            phone: normalizedData.phone,
+            dietaryRestrictions: normalizedData.dietaryRestrictions,
+            message: normalizedData.message,
+            totalPasses: invitation.numberOfPasses
+        });
+
+        return this.confirmationRepository.save(confirmation);
+    }
+
+    /**
+     * Actualiza la invitación y notifica a través de SSE.
+     * @param {Invitation} invitation - La entidad de la invitación original.
+     * @param {Confirmation} savedConfirmation - La entidad de la confirmación guardada.
+     * @param {Object} normalizedData - Los datos de confirmación normalizados.
+     * @returns {Promise<Invitation>} La entidad de la invitación actualizada.
+     * @private
+     */
+    async updateInvitationAndNotify(invitation, savedConfirmation, normalizedData) {
+        const updatedInvitation = invitation
+            .confirm({
+                attendingGuests: normalizedData.attendingGuests
+            })
+            .updateConfirmation({
+                attendingNames: normalizedData.attendingNames,
+                dietaryRestrictionsNames: normalizedData.dietaryRestrictions,
+                dietaryRestrictionsDetails: normalizedData.dietaryRestrictions,
+                generalMessage: normalizedData.message
+            });
+
+        await this.invitationRepository.update(invitation.code, updatedInvitation);
+
+        this.logger.info('Attendance confirmed successfully', {
+            invitationCode: invitation.code,
+            willAttend: normalizedData.willAttend,
+            attendingGuests: normalizedData.attendingGuests,
+            guestNames: invitation.getGuestNamesString()
+        });
+
+        if (this.sseService) {
+            this.sseService.notify('confirmation', {
+                type: 'new_confirmation',
+                invitation: updatedInvitation.toObject(),
+                confirmation: savedConfirmation.toObject(),
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        return updatedInvitation;
+    }
+
+    /**
+     * Maneja los errores durante la confirmación de asistencia.
+     * @param {Error} error - El error capturado.
+     * @param {string} invitationCode - El código de la invitación.
+     * @param {Object} confirmationData - Los datos de confirmación.
+     * @returns {Object} Un objeto de resultado de error estandarizado.
+     * @private
+     */
+    handleConfirmError(error, invitationCode, confirmationData) {
+        this.logger.error('Error confirming attendance', {
+            invitationCode,
+            error: error.message,
+            stack: error.stack,
+            confirmationData
+        });
+
+        return {
+            success: false,
+            error: error.message,
+            message: 'Error al confirmar asistencia'
+        };
     }
 }
 

@@ -22,13 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Log de éxito (solo en desarrollo)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            console.log('✅ Aplicación inicializada correctamente con Clean Architecture');
-            console.log('🏗️ Arquitectura: Clean Architecture + Dependency Injection');
-            console.log('📊 Módulos cargados:', appController.getLoadedModules?.() || 'N/A');
+            //
         }
     } catch (error) {
-        console.error('❌ Error al inicializar la aplicación:', error);
-
         // Mostrar mensaje de error al usuario
         showErrorMessage();
     }
@@ -75,10 +71,10 @@ function showErrorMessage() {
 /**
  * Manejo global de errores no capturados
  */
-window.addEventListener('error', event => {
-    console.error('❌ Error global capturado:', event.error);
+window.addEventListener('error', () => {
+    //
 });
 
-window.addEventListener('unhandledrejection', event => {
-    console.error('❌ Promise rechazada no manejada:', event.reason);
+window.addEventListener('unhandledrejection', () => {
+    //
 });

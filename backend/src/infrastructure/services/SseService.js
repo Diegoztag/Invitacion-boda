@@ -13,7 +13,7 @@ class SseService {
      * @param {Object} req - Objeto de solicitud Express
      * @param {Object} res - Objeto de respuesta Express
      */
-    addClient(req, res) {
+    addClient(_req, res) {
         // Configurar headers para SSE
         res.writeHead(200, {
             'Content-Type': 'text/event-stream',
@@ -36,7 +36,7 @@ class SseService {
         this.logger.info(`SSE Client connected. Total clients: ${this.clients.size}`, { clientId });
 
         // Manejar cierre de conexión
-        req.on('close', () => {
+        _req.on('close', () => {
             this.clients.delete(newClient);
             this.logger.info(`SSE Client disconnected. Total clients: ${this.clients.size}`, {
                 clientId

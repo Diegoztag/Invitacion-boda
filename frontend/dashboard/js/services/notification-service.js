@@ -247,15 +247,15 @@ class NotificationService {
                     if (data.type === 'new_confirmation') {
                         this.handleNewConfirmation(data.invitation);
                     }
-                } catch (error) {
+                } catch (_error) {
                     //
                 }
             });
 
-            this.eventSource.onerror = () => {
+            this.eventSource.onerror = _error => {
                 this.handleConnectionError();
             };
-        } catch (error) {
+        } catch (_error) {
             this.handleConnectionError();
         }
     }
@@ -475,7 +475,7 @@ class NotificationService {
 
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.5);
-                } catch (e) {
+                } catch (_e) {
                     //
                 }
             }
@@ -509,7 +509,7 @@ class NotificationService {
             try {
                 const parsed = JSON.parse(saved);
                 this.seenConfirmations = new Set(parsed);
-            } catch (e) {
+            } catch (_e) {
                 this.seenConfirmations = new Set();
             }
         }

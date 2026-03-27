@@ -195,7 +195,7 @@ class Logger {
             ...context
         });
 
-        return (result = {}, level = 'info') => {
+        return (_result = {}, level = 'info') => {
             const duration = Date.now() - startTime;
 
             this.log(level, `Completed operation: ${operation}`, {

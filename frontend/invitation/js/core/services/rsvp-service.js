@@ -61,7 +61,7 @@ export class RSVPService {
      * @param {Object} formData - The data from the form.
      * @returns {Promise<{isValid: boolean, errors: Object}>} The validation result.
      */
-    async validate(formData) {
+    async validate() {
         // This is a placeholder for more complex validation logic if needed.
         // For now, it can delegate to the validation service or a dedicated validator component.
         // This example assumes validation is handled by a FormValidatorComponent in the controller.

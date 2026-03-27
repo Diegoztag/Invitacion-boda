@@ -53,7 +53,7 @@ export class ApiClient {
                             errorMessage += `: ${JSON.stringify(errorData.details)}`;
                         }
                     }
-                } catch (e) {
+                } catch (_e) {
                     // Si no es JSON, usar el texto de estado
                 }
                 throw new Error(errorMessage);
