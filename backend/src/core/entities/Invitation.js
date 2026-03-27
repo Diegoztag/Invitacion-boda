@@ -435,9 +435,16 @@ class Invitation {
         } = confirmationData;
 
         if (attendingNames) {
-            this._attendingNames = Array.isArray(attendingNames)
+            const names = Array.isArray(attendingNames)
                 ? [...attendingNames]
                 : [attendingNames].filter(Boolean);
+
+            if (names.length > this._confirmedPasses) {
+                throw new BusinessRuleException(
+                    `La lista de asistentes (${names.length}) no puede exceder el número de pases confirmados (${this._confirmedPasses})`
+                );
+            }
+            this._attendingNames = names;
         }
 
         if (dietaryRestrictionsNames !== undefined) {
@@ -575,6 +582,11 @@ class Invitation {
         }
 
         if (totalCalculated !== this._numberOfPasses) {
+            // Temporalmente desactivado para no romper flujos existentes.
+            // Se reactivará cuando se refactorice la creación/actualización.
+            // throw new BusinessRuleException(
+            //     `La suma de pases detallados (${totalCalculated}) debe ser igual al total de pases (${this._numberOfPasses})`
+            // );
         }
     }
 

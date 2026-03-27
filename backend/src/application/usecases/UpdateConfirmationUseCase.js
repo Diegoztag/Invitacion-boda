@@ -52,7 +52,11 @@ class UpdateConfirmationUseCase {
             this.validateBusinessRules(invitation, normalizedData);
 
             // 5. Actualizar la entidad de confirmación
-            const updatedConfirmation = this.applyUpdates(existingConfirmation, normalizedData);
+            const updatedConfirmation = this.applyUpdates(
+                existingConfirmation,
+                normalizedData,
+                invitation
+            );
 
             // 6. Guardar confirmación actualizada
             const savedConfirmation = await this.confirmationRepository.update(
@@ -84,13 +88,16 @@ class UpdateConfirmationUseCase {
         }
     }
 
-    applyUpdates(confirmation, normalizedData) {
+    applyUpdates(confirmation, normalizedData, invitation) {
         const updatedConfirmation = confirmation.clone();
         if (normalizedData.willAttend !== undefined) {
             updatedConfirmation.updateAttendance(normalizedData.willAttend);
         }
         if (normalizedData.attendingGuests !== undefined) {
-            updatedConfirmation.updateAttendingGuests(normalizedData.attendingGuests);
+            updatedConfirmation.updateAttendingGuests(
+                normalizedData.attendingGuests,
+                invitation.numberOfPasses
+            );
         }
         if (normalizedData.attendingNames) {
             updatedConfirmation.updateAttendingNames(normalizedData.attendingNames);
@@ -145,9 +152,10 @@ class UpdateConfirmationUseCase {
     }
 
     validateBusinessRules(invitation, normalizedData) {
-        if (normalizedData.attendingGuests > invitation.numberOfPasses) {
-            throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);
-        }
+        // La validación del número de pases ahora la hace la entidad Confirmation
+        // if (normalizedData.attendingGuests > invitation.numberOfPasses) {
+        //     throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);
+        // }
     }
 }
 

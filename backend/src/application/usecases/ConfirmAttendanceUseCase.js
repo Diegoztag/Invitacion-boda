@@ -73,7 +73,8 @@ class ConfirmAttendanceUseCase {
                 attendingNames: normalizedData.attendingNames,
                 phone: normalizedData.phone,
                 dietaryRestrictions: normalizedData.dietaryRestrictions,
-                message: normalizedData.message
+                message: normalizedData.message,
+                totalPasses: invitation.numberOfPasses
             });
 
             // Guardar confirmación
@@ -249,10 +250,10 @@ class ConfirmAttendanceUseCase {
             throw new Error('No se pueden tener invitados si no va a asistir');
         }
 
-        // Validar que no exceda el número de pases disponibles
-        if (normalizedData.attendingGuests > invitation.numberOfPasses) {
-            throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);
-        }
+        // La validación del número de pases ahora la hace la entidad Confirmation
+        // if (normalizedData.attendingGuests > invitation.numberOfPasses) {
+        //     throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);
+        // }
 
         // Validar que el número de nombres no exceda el número de invitados
         if (

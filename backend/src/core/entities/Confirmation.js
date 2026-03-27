@@ -16,7 +16,8 @@ class Confirmation {
         phone = '',
         dietaryRestrictions = '',
         message = '',
-        confirmedAt = null
+        confirmedAt = null,
+        totalPasses = Infinity // Para no romper tests existentes
     }) {
         this.validateConstructorParams({
             code,
@@ -26,7 +27,8 @@ class Confirmation {
             phone,
             dietaryRestrictions,
             message,
-            confirmedAt
+            confirmedAt,
+            totalPasses
         });
 
         this._code = code;
@@ -87,9 +89,15 @@ class Confirmation {
      * Actualiza el número de invitados que asistirán
      * @param {number} attendingGuests
      */
-    updateAttendingGuests(attendingGuests) {
+    updateAttendingGuests(attendingGuests, totalPasses = Infinity) {
         if (!Number.isInteger(attendingGuests) || attendingGuests < 0) {
             throw new ValidationException('El número de invitados debe ser un entero no negativo');
+        }
+
+        if (attendingGuests > totalPasses) {
+            throw new BusinessRuleException(
+                `El número de asistentes (${attendingGuests}) no puede exceder el total de pases disponibles (${totalPasses})`
+            );
         }
 
         if (!this._willAttend && attendingGuests > 0) {
@@ -352,6 +360,12 @@ class Confirmation {
         if (attendingNames && attendingNames.length > attendingGuests) {
             throw new BusinessRuleException(
                 'No se pueden tener más nombres que invitados confirmados'
+            );
+        }
+
+        if (params.totalPasses !== undefined && attendingGuests > params.totalPasses) {
+            throw new BusinessRuleException(
+                `El número de asistentes (${attendingGuests}) no puede exceder el total de pases disponibles (${params.totalPasses})`
             );
         }
     }

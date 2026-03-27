@@ -1,1 +1,0 @@
-refactor(entities): enrich entities with custom exceptions
