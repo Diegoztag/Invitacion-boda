@@ -6,6 +6,8 @@
 import { DIContainer } from '../../config/di-container.js';
 import { EVENTS } from '../../shared/constants/events.js';
 import { SELECTORS } from '../../shared/constants/selectors.js';
+import { ComponentFactory } from '../components/component-factory.js';
+import { ControllerFactory } from './controller-factory.js';
 
 export class AppController {
     constructor(container, options = {}) {
@@ -143,54 +145,30 @@ export class AppController {
      * Inicializa componentes UI base
      */
     async initializeBaseComponents() {
-        // Countdown Component
-        const countdownElements = this.container.querySelectorAll('[data-countdown]');
-        for (const element of countdownElements) {
-            try {
-                const { CountdownComponent } = await import('../components/ui/countdown.js');
-                const targetDate = element.getAttribute('data-countdown');
-                const countdown = new CountdownComponent(element, targetDate);
-                await countdown.init();
-                this.components.set(`countdown-${element.id || Date.now()}`, countdown);
-            } catch (error) {
-                //
+        const componentInitializers = [
+            {
+                selector: '[data-countdown]',
+                factory: ComponentFactory.createCountdown,
+                name: 'countdown'
+            },
+            { selector: '[data-modal]', factory: ComponentFactory.createModal, name: 'modal' },
+            { selector: '[data-loader]', factory: ComponentFactory.createLoader, name: 'loader' }
+        ];
+
+        for (const { selector, factory, name } of componentInitializers) {
+            const elements = this.container.querySelectorAll(selector);
+            for (const element of elements) {
+                const component = await factory(element);
+                if (component) {
+                    this.components.set(`${name}-${element.id || Date.now()}`, component);
+                }
             }
         }
 
-        // Modal Components
-        const modalElements = this.container.querySelectorAll('[data-modal]');
-        for (const element of modalElements) {
-            try {
-                const { ModalComponent } = await import('../components/ui/modal.js');
-                const modal = new ModalComponent(element);
-                await modal.init();
-                this.components.set(`modal-${element.id || Date.now()}`, modal);
-            } catch (error) {
-                //
-            }
-        }
-
-        // Mobile Menu Component
-        try {
-            const { MobileMenuComponent } = await import('../components/ui/mobile-menu.js');
-            const mobileMenu = new MobileMenuComponent();
-            mobileMenu.init();
+        // Componentes Singleton
+        const mobileMenu = await ComponentFactory.createMobileMenu();
+        if (mobileMenu) {
             this.components.set('mobile-menu', mobileMenu);
-        } catch (error) {
-            //
-        }
-
-        // Loader Components
-        const loaderElements = this.container.querySelectorAll('[data-loader]');
-        for (const element of loaderElements) {
-            try {
-                const { LoaderComponent } = await import('../components/ui/loader.js');
-                const loader = new LoaderComponent(element);
-                await loader.init();
-                this.components.set(`loader-${element.id || Date.now()}`, loader);
-            } catch (error) {
-                //
-            }
         }
     }
 
@@ -198,88 +176,37 @@ export class AppController {
      * Inicializa controladores principales
      */
     async initializeControllers() {
-        // Navigation Controller
-        try {
-            const { NavigationController } = await import('./navigation-controller.js');
-            this.navigationController = new NavigationController(this.container, {
-                smoothScroll: true,
-                updateUrl: true,
-                highlightActiveSection: true
-            });
-            await this.navigationController.init();
-        } catch (error) {
-            //
-        }
+        this.navigationController = await ControllerFactory.createNavigationController(
+            this.container
+        );
+        this.contentController = await ControllerFactory.createContentController(
+            this.container,
+            this.metaService
+        );
+        this.scrollAnimationController = await ControllerFactory.createScrollAnimationController(
+            this.container
+        );
 
-        // Content Controller
-        try {
-            const { ContentController } = await import('./content-controller.js');
-            this.contentController = new ContentController(this.container, this.metaService, {
-                autoUpdateMeta: true,
-                enableAnimations: true
-            });
-            await this.contentController.init();
-        } catch (error) {
-            //
-        }
-
-        // RSVP Controller
         const rsvpContainer =
             this.container.querySelector('[data-rsvp-container]') ||
             this.container.querySelector('#rsvp');
         if (rsvpContainer) {
-            try {
-                const { RSVPController } = await import('./rsvp-controller.js');
-                this.rsvpController = new RSVPController(
-                    rsvpContainer,
-                    this.invitationService,
-                    this.validationService,
-                    {
-                        autoSave: true,
-                        showConfirmation: true,
-                        enableValidation: true
-                    }
-                );
-                await this.rsvpController.init();
-            } catch (error) {
-                //
-            }
+            this.rsvpController = await ControllerFactory.createRSVPController(
+                rsvpContainer,
+                this.invitationService,
+                this.validationService
+            );
         }
 
-        // Carousel Controllers
         const carouselElements = this.container.querySelectorAll('[data-carousel]');
         for (const element of carouselElements) {
-            try {
-                const { CarouselController } = await import('./carousel-controller.js');
-
-                // Obtener configuración del carrusel desde WEDDING_CONFIG
-                const config = this.configurationService?.getConfig() || {};
-                const carouselConfig = config.carouselSection?.carousel || {};
-
-                const carousel = new CarouselController(element, {
-                    autoPlay: carouselConfig.enableAutoPlay !== false,
-                    autoPlayInterval: carouselConfig.autoPlayDelay || 5000,
-                    animationDuration: carouselConfig.animationDuration || 600,
-                    loop: true,
-                    showDots: carouselConfig.showIndicators !== false,
-                    showArrows: carouselConfig.showNavigationButtons !== false,
-                    swipeEnabled: carouselConfig.enableSwipe !== false,
-                    keyboardEnabled: carouselConfig.enableKeyboard !== false
-                });
-                await carousel.init();
+            const carousel = await ControllerFactory.createCarouselController(
+                element,
+                this.configurationService
+            );
+            if (carousel) {
                 this.components.set(`carousel-${element.id || Date.now()}`, carousel);
-            } catch (error) {
-                //
             }
-        }
-
-        // Scroll Animation Controller
-        try {
-            const { ScrollAnimationController } = await import('./scroll-animation-controller.js');
-            this.scrollAnimationController = new ScrollAnimationController(this.container);
-            await this.scrollAnimationController.init();
-        } catch (error) {
-            //
         }
     }
 
