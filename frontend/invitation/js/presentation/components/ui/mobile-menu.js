@@ -3,7 +3,7 @@
  * Maneja la funcionalidad del menú hamburguesa
  */
 
-export class MobileMenuComponent {
+export class MobileMenu {
     constructor() {
         this.navToggle = null;
         this.navMenu = null;

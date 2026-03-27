@@ -7,7 +7,7 @@ import { Component } from '../base/component.js';
 import { EVENTS } from '../../../shared/constants/events.js';
 import { debounce } from '../../../shared/helpers/debounce.js';
 
-export class FormValidatorComponent extends Component {
+export class FormValidator extends Component {
     constructor(formElement, validationService, options = {}) {
         super(formElement);
 

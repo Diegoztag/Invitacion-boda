@@ -1,5 +1,4 @@
 const NotFoundException = require('../../shared/exceptions/NotFoundException');
-const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
 /**
  * DeleteInvitationUseCase

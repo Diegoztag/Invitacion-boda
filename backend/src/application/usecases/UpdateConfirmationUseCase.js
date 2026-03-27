@@ -151,7 +151,7 @@ class UpdateConfirmationUseCase {
         return normalized;
     }
 
-    validateBusinessRules(invitation, normalizedData) {
+    validateBusinessRules(_invitation, _normalizedData) {
         // La validación del número de pases ahora la hace la entidad Confirmation
         // if (normalizedData.attendingGuests > invitation.numberOfPasses) {
         //     throw new Error(`Solo tienes ${invitation.numberOfPasses} pases disponibles`);

@@ -515,13 +515,7 @@ export function getStatusBadge(invitation, options = {}) {
  * @returns {string} HTML del badge
  */
 export function renderStatBadge(value, type = 'count', options = {}) {
-    const {
-        title = '',
-        threshold = null,
-        showTrend = false,
-        trendDirection = 'up',
-        badgeClass = ''
-    } = options;
+    const { title = '', threshold = null, trendDirection = 'up', badgeClass = '' } = options;
 
     let html = '';
     let finalBadgeClass = badgeClass;
