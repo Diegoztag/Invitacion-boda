@@ -2,6 +2,7 @@ import { EVENTS } from '../../shared/constants/events.js';
 import { RSVPService } from '../../core/services/rsvp-service.js';
 import { RSVPUI } from '../ui/rsvp-ui.js';
 import { FormValidatorComponent } from '../components/ui/form-validator.js';
+import { sanitize } from '../../shared/helpers/sanitizer.js';
 
 export class RSVPController {
     constructor(container, rsvpService, validationService, options = {}) {
@@ -98,7 +99,13 @@ export class RSVPController {
         this.ui.setSubmitButtonState(true);
 
         const invitationId = this.getInvitationId();
-        const formData = this.ui.getFormData(invitationId);
+        const rawFormData = this.ui.getFormData(invitationId);
+
+        // Sanitize form data before submitting
+        const formData = Object.entries(rawFormData).reduce((acc, [key, value]) => {
+            acc[key] = typeof value === 'string' ? sanitize(value) : value;
+            return acc;
+        }, {});
 
         try {
             const result = await this.rsvpService.submitConfirmation(invitationId, formData);

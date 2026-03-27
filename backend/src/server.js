@@ -44,6 +44,7 @@ const ConfirmationController = require('./presentation/controllers/ConfirmationC
 // Importar configuración de rutas y middleware
 const configureRoutes = require('./presentation/routes');
 const configureMiddleware = require('./presentation/middleware');
+const errorHandler = require('./presentation/middleware/errorHandler');
 
 // Importar servicios de infraestructura
 const CsvStorage = require('./infrastructure/services/CsvStorage');
@@ -372,25 +373,7 @@ class Server {
         });
 
         // Middleware de manejo de errores de Express
-        this.app.use((error, req, res, next) => {
-            logger.error('Express Error Handler', {
-                requestId: req.id,
-                error: error.message,
-                stack: error.stack,
-                path: req.path,
-                method: req.method
-            });
-
-            if (res.headersSent) {
-                return next(error);
-            }
-
-            res.status(500).json({
-                success: false,
-                error: 'Error interno del servidor',
-                requestId: req.id
-            });
-        });
+        this.app.use(errorHandler);
     }
 
     /**
