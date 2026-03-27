@@ -1,3 +1,6 @@
+const NotFoundException = require('../../shared/exceptions/NotFoundException');
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
+
 /**
  * Get Invitation Use Case
  * Caso de uso para obtener invitaciones
@@ -19,51 +22,35 @@ class GetInvitationUseCase {
 
         try {
             if (!code || typeof code !== 'string') {
-                endOperation({ success: false, reason: 'invalid_code' });
-                return {
-                    success: false,
-                    error: 'Código de invitación es requerido'
-                };
+                throw new BusinessRuleException('Código de invitación es requerido');
             }
 
             const invitation = await this.invitationRepository.findByCode(code);
 
             if (!invitation) {
-                endOperation({ success: false, reason: 'not_found' });
-                return {
-                    success: false,
-                    error: 'Invitación no encontrada'
-                };
+                throw new NotFoundException('Invitación', code);
             }
 
             // Verificar si la invitación está activa
             if (!invitation.isActive()) {
-                endOperation({ success: false, reason: 'inactive' });
-                return {
-                    success: false,
-                    error: 'Invitación no está activa'
-                };
+                throw new BusinessRuleException(
+                    'La invitación no está activa o ha sido cancelada.'
+                );
             }
 
             endOperation({ success: true });
-            return {
-                success: true,
-                invitation: invitation.toObject(),
-                message: 'Invitación encontrada'
-            };
+            return invitation.toObject();
         } catch (error) {
             endOperation({ error: error.message }, 'error');
 
-            this.logger.error('Error getting invitation', {
+            this.logger.error('Error en GetInvitationUseCase', {
                 code,
                 error: error.message,
                 stack: error.stack
             });
 
-            return {
-                success: false,
-                error: 'Error obteniendo invitación'
-            };
+            // Re-lanzar la excepción para que la capa superior la maneje
+            throw error;
         }
     }
 

@@ -4,10 +4,12 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
-// Importar configuración para validación de límites
+// Importar configuraciรณn para validaciรณn de lรญmites
 const config = require('../../config');
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
+const NotFoundException = require('../../shared/exceptions/NotFoundException');
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
 class InvitationController {
     constructor(
@@ -31,7 +33,7 @@ class InvitationController {
     }
 
     /**
-     * Obtiene una invitación por código
+     * Obtiene una invitaciรณn por cรณdigo
      * GET /api/invitations/:code
      */
     async getInvitation(req, res) {
@@ -42,19 +44,19 @@ class InvitationController {
 
         try {
             const { code } = req.params;
-
-            const result = await this.getInvitationUseCase.execute(code);
-
-            if (!result.success) {
-                const statusCode = result.error === 'Invitación no encontrada' ? 404 : 400;
-                return res.status(statusCode).json(result);
-            }
-
+            const invitation = await this.getInvitationUseCase.execute(code);
             endOperation({ found: true });
-
-            res.json(result);
+            res.json({ success: true, invitation });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
+
+            if (error instanceof NotFoundException) {
+                return res.status(404).json({ success: false, error: error.message });
+            }
+
+            if (error instanceof BusinessRuleException) {
+                return res.status(400).json({ success: false, error: error.message });
+            }
 
             this.logger.error('Error getting invitation', {
                 code: req.params.code,
@@ -70,7 +72,7 @@ class InvitationController {
     }
 
     /**
-     * Crea una nueva invitación
+     * Crea una nueva invitaciรณn
      * POST /api/invitations
      */
     async createInvitation(req, res) {
@@ -87,7 +89,7 @@ class InvitationController {
             if (!validation.isValid) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Datos de invitación inválidos',
+                    error: 'Datos de invitaciรณn invรกlidos',
                     details: validation.errors
                 });
             }
@@ -104,7 +106,7 @@ class InvitationController {
                 code: result.invitation.code
             });
 
-            // Convertir entidad a objeto plano para no exponer getters/protótipo
+            // Convertir entidad a objeto plano para no exponer getters/protรณtipo
             res.status(201).json({
                 ...result,
                 invitation: result.invitation.toObject()
@@ -126,7 +128,7 @@ class InvitationController {
     }
 
     /**
-     * Obtiene todas las invitaciones con filtros y paginación
+     * Obtiene todas las invitaciones con filtros y paginaciรณn
      * GET /api/invitations
      */
     async getInvitations(req, res) {
@@ -209,7 +211,7 @@ class InvitationController {
     }
 
     /**
-     * Actualiza una invitación
+     * Actualiza una invitaciรณn
      * PUT /api/invitations/:code
      */
     async updateInvitation(req, res) {
@@ -221,26 +223,26 @@ class InvitationController {
         try {
             const { code } = req.params;
 
-            // Validar código
+            // Validar cรณdigo
             if (!this.validationService.validateInvitationCode(code)) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Código de invitación inválido'
+                    error: 'Cรณdigo de invitaciรณn invรกlido'
                 });
             }
 
-            // Buscar invitación existente
+            // Buscar invitaciรณn existente
             const existingInvitation = await this.invitationRepository.findByCode(code);
             if (!existingInvitation) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Invitación no encontrada'
+                    error: 'Invitaciรณn no encontrada'
                 });
             }
 
             const updateInvitationDTO = new UpdateInvitationDTO(req.body);
 
-            // Validar datos de actualización
+            // Validar datos de actualizaciรณn
             const validation = this.validationService.validateInvitationData({
                 ...existingInvitation.toObject(),
                 ...updateInvitationDTO
@@ -249,12 +251,12 @@ class InvitationController {
             if (!validation.isValid) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Datos de actualización inválidos',
+                    error: 'Datos de actualizaciรณn invรกlidos',
                     details: validation.errors
                 });
             }
 
-            // Crear invitación actualizada
+            // Crear invitaciรณn actualizada
             const updatedInvitation = existingInvitation.clone();
             updatedInvitation.update(validation.sanitized);
 
@@ -266,7 +268,7 @@ class InvitationController {
             res.json({
                 success: true,
                 invitation: result.toObject(),
-                message: 'Invitación actualizada exitosamente'
+                message: 'Invitaciรณn actualizada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -286,7 +288,7 @@ class InvitationController {
     }
 
     /**
-     * Elimina una invitación (soft delete)
+     * Elimina una invitaciรณn (soft delete)
      * DELETE /api/invitations/:code
      */
     async deleteInvitation(req, res) {
@@ -299,21 +301,21 @@ class InvitationController {
             const { code } = req.params;
             const { reason = '' } = req.body;
 
-            // Validar código
+            // Validar cรณdigo
             if (!this.validationService.validateInvitationCode(code)) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Código de invitación inválido'
+                    error: 'Cรณdigo de invitaciรณn invรกlido'
                 });
             }
 
-            // Eliminar invitación
+            // Eliminar invitaciรณn
             const result = await this.invitationRepository.delete(code, 'admin', reason);
 
             if (!result) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Invitación no encontrada'
+                    error: 'Invitaciรณn no encontrada'
                 });
             }
 
@@ -321,7 +323,7 @@ class InvitationController {
 
             res.json({
                 success: true,
-                message: 'Invitación eliminada exitosamente'
+                message: 'Invitaciรณn eliminada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -340,7 +342,7 @@ class InvitationController {
     }
 
     /**
-     * Restaura (activa) una invitación previamente eliminada
+     * Restaura (activa) una invitaciรณn previamente eliminada
      * PUT /api/invitations/:code/activate
      */
     async restoreInvitation(req, res) {
@@ -355,7 +357,7 @@ class InvitationController {
             const result = await this.restoreInvitationUseCase.execute(code);
 
             if (!result.success) {
-                const statusCode = result.error === 'Invitación no encontrada' ? 404 : 400;
+                const statusCode = result.error === 'Invitaciรณn no encontrada' ? 404 : 400;
                 return res.status(statusCode).json(result);
             }
 
@@ -364,7 +366,7 @@ class InvitationController {
             res.json({
                 success: true,
                 invitation: result.data,
-                message: 'Invitación activada exitosamente'
+                message: 'Invitaciรณn activada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
@@ -383,7 +385,7 @@ class InvitationController {
     }
 
     /**
-     * Obtiene estadísticas de invitaciones
+     * Obtiene estadรญsticas de invitaciones
      * GET /api/stats
      */
     async getStats(req, res) {
@@ -392,10 +394,10 @@ class InvitationController {
         });
 
         try {
-            // Obtener estadísticas unificadas desde invitaciones
+            // Obtener estadรญsticas unificadas desde invitaciones
             const invitationStats = await this.invitationRepository.getStats();
 
-            // Calcular tasas de confirmación y asistencia
+            // Calcular tasas de confirmaciรณn y asistencia
             const confirmationRate =
                 invitationStats.active > 0
                     ? ((invitationStats.confirmed / invitationStats.active) * 100).toFixed(2)
@@ -447,7 +449,7 @@ class InvitationController {
                         activeStaffPasses: invitationStats.activeStaffPasses || 0,
                         totalActivePasses: invitationStats.totalActivePasses || 0,
 
-                        // Porcentajes de distribución
+                        // Porcentajes de distribuciรณn
                         distributionPercentages: invitationStats.distributionPercentages || {
                             adults: 0,
                             children: 0,
@@ -500,7 +502,7 @@ class InvitationController {
                 });
             }
 
-            // Ejecutar importación en lote
+            // Ejecutar importaciรณn en lote
             const result = await this.createInvitationUseCase.executeBatch(invitations);
 
             endOperation({
@@ -511,7 +513,7 @@ class InvitationController {
             res.json({
                 success: true,
                 result,
-                message: `Importación completada: ${result.success.length} exitosas, ${result.errors.length} fallidas`
+                message: `Importaciรณn completada: ${result.success.length} exitosas, ${result.errors.length} fallidas`
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');

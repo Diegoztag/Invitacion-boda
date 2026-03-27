@@ -32,7 +32,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Consolidar Lógica de Estadísticas en `GetConfirmationStatsUseCase`**: Refactorizar el caso de uso para que sea la única fuente de datos agregados de confirmaciones.
 - [x] **Dividir Casos de Uso con Múltiples Responsabilidades**: Refactorizar `ConfirmAttendanceUseCase` en casos de uso más pequeños y enfocados (`ConfirmAttendanceUseCase`, `UpdateConfirmationUseCase`, `CancelConfirmationUseCase`).
 - [ ] **Implementar Patrón de Unidad de Trabajo (Unit of Work)**: Asegurar la atomicidad de las operaciones en la base de datos que involucran múltiples repositorios (ej. al confirmar una asistencia).
-- [ ] **Mejorar Manejo de Errores con Excepciones Personalizadas**: Introducir excepciones específicas (`NotFoundException`, `BusinessRuleException`) para un manejo de errores más claro y granular.
+- [x] **Mejorar Manejo de Errores con Excepciones Personalizadas**: Introducir excepciones específicas (`NotFoundException`, `BusinessRuleException`) para un manejo de errores más claro y granular.
 - [ ] **Enriquecer Entidades del Dominio**: Mover más lógica de negocio y validaciones a las entidades (`Invitation`, `Confirmation`) para que sean modelos de dominio más ricos.
 - [ ] **Refactorizar `AppController` para Reducir Complejidad**: Dividir el método `init` y extraer la lógica de inicialización de componentes a una `ComponentFactory`.
 - [ ] **Introducir un `AppStateService` para Gestión de Estado en Frontend**: Centralizar el estado global de la aplicación para un manejo más predecible y escalable.
