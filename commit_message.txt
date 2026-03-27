@@ -1,1 +1,1 @@
-refactor: Eliminar valores hard-coded de paginación y validación
+refactor(entities): enrich entities with custom exceptions

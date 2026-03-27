@@ -4,6 +4,9 @@
  * Sigue principios DDD (Domain Driven Design)
  */
 
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
+const ValidationException = require('../../shared/exceptions/ValidationException');
+
 class Invitation {
     constructor({
         code = null,
@@ -236,15 +239,15 @@ class Invitation {
                 : confirmationData.attendingGuests;
 
         if (this.isConfirmed() && confirmedCount > 0) {
-            throw new Error('Esta invitación ya ha sido confirmada');
+            throw new BusinessRuleException('Esta invitación ya ha sido confirmada');
         }
 
         if (this._status === 'inactive') {
-            throw new Error('No se puede confirmar una invitación inactiva');
+            throw new BusinessRuleException('No se puede confirmar una invitación inactiva');
         }
 
         if (confirmedCount > this._numberOfPasses) {
-            throw new Error(`Solo tienes ${this._numberOfPasses} pases disponibles`);
+            throw new ValidationException(`Solo tienes ${this._numberOfPasses} pases disponibles`);
         }
 
         this._confirmedPasses = confirmedCount;
@@ -300,7 +303,7 @@ class Invitation {
             throw new BusinessRuleException('La invitación ya está inactiva o cancelada.');
         }
 
-        this._status = 'inactive'; // O 'cancelled', dependiendo de la semántica deseada. 'inactive' es más genérico.
+        this._status = 'inactive';
         this._cancelledAt = new Date().toISOString();
         this._cancelledBy = cancelledBy;
         this._cancellationReason = reason;
@@ -342,7 +345,7 @@ class Invitation {
      */
     assignTable(tableNumber) {
         if (tableNumber !== null && (!Number.isInteger(tableNumber) || tableNumber <= 0)) {
-            throw new Error('El número de mesa debe ser un entero positivo');
+            throw new ValidationException('El número de mesa debe ser un entero positivo');
         }
 
         this._tableNumber = tableNumber;
@@ -357,7 +360,7 @@ class Invitation {
         const totalPasses = (adultPasses || 0) + (childPasses || 0) + (staffPasses || 0);
 
         if (totalPasses !== this._numberOfPasses) {
-            throw new Error(
+            throw new ValidationException(
                 `La suma de pases (${totalPasses}) debe coincidir con el total (${this._numberOfPasses})`
             );
         }
@@ -530,34 +533,31 @@ class Invitation {
     validateConstructorParams(params) {
         const { code, guestNames, numberOfPasses, phone } = params;
 
-        // Validar código
         if (!code || (typeof code === 'string' && code.trim() === '')) {
-            throw new Error('Código de invitación es requerido');
+            throw new ValidationException('Código de invitación es requerido');
         }
 
-        // Validar nombres de invitados
         if (Array.isArray(guestNames)) {
             if (guestNames.length === 0) {
-                throw new Error('Al menos un nombre de invitado es requerido');
+                throw new ValidationException('Al menos un nombre de invitado es requerido');
             }
-
             if (guestNames.some(name => typeof name !== 'string' || name.trim() === '')) {
-                throw new Error('Nombres de invitados no pueden estar vacíos');
+                throw new ValidationException('Nombres de invitados no pueden estar vacíos');
             }
         } else if (typeof guestNames === 'string') {
             if (guestNames.trim() === '') {
-                throw new Error('Al menos un nombre de invitado es requerido');
+                throw new ValidationException('Al menos un nombre de invitado es requerido');
             }
         } else {
-            throw new Error('guestNames debe ser un array o string');
+            throw new ValidationException('guestNames debe ser un array o string');
         }
 
         if (!Number.isInteger(numberOfPasses) || numberOfPasses <= 0) {
-            throw new Error('Número de pases debe ser mayor a 0');
+            throw new ValidationException('Número de pases debe ser mayor a 0');
         }
 
         if (phone && typeof phone !== 'string') {
-            throw new Error('phone debe ser un string');
+            throw new ValidationException('phone debe ser un string');
         }
     }
 
@@ -566,15 +566,14 @@ class Invitation {
      * @private
      */
     validatePassesConsistency() {
-        // CORREGIDO: Solo validar, NO modificar automáticamente los datos del CSV
         const totalCalculated = this._adultPasses + this._childPasses + this._staffPasses;
 
-        // Solo validar que los pases confirmados no excedan el total
         if (this._confirmedPasses > this._numberOfPasses) {
-            throw new Error('Los pases confirmados no pueden exceder el total de pases');
+            throw new BusinessRuleException(
+                'Los pases confirmados no pueden exceder el total de pases'
+            );
         }
 
-        // Opcional: Log de advertencia si no coinciden, pero NO modificar
         if (totalCalculated !== this._numberOfPasses) {
         }
     }

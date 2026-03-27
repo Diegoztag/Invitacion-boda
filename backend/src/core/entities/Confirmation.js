@@ -4,6 +4,9 @@
  * Sigue principios DDD (Domain Driven Design)
  */
 
+const ValidationException = require('../../shared/exceptions/ValidationException');
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
+
 class Confirmation {
     constructor({
         code,
@@ -86,11 +89,11 @@ class Confirmation {
      */
     updateAttendingGuests(attendingGuests) {
         if (!Number.isInteger(attendingGuests) || attendingGuests < 0) {
-            throw new Error('El número de invitados debe ser un entero no negativo');
+            throw new ValidationException('El número de invitados debe ser un entero no negativo');
         }
 
         if (!this._willAttend && attendingGuests > 0) {
-            throw new Error('No se pueden tener invitados si no va a asistir');
+            throw new BusinessRuleException('No se pueden tener invitados si no va a asistir');
         }
 
         this._attendingGuests = attendingGuests;
@@ -109,7 +112,7 @@ class Confirmation {
      */
     updateAttendingNames(attendingNames) {
         if (!Array.isArray(attendingNames)) {
-            throw new Error('Los nombres de invitados deben ser un array');
+            throw new ValidationException('Los nombres de invitados deben ser un array');
         }
 
         const validNames = attendingNames.filter(
@@ -117,7 +120,7 @@ class Confirmation {
         );
 
         if (validNames.length > this._attendingGuests) {
-            throw new Error(
+            throw new BusinessRuleException(
                 `No se pueden tener más nombres (${validNames.length}) que invitados confirmados (${this._attendingGuests})`
             );
         }
@@ -132,7 +135,7 @@ class Confirmation {
      */
     updatePhone(phone) {
         if (phone && typeof phone !== 'string') {
-            throw new Error('El teléfono debe ser un string');
+            throw new ValidationException('El teléfono debe ser un string');
         }
 
         this._phone = phone || '';
@@ -145,7 +148,7 @@ class Confirmation {
      */
     updateDietaryRestrictions(dietaryRestrictions) {
         if (dietaryRestrictions && typeof dietaryRestrictions !== 'string') {
-            throw new Error('Las restricciones dietarias deben ser un string');
+            throw new ValidationException('Las restricciones dietarias deben ser un string');
         }
 
         this._dietaryRestrictions = dietaryRestrictions || '';
@@ -158,7 +161,7 @@ class Confirmation {
      */
     updateMessage(message) {
         if (message && typeof message !== 'string') {
-            throw new Error('El mensaje debe ser un string');
+            throw new ValidationException('El mensaje debe ser un string');
         }
 
         this._message = message || '';
@@ -310,40 +313,46 @@ class Confirmation {
         } = params;
 
         if (!code || typeof code !== 'string') {
-            throw new Error('El código de invitación es requerido y debe ser un string');
+            throw new ValidationException(
+                'El código de invitación es requerido y debe ser un string'
+            );
         }
 
         if (typeof willAttend !== 'boolean') {
-            throw new Error('willAttend debe ser un boolean');
+            throw new ValidationException('willAttend debe ser un boolean');
         }
 
         if (!Number.isInteger(attendingGuests) || attendingGuests < 0) {
-            throw new Error('attendingGuests debe ser un entero no negativo');
+            throw new ValidationException('attendingGuests debe ser un entero no negativo');
         }
 
         if (attendingNames && !Array.isArray(attendingNames)) {
-            throw new Error('attendingNames debe ser un array');
+            throw new ValidationException('attendingNames debe ser un array');
         }
 
         if (phone && typeof phone !== 'string') {
-            throw new Error('phone debe ser un string');
+            throw new ValidationException('phone debe ser un string');
         }
 
         if (dietaryRestrictions && typeof dietaryRestrictions !== 'string') {
-            throw new Error('dietaryRestrictions debe ser un string');
+            throw new ValidationException('dietaryRestrictions debe ser un string');
         }
 
         if (message && typeof message !== 'string') {
-            throw new Error('message debe ser un string');
+            throw new ValidationException('message debe ser un string');
         }
 
         // Validaciones de lógica de negocio
         if (!willAttend && attendingGuests > 0) {
-            throw new Error('No se pueden tener invitados confirmados si no va a asistir');
+            throw new BusinessRuleException(
+                'No se pueden tener invitados confirmados si no va a asistir'
+            );
         }
 
         if (attendingNames && attendingNames.length > attendingGuests) {
-            throw new Error('No se pueden tener más nombres que invitados confirmados');
+            throw new BusinessRuleException(
+                'No se pueden tener más nombres que invitados confirmados'
+            );
         }
     }
 
