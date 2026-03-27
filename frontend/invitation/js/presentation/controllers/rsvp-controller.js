@@ -26,39 +26,39 @@ export class RSVPController {
             return;
         }
 
-        await this.setupFormValidation();
-        this.setupEventListeners();
-        await this.loadInitialData();
+        await this._setupFormValidation();
+        this._setupEventListeners();
+        await this._loadInitialData();
 
         this.isInitialized = true;
     }
 
-    async setupFormValidation() {
+    async _setupFormValidation() {
         if (this.validationService) {
             this.formValidator = new FormValidator(this.ui.form, this.validationService);
             await this.formValidator.init();
         }
     }
 
-    setupEventListeners() {
-        this.ui.form.addEventListener('submit', this.handleFormSubmit.bind(this));
-        this.ui.form.addEventListener('change', this.handleFormChange.bind(this));
+    _setupEventListeners() {
+        this.ui.form.addEventListener('submit', this._handleFormSubmit.bind(this));
+        this.ui.form.addEventListener('change', this._handleFormChange.bind(this));
     }
 
-    async loadInitialData() {
-        const invitationId = this.getInvitationId();
+    async _loadInitialData() {
+        const invitationId = this._getInvitationId();
         if (invitationId) {
             try {
                 this.currentInvitation = await this.rsvpService.loadInvitation(invitationId);
                 this.ui.populateInvitationDetails(this.currentInvitation);
-                this.handleInvitationStatus();
+                this._handleInvitationStatus();
             } catch (error) {
                 this.emit(EVENTS.RSVP.ERROR, { message: 'Error al cargar la invitación.' });
             }
         }
     }
 
-    handleInvitationStatus() {
+    _handleInvitationStatus() {
         const status = this.currentInvitation?.status?.toLowerCase() || '';
         if (!this.options.allowReconfirmation) {
             if (status === 'confirmed' || status === 'partial') {
@@ -73,17 +73,17 @@ export class RSVPController {
         this.ui.showForm();
     }
 
-    handleFormChange(e) {
+    _handleFormChange(e) {
         if (e.target.classList.contains('attendance-check')) {
-            this.handleAttendanceChange(e.target.value);
+            this._handleAttendanceChange(e.target.value);
         }
     }
 
-    handleAttendanceChange(value) {
+    _handleAttendanceChange(value) {
         this.ui.updateAttendanceDetails(value, this.currentInvitation);
     }
 
-    async handleFormSubmit(e) {
+    async _handleFormSubmit(e) {
         e.preventDefault();
         if (this.isSubmitting) {
             return;
@@ -100,7 +100,7 @@ export class RSVPController {
         this.isSubmitting = true;
         this.ui.setSubmitButtonState(true);
 
-        const invitationId = this.getInvitationId();
+        const invitationId = this._getInvitationId();
         const rawFormData = this.ui.getFormData(invitationId);
 
         // Sanitize form data before submitting
@@ -121,7 +121,7 @@ export class RSVPController {
         }
     }
 
-    getInvitationId() {
+    _getInvitationId() {
         const urlParams = new URLSearchParams(window.location.search);
         return (
             urlParams.get('id') ||
