@@ -268,9 +268,7 @@ class AdminApp {
             showToast('Error inesperado en la aplicación', 'error');
         });
 
-        window.addEventListener('error', () => {
-            //
-        });
+        window.addEventListener('error', () => {});
     }
 
     async refreshCurrentSection() {
@@ -298,9 +296,7 @@ class AdminApp {
                     }
                     break;
             }
-        } catch {
-            //
-        }
+        } catch {}
     }
 }
 

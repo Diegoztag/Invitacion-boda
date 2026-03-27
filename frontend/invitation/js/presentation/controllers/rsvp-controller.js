@@ -1,7 +1,7 @@
 import { EVENTS } from '../../shared/constants/events.js';
 import { RSVPService } from '../../core/services/rsvp-service.js';
 import { RSVPUI } from '../ui/rsvp-ui.js';
-import { FormValidatorComponent } from '../components/ui/form-validator.js';
+import { FormValidator } from '../components/ui/form-validator.js';
 import { sanitize } from '../../shared/helpers/sanitizer.js';
 
 export class RSVPController {
@@ -35,7 +35,7 @@ export class RSVPController {
 
     async setupFormValidation() {
         if (this.validationService) {
-            this.formValidator = new FormValidatorComponent(this.ui.form, this.validationService);
+            this.formValidator = new FormValidator(this.ui.form, this.validationService);
             await this.formValidator.init();
         }
     }

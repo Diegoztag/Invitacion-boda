@@ -15,7 +15,7 @@ const config = require('./config');
 
 // Importar dependencias
 const DIContainer = require('./shared/utils/DIContainer');
-const Logger = require('./shared/utils/Logger');
+const Logger = require('./shared/utils/logger');
 const ValidationService = require('./shared/utils/ValidationService');
 
 // Importar repositorios
@@ -471,6 +471,7 @@ class Server {
 }
 
 // Crear e iniciar servidor si este archivo es ejecutado directamente
+
 if (require.main === module) {
     const server = new Server();
     server.start().catch();

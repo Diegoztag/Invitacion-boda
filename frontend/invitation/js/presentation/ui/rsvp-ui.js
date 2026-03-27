@@ -241,36 +241,44 @@ export class RSVPUI {
         }
 
         const formData = new FormData(this.form);
-        const data = {};
-
-        for (const [key, value] of formData.entries()) {
-            if (!key.startsWith('guest_') && key !== 'attendance_check') {
-                data[key] = value;
-            }
-        }
+        const data = this.extractBaseFormData(formData);
 
         data.attending = this.form.querySelector('.attendance-check:checked')?.value === 'si';
         data.invitation_id = invitationId;
 
         if (data.attending) {
-            const guestRows = this.form.querySelectorAll('.guest-row');
-            data.guest_names = Array.from(guestRows)
-                .map((row, index) => {
-                    const nameInput = row.querySelector(`input[name="guest_name_${index}"]`);
-                    const attendingCheckbox = row.querySelector(
-                        `input[name="guest_attending_${index}"]`
-                    );
-                    return attendingCheckbox?.checked && nameInput?.value.trim()
-                        ? nameInput.value.trim()
-                        : null;
-                })
-                .filter(Boolean);
-            data.guest_count = data.guest_names.length;
+            this.extractGuestData(data);
         } else {
             data.guest_names = [];
             data.guest_count = 0;
         }
 
         return data;
+    }
+
+    extractBaseFormData(formData) {
+        const data = {};
+        for (const [key, value] of formData.entries()) {
+            if (!key.startsWith('guest_') && key !== 'attendance_check') {
+                data[key] = value;
+            }
+        }
+        return data;
+    }
+
+    extractGuestData(data) {
+        const guestRows = this.form.querySelectorAll('.guest-row');
+        data.guest_names = Array.from(guestRows)
+            .map((row, index) => {
+                const nameInput = row.querySelector(`input[name="guest_name_${index}"]`);
+                const attendingCheckbox = row.querySelector(
+                    `input[name="guest_attending_${index}"]`
+                );
+                return attendingCheckbox?.checked && nameInput?.value.trim()
+                    ? nameInput.value.trim()
+                    : null;
+            })
+            .filter(Boolean);
+        data.guest_count = data.guest_names.length;
     }
 }

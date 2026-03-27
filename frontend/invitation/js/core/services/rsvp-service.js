@@ -25,7 +25,6 @@ export class RSVPService {
             const invitation = await this.invitationService.loadInvitation(invitationId);
             return invitation;
         } catch (error) {
-            console.error(`[RSVPService] Error loading invitation ${invitationId}:`, error);
             throw new Error('Failed to load invitation data.');
         }
     }
@@ -48,10 +47,6 @@ export class RSVPService {
             const result = await this.invitationService.confirmAttendance(invitationId, formData);
             return result;
         } catch (error) {
-            console.error(
-                `[RSVPService] Error submitting confirmation for invitation ${invitationId}:`,
-                error
-            );
             throw new Error('Failed to submit confirmation.');
         }
     }
@@ -65,7 +60,6 @@ export class RSVPService {
         // This is a placeholder for more complex validation logic if needed.
         // For now, it can delegate to the validation service or a dedicated validator component.
         // This example assumes validation is handled by a FormValidatorComponent in the controller.
-        console.warn('[RSVPService] Validation logic should be implemented or delegated.');
         return { isValid: true, errors: {} };
     }
 }

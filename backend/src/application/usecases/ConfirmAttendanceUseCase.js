@@ -25,43 +25,30 @@ class ConfirmAttendanceUseCase {
      * Ejecuta el caso de uso para confirmar asistencia
      * @param {string} invitationCode - Código de la invitación
      * @param {Object} confirmationData - Datos de confirmación
-     * @param {boolean} confirmationData.willAttend - Si va a asistir
-     * @param {number} confirmationData.attendingGuests - Número de invitados que asistirán
-     * @param {Array<string>} confirmationData.attendingNames - Nombres de los invitados
-     * @param {string} confirmationData.phone - Teléfono de contacto
-     * @param {string} confirmationData.dietaryRestrictions - Restricciones dietarias
-     * @param {string} confirmationData.message - Mensaje para los novios
      * @returns {Promise<Object>} Resultado de la operación
      */
     async execute(invitationCode, confirmationData) {
         try {
-            this.validateInput(invitationCode, confirmationData);
-
-            const invitation = await this.findAndValidateInvitation(invitationCode);
-            const normalizedData = this.normalizeConfirmationData(confirmationData);
-            this.validateBusinessRules(invitation, normalizedData);
-
-            const savedConfirmation = await this.createAndSaveConfirmation(
+            const { invitation, normalizedData } = await this._prepareAndValidate(
+                invitationCode,
+                confirmationData
+            );
+            const savedConfirmation = await this._createAndSaveConfirmation(
                 invitation,
                 normalizedData
             );
-
-            const updatedInvitation = await this.updateInvitationAndNotify(
+            const updatedInvitation = await this._updateAndNotify(
                 invitation,
                 savedConfirmation,
                 normalizedData
             );
-
-            return {
-                success: true,
-                invitation: updatedInvitation.toObject(),
-                confirmation: savedConfirmation.toObject(),
-                message: normalizedData.willAttend
-                    ? 'Asistencia confirmada exitosamente'
-                    : 'Confirmación de no asistencia registrada'
-            };
+            return this._buildSuccessResponse(
+                updatedInvitation,
+                savedConfirmation,
+                normalizedData.willAttend
+            );
         } catch (error) {
-            return this.handleConfirmError(error, invitationCode, confirmationData);
+            return this._handleError(error, invitationCode, confirmationData);
         }
     }
 
@@ -230,28 +217,6 @@ class ConfirmAttendanceUseCase {
     }
 
     /**
-     * Crea y guarda la confirmación.
-     * @param {Invitation} invitation - La entidad de la invitación.
-     * @param {Object} normalizedData - Los datos de confirmación normalizados.
-     * @returns {Promise<Confirmation>} La entidad de la confirmación guardada.
-     * @private
-     */
-    async createAndSaveConfirmation(invitation, normalizedData) {
-        const confirmation = new Confirmation({
-            code: invitation.code,
-            willAttend: normalizedData.willAttend,
-            attendingGuests: normalizedData.attendingGuests,
-            attendingNames: normalizedData.attendingNames,
-            phone: normalizedData.phone,
-            dietaryRestrictions: normalizedData.dietaryRestrictions,
-            message: normalizedData.message,
-            totalPasses: invitation.numberOfPasses
-        });
-
-        return this.confirmationRepository.save(confirmation);
-    }
-
-    /**
      * Actualiza la invitación y notifica a través de SSE.
      * @param {Invitation} invitation - La entidad de la invitación original.
      * @param {Confirmation} savedConfirmation - La entidad de la confirmación guardada.
@@ -293,14 +258,82 @@ class ConfirmAttendanceUseCase {
     }
 
     /**
-     * Maneja los errores durante la confirmación de asistencia.
-     * @param {Error} error - El error capturado.
-     * @param {string} invitationCode - El código de la invitación.
-     * @param {Object} confirmationData - Los datos de confirmación.
-     * @returns {Object} Un objeto de resultado de error estandarizado.
+     * Prepara y valida los datos para la confirmación.
+     * @param {string} invitationCode - Código de la invitación.
+     * @param {Object} confirmationData - Datos de confirmación.
+     * @returns {Promise<{invitation: Invitation, normalizedData: Object}>}
      * @private
      */
-    handleConfirmError(error, invitationCode, confirmationData) {
+    async _prepareAndValidate(invitationCode, confirmationData) {
+        this.validateInput(invitationCode, confirmationData);
+        const invitation = await this.findAndValidateInvitation(invitationCode);
+        const normalizedData = this.normalizeConfirmationData(confirmationData);
+        this.validateBusinessRules(invitation, normalizedData);
+        return { invitation, normalizedData };
+    }
+
+    /**
+     * Crea y guarda la confirmación.
+     * @param {Invitation} invitation - La entidad de la invitación.
+     * @param {Object} normalizedData - Los datos de confirmación normalizados.
+     * @returns {Promise<Confirmation>}
+     * @private
+     */
+    async _createAndSaveConfirmation(invitation, normalizedData) {
+        const confirmation = new Confirmation({
+            code: invitation.code,
+            willAttend: normalizedData.willAttend,
+            attendingGuests: normalizedData.attendingGuests,
+            attendingNames: normalizedData.attendingNames,
+            phone: normalizedData.phone,
+            dietaryRestrictions: normalizedData.dietaryRestrictions,
+            message: normalizedData.message,
+            totalPasses: invitation.numberOfPasses
+        });
+
+        return this.confirmationRepository.save(confirmation);
+    }
+
+    /**
+     * Actualiza la invitación y notifica.
+     * @param {Invitation} invitation - La entidad de la invitación.
+     * @param {Confirmation} savedConfirmation - La confirmación guardada.
+     * @param {Object} normalizedData - Los datos de confirmación normalizados.
+     * @returns {Promise<Invitation>}
+     * @private
+     */
+    async _updateAndNotify(invitation, savedConfirmation, normalizedData) {
+        return this.updateInvitationAndNotify(invitation, savedConfirmation, normalizedData);
+    }
+
+    /**
+     * Construye una respuesta de éxito.
+     * @param {Invitation} updatedInvitation - La invitación actualizada.
+     * @param {Confirmation} savedConfirmation - La confirmación guardada.
+     * @param {boolean} willAttend - Si el invitado asistirá.
+     * @returns {Object}
+     * @private
+     */
+    _buildSuccessResponse(updatedInvitation, savedConfirmation, willAttend) {
+        return {
+            success: true,
+            invitation: updatedInvitation.toObject(),
+            confirmation: savedConfirmation.toObject(),
+            message: willAttend
+                ? 'Asistencia confirmada exitosamente'
+                : 'Confirmación de no asistencia registrada'
+        };
+    }
+
+    /**
+     * Maneja los errores durante la confirmación.
+     * @param {Error} error - El error.
+     * @param {string} invitationCode - El código de la invitación.
+     * @param {Object} confirmationData - Los datos de confirmación.
+     * @returns {Object}
+     * @private
+     */
+    _handleError(error, invitationCode, confirmationData) {
         this.logger.error('Error confirming attendance', {
             invitationCode,
             error: error.message,

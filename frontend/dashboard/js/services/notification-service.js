@@ -247,15 +247,15 @@ class NotificationService {
                     if (data.type === 'new_confirmation') {
                         this.handleNewConfirmation(data.invitation);
                     }
-                } catch (_error) {
+                } catch (error) {
                     //
                 }
             });
 
-            this.eventSource.onerror = _error => {
+            this.eventSource.onerror = () => {
                 this.handleConnectionError();
             };
-        } catch (_error) {
+        } catch (error) {
             this.handleConnectionError();
         }
     }
@@ -275,21 +275,28 @@ class NotificationService {
         }
 
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.reconnectAttempts++;
-            // Exponential backoff: 2s, 4s, 8s, 16s, 32s
-            const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-
-            if (this.reconnectTimeout) {
-                clearTimeout(this.reconnectTimeout);
-            }
-
-            this.reconnectTimeout = setTimeout(() => this.startMonitoring(), delay);
+            this.scheduleReconnect();
         } else {
             this.showSystemToast(
                 'No se pudo establecer conexión con el servidor de notificaciones. Por favor, recarga la página más tarde.',
                 'error'
             );
         }
+    }
+
+    /**
+     * Programa un intento de reconexión con exponential backoff
+     */
+    scheduleReconnect() {
+        this.reconnectAttempts++;
+        // Exponential backoff: 2s, 4s, 8s, 16s, 32s
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+        }
+
+        this.reconnectTimeout = setTimeout(() => this.startMonitoring(), delay);
     }
 
     /**
@@ -475,7 +482,7 @@ class NotificationService {
 
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.5);
-                } catch (_e) {
+                } catch (e) {
                     //
                 }
             }
@@ -509,7 +516,7 @@ class NotificationService {
             try {
                 const parsed = JSON.parse(saved);
                 this.seenConfirmations = new Set(parsed);
-            } catch (_e) {
+            } catch (e) {
                 this.seenConfirmations = new Set();
             }
         }

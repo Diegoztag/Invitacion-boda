@@ -32,86 +32,63 @@ export class DIContainer {
         await this.registerDefaultServices();
 
         this.isInitialized = true;
-        console.log('✅ DIContainer initialized');
     }
 
     /**
      * Registra los servicios por defecto
      */
     async registerDefaultServices() {
-        // API Client
-        this.register(
-            'apiClient',
-            async () => {
-                const { ApiClient } = await import('../infrastructure/api/api-client.js');
-                const backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
-                return new ApiClient(backendUrl);
-            },
-            true
-        );
+        const serviceFactories = {
+            apiClient: this.createApiClient,
+            invitationService: this.createInvitationService,
+            metaService: this.createMetaService,
+            configurationService: this.createConfigurationService,
+            validationService: this.createValidationService,
+            sectionGeneratorService: this.createSectionGeneratorService
+        };
 
-        // Invitation Service
-        this.register(
-            'invitationService',
-            async container => {
-                const { InvitationService } =
-                    await import('../core/services/invitation-service.js');
-                const apiClient = await container.resolve('apiClient');
-                return new InvitationService(apiClient);
-            },
-            true
-        );
+        for (const [name, factory] of Object.entries(serviceFactories)) {
+            this.register(name, factory.bind(this), true);
+        }
+    }
 
-        // Meta Service
-        this.register(
-            'metaService',
-            async () => {
-                const { MetaService } = await import('../core/services/meta-service.js');
-                const metaService = new MetaService();
-                await metaService.init();
-                return metaService;
-            },
-            true
-        );
+    async createApiClient() {
+        const { ApiClient } = await import('../infrastructure/api/api-client.js');
+        const backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
+        return new ApiClient(backendUrl);
+    }
 
-        // Configuration Service
-        this.register(
-            'configurationService',
-            async () => {
-                const { ConfigurationService } =
-                    await import('../core/services/configuration-service.js');
-                const configurationService = new ConfigurationService();
-                await configurationService.init();
-                return configurationService;
-            },
-            true
-        );
+    async createInvitationService(container) {
+        const { InvitationService } = await import('../core/services/invitation-service.js');
+        const apiClient = await container.resolve('apiClient');
+        return new InvitationService(apiClient);
+    }
 
-        // Validation Service
-        this.register(
-            'validationService',
-            async () => {
-                const { ValidationService } =
-                    await import('../core/services/validation-service.js');
-                return new ValidationService();
-            },
-            true
-        );
+    async createMetaService() {
+        const { MetaService } = await import('../core/services/meta-service.js');
+        const metaService = new MetaService();
+        await metaService.init();
+        return metaService;
+    }
 
-        // Section Generator Service
-        this.register(
-            'sectionGeneratorService',
-            async () => {
-                const { SectionGeneratorService } =
-                    await import('../core/services/section-generator-service.js');
-                const sectionGeneratorService = new SectionGeneratorService();
-                sectionGeneratorService.init();
-                return sectionGeneratorService;
-            },
-            true
-        );
+    async createConfigurationService() {
+        const { ConfigurationService } = await import('../core/services/configuration-service.js');
+        const configurationService = new ConfigurationService();
+        await configurationService.init();
+        return configurationService;
+    }
 
-        console.log('📦 Default services registered');
+    async createValidationService() {
+        const { ValidationService } = await import('../core/services/validation-service.js');
+        return new ValidationService();
+    }
+
+    async createSectionGeneratorService() {
+        const { SectionGeneratorService } =
+            await import('../core/services/section-generator-service.js');
+        const sectionGeneratorService = new SectionGeneratorService();
+        sectionGeneratorService.init();
+        return sectionGeneratorService;
     }
 
     /**

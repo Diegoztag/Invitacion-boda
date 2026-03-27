@@ -4,6 +4,7 @@
 class EventBus {
     constructor() {
         this.events = {};
+        this.middleware = [];
     }
 
     /**
@@ -18,6 +19,19 @@ class EventBus {
         }
         this.events[event].push(callback);
         return () => this.off(event, callback);
+    }
+
+    /**
+     * Se suscribe a un evento una sola vez.
+     * @param {string} event - El nombre del evento.
+     * @param {Function} callback - La función a ejecutar.
+     */
+    once(event, callback) {
+        const onceCallback = data => {
+            callback(data);
+            this.off(event, onceCallback);
+        };
+        this.on(event, onceCallback);
     }
 
     /**
@@ -41,7 +55,22 @@ class EventBus {
         if (!this.events[event]) {
             return;
         }
-        this.events[event].forEach(callback => callback(data));
+
+        // Ejecutar middleware
+        let finalData = data;
+        for (const mw of this.middleware) {
+            finalData = mw(event, finalData);
+        }
+
+        this.events[event].forEach(callback => callback(finalData));
+    }
+
+    /**
+     * Añade un middleware.
+     * @param {Function} middleware - La función de middleware.
+     */
+    use(middleware) {
+        this.middleware.push(middleware);
     }
 }
 

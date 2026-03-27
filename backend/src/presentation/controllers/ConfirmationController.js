@@ -94,25 +94,15 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/:code
      */
     async getConfirmation(req, res, next) {
-        const endOperation = this.logger.startOperation('getConfirmation', {
-            code: req.params.code,
-            ip: req.ip
-        });
-
-        try {
-            const { code } = req.params;
-            const result = await this.getConfirmationUseCase.execute(code);
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: true });
-            this.sendSuccess(res, { confirmation: result.data });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { code } = req.params;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationUseCase,
+            [code],
+            'getConfirmation'
+        );
     }
 
     /**
@@ -163,34 +153,16 @@ class ConfirmationController extends BaseController {
      * DELETE /api/confirmations/:code
      */
     async cancelConfirmation(req, res, next) {
-        const endOperation = this.logger.startOperation('cancelConfirmation', {
-            code: req.params.code,
-            ip: req.ip
-        });
-
-        try {
-            const { code } = req.params;
-            const { reason = '' } = req.body;
-
-            // Validar código
-            if (!this.validationService.validateInvitationCode(code)) {
-                return this.sendError(res, new Error('Código de invitación inválido'), next);
-            }
-
-            // Ejecutar cancelación
-            const result = await this.cancelConfirmationUseCase.execute(code, reason);
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ cancelled: true });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { code } = req.params;
+        const { reason = '' } = req.body;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.cancelConfirmationUseCase,
+            [code, reason],
+            'cancelConfirmation'
+        );
     }
 
     /**
@@ -249,20 +221,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/stats
      */
     async getStats(req, res, next) {
-        const endOperation = this.logger.startOperation('getConfirmationStats', {
-            ip: req.ip
-        });
-
-        try {
-            const stats = await this.getConfirmationStatsUseCase.execute();
-
-            endOperation({ statsGenerated: true });
-
-            this.sendSuccess(res, { stats });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getConfirmationStats'
+        );
     }
 
     /**
@@ -270,24 +236,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/positive
      */
     async getPositiveConfirmations(req, res, next) {
-        const endOperation = this.logger.startOperation('getPositiveConfirmations', {
-            ip: req.ip
-        });
-
-        try {
-            const result = await this.getConfirmationStatsUseCase.getPositiveConfirmations();
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getPositiveConfirmations'
+        );
     }
 
     /**
@@ -295,24 +251,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/negative
      */
     async getNegativeConfirmations(req, res, next) {
-        const endOperation = this.logger.startOperation('getNegativeConfirmations', {
-            ip: req.ip
-        });
-
-        try {
-            const result = await this.getConfirmationStatsUseCase.getNegativeConfirmations();
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getNegativeConfirmations'
+        );
     }
 
     /**
@@ -320,25 +266,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/dietary-restrictions
      */
     async getConfirmationsWithDietaryRestrictions(req, res, next) {
-        const endOperation = this.logger.startOperation('getConfirmationsWithDietaryRestrictions', {
-            ip: req.ip
-        });
-
-        try {
-            const result =
-                await this.getConfirmationStatsUseCase.getConfirmationsWithDietaryRestrictions();
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getConfirmationsWithDietaryRestrictions'
+        );
     }
 
     /**
@@ -346,24 +281,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/messages
      */
     async getConfirmationsWithMessages(req, res, next) {
-        const endOperation = this.logger.startOperation('getConfirmationsWithMessages', {
-            ip: req.ip
-        });
-
-        try {
-            const result = await this.getConfirmationStatsUseCase.getConfirmationsWithMessages();
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getConfirmationsWithMessages'
+        );
     }
 
     /**
@@ -371,30 +296,16 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/recent
      */
     async getRecentConfirmations(req, res, next) {
-        const endOperation = this.logger.startOperation('getRecentConfirmations', {
-            ip: req.ip
-        });
-
-        try {
-            const { hours = 24 } = req.query;
-            const hoursNum = parseInt(hours, 10);
-
-            const result = await this.getConfirmationStatsUseCase.getRecentConfirmations(hoursNum);
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({
-                found: result.count,
-                hours: result.hours
-            });
-
-            this.sendSuccess(res, result);
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { hours = 24 } = req.query;
+        const hoursNum = parseInt(hours, 10);
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [hoursNum],
+            'getRecentConfirmations'
+        );
     }
 
     /**
@@ -439,29 +350,15 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/search/:name
      */
     async searchByName(req, res, next) {
-        const endOperation = this.logger.startOperation('searchConfirmationsByName', {
-            name: req.params.name,
-            ip: req.ip
-        });
-
-        try {
-            const { name } = req.params;
-            const result = await this.searchConfirmationsByNameUseCase.execute(name);
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            this.sendSuccess(res, {
-                confirmations: result.data,
-                count: result.count
-            });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { name } = req.params;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.searchConfirmationsByNameUseCase,
+            [name],
+            'searchConfirmationsByName'
+        );
     }
 
     /**
@@ -469,26 +366,14 @@ class ConfirmationController extends BaseController {
      * GET /api/confirmations/total-guests
      */
     async getTotalConfirmedGuests(req, res, next) {
-        const endOperation = this.logger.startOperation('getTotalConfirmedGuests', {
-            ip: req.ip
-        });
-
-        try {
-            const result = await this.getConfirmationStatsUseCase.getTotalConfirmedGuests();
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ totalGuests: result.total });
-
-            this.sendSuccess(res, {
-                totalConfirmedGuests: result.total
-            });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getConfirmationStatsUseCase,
+            [],
+            'getTotalConfirmedGuests'
+        );
     }
 }
 

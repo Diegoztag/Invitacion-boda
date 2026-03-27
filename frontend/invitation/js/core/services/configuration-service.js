@@ -18,8 +18,6 @@ export class ConfigurationService {
             return;
         }
 
-        console.log('⚙️ Initializing ConfigurationService...');
-
         // Cargar configuración
         this.loadConfiguration();
 
@@ -27,7 +25,6 @@ export class ConfigurationService {
         await this.applyConfigurationToDOM();
 
         this.isInitialized = true;
-        console.log('✅ ConfigurationService initialized');
     }
 
     /**
@@ -37,59 +34,39 @@ export class ConfigurationService {
         this.config = window.WEDDING_CONFIG || {};
 
         if (!this.config || Object.keys(this.config).length === 0) {
-            console.warn('⚠️ WEDDING_CONFIG not found or empty');
             this.config = this.getDefaultConfig();
         }
-
-        console.log('📋 Configuration loaded:', this.config);
     }
 
     /**
      * Aplica la configuración al DOM
      */
     async applyConfigurationToDOM() {
-        console.log('🎨 Applying configuration to DOM...');
+        const sections = {
+            couple: this.applyCoupleInfo,
+            event: this.applyEventInfo,
+            location: this.applyLocationInfo,
+            schedule: this.applySchedule,
+            dressCode: this.applyDressCode,
+            messages: this.applyMessages,
+            rsvp: this.applyRSVPConfig,
+            gift: this.applyGiftRegistry,
+            carousel: this.applyCarouselConfig,
+            photos: this.applyPhotoSection,
+            theme: this.applyTheme,
+            images: this.applyImages,
+            map: this.applyMapConfig
+        };
 
-        // Aplicar información de los novios
-        this.applyCoupleInfo();
-
-        // Aplicar información del evento
-        this.applyEventInfo();
-
-        // Aplicar información de ubicación
-        this.applyLocationInfo();
-
-        // Aplicar itinerario
-        this.applySchedule();
-
-        // Aplicar código de vestimenta
-        this.applyDressCode();
-
-        // Aplicar mensajes personalizables
-        this.applyMessages();
-
-        // Aplicar configuración de RSVP
-        this.applyRSVPConfig();
-
-        // Aplicar mesa de regalos
-        this.applyGiftRegistry();
-
-        // Aplicar configuración del carrusel
-        this.applyCarouselConfig();
-
-        // Aplicar configuración de fotos/hashtag
-        this.applyPhotoSection();
-
-        // Aplicar tema y colores
-        this.applyTheme();
-
-        // Aplicar imágenes
-        this.applyImages();
-
-        // Aplicar configuración del mapa
-        this.applyMapConfig();
-
-        console.log(`✅ Configuration applied to ${this.appliedElements.size} elements`);
+        for (const key in sections) {
+            if (Object.prototype.hasOwnProperty.call(sections, key)) {
+                try {
+                    sections[key].call(this);
+                } catch (error) {
+                    //
+                }
+            }
+        }
     }
 
     /**
@@ -408,7 +385,6 @@ export class ConfigurationService {
             }
 
             this.appliedElements.add('carouselTrack');
-            console.log(`🎠 Carousel configured with ${photoCount} photos`);
         }
 
         // Controles del carrusel
@@ -494,7 +470,6 @@ export class ConfigurationService {
                 heroSection.style.backgroundPosition = 'center';
                 heroSection.style.backgroundRepeat = 'no-repeat';
                 this.appliedElements.add('hero-background');
-                console.log(`🖼️ Hero background image applied: ${images.heroBackground}`);
             }
         }
 
@@ -512,8 +487,6 @@ export class ConfigurationService {
                 icon.className = `reception-icon ${images.receptionIcon}`;
             });
         }
-
-        console.log('🖼️ Images applied from configuration');
     }
 
     /**
@@ -547,7 +520,6 @@ export class ConfigurationService {
         if (element && content !== null && content !== undefined) {
             element.textContent = content;
             this.appliedElements.add(selector);
-            console.log(`📝 Updated ${selector}: ${content}`);
         }
     }
 
@@ -594,12 +566,8 @@ export class ConfigurationService {
      * Recarga la configuración y la aplica
      */
     async reloadConfiguration() {
-        console.log('🔄 Reloading configuration...');
-
         this.loadConfiguration();
         await this.applyConfigurationToDOM();
-
-        console.log('✅ Configuration reloaded');
     }
 
     /**
@@ -609,7 +577,5 @@ export class ConfigurationService {
         this.config = null;
         this.appliedElements.clear();
         this.isInitialized = false;
-
-        console.log('🗑️ ConfigurationService destroyed');
     }
 }

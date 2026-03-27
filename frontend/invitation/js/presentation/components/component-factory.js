@@ -16,7 +16,6 @@ export class ComponentFactory {
             await countdown.init();
             return countdown;
         } catch (error) {
-            console.error('Error creating CountdownComponent:', error);
             return null;
         }
     }
@@ -33,7 +32,6 @@ export class ComponentFactory {
             await modal.init();
             return modal;
         } catch (error) {
-            console.error('Error creating ModalComponent:', error);
             return null;
         }
     }
@@ -49,7 +47,6 @@ export class ComponentFactory {
             mobileMenu.init();
             return mobileMenu;
         } catch (error) {
-            console.error('Error creating MobileMenuComponent:', error);
             return null;
         }
     }
@@ -66,7 +63,6 @@ export class ComponentFactory {
             await loader.init();
             return loader;
         } catch (error) {
-            console.error('Error creating LoaderComponent:', error);
             return null;
         }
     }

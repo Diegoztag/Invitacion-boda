@@ -35,24 +35,13 @@ export class InvitationService {
                 return cachedInvitation;
             }
 
-            console.log(`📨 Loading invitation: ${normalizedCode}`);
-
             // Cargar desde API
             const response = await this.apiClient.getInvitation(normalizedCode);
-            console.log('📦 Raw response from API:', response);
 
             // Extraer datos de la invitación de la respuesta
             const invitationData = response.invitation || response;
 
             const invitation = new Invitation(invitationData);
-            console.log('🏗️ Invitation model created:', invitation);
-            console.log('🔍 Validation check:', {
-                code: invitation.code,
-                guestNames: invitation.guestNames,
-                numberOfPasses: invitation.numberOfPasses,
-                isActive: invitation.isActive,
-                isValid: invitation.isValid()
-            });
 
             // Validar que la invitación sea válida
             if (!invitation.isValid()) {
@@ -63,12 +52,10 @@ export class InvitationService {
             this.cache.set(normalizedCode, invitation);
             this.currentInvitation = invitation;
 
-            console.log('✅ Invitation loaded successfully:', invitation.getDisplayName());
             this.emit(EVENTS.CONTENT.LOADED, { invitation });
 
             return invitation;
         } catch (error) {
-            console.error(`❌ Error loading invitation ${normalizedCode}:`, error);
             this.emit(EVENTS.CONTENT.ERROR, { error: error.message, code: normalizedCode });
             throw error;
         }
@@ -81,53 +68,22 @@ export class InvitationService {
      * @returns {Promise<Invitation>}
      */
     async confirmAttendance(code, confirmationData) {
-        if (!code || typeof code !== 'string') {
-            throw new Error('El código de invitación es requerido');
-        }
-
-        if (!confirmationData || typeof confirmationData !== 'object') {
-            throw new Error('Los datos de confirmación son requeridos');
-        }
-
-        const normalizedCode = code.trim().toUpperCase();
+        const normalizedCode = this.validateAndNormalizeCode(code);
+        this.validateConfirmationData(confirmationData);
 
         try {
-            // Obtener la invitación actual o cargarla
-            let invitation = this.currentInvitation;
-            if (!invitation || invitation.code !== normalizedCode) {
-                invitation = await this.loadInvitation(normalizedCode);
-            }
+            const invitation = await this.getInvitationForConfirmation(normalizedCode);
+            this.validateConfirmationAction(invitation, confirmationData);
 
-            // Validar que se puede confirmar
-            if (!invitation.canConfirm() && !invitation.canModify()) {
-                throw new Error('Esta invitación no puede ser modificada');
-            }
-
-            // Validar datos de confirmación
-            const validation = invitation.validateConfirmationData(confirmationData);
-            if (!validation.isValid) {
-                const errorMessage = validation.errors.join('. ');
-                this.emit(EVENTS.RSVP.VALIDATION_ERROR, { errors: validation.errors });
-                throw new Error(errorMessage);
-            }
-
-            console.log(`📝 Confirming attendance for: ${invitation.getDisplayName()}`);
             this.emit(EVENTS.RSVP.FORM_SUBMITTED, { invitation, confirmationData });
 
-            // Enviar confirmación al backend
             const response = await this.apiClient.confirmInvitation(
                 normalizedCode,
                 confirmationData
             );
 
-            // Actualizar el modelo local
-            invitation.confirm(confirmationData);
+            this.updateLocalInvitationState(invitation, confirmationData, normalizedCode);
 
-            // Actualizar cache
-            this.cache.set(normalizedCode, invitation);
-            this.currentInvitation = invitation;
-
-            console.log(`✅ Attendance confirmed successfully for: ${invitation.getDisplayName()}`);
             this.emit(EVENTS.RSVP.CONFIRMATION_SUCCESS, {
                 invitation,
                 response,
@@ -136,7 +92,6 @@ export class InvitationService {
 
             return invitation;
         } catch (error) {
-            console.error(`❌ Error confirming attendance for ${normalizedCode}:`, error);
             this.emit(EVENTS.RSVP.CONFIRMATION_ERROR, {
                 error: error.message,
                 code: normalizedCode,
@@ -144,6 +99,46 @@ export class InvitationService {
             });
             throw error;
         }
+    }
+
+    validateAndNormalizeCode(code) {
+        if (!code || typeof code !== 'string') {
+            throw new Error('El código de invitación es requerido');
+        }
+        return code.trim().toUpperCase();
+    }
+
+    validateConfirmationData(data) {
+        if (!data || typeof data !== 'object') {
+            throw new Error('Los datos de confirmación son requeridos');
+        }
+    }
+
+    async getInvitationForConfirmation(normalizedCode) {
+        let invitation = this.currentInvitation;
+        if (!invitation || invitation.code !== normalizedCode) {
+            invitation = await this.loadInvitation(normalizedCode);
+        }
+        return invitation;
+    }
+
+    validateConfirmationAction(invitation, confirmationData) {
+        if (!invitation.canConfirm() && !invitation.canModify()) {
+            throw new Error('Esta invitación no puede ser modificada');
+        }
+
+        const validation = invitation.validateConfirmationData(confirmationData);
+        if (!validation.isValid) {
+            const errorMessage = validation.errors.join('. ');
+            this.emit(EVENTS.RSVP.VALIDATION_ERROR, { errors: validation.errors });
+            throw new Error(errorMessage);
+        }
+    }
+
+    updateLocalInvitationState(invitation, confirmationData, normalizedCode) {
+        invitation.confirm(confirmationData);
+        this.cache.set(normalizedCode, invitation);
+        this.currentInvitation = invitation;
     }
 
     /**
@@ -167,7 +162,6 @@ export class InvitationService {
      */
     clearCurrentInvitation() {
         this.currentInvitation = null;
-        console.log('🧹 Current invitation cleared');
     }
 
     /**
@@ -195,7 +189,6 @@ export class InvitationService {
      */
     clearCache() {
         this.cache.clear();
-        console.log('🧹 Invitation cache cleared');
     }
 
     /**
@@ -261,7 +254,6 @@ export class InvitationService {
 
             return response.invitations.map(data => new Invitation(data));
         } catch (error) {
-            console.error('Error searching invitations:', error);
             throw new Error('Error al buscar invitaciones');
         }
     }
@@ -274,7 +266,6 @@ export class InvitationService {
         try {
             return await this.apiClient.getInvitationStats();
         } catch (error) {
-            console.error('Error getting invitation stats:', error);
             throw new Error('Error al obtener estadísticas');
         }
     }
@@ -322,7 +313,7 @@ export class InvitationService {
             try {
                 callback(data);
             } catch (error) {
-                console.error(`Error in event listener for ${event}:`, error);
+                //
             }
         });
     }
@@ -341,6 +332,5 @@ export class InvitationService {
         this.clearCache();
         this.clearEventListeners();
         this.currentInvitation = null;
-        console.log('🗑️ InvitationService destroyed');
     }
 }

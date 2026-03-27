@@ -38,20 +38,15 @@ class InvitationController extends BaseController {
      * GET /api/invitations/:code
      */
     async getInvitation(req, res, next) {
-        const endOperation = this.logger.startOperation('getInvitation', {
-            code: req.params.code,
-            ip: req.ip
-        });
-
-        try {
-            const { code } = req.params;
-            const invitation = await this.getInvitationUseCase.execute(code);
-            endOperation({ found: true });
-            this.sendSuccess(res, { invitation });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { code } = req.params;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getInvitationUseCase,
+            [code],
+            'getInvitation'
+        );
     }
 
     /**
@@ -233,27 +228,17 @@ class InvitationController extends BaseController {
      * DELETE /api/invitations/:code
      */
     async deleteInvitation(req, res, next) {
-        const endOperation = this.logger.startOperation('deleteInvitation', {
-            code: req.params.code,
-            ip: req.ip
-        });
-
-        try {
-            const { code } = req.params;
-            const { reason = '' } = req.body;
-            const cancelledBy = req.user ? req.user.id : 'admin'; // Asumir que hay un usuario autenticado
-
-            await this.deleteInvitationUseCase.execute(code, cancelledBy, reason);
-
-            endOperation({ deleted: true });
-
-            this.sendSuccess(res, {
-                message: 'Invitación desactivada exitosamente'
-            });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { code } = req.params;
+        const { reason = '' } = req.body;
+        const cancelledBy = req.user ? req.user.id : 'admin';
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.deleteInvitationUseCase,
+            [code, cancelledBy, reason],
+            'deleteInvitation'
+        );
     }
 
     /**
@@ -261,26 +246,15 @@ class InvitationController extends BaseController {
      * PUT /api/invitations/:code/activate
      */
     async restoreInvitation(req, res, next) {
-        const endOperation = this.logger.startOperation('restoreInvitation', {
-            code: req.params.code,
-            ip: req.ip
-        });
-
-        try {
-            const { code } = req.params;
-
-            const restoredInvitation = await this.restoreInvitationUseCase.execute(code);
-
-            endOperation({ restored: true });
-
-            this.sendSuccess(res, {
-                invitation: restoredInvitation,
-                message: 'Invitación activada exitosamente'
-            });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { code } = req.params;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.restoreInvitationUseCase,
+            [code],
+            'restoreInvitation'
+        );
     }
 
     /**
@@ -446,31 +420,15 @@ class InvitationController extends BaseController {
      * GET /api/invitations/search/:name
      */
     async searchByName(req, res, next) {
-        const endOperation = this.logger.startOperation('searchInvitationsByName', {
-            name: req.params.name,
-            ip: req.ip
-        });
-
-        try {
-            const { name } = req.params;
-
-            const result = await this.searchInvitationsByNameUseCase.execute(name);
-
-            if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
-            }
-
-            endOperation({ found: result.count });
-
-            // Renombrar 'data' a 'invitations' para mantener la consistencia de la API
-            this.sendSuccess(res, {
-                invitations: result.data,
-                count: result.count
-            });
-        } catch (error) {
-            endOperation({ error: error.message }, 'error');
-            this.sendError(res, error, next);
-        }
+        const { name } = req.params;
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.searchInvitationsByNameUseCase,
+            [name],
+            'searchInvitationsByName'
+        );
     }
 }
 

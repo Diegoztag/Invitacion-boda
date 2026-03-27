@@ -572,8 +572,8 @@ export class AdminAPI {
             if (invitation.adults || invitation.children || invitation.staff) {
                 const total =
                     (invitation.adults || 0) + (invitation.children || 0) + (invitation.staff || 0);
+
                 if (total !== invitation.numberOfPasses) {
-                    //
                 }
             }
 

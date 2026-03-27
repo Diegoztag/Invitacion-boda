@@ -19,7 +19,6 @@ export class ControllerFactory {
             await controller.init();
             return controller;
         } catch (error) {
-            console.error('Error creating NavigationController:', error);
             return null;
         }
     }
@@ -40,7 +39,6 @@ export class ControllerFactory {
             await controller.init();
             return controller;
         } catch (error) {
-            console.error('Error creating ContentController:', error);
             return null;
         }
     }
@@ -68,7 +66,6 @@ export class ControllerFactory {
             await controller.init();
             return controller;
         } catch (error) {
-            console.error('Error creating RSVPController:', error);
             return null;
         }
     }
@@ -97,7 +94,6 @@ export class ControllerFactory {
             await controller.init();
             return controller;
         } catch (error) {
-            console.error('Error creating CarouselController:', error);
             return null;
         }
     }
@@ -114,7 +110,6 @@ export class ControllerFactory {
             await controller.init();
             return controller;
         } catch (error) {
-            console.error('Error creating ScrollAnimationController:', error);
             return null;
         }
     }

@@ -18,9 +18,7 @@ export class MetaService {
             return;
         }
 
-        console.log('🏷️ Initializing MetaService...');
         this.isInitialized = true;
-        console.log('✅ MetaService initialized');
     }
 
     /**
@@ -53,7 +51,6 @@ export class MetaService {
         }
 
         document.title = title;
-        console.log(`📝 Title updated: ${title}`);
     }
 
     /**
@@ -76,7 +73,6 @@ export class MetaService {
         }
 
         metaTag.setAttribute('content', content);
-        console.log(`🏷️ Meta tag updated: ${name} = ${content}`);
     }
 
     /**
@@ -113,8 +109,6 @@ export class MetaService {
             title: personalizedTitle,
             description: description
         });
-
-        console.log(`✅ Meta tags updated for invitation: ${invitation.getDisplayName()}`);
     }
 
     /**
@@ -243,8 +237,6 @@ export class MetaService {
         if (metaTags.siteName) {
             this.updateMetaTag('og:site_name', metaTags.siteName, 'property');
         }
-
-        console.log('✅ General wedding meta tags updated');
     }
 
     /**
@@ -264,8 +256,6 @@ export class MetaService {
 
         this.updateTitle(title);
         this.updateMetaTag('description', description);
-
-        console.log(`✅ Confirmation meta tags updated for: ${invitation.getDisplayName()}`);
     }
 
     /**
@@ -279,8 +269,6 @@ export class MetaService {
         Object.entries(this.originalMeta).forEach(([name, content]) => {
             this.updateMetaTag(name, content);
         });
-
-        console.log('🔄 Original meta tags restored');
     }
 
     /**
@@ -299,32 +287,24 @@ export class MetaService {
      * @param {Object} data - Datos para actualizar meta tags
      */
     async updateFromData(data = {}) {
+        const updateActions = [
+            {
+                condition: data.invitation,
+                action: () => this.updateInvitationMeta(data.invitation)
+            },
+            { condition: data.meta, action: () => this.updateSpecificMeta(data.meta) },
+            { condition: data.section, action: () => this.updateSectionMeta(data.section) }
+        ];
+
         try {
-            console.log('🏷️ Updating meta tags from data:', data);
+            const actionToExecute = updateActions.find(item => item.condition);
 
-            // Si hay datos de invitación, usar esos
-            if (data.invitation) {
-                this.updateInvitationMeta(data.invitation);
-                return;
+            if (actionToExecute) {
+                actionToExecute.action();
+            } else {
+                this.updateWeddingMeta();
             }
-
-            // Si hay datos específicos de meta tags
-            if (data.meta) {
-                this.updateSpecificMeta(data.meta);
-                return;
-            }
-
-            // Si hay datos de sección actual
-            if (data.section) {
-                this.updateSectionMeta(data.section);
-                return;
-            }
-
-            // Por defecto, actualizar meta tags generales
-            this.updateWeddingMeta();
         } catch (error) {
-            console.error('Error updating meta tags from data:', error);
-            // Fallback a meta tags generales
             this.updateWeddingMeta();
         }
     }
@@ -359,8 +339,6 @@ export class MetaService {
                 this.updateMetaTag(`twitter:${key}`, value, 'name');
             });
         }
-
-        console.log('✅ Specific meta tags updated');
     }
 
     /**
@@ -409,8 +387,6 @@ export class MetaService {
             `${window.location.origin}${window.location.pathname}#${sectionId}`,
             'property'
         );
-
-        console.log(`✅ Meta tags updated for section: ${sectionId}`);
     }
 
     /**
@@ -427,17 +403,12 @@ export class MetaService {
      */
     async loadDefaultMeta() {
         try {
-            console.log('🏷️ Loading default meta tags...');
-
             // Configurar SEO básico
             this.setupBasicSEO();
 
             // Actualizar meta tags basado en la URL
             this.updateMetaFromUrl();
-
-            console.log('✅ Default meta tags loaded');
         } catch (error) {
-            console.error('Error loading default meta tags:', error);
             // Fallback: al menos cargar meta tags básicos de la boda
             this.updateWeddingMeta();
         }
@@ -452,7 +423,6 @@ export class MetaService {
 
         if (invitationCode) {
             // Si hay código en la URL, esperar a que se cargue la invitación
-            console.log('🔍 Invitation code found in URL, waiting for invitation data...');
         } else {
             // Actualizar con meta tags generales
             this.updateWeddingMeta();
@@ -483,8 +453,6 @@ export class MetaService {
         // Theme color desde configuración de la boda
         const themeColor = window.WEDDING_CONFIG?.theme?.primaryColor || '#d4a574';
         this.updateMetaTag('theme-color', themeColor);
-
-        console.log('✅ Basic SEO meta tags configured');
     }
 
     /**
@@ -493,6 +461,5 @@ export class MetaService {
     destroy() {
         this.restoreOriginalMeta();
         this.isInitialized = false;
-        console.log('🗑️ MetaService destroyed');
     }
 }

@@ -30,8 +30,6 @@ import { getApiConfig } from './app-config.js';
  * @param {DIContainer} container - Contenedor de dependencias
  */
 export function setupDependencies(container) {
-    console.log('🔧 Setting up dependencies...');
-
     // ========================================
     // INFRASTRUCTURE LAYER
     // ========================================
@@ -71,7 +69,6 @@ export function setupDependencies(container) {
     container.register('countdownComponent', () => {
         const countdownElement = document.getElementById('countdown');
         if (!countdownElement) {
-            console.warn('Countdown element not found, skipping registration');
             return null;
         }
 
@@ -114,9 +111,6 @@ export function setupDependencies(container) {
     // container.register('appController', (c) => {
     //     return new AppController(document.body, {});
     // }, true);
-
-    console.log('✅ Dependencies configured successfully');
-    console.log('📋 Registered services:', container.getRegisteredServices());
 }
 
 /**
@@ -137,11 +131,9 @@ export function validateDependencies(container) {
     const missingServices = criticalServices.filter(service => !container.has(service));
 
     if (missingServices.length > 0) {
-        console.error('❌ Missing critical services:', missingServices);
         return false;
     }
 
-    console.log('✅ All critical dependencies are available');
     return true;
 }
 
@@ -150,8 +142,6 @@ export function validateDependencies(container) {
  * @param {DIContainer} container - Contenedor de dependencias
  */
 export async function initializeServices(container) {
-    console.log('🚀 Initializing services...');
-
     try {
         // Inicializar Meta Service
         const metaService = container.resolve('metaService');
@@ -160,10 +150,7 @@ export async function initializeServices(container) {
         // Verificar conectividad de API
         const apiClient = container.resolve('apiClient');
         await apiClient.healthCheck();
-
-        console.log('✅ Services initialized successfully');
     } catch (error) {
-        console.error('❌ Error initializing services:', error);
         throw error;
     }
 }
@@ -173,8 +160,6 @@ export async function initializeServices(container) {
  * @param {DIContainer} container - Contenedor de dependencias
  */
 export function cleanupServices(container) {
-    console.log('🧹 Cleaning up services...');
-
     // Limpiar componentes que puedan tener timers o event listeners
     const componentsToCleanup = [
         'countdownComponent',
@@ -190,12 +175,10 @@ export function cleanupServices(container) {
                 service.destroy();
             }
         } catch (error) {
-            console.warn(`Warning cleaning up ${serviceName}:`, error);
+            //
         }
     });
 
     // Limpiar el contenedor
     container.clear();
-
-    console.log('✅ Services cleaned up');
 }

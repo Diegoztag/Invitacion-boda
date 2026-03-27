@@ -27,45 +27,40 @@ export class ValidationService {
             return { isValid: true, errors: [] };
         }
 
-        // Validación de campo requerido
         if (rules.required && this.isEmpty(value)) {
             errors.push(this.getMessage('required', fieldName));
+            return { isValid: false, errors };
         }
 
-        // Si el campo está vacío y no es requerido, no validar más reglas
         if (this.isEmpty(value) && !rules.required) {
             return { isValid: true, errors: [] };
         }
 
-        // Validación de longitud mínima
-        if (rules.minLength && value.length < rules.minLength) {
-            errors.push(this.getMessage('minLength', fieldName, { min: rules.minLength }));
-        }
+        this.applyValidationRules(fieldName, value, rules, errors);
+        this.applyCustomValidators(fieldName, value, rules, errors);
 
-        // Validación de longitud máxima
-        if (rules.maxLength && value.length > rules.maxLength) {
-            errors.push(this.getMessage('maxLength', fieldName, { max: rules.maxLength }));
-        }
+        return { isValid: errors.length === 0, errors };
+    }
 
-        // Validación de patrón
-        if (rules.pattern && !rules.pattern.test(value)) {
-            errors.push(this.getMessage('pattern', fieldName));
-        }
+    applyValidationRules(fieldName, value, rules, errors) {
+        const ruleValidations = {
+            minLength: (val, rule) => val.length < rule,
+            maxLength: (val, rule) => val.length > rule,
+            pattern: (val, rule) => !rule.test(val),
+            email: val => !this.isValidEmail(val),
+            phone: val => !this.isValidPhone(val)
+        };
 
-        // Validaciones específicas por tipo de campo
-        if (fieldName === 'email' && value) {
-            if (!this.isValidEmail(value)) {
-                errors.push(this.getMessage('email', fieldName));
+        for (const [rule, validation] of Object.entries(ruleValidations)) {
+            if (rules[rule] && validation(value, rules[rule])) {
+                errors.push(
+                    this.getMessage(rule, fieldName, { min: rules.minLength, max: rules.maxLength })
+                );
             }
         }
+    }
 
-        if (fieldName === 'phone' && value) {
-            if (!this.isValidPhone(value)) {
-                errors.push(this.getMessage('phone', fieldName));
-            }
-        }
-
-        // Validadores personalizados
+    applyCustomValidators(fieldName, value, rules, errors) {
         if (this.customValidators.has(fieldName)) {
             const customValidator = this.customValidators.get(fieldName);
             const customResult = customValidator(value, rules);
@@ -73,11 +68,6 @@ export class ValidationService {
                 errors.push(...customResult.errors);
             }
         }
-
-        return {
-            isValid: errors.length === 0,
-            errors
-        };
     }
 
     /**
@@ -351,7 +341,6 @@ export class ValidationService {
      */
     registerCustomValidator(fieldName, validator) {
         this.customValidators.set(fieldName, validator);
-        console.log(`📝 Custom validator registered for field: ${fieldName}`);
     }
 
     /**
@@ -360,7 +349,6 @@ export class ValidationService {
      */
     removeCustomValidator(fieldName) {
         this.customValidators.delete(fieldName);
-        console.log(`🗑️ Custom validator removed for field: ${fieldName}`);
     }
 
     /**
@@ -445,7 +433,6 @@ export class ValidationService {
      */
     updateRules(newRules) {
         this.rules = { ...this.rules, ...newRules };
-        console.log('📝 Validation rules updated');
     }
 
     /**
@@ -453,6 +440,5 @@ export class ValidationService {
      */
     destroy() {
         this.customValidators.clear();
-        console.log('🗑️ ValidationService destroyed');
     }
 }

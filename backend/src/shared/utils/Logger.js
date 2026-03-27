@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Logger Service
  * Servicio de logging con diferentes niveles y formatos

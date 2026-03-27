@@ -21,37 +21,38 @@ class GetInvitationUseCase {
         const endOperation = this.logger.startOperation('getInvitation', { code });
 
         try {
-            if (!code || typeof code !== 'string') {
-                throw new BusinessRuleException('Código de invitación es requerido');
-            }
-
-            const invitation = await this.invitationRepository.findByCode(code);
-
-            if (!invitation) {
-                throw new NotFoundException('Invitación', code);
-            }
-
-            // Verificar si la invitación está activa
-            if (!invitation.isActive()) {
-                throw new BusinessRuleException(
-                    'La invitación no está activa o ha sido cancelada.'
-                );
-            }
-
+            const invitation = await this._findAndValidateInvitation(code);
             endOperation({ success: true });
             return invitation.toObject();
         } catch (error) {
             endOperation({ error: error.message }, 'error');
-
-            this.logger.error('Error en GetInvitationUseCase', {
-                code,
-                error: error.message,
-                stack: error.stack
-            });
-
-            // Re-lanzar la excepción para que la capa superior la maneje
-            throw error;
+            this._handleError(error, { code });
+            throw error; // Re-lanzar para que la capa superior maneje
         }
+    }
+
+    /**
+     * Busca y valida la invitación por código.
+     * @param {string} code - Código de la invitación.
+     * @returns {Promise<Invitation>}
+     * @private
+     */
+    async _findAndValidateInvitation(code) {
+        if (!code || typeof code !== 'string') {
+            throw new BusinessRuleException('Código de invitación es requerido');
+        }
+
+        const invitation = await this.invitationRepository.findByCode(code);
+
+        if (!invitation) {
+            throw new NotFoundException('Invitación', code);
+        }
+
+        if (!invitation.isActive()) {
+            throw new BusinessRuleException('La invitación no está activa o ha sido cancelada.');
+        }
+
+        return invitation;
     }
 
     /**
@@ -249,6 +250,20 @@ class GetInvitationUseCase {
                 error: 'Error exportando invitaciones'
             };
         }
+    }
+
+    /**
+     * Maneja los errores de forma centralizada.
+     * @param {Error} error - El error.
+     * @param {Object} context - Contexto adicional del error.
+     * @private
+     */
+    _handleError(error, context) {
+        this.logger.error('Error en GetInvitationUseCase', {
+            ...context,
+            error: error.message,
+            stack: error.stack
+        });
     }
 }
 

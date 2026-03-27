@@ -20,52 +20,64 @@ class CreateInvitationUseCase {
      * @returns {Promise<Object>} Resultado de la operación
      */
     async execute(invitationData) {
+        const endOperation = this.logger.startOperation('createInvitation', {
+            guestNames: invitationData.guestNames,
+            numberOfPasses: invitationData.numberOfPasses
+        });
+
         try {
-            // Preparar invitación (validar y crear entidad)
-            const invitation = await this.prepareInvitation(invitationData);
+            const invitation = await this._prepareAndValidateInvitation(invitationData);
+            const savedInvitation = await this._saveInvitation(invitation);
 
-            // Guardar en el repositorio
-            const savedInvitation = await this.invitationRepository.save(invitation);
-
-            // Log de éxito
-            this.logger.info('Invitation created successfully', {
-                code: savedInvitation.code,
-                guestNames: savedInvitation.getGuestNamesString(),
-                numberOfPasses: savedInvitation.numberOfPasses
-            });
-
-            return {
-                success: true,
-                invitation: savedInvitation, // devolver entidad para facilitar tests
-                message: 'Invitación creada exitosamente'
-            };
+            endOperation({ success: true, code: savedInvitation.code });
+            return this._buildSuccessResponse(savedInvitation);
         } catch (error) {
-            return this.handleCreateError(error, invitationData);
+            endOperation({ error: error.message }, 'error');
+            return this._handleError(error, invitationData);
         }
     }
 
     /**
-     * Prepara una invitación para ser guardada (valida y crea entidad)
-     * @param {Object} invitationData
-     * @returns {Promise<Invitation>} Entidad de invitación lista para guardar
+     * Prepara y valida los datos de la invitación.
+     * @param {Object} invitationData - Datos de la invitación.
+     * @returns {Promise<Invitation>}
      * @private
      */
-    async prepareInvitation(invitationData) {
-        // Validar datos de entrada
+    async _prepareAndValidateInvitation(invitationData) {
         this.validateInput(invitationData);
-
-        // Normalizar datos
         const normalizedData = this.normalizeData(invitationData);
-
-        // Generar código único antes de crear la entidad
-        const code = await this.generateUniqueCode();
-        normalizedData.code = code;
-
-        // Validar reglas de negocio
+        normalizedData.code = await this.generateUniqueCode();
         await this.validateBusinessRules(normalizedData);
-
-        // Crear entidad de invitación
         return new Invitation(normalizedData);
+    }
+
+    /**
+     * Guarda la invitación en el repositorio.
+     * @param {Invitation} invitation - La entidad de invitación.
+     * @returns {Promise<Invitation>}
+     * @private
+     */
+    async _saveInvitation(invitation) {
+        return this.invitationRepository.save(invitation);
+    }
+
+    /**
+     * Construye una respuesta de éxito.
+     * @param {Invitation} savedInvitation - La invitación guardada.
+     * @returns {Object}
+     * @private
+     */
+    _buildSuccessResponse(savedInvitation) {
+        this.logger.info('Invitation created successfully', {
+            code: savedInvitation.code,
+            guestNames: savedInvitation.getGuestNamesString(),
+            numberOfPasses: savedInvitation.numberOfPasses
+        });
+        return {
+            success: true,
+            invitation: savedInvitation,
+            message: 'Invitación creada exitosamente'
+        };
     }
 
     /**
@@ -273,7 +285,7 @@ class CreateInvitationUseCase {
         // Fase 1: Preparación y Validación Individual
         for (let i = 0; i < invitationsData.length; i++) {
             try {
-                const invitation = await this.prepareInvitation(invitationsData[i]);
+                const invitation = await this._prepareAndValidateInvitation(invitationsData[i]);
                 preparedInvitations.push(invitation);
                 preparedIndices.push(i);
             } catch (error) {
@@ -373,39 +385,22 @@ class CreateInvitationUseCase {
     }
 
     /**
-     * Maneja los errores durante la creación de la invitación.
-     * @param {Error} error - El error capturado.
-     * @param {Object} invitationData - Los datos de la invitación que causaron el error.
-     * @returns {Object} Un objeto de resultado de error estandarizado.
+     * Maneja los errores durante la creación.
+     * @param {Error} error - El error.
+     * @param {Object} invitationData - Los datos originales.
+     * @returns {Object}
      * @private
      */
-    handleCreateError(error, invitationData) {
+    _handleError(error, invitationData) {
         this.logger.error('Error creating invitation', {
             error: error.message,
             stack: error.stack,
             invitationData
         });
 
-        const errorMappings = {
-            'Datos de invitación son requeridos': 'Datos de invitación son requeridos',
-            'Datos de invitación inválidos': 'Datos de invitación inválidos',
-            'Validation service': 'Error validando datos de invitación',
-            'No se pudo generar un código único': 'Ya existe una invitación con el código generado',
-            generar: 'Error generando código de invitación',
-            'Error generando código de invitación': 'Error generando código de invitación'
-        };
-
-        let errorMessage = 'Error creando invitación';
-        for (const key in errorMappings) {
-            if (error.message.includes(key)) {
-                errorMessage = errorMappings[key];
-                break;
-            }
-        }
-
         const result = {
             success: false,
-            error: errorMessage,
+            error: error.message || 'Error creando invitación',
             message: 'Error al crear la invitación'
         };
 
