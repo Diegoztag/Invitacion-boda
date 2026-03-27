@@ -7,7 +7,9 @@
 const crypto = require('crypto');
 
 class ValidationService {
-    constructor() {
+    constructor(config, logger) {
+        this.config = config;
+        this.logger = logger;
         // Expresiones regulares para validaciones
         this.patterns = {
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -308,19 +310,20 @@ class ValidationService {
      * @returns {Object}
      */
     getInvitationValidationRules() {
+        const { invitation } = this.config.validation;
         return {
             guestNames: {
                 type: 'array',
                 required: true,
                 minItems: 1,
-                maxItems: 10,
+                maxItems: invitation.maxGuestNames,
                 itemType: 'string'
             },
             numberOfPasses: {
                 type: 'number',
                 required: true,
-                min: 1,
-                max: 20,
+                min: invitation.minPasses,
+                max: invitation.maxPasses,
                 integer: true
             },
             phone: {
@@ -331,28 +334,28 @@ class ValidationService {
                 type: 'number',
                 required: false,
                 min: 0,
-                max: 20,
+                max: invitation.maxAdults,
                 integer: true
             },
             childPasses: {
                 type: 'number',
                 required: false,
                 min: 0,
-                max: 20,
+                max: invitation.maxChildren,
                 integer: true
             },
             staffPasses: {
                 type: 'number',
                 required: false,
                 min: 0,
-                max: 20,
+                max: invitation.maxStaff,
                 integer: true
             },
             tableNumber: {
                 type: 'number',
                 required: false,
                 min: 1,
-                max: 100,
+                max: invitation.maxTableNumber,
                 integer: true
             },
             status: {
@@ -364,7 +367,7 @@ class ValidationService {
                 type: 'number',
                 required: false,
                 min: 0,
-                max: 20,
+                max: invitation.maxPasses, // Debe ser consistente con numberOfPasses
                 integer: true
             }
         };
@@ -375,6 +378,8 @@ class ValidationService {
      * @returns {Object}
      */
     getConfirmationValidationRules() {
+        const { confirmation } = this.config.validation;
+        const { invitation } = this.config.validation; // Para consistencia
         return {
             willAttend: {
                 type: 'boolean',
@@ -384,13 +389,13 @@ class ValidationService {
                 type: 'number',
                 required: false,
                 min: 0,
-                max: 20,
+                max: invitation.maxPasses, // El máximo de asistentes no puede superar el de la invitación
                 integer: true
             },
             attendingNames: {
                 type: 'array',
                 required: false,
-                maxItems: 20,
+                maxItems: confirmation.maxAttendingNames,
                 itemType: 'string'
             },
             phone: {
@@ -400,12 +405,12 @@ class ValidationService {
             dietaryRestrictions: {
                 type: 'string',
                 required: false,
-                maxLength: 200
+                maxLength: confirmation.maxSpecialAccommodationsLength
             },
             message: {
                 type: 'string',
                 required: false,
-                maxLength: 500
+                maxLength: invitation.maxNotesLength // Reutilizar la longitud de notas
             }
         };
     }

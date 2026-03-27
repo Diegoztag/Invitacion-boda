@@ -3,8 +3,9 @@
  * Caso de uso para obtener una lista paginada y filtrada de confirmaciones.
  */
 class GetConfirmationsUseCase {
-    constructor(confirmationRepository, logger) {
+    constructor(confirmationRepository, config, logger) {
         this.confirmationRepository = confirmationRepository;
+        this.config = config;
         this.logger = logger;
     }
 
@@ -32,8 +33,9 @@ class GetConfirmationsUseCase {
             if (isNaN(pageNum) || pageNum < 1) {
                 return { success: false, error: 'Número de página inválido' };
             }
-            if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-                return { success: false, error: 'Límite inválido (1-100)' };
+            const maxLimit = this.config.validation.pagination.maxLimit;
+            if (isNaN(limitNum) || limitNum < 1 || limitNum > maxLimit) {
+                return { success: false, error: `Límite inválido (1-${maxLimit})` };
             }
 
             // 2. Separar el filtro de búsqueda del resto

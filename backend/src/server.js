@@ -28,6 +28,7 @@ const GetInvitationUseCase = require('./application/usecases/GetInvitationUseCas
 const GetInvitationsUseCase = require('./application/usecases/GetInvitationsUseCase');
 const SearchInvitationsByNameUseCase = require('./application/usecases/SearchInvitationsByNameUseCase');
 const RestoreInvitationUseCase = require('./application/usecases/RestoreInvitationUseCase');
+const DeleteInvitationUseCase = require('./application/usecases/DeleteInvitationUseCase'); // Añadido
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const UpdateConfirmationUseCase = require('./application/usecases/UpdateConfirmationUseCase');
 const CancelConfirmationUseCase = require('./application/usecases/CancelConfirmationUseCase');
@@ -67,7 +68,7 @@ class Server {
     setupDependencies() {
         // 1. Instanciar dependencias base
         const logger = new Logger();
-        const validationService = new ValidationService(logger);
+        const validationService = new ValidationService(config, logger);
         const csvStorage = new CsvStorage(logger);
         const sseService = new SseService(logger);
 
@@ -79,6 +80,7 @@ class Server {
         const createInvitationUseCase = new CreateInvitationUseCase(
             invitationRepository,
             validationService,
+            config,
             logger
         );
         const confirmAttendanceUseCase = new ConfirmAttendanceUseCase(
@@ -110,7 +112,11 @@ class Server {
             validationService,
             logger
         );
-        const getConfirmationsUseCase = new GetConfirmationsUseCase(confirmationRepository, logger);
+        const getConfirmationsUseCase = new GetConfirmationsUseCase(
+            confirmationRepository,
+            config,
+            logger
+        );
         const searchConfirmationsByNameUseCase = new SearchConfirmationsByNameUseCase(
             confirmationRepository,
             logger
@@ -120,7 +126,11 @@ class Server {
             validationService,
             logger
         );
-        const getInvitationsUseCase = new GetInvitationsUseCase(invitationRepository, logger);
+        const getInvitationsUseCase = new GetInvitationsUseCase(
+            invitationRepository,
+            config,
+            logger
+        );
         const searchInvitationsByNameUseCase = new SearchInvitationsByNameUseCase(
             invitationRepository,
             logger
@@ -130,6 +140,7 @@ class Server {
             validationService,
             logger
         );
+        const deleteInvitationUseCase = new DeleteInvitationUseCase(invitationRepository, logger); // Añadido
 
         // 4. Instanciar controladores
         const invitationController = new InvitationController(
@@ -138,8 +149,10 @@ class Server {
             getInvitationsUseCase,
             searchInvitationsByNameUseCase,
             restoreInvitationUseCase,
+            deleteInvitationUseCase, // Añadido
             invitationRepository,
             validationService,
+            config,
             logger
         );
         const confirmationController = new ConfirmationController(
@@ -151,6 +164,7 @@ class Server {
             getConfirmationsUseCase,
             searchConfirmationsByNameUseCase,
             validationService,
+            config,
             logger
         );
         const notificationController = new NotificationController(sseService, logger);
@@ -208,6 +222,10 @@ class Server {
             }
         );
         this.container.register('restoreInvitationUseCase', () => restoreInvitationUseCase, {
+            singleton: true
+        });
+        this.container.register('deleteInvitationUseCase', () => deleteInvitationUseCase, {
+            // Añadido
             singleton: true
         });
         this.container.register('invitationController', () => invitationController, {

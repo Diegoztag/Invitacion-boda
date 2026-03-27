@@ -92,13 +92,6 @@ class Invitation {
     get confirmed() {
         return !!this._confirmationDate;
     }
-    set confirmed(value) {
-        if (value) {
-            this._confirmationDate = new Date().toISOString();
-        } else {
-            this._confirmationDate = null;
-        }
-    }
     get confirmedPasses() {
         return this._confirmedPasses;
     }
@@ -120,26 +113,14 @@ class Invitation {
     get status() {
         return this._status;
     }
-    set status(value) {
-        this._status = value;
-    }
     get cancelledAt() {
         return this._cancelledAt;
-    }
-    set cancelledAt(value) {
-        this._cancelledAt = value;
     }
     get cancelledBy() {
         return this._cancelledBy;
     }
-    set cancelledBy(value) {
-        this._cancelledBy = value;
-    }
     get cancellationReason() {
         return this._cancellationReason;
-    }
-    set cancellationReason(value) {
-        this._cancellationReason = value;
     }
     get attendingNames() {
         return [...this._attendingNames];
@@ -308,30 +289,36 @@ class Invitation {
     }
 
     /**
-     * Desactiva la invitación
-     * @param {string} cancelledBy - Quien cancela la invitación
-     * @param {string} reason - Razón de la cancelación
+     * Cancela la invitación.
+     * Este método encapsula la lógica de negocio para cancelar una invitación,
+     * asegurando que el estado sea consistente.
+     * @param {string} cancelledBy - Identificador de quién realiza la cancelación (ej. 'admin', 'user').
+     * @param {string} reason - Motivo de la cancelación.
      */
-    deactivate(cancelledBy = 'admin', reason = '') {
-        if (this._status === 'inactive') {
-            throw new Error('La invitación ya está inactiva');
+    cancel(cancelledBy = 'admin', reason = '') {
+        if (!this.isActive()) {
+            throw new BusinessRuleException('La invitación ya está inactiva o cancelada.');
         }
 
-        this._status = 'inactive';
+        this._status = 'inactive'; // O 'cancelled', dependiendo de la semántica deseada. 'inactive' es más genérico.
         this._cancelledAt = new Date().toISOString();
         this._cancelledBy = cancelledBy;
         this._cancellationReason = reason;
+
+        // Opcional: resetear pases confirmados si la lógica de negocio lo requiere.
+        // this._confirmedPasses = 0;
+        // this._confirmationDate = null;
 
         return this;
     }
 
     /**
-     * Reactiva la invitación
+     * Restaura una invitación previamente cancelada/inactiva.
+     * Encapsula la lógica para revertir una cancelación.
      */
-    activate() {
-        if (this._status !== 'inactive' && this._status !== 'cancelled') {
-            // Si no está inactiva ni cancelada, ya se considera activa
-            // No lanzamos error, solo retornamos
+    restore() {
+        if (this.isActive()) {
+            // Si ya está activa, no hay nada que hacer.
             return this;
         }
 
@@ -339,13 +326,9 @@ class Invitation {
         this._cancelledBy = null;
         this._cancellationReason = null;
 
-        // Recalcular estado basado en confirmaciones existentes
-        if (this._confirmedPasses > 0) {
-            if (this._confirmedPasses < this._numberOfPasses) {
-                this._status = 'partial';
-            } else {
-                this._status = 'confirmed';
-            }
+        // Recalcula el estado basado en si ya había una confirmación previa.
+        if (this.isConfirmed()) {
+            this._status = this.isFullyConfirmed() ? 'confirmed' : 'partial';
         } else {
             this._status = 'pending';
         }
@@ -655,22 +638,6 @@ class Invitation {
         } else if (this._confirmedPasses === 0) {
             this._status = 'cancelled';
         }
-
-        return this;
-    }
-
-    /**
-     * Cancela la invitación (método simplificado para tests)
-     * @param {string} reason - Razón de la cancelación
-     * @param {string} cancelledBy - Quién cancela
-     */
-    cancel(reason = '', cancelledBy = 'admin') {
-        this._confirmedPasses = 0;
-        this._confirmationDate = null;
-        this._cancelledAt = new Date().toISOString();
-        this._cancelledBy = cancelledBy;
-        this._cancellationReason = reason;
-        this._status = 'cancelled';
 
         return this;
     }

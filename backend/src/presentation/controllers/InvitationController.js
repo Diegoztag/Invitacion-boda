@@ -4,8 +4,6 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
-// Importar configuraciรณn para validaciรณn de lรญmites
-const config = require('../../config');
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
 const NotFoundException = require('../../shared/exceptions/NotFoundException');
@@ -18,8 +16,10 @@ class InvitationController {
         getInvitationsUseCase,
         searchInvitationsByNameUseCase,
         restoreInvitationUseCase,
-        invitationRepository,
+        deleteInvitationUseCase, // Añadido
+        invitationRepository, // Se mantiene por ahora para update, pero se eliminará
         validationService,
+        config,
         logger
     ) {
         this.createInvitationUseCase = createInvitationUseCase;
@@ -27,8 +27,10 @@ class InvitationController {
         this.getInvitationsUseCase = getInvitationsUseCase;
         this.searchInvitationsByNameUseCase = searchInvitationsByNameUseCase;
         this.restoreInvitationUseCase = restoreInvitationUseCase;
+        this.deleteInvitationUseCase = deleteInvitationUseCase; // Añadido
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
+        this.config = config;
         this.logger = logger;
     }
 
@@ -140,7 +142,7 @@ class InvitationController {
         try {
             const {
                 page = 1,
-                limit = 10,
+                limit = this.config.validation.pagination.defaultLimit,
                 status,
                 confirmed,
                 search,
@@ -300,33 +302,26 @@ class InvitationController {
         try {
             const { code } = req.params;
             const { reason = '' } = req.body;
+            const cancelledBy = req.user ? req.user.id : 'admin'; // Asumir que hay un usuario autenticado
 
-            // Validar cรณdigo
-            if (!this.validationService.validateInvitationCode(code)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Cรณdigo de invitaciรณn invรกlido'
-                });
-            }
-
-            // Eliminar invitaciรณn
-            const result = await this.invitationRepository.delete(code, 'admin', reason);
-
-            if (!result) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Invitaciรณn no encontrada'
-                });
-            }
+            await this.deleteInvitationUseCase.execute(code, cancelledBy, reason);
 
             endOperation({ deleted: true });
 
             res.json({
                 success: true,
-                message: 'Invitaciรณn eliminada exitosamente'
+                message: 'Invitación desactivada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
+
+            if (error instanceof NotFoundException) {
+                return res.status(404).json({ success: false, error: error.message });
+            }
+
+            if (error instanceof BusinessRuleException) {
+                return res.status(400).json({ success: false, error: error.message });
+            }
 
             this.logger.error('Error deleting invitation', {
                 code: req.params.code,
@@ -354,22 +349,25 @@ class InvitationController {
         try {
             const { code } = req.params;
 
-            const result = await this.restoreInvitationUseCase.execute(code);
-
-            if (!result.success) {
-                const statusCode = result.error === 'Invitaciรณn no encontrada' ? 404 : 400;
-                return res.status(statusCode).json(result);
-            }
+            const restoredInvitation = await this.restoreInvitationUseCase.execute(code);
 
             endOperation({ restored: true });
 
             res.json({
                 success: true,
-                invitation: result.data,
-                message: 'Invitaciรณn activada exitosamente'
+                invitation: restoredInvitation,
+                message: 'Invitación activada exitosamente'
             });
         } catch (error) {
             endOperation({ error: error.message }, 'error');
+
+            if (error instanceof NotFoundException) {
+                return res.status(404).json({ success: false, error: error.message });
+            }
+
+            if (error instanceof BusinessRuleException) {
+                return res.status(400).json({ success: false, error: error.message });
+            }
 
             this.logger.error('Error restoring invitation', {
                 code: req.params.code,

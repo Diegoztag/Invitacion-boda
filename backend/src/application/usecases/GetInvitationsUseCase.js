@@ -3,8 +3,9 @@
  * Caso de uso para obtener una lista paginada de invitaciones.
  */
 class GetInvitationsUseCase {
-    constructor(invitationRepository, logger) {
+    constructor(invitationRepository, config, logger) {
         this.invitationRepository = invitationRepository;
+        this.config = config;
         this.logger = logger;
     }
 
@@ -29,8 +30,9 @@ class GetInvitationsUseCase {
                 return { success: false, error: 'Número de página inválido' };
             }
 
-            if (isNaN(limitNum) || limitNum < 1 || limitNum > 1000) {
-                return { success: false, error: 'Límite inválido (1-1000)' };
+            const maxLimit = this.config.validation.pagination.maxLimit;
+            if (isNaN(limitNum) || limitNum < 1 || limitNum > maxLimit) {
+                return { success: false, error: `Límite inválido (1-${maxLimit})` };
             }
 
             // Obtener invitaciones paginadas

@@ -5,15 +5,12 @@
  */
 
 const Invitation = require('../../core/entities/Invitation');
-// importar configuración del backend en lugar de frontend
-// la configuración se encuentra en src/config/index.js
-eval("require('module').Module._initPaths()");
-const config = require('../../config');
 
 class CreateInvitationUseCase {
-    constructor(invitationRepository, validationService, logger) {
+    constructor(invitationRepository, validationService, config, logger) {
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
+        this.config = config;
         this.logger = logger;
     }
 
@@ -130,7 +127,7 @@ class CreateInvitationUseCase {
         Object.assign(invitationData, validation.sanitized);
 
         // Reglas adicionales que no cubre el servicio
-        const maxPasses = config.guests.maxGuestsPerInvitation;
+        const maxPasses = this.config.guests.maxGuestsPerInvitation;
         if (invitationData.numberOfPasses > maxPasses) {
             throw new Error(`El número máximo de pases por invitación es ${maxPasses}`);
         }
@@ -257,7 +254,7 @@ class CreateInvitationUseCase {
                 0
             );
 
-            const maxPassesPerTable = config.tables.maxPassesPerTable;
+            const maxPassesPerTable = this.config.tables.maxPassesPerTable;
             if (totalPassesInTable + normalizedData.numberOfPasses > maxPassesPerTable) {
                 this.logger.error('Table capacity exceeded', {
                     tableNumber: normalizedData.tableNumber,
@@ -397,11 +394,11 @@ class CreateInvitationUseCase {
 
     /**
      * Genera un código único utilizando el servicio de validación.
-     * Reintenta hasta 10 veces antes de fallar.
+     * Reintenta según la configuración antes de fallar.
      * @returns {Promise<string>}
      */
     async generateUniqueCode() {
-        const maxAttempts = 10;
+        const maxAttempts = this.config.validation.app.generationMaxAttempts;
         let attempt = 0;
         while (attempt < maxAttempts) {
             try {

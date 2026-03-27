@@ -20,6 +20,7 @@ class ConfirmationController {
         getConfirmationsUseCase,
         searchConfirmationsByNameUseCase,
         validationService,
+        config,
         logger
     ) {
         this.confirmAttendanceUseCase = confirmAttendanceUseCase;
@@ -30,6 +31,7 @@ class ConfirmationController {
         this.getConfirmationsUseCase = getConfirmationsUseCase;
         this.searchConfirmationsByNameUseCase = searchConfirmationsByNameUseCase;
         this.validationService = validationService;
+        this.config = config;
         this.logger = logger;
     }
 
@@ -258,7 +260,7 @@ class ConfirmationController {
         try {
             const {
                 page = 1,
-                limit = 10,
+                limit = this.config.validation.pagination.defaultLimit,
                 willAttend,
                 search,
                 sortBy = 'confirmedAt',
