@@ -69,23 +69,23 @@ export class AppController {
 
             // 1. Configurar manejo de errores
             if (this.options.enableErrorHandling) {
-                this.setupErrorHandling();
+                this._setupErrorHandling();
             }
 
             // 2. Inicializar DI Container y servicios
-            await this.initializeServices();
+            await this._initializeServices();
 
             // 3. Inicializar componentes UI base
-            await this.initializeBaseComponents();
+            await this._initializeUIComponents();
 
             // 4. Inicializar controladores
-            await this.initializeControllers();
+            await this._initializeControllers();
 
             // 5. Configurar event listeners globales
-            this.setupGlobalEventListeners();
+            this._setupEventListeners();
 
             // 6. Cargar datos iniciales
-            await this.loadInitialData();
+            await this._loadInitialData();
 
             // 7. Finalizar inicialización
             this.finalizeInitialization();
@@ -108,7 +108,7 @@ export class AppController {
     /**
      * Inicializa servicios principales
      */
-    async initializeServices() {
+    async _initializeServices() {
         // Inicializar DI Container
         this.diContainer = DIContainer.getInstance();
         await this.diContainer.init();
@@ -143,7 +143,7 @@ export class AppController {
     /**
      * Inicializa componentes UI base
      */
-    async initializeBaseComponents() {
+    async _initializeUIComponents() {
         const componentInitializers = [
             {
                 selector: '[data-countdown]',
@@ -174,7 +174,7 @@ export class AppController {
     /**
      * Inicializa controladores principales
      */
-    async initializeControllers() {
+    async _initializeControllers() {
         this.navigationController = await ControllerFactory.createNavigationController(
             this.container
         );
@@ -212,7 +212,7 @@ export class AppController {
     /**
      * Configura event listeners globales
      */
-    setupGlobalEventListeners() {
+    _setupEventListeners() {
         // Error handling
         const errorHandler = event => {
             this.handleGlobalError(event.error || event.reason, event);
@@ -273,7 +273,7 @@ export class AppController {
     /**
      * Carga datos iniciales de la aplicación
      */
-    async loadInitialData() {
+    async _loadInitialData() {
         try {
             // Cargar configuración de meta tags
             if (this.metaService) {
@@ -359,7 +359,7 @@ export class AppController {
     /**
      * Configura manejo de errores
      */
-    setupErrorHandling() {
+    _setupErrorHandling() {
         // Configurar manejo de errores personalizado
         window.addEventListener('error', event => {
             this.logError('JavaScript Error', event.error, {
