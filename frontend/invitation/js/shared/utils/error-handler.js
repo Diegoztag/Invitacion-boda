@@ -4,8 +4,7 @@
  * @param {string} context - El contexto en el que ocurrió el error.
  */
 export function handleError(error, context = 'General') {
-    // Aquí se podría agregar un sistema de logging más robusto,
-    // como enviar los errores a un servicio externo (Sentry, LogRocket, etc.).
+    //
 }
 
 /**

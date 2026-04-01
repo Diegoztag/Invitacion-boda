@@ -142,14 +142,14 @@ class Logger {
         const reset = this.colors.reset;
 
         if (this.format === 'json') {
-            console.log(JSON.stringify(logEntry, null, 2));
+            process.stdout.write(`${JSON.stringify(logEntry, null, 2)}\n`);
         } else {
             // Formato legible para humanos
             const metaStr =
                 Object.keys(meta).length > 0 ? `\n${JSON.stringify(meta, null, 2)}` : '';
 
-            console.log(
-                `${color}[${timestamp}] ${level} [${service}]: ${message}${reset}${metaStr}`
+            process.stdout.write(
+                `${color}[${timestamp}] ${level} [${service}]: ${message}${reset}${metaStr}\n`
             );
         }
     }
@@ -173,8 +173,8 @@ class Logger {
             await fs.appendFile(this.filePath, logLine);
         } catch (error) {
             // Si falla el logging a archivo, al menos mostrar en consola
-            console.error('Error writing to log file:', error);
-            console.log('Original log entry:', logEntry);
+            process.stderr.write(`Error writing to log file: ${error}\n`);
+            process.stdout.write(`Original log entry: ${JSON.stringify(logEntry)}\n`);
         }
     }
 

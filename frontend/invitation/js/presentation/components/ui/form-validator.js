@@ -42,8 +42,6 @@ export class FormValidator extends Component {
             return;
         }
 
-        console.log('📝 Initializing FormValidatorComponent...');
-
         // Descubrir campos del formulario
         this.discoverFields();
 
@@ -54,7 +52,6 @@ export class FormValidator extends Component {
         this.setupErrorElements();
 
         await super.init();
-        console.log('✅ FormValidatorComponent initialized');
     }
 
     /**
@@ -73,8 +70,6 @@ export class FormValidator extends Component {
                 });
             }
         });
-
-        console.log(`📋 Discovered ${this.fields.size} form fields`);
     }
 
     /**
@@ -118,8 +113,8 @@ export class FormValidator extends Component {
             try {
                 const customRules = JSON.parse(element.getAttribute('data-validation-rules'));
                 Object.assign(rules, customRules);
-            } catch (e) {
-                console.warn('Invalid validation rules JSON:', e);
+            } catch {
+                // Silently ignore JSON parsing errors
             }
         }
 
@@ -132,9 +127,9 @@ export class FormValidator extends Component {
     setupEventListeners() {
         // Validación en input
         if (this.options.validateOnInput) {
-            this.element.addEventListener('input', e => {
-                if (e.target.name && this.fields.has(e.target.name)) {
-                    this.debouncedValidate(e.target.name, e.target.value);
+            this.element.addEventListener('input', event => {
+                if (event.target.name && this.fields.has(event.target.name)) {
+                    this.debouncedValidate(event.target.name, event.target.value);
                 }
             });
         }
@@ -143,9 +138,9 @@ export class FormValidator extends Component {
         if (this.options.validateOnBlur) {
             this.element.addEventListener(
                 'blur',
-                e => {
-                    if (e.target.name && this.fields.has(e.target.name)) {
-                        this.validateField(e.target.name, e.target.value);
+                event => {
+                    if (event.target.name && this.fields.has(event.target.name)) {
+                        this.validateField(event.target.name, event.target.value);
                     }
                 },
                 true
@@ -154,8 +149,8 @@ export class FormValidator extends Component {
 
         // Validación en submit
         if (this.options.validateOnSubmit) {
-            this.element.addEventListener('submit', e => {
-                e.preventDefault();
+            this.element.addEventListener('submit', event => {
+                event.preventDefault();
                 this.validateForm().then(isValid => {
                     if (isValid) {
                         this.emit(EVENTS.FORM.VALID_SUBMIT, {
@@ -278,8 +273,7 @@ export class FormValidator extends Component {
             this.updateFormValidationState();
 
             return result;
-        } catch (error) {
-            console.error(`Error validating field ${fieldName}:`, error);
+        } catch {
             return { isValid: false, errors: ['Error de validación'] };
         }
     }
@@ -325,8 +319,7 @@ export class FormValidator extends Component {
             });
 
             return result.isValid;
-        } catch (error) {
-            console.error('Error validating form:', error);
+        } catch {
             return false;
         }
     }
@@ -423,7 +416,7 @@ export class FormValidator extends Component {
         errorList.innerHTML = '';
 
         if (this.errors.size > 0) {
-            this.errors.forEach((errors, fieldName) => {
+            this.errors.forEach(errors => {
                 errors.forEach(error => {
                     const li = document.createElement('li');
                     li.textContent = error;
@@ -533,7 +526,6 @@ export class FormValidator extends Component {
         const field = this.fields.get(fieldName);
         if (field) {
             field.rules = { ...field.rules, ...rules };
-            console.log(`📝 Custom rules set for field: ${fieldName}`);
         }
     }
 
@@ -546,7 +538,6 @@ export class FormValidator extends Component {
         const field = this.fields.get(fieldName);
         if (field) {
             field.element.value = value;
-            console.log(`📝 Field value set for ${fieldName}: ${value}`);
         }
     }
 
@@ -576,8 +567,6 @@ export class FormValidator extends Component {
                 errorElement: null,
                 isValid: null
             });
-
-            console.log(`✅ New field added: ${fieldName}`);
         }
     }
 
@@ -598,8 +587,6 @@ export class FormValidator extends Component {
 
             // Remover el campo del mapa
             this.fields.delete(fieldName);
-
-            console.log(`🗑️ Field removed: ${fieldName}`);
         }
     }
 
@@ -621,8 +608,6 @@ export class FormValidator extends Component {
         this.element.reset();
 
         this.isValid = false;
-
-        console.log('🔄 Form validator reset');
     }
 
     /**
@@ -652,6 +637,5 @@ export class FormValidator extends Component {
         this.errorSummaryElement = null;
 
         super.destroy();
-        console.log('🗑️ FormValidatorComponent destroyed');
     }
 }

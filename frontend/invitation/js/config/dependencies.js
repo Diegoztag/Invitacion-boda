@@ -10,6 +10,8 @@ import { ApiClient } from '../infrastructure/api/api-client.js';
 import { InvitationService } from '../core/services/invitation-service.js';
 import { MetaService } from '../core/services/meta-service.js';
 import { ValidationService } from '../core/services/validation-service.js';
+import { RSVPService } from '../core/services/rsvp-service.js';
+import { RSVPFacade } from '../core/facades/RSVPFacade.js';
 
 // Importaciones de controladores
 import { NavigationController } from '../presentation/controllers/navigation-controller.js';
@@ -61,6 +63,12 @@ export function setupDependencies(container) {
     // Validation Service - Maneja validaciones de formularios
     container.register('validationService', () => new ValidationService(), true);
 
+    // RSVP Service - Maneja la lógica de negocio de RSVP
+    container.register('rsvpService', c => new RSVPService(c.resolve('apiClient')), true);
+
+    // RSVP Facade - Simplifica la interacción con los servicios de RSVP
+    container.register('rsvpFacade', c => new RSVPFacade(c.resolve('rsvpService')), true);
+
     // ========================================
     // UI COMPONENTS LAYER
     // ========================================
@@ -93,7 +101,7 @@ export function setupDependencies(container) {
     // RSVP Controller - Maneja formulario de confirmación
     container.register(
         'rsvpController',
-        c => new RSVPController(c.resolve('invitationService'), c.resolve('validationService'))
+        c => new RSVPController(c.resolve('rsvpFacade'), c.resolve('validationService'))
     );
 
     // Content Controller - Maneja contenido dinámico
@@ -174,7 +182,7 @@ export function cleanupServices(container) {
             if (service && typeof service.destroy === 'function') {
                 service.destroy();
             }
-        } catch (error) {
+        } catch {
             //
         }
     });

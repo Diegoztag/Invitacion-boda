@@ -16,12 +16,10 @@ export class Component {
      */
     async init() {
         if (this.isInitialized) {
-            console.warn(`Component ${this.constructor.name} is already initialized`);
             return;
         }
 
         this.isInitialized = true;
-        console.log(`✅ ${this.constructor.name} initialized`);
     }
 
     /**
@@ -45,8 +43,6 @@ export class Component {
         this.element = null;
         this.isDestroyed = true;
         this.isInitialized = false;
-
-        console.log(`🗑️ ${this.constructor.name} destroyed`);
     }
 
     /**

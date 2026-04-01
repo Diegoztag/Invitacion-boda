@@ -31,8 +31,6 @@ export class ContentController {
             return;
         }
 
-        console.log('📄 Initializing ContentController...');
-
         // Descubrir elementos de contenido dinámico
         this.discoverContentElements();
 
@@ -43,7 +41,6 @@ export class ContentController {
         await this.updateInitialContent();
 
         this.isInitialized = true;
-        console.log('✅ ContentController initialized');
     }
 
     /**
@@ -68,8 +65,6 @@ export class ContentController {
 
         // Elementos dinámicos especiales
         this.discoverSpecialElements();
-
-        console.log(`📋 Discovered ${this.contentElements.size} content elements`);
     }
 
     /**
@@ -124,14 +119,12 @@ export class ContentController {
      * Configura los event listeners
      */
     setupEventListeners() {
-        // Escuchar cambios de datos
-        this.container.addEventListener('dataChanged', e => {
-            this.handleDataChange(e.detail);
+        this.container.addEventListener('dataChanged', event => {
+            this.handleDataChange(event.detail);
         });
 
-        // Escuchar eventos de navegación para actualizar contenido
-        this.container.addEventListener(EVENTS.NAVIGATION.SECTION_CHANGED, e => {
-            this.handleSectionChange(e.detail);
+        this.container.addEventListener(EVENTS.NAVIGATION.SECTION_CHANGED, event => {
+            this.handleSectionChange(event.detail);
         });
     }
 
@@ -160,11 +153,8 @@ export class ContentController {
     async updateContent(key, value, options = {}) {
         const contentElement = this.contentElements.get(key);
         if (!contentElement) {
-            console.warn(`Content element not found: ${key}`);
             return;
         }
-
-        console.log(`📝 Updating content: ${key}`);
 
         // Formatear valor según el tipo
         const formattedValue = this.formatValue(value, contentElement);
@@ -386,7 +376,7 @@ export class ContentController {
      * Inicializa contadores animados
      */
     initializeCounters() {
-        this.dynamicElements.forEach((element, key) => {
+        this.dynamicElements.forEach(element => {
             if (element.type === 'counter') {
                 this.animateCounter(element);
             }
@@ -425,7 +415,7 @@ export class ContentController {
      * @param {Object} data - Datos para evaluación
      */
     evaluateConditionalElements(data = {}) {
-        this.dynamicElements.forEach((element, key) => {
+        this.dynamicElements.forEach(element => {
             if (element.type === 'conditional') {
                 const shouldShow = this.evaluateCondition(element.key, element.condition, data);
 
@@ -600,8 +590,6 @@ export class ContentController {
                 );
             }
         });
-
-        console.log(`🔄 Content reset for ${elementsToReset.length} elements`);
     }
 
     /**
@@ -610,7 +598,6 @@ export class ContentController {
      */
     updateOptions(newOptions) {
         this.options = { ...this.options, ...newOptions };
-        console.log('⚙️ Content controller options updated');
     }
 
     /**
@@ -627,6 +614,5 @@ export class ContentController {
         this.metaService = null;
 
         this.isInitialized = false;
-        console.log('🗑️ ContentController destroyed');
     }
 }

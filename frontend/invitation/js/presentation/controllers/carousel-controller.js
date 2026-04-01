@@ -93,7 +93,6 @@ export class CarouselController {
             this.container.querySelector('[data-carousel-slides]');
 
         if (!this.slidesContainer) {
-            console.warn('Carousel slides container not found');
             return;
         }
 
@@ -275,11 +274,10 @@ export class CarouselController {
             });
         }
 
-        // Dots
         if (this.dotsContainer) {
-            const dotsHandler = e => {
-                if (e.target.classList.contains('carousel-dot')) {
-                    const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+            const dotsHandler = event => {
+                if (event.target.classList.contains('carousel-dot')) {
+                    const slideIndex = parseInt(event.target.getAttribute('data-slide'));
                     this.goToSlide(slideIndex);
                 }
             };
@@ -337,25 +335,24 @@ export class CarouselController {
      * Configura eventos touch/swipe
      */
     setupTouchEvents() {
-        const touchStartHandler = e => {
-            this.touchStartX = e.touches[0].clientX;
-            this.touchStartY = e.touches[0].clientY;
+        const touchStartHandler = event => {
+            this.touchStartX = event.touches[0].clientX;
+            this.touchStartY = event.touches[0].clientY;
             this.pauseAutoPlay();
         };
 
-        const touchMoveHandler = e => {
-            // Prevenir scroll si es swipe horizontal
-            const deltaX = Math.abs(e.touches[0].clientX - this.touchStartX);
-            const deltaY = Math.abs(e.touches[0].clientY - this.touchStartY);
+        const touchMoveHandler = event => {
+            const deltaX = Math.abs(event.touches[0].clientX - this.touchStartX);
+            const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
 
             if (deltaX > deltaY) {
-                e.preventDefault();
+                event.preventDefault();
             }
         };
 
-        const touchEndHandler = e => {
-            this.touchEndX = e.changedTouches[0].clientX;
-            this.touchEndY = e.changedTouches[0].clientY;
+        const touchEndHandler = event => {
+            this.touchEndX = event.changedTouches[0].clientX;
+            this.touchEndY = event.changedTouches[0].clientY;
             this.handleSwipe();
 
             if (this.options.autoPlay) {
@@ -390,30 +387,30 @@ export class CarouselController {
      * Configura eventos de teclado
      */
     setupKeyboardEvents() {
-        const keyHandler = e => {
+        const keyHandler = event => {
             if (!this.container.contains(document.activeElement)) {
                 return;
             }
 
-            switch (e.key) {
+            switch (event.key) {
                 case 'ArrowLeft':
-                    e.preventDefault();
+                    event.preventDefault();
                     this.prevSlide();
                     break;
                 case 'ArrowRight':
-                    e.preventDefault();
+                    event.preventDefault();
                     this.nextSlide();
                     break;
                 case 'Home':
-                    e.preventDefault();
+                    event.preventDefault();
                     this.goToSlide(0);
                     break;
                 case 'End':
-                    e.preventDefault();
+                    event.preventDefault();
                     this.goToSlide(this.totalSlides - 1);
                     break;
                 case ' ':
-                    e.preventDefault();
+                    event.preventDefault();
                     this.toggleAutoPlay();
                     break;
             }
@@ -918,8 +915,7 @@ export class CarouselController {
         // Parar autoplay
         this.pauseAutoPlay();
 
-        // Remover event listeners
-        this.eventListeners.forEach((listener, key) => {
+        this.eventListeners.forEach(listener => {
             if (listener.element && listener.handler) {
                 listener.element.removeEventListener(listener.event, listener.handler);
             }

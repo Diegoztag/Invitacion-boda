@@ -60,8 +60,6 @@ export class Modal extends Component {
             return;
         }
 
-        console.log('🪟 Initializing ModalComponent...');
-
         // Crear estructura del modal
         this.createModalStructure();
 
@@ -72,7 +70,6 @@ export class Modal extends Component {
         this.applyConfiguration();
 
         await super.init();
-        console.log('✅ ModalComponent initialized');
     }
 
     /**
@@ -116,10 +113,9 @@ export class Modal extends Component {
      * Configura los event listeners
      */
     setupEventListeners() {
-        // Click en overlay para cerrar
         if (this.overlay && this.options.closeOnBackdrop) {
-            this.overlay.addEventListener('click', e => {
-                if (e.target === this.overlay) {
+            this.overlay.addEventListener('click', event => {
+                if (event.target === this.overlay) {
                     this.close();
                     this.emit(EVENTS.MODAL.BACKDROP_CLICKED);
                 }
@@ -133,19 +129,17 @@ export class Modal extends Component {
             });
         }
 
-        // Tecla Escape para cerrar
         if (this.options.closeOnEscape) {
-            document.addEventListener('keydown', e => {
-                if (e.key === 'Escape' && this.isOpen) {
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && this.isOpen) {
                     this.close();
                 }
             });
         }
 
-        // Trap focus dentro del modal
-        this.element.addEventListener('keydown', e => {
-            if (e.key === 'Tab' && this.isOpen) {
-                this.trapFocus(e);
+        this.element.addEventListener('keydown', event => {
+            if (event.key === 'Tab' && this.isOpen) {
+                this.trapFocus(event);
             }
         });
     }
@@ -222,8 +216,6 @@ export class Modal extends Component {
 
         // Emitir evento
         this.emit(EVENTS.MODAL.OPENED, { options });
-
-        console.log('🪟 Modal opened');
     }
 
     /**
@@ -263,8 +255,6 @@ export class Modal extends Component {
 
         // Emitir evento
         this.emit(EVENTS.MODAL.CLOSED);
-
-        console.log('🪟 Modal closed');
     }
 
     /**
@@ -421,21 +411,19 @@ export class Modal extends Component {
      * Maneja el trap de focus dentro del modal
      * @param {KeyboardEvent} e - Evento de teclado
      */
-    trapFocus(e) {
+    trapFocus(event) {
         const focusableElements = this.getFocusableElements();
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
-        if (e.shiftKey) {
-            // Shift + Tab
+        if (event.shiftKey) {
             if (document.activeElement === firstElement) {
-                e.preventDefault();
+                event.preventDefault();
                 lastElement.focus();
             }
         } else {
-            // Tab
             if (document.activeElement === lastElement) {
-                e.preventDefault();
+                event.preventDefault();
                 firstElement.focus();
             }
         }
@@ -482,8 +470,7 @@ export class Modal extends Component {
             this.setTitle(config.title || '¿Confirmar acción?');
             this.setContent(config.message || '¿Estás seguro de que deseas continuar?');
 
-            // Botón de cancelar
-            const cancelButton = this.addButton({
+            this.addButton({
                 text: config.cancelText || 'Cancelar',
                 className: 'btn btn-secondary',
                 onClick: () => {
@@ -492,8 +479,7 @@ export class Modal extends Component {
                 }
             });
 
-            // Botón de confirmar
-            const confirmButton = this.addButton({
+            this.addButton({
                 text: config.confirmText || 'Confirmar',
                 className: 'btn btn-primary',
                 onClick: () => {
@@ -559,6 +545,5 @@ export class Modal extends Component {
         }
 
         super.destroy();
-        console.log('🗑️ ModalComponent destroyed');
     }
 }

@@ -26,13 +26,10 @@ export class ScrollAnimationController {
             return;
         }
 
-        console.log('✨ Initializing ScrollAnimationController...');
-
         this.setupObserver();
         this.observeElements();
 
         this.isInitialized = true;
-        console.log('✅ ScrollAnimationController initialized');
     }
 
     /**
@@ -65,8 +62,6 @@ export class ScrollAnimationController {
         elements.forEach(element => {
             this.observer.observe(element);
         });
-
-        console.log(`👀 Observing ${elements.length} elements for scroll animation`);
     }
 
     /**
@@ -96,6 +91,5 @@ export class ScrollAnimationController {
             this.observer = null;
         }
         this.isInitialized = false;
-        console.log('🗑️ ScrollAnimationController destroyed');
     }
 }

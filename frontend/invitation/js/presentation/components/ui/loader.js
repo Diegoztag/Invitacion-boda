@@ -48,8 +48,6 @@ export class LoaderComponent extends Component {
             return;
         }
 
-        console.log('⏳ Initializing LoaderComponent...');
-
         // Crear estructura del loader
         this.createLoaderStructure();
 
@@ -57,7 +55,6 @@ export class LoaderComponent extends Component {
         this.applyConfiguration();
 
         await super.init();
-        console.log('✅ LoaderComponent initialized');
     }
 
     /**
@@ -197,7 +194,6 @@ export class LoaderComponent extends Component {
         });
 
         this.isVisible = true;
-        console.log('⏳ Loader shown');
     }
 
     /**
@@ -223,7 +219,6 @@ export class LoaderComponent extends Component {
         }, 300);
 
         this.isVisible = false;
-        console.log('✅ Loader hidden');
     }
 
     /**
@@ -268,8 +263,6 @@ export class LoaderComponent extends Component {
 
         // Recrear estructura
         this.createLoaderStructure();
-
-        console.log(`🔄 Loader type changed to: ${type}`);
     }
 
     /**
@@ -289,8 +282,6 @@ export class LoaderComponent extends Component {
 
         // Agregar nueva clase
         this.addClass(`loader-${size}`);
-
-        console.log(`📏 Loader size changed to: ${size}`);
     }
 
     /**
@@ -310,8 +301,6 @@ export class LoaderComponent extends Component {
 
         // Agregar nueva clase
         this.addClass(`loader-${color}`);
-
-        console.log(`🎨 Loader color changed to: ${color}`);
     }
 
     /**
@@ -428,8 +417,6 @@ export class LoaderComponent extends Component {
         if (oldOptions.text !== this.options.text) {
             this.setText(this.options.text);
         }
-
-        console.log('⚙️ Loader options updated');
     }
 
     /**
@@ -451,6 +438,5 @@ export class LoaderComponent extends Component {
         }
 
         super.destroy();
-        console.log('🗑️ LoaderComponent destroyed');
     }
 }

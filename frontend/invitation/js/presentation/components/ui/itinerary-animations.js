@@ -19,13 +19,10 @@ export class ItineraryAnimations {
             return;
         }
 
-        console.log('🎭 Initializing Itinerary Animations...');
-
         // Buscar elementos del itinerario
         this.findItineraryElements();
 
         if (this.items.length === 0) {
-            console.warn('No itinerary items found for animation');
             return;
         }
 
@@ -36,7 +33,6 @@ export class ItineraryAnimations {
         this.setupInitialAnimations();
 
         this.isInitialized = true;
-        console.log(`✅ Itinerary Animations initialized with ${this.items.length} items`);
     }
 
     /**
@@ -45,7 +41,6 @@ export class ItineraryAnimations {
     findItineraryElements() {
         const timeline = document.querySelector('.itinerary-timeline');
         if (!timeline) {
-            console.warn('Itinerary timeline not found');
             return;
         }
 
@@ -164,8 +159,6 @@ export class ItineraryAnimations {
                 item.content.classList.add('animate-in');
             }, 300);
         }
-
-        console.log(`🎭 Animated itinerary item ${item.index + 1}`);
     }
 
     /**
@@ -245,8 +238,6 @@ export class ItineraryAnimations {
 
         this.items = [];
         this.isInitialized = false;
-
-        console.log('🗑️ Itinerary Animations destroyed');
     }
 
     /**

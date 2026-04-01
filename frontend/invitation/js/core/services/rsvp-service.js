@@ -24,7 +24,7 @@ export class RSVPService {
         try {
             const invitation = await this.invitationService.loadInvitation(invitationId);
             return invitation;
-        } catch (error) {
+        } catch {
             throw new Error('Failed to load invitation data.');
         }
     }
@@ -46,7 +46,7 @@ export class RSVPService {
         try {
             const result = await this.invitationService.confirmAttendance(invitationId, formData);
             return result;
-        } catch (error) {
+        } catch {
             throw new Error('Failed to submit confirmation.');
         }
     }

@@ -62,7 +62,7 @@ export class ConfigurationService {
             if (Object.prototype.hasOwnProperty.call(sections, key)) {
                 try {
                     sections[key].call(this);
-                } catch (error) {
+                } catch {
                     //
                 }
             }
@@ -450,8 +450,6 @@ export class ConfigurationService {
         if (theme.textLight) {
             document.documentElement.style.setProperty('--text-light', theme.textLight);
         }
-
-        console.log('🎨 Theme colors applied');
     }
 
     /**

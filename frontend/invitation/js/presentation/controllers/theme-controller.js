@@ -29,8 +29,6 @@ export class ThemeController {
             return;
         }
 
-        console.log('🎨 Initializing ThemeController...');
-
         // Descubrir elementos
         this.discoverElements();
 
@@ -41,7 +39,6 @@ export class ThemeController {
         this.loadInitialTheme();
 
         this.isInitialized = true;
-        console.log('✅ ThemeController initialized');
     }
 
     /**
@@ -51,7 +48,7 @@ export class ThemeController {
         this.themeToggleButton = this.container.querySelector(SELECTORS.THEME.TOGGLE_BUTTON);
 
         if (!this.themeToggleButton) {
-            console.warn('Theme toggle button not found');
+            //
         }
     }
 
@@ -139,7 +136,7 @@ export class ThemeController {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error(`Error in event listener for ${event}:`, error);
+                    //
                 }
             });
         }
@@ -153,6 +150,5 @@ export class ThemeController {
             this.themeToggleButton.removeEventListener('click', () => this.toggleTheme());
         }
         this.isInitialized = false;
-        console.log('🗑️ ThemeController destroyed');
     }
 }

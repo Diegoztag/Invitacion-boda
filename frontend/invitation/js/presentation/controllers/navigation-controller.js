@@ -43,8 +43,6 @@ export class NavigationController {
             return;
         }
 
-        console.log('🧭 Initializing NavigationController...');
-
         // Descubrir secciones y elementos de navegación
         this.discoverSections();
         this.discoverNavItems();
@@ -56,7 +54,6 @@ export class NavigationController {
         this.setupInitialNavigation();
 
         this.isInitialized = true;
-        console.log('✅ NavigationController initialized');
     }
 
     /**
@@ -77,8 +74,6 @@ export class NavigationController {
                 });
             }
         });
-
-        console.log(`📍 Discovered ${this.sections.size} sections`);
     }
 
     /**
@@ -99,18 +94,15 @@ export class NavigationController {
                 });
             }
         });
-
-        console.log(`🔗 Discovered ${this.navItems.size} navigation items`);
     }
 
     /**
      * Configura los event listeners
      */
     setupEventListeners() {
-        // Click en elementos de navegación
         this.navItems.forEach((navItem, target) => {
-            const clickHandler = e => {
-                e.preventDefault();
+            const clickHandler = event => {
+                event.preventDefault();
                 this.navigateToSection(target);
             };
 
@@ -150,12 +142,11 @@ export class NavigationController {
             handler: resizeHandler
         });
 
-        // Cambios en URL (back/forward)
         if (this.options.updateUrl) {
-            const popstateHandler = e => {
+            const popstateHandler = () => {
                 const hash = window.location.hash.substring(1);
                 if (hash && this.sections.has(hash)) {
-                    this.navigateToSection(hash, false); // No actualizar URL
+                    this.navigateToSection(hash, false);
                 }
             };
 
@@ -197,11 +188,8 @@ export class NavigationController {
     async navigateToSection(sectionId, updateUrl = true, options = {}) {
         const section = this.sections.get(sectionId);
         if (!section) {
-            console.warn(`Section not found: ${sectionId}`);
             return;
         }
-
-        console.log(`🧭 Navigating to section: ${sectionId}`);
 
         // Emitir evento antes de navegar
         this.emit(EVENTS.NAVIGATION.BEFORE_NAVIGATE, {
@@ -393,7 +381,7 @@ export class NavigationController {
         try {
             window.history.pushState({ section: sectionId }, '', newUrl);
         } catch (error) {
-            console.warn('Could not update URL:', error);
+            //
         }
     }
 
@@ -507,8 +495,6 @@ export class NavigationController {
         if (newOptions.scrollOffset !== undefined) {
             this.updateSectionOffsets();
         }
-
-        console.log('⚙️ Navigation options updated');
     }
 
     /**
@@ -517,21 +503,18 @@ export class NavigationController {
     refresh() {
         this.updateSectionOffsets();
         this.updateActiveSection();
-        console.log('🔄 Navigation refreshed');
     }
 
     /**
      * Destruye el controlador y limpia recursos
      */
     destroy() {
-        // Remover todos los event listeners
-        this.eventListeners.forEach((listener, key) => {
+        this.eventListeners.forEach(listener => {
             if (listener.element && listener.handler) {
                 listener.element.removeEventListener(listener.event, listener.handler);
             }
         });
 
-        // Limpiar referencias
         this.eventListeners.clear();
         this.sections.clear();
         this.navItems.clear();
@@ -540,6 +523,5 @@ export class NavigationController {
         this.debouncedScrollHandler = null;
 
         this.isInitialized = false;
-        console.log('🗑️ NavigationController destroyed');
     }
 }

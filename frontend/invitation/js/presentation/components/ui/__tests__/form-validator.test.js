@@ -51,12 +51,12 @@ describe('FormValidatorComponent', () => {
     beforeEach(() => {
         // Mock de ValidationService
         validationService = {
-            validateField: jest.fn((fieldName, value, rules) => ({
+            validateField: jest.fn((_fieldName, value) => ({
                 isValid: value && value.length > 2,
                 errors: value && value.length <= 2 ? ['Campo demasiado corto'] : []
             })),
 
-            validateForm: jest.fn(data => ({
+            validateForm: jest.fn(_data => ({
                 isValid: true,
                 errors: {},
                 fieldErrors: {}
@@ -137,7 +137,7 @@ describe('FormValidatorComponent', () => {
             const fullNameInput = form.querySelector('#fullName');
             fullNameInput.value = 'Juan Pérez';
 
-            const result = await formValidator.validateField('fullName');
+            await formValidator.validateField('fullName');
 
             expect(validationService.validateField).toHaveBeenCalledWith('fullName', 'Juan Pérez');
         });
@@ -215,7 +215,7 @@ describe('FormValidatorComponent', () => {
         it('debe validar todo el formulario', async () => {
             await formValidator.init();
 
-            const isFormValid = await formValidator.validateForm();
+            await formValidator.validateForm();
 
             expect(validationService.validateForm).toHaveBeenCalled();
         });

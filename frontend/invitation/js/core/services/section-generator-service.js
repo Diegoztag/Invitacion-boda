@@ -18,17 +18,13 @@ export class SectionGeneratorService {
             return;
         }
 
-        console.log('🏗️ Initializing SectionGeneratorService...');
-
         this.config = window.WEDDING_CONFIG;
 
         if (!this.config) {
-            console.warn('WEDDING_CONFIG not found, no sections will be generated');
             return;
         }
 
         this.isInitialized = true;
-        console.log('✅ SectionGeneratorService initialized');
     }
 
     /**
@@ -36,7 +32,6 @@ export class SectionGeneratorService {
      */
     generateEnabledSections() {
         if (!this.config) {
-            console.warn('Config not available, cannot generate sections');
             return;
         }
 
@@ -364,8 +359,8 @@ export class SectionGeneratorService {
     getEnabledSections() {
         const sectionsConfig = this.getSectionsConfiguration();
         return Object.entries(sectionsConfig)
-            .filter(([_, config]) => config.enabled)
-            .map(([sectionId, _]) => sectionId);
+            .filter(([, config]) => config.enabled)
+            .map(([sectionId]) => sectionId);
     }
 
     /**
@@ -374,8 +369,8 @@ export class SectionGeneratorService {
     getDisabledSections() {
         const sectionsConfig = this.getSectionsConfiguration();
         return Object.entries(sectionsConfig)
-            .filter(([_, config]) => !config.enabled)
-            .map(([sectionId, _]) => sectionId);
+            .filter(([, config]) => !config.enabled)
+            .map(([sectionId]) => sectionId);
     }
 
     /**

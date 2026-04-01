@@ -23,7 +23,6 @@ export class Component {
      */
     emit(eventName, data = null) {
         if (this.isDestroyed) {
-            console.warn(`Cannot emit event '${eventName}' on destroyed component`);
             return;
         }
 
@@ -32,7 +31,7 @@ export class Component {
             try {
                 listener(data);
             } catch (error) {
-                console.error(`Error in event listener for '${eventName}':`, error);
+                //
             }
         });
 
@@ -54,12 +53,10 @@ export class Component {
      */
     on(eventName, callback) {
         if (this.isDestroyed) {
-            console.warn(`Cannot add listener for '${eventName}' on destroyed component`);
             return;
         }
 
         if (typeof callback !== 'function') {
-            console.error(`Callback for event '${eventName}' must be a function`);
             return;
         }
 
@@ -350,8 +347,6 @@ export class Component {
 
         // Limpiar referencia al container
         this.container = null;
-
-        console.log(`Component destroyed: ${this.constructor.name}`);
     }
 
     /**

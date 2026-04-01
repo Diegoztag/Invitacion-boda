@@ -18,7 +18,7 @@ export class ControllerFactory {
             });
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -38,7 +38,7 @@ export class ControllerFactory {
             });
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -46,18 +46,15 @@ export class ControllerFactory {
     /**
      * Crea e inicializa el RSVPController.
      * @param {HTMLElement} container - El elemento contenedor del formulario RSVP.
-     * @param {import('../../core/services/invitation-service.js').InvitationService} invitationService - El servicio de invitaciones.
+     * @param {import('../../core/facades/RSVPFacade.js').RSVPFacade} rsvpFacade - El facade de RSVP.
      * @param {import('../../core/services/validation-service.js').ValidationService} validationService - El servicio de validación.
      * @returns {Promise<import('./rsvp-controller.js').RSVPController|null>}
      */
-    static async createRSVPController(container, invitationService, validationService) {
+    static async createRSVPController(container, rsvpFacade, validationService) {
         try {
             const { RSVPController } = await import('./rsvp-controller.js');
-            const { RSVPService } = await import('../../core/services/rsvp-service.js');
 
-            const rsvpService = new RSVPService(invitationService, validationService);
-
-            const controller = new RSVPController(container, rsvpService, validationService, {
+            const controller = new RSVPController(container, rsvpFacade, validationService, {
                 autoSave: true,
                 showConfirmation: true,
                 enableValidation: true,
@@ -65,7 +62,7 @@ export class ControllerFactory {
             });
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -93,7 +90,7 @@ export class ControllerFactory {
             });
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -109,7 +106,7 @@ export class ControllerFactory {
             const controller = new ScrollAnimationController(container);
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }

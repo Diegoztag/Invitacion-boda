@@ -192,7 +192,7 @@ export class AppController {
         if (rsvpContainer) {
             this.rsvpController = await ControllerFactory.createRSVPController(
                 rsvpContainer,
-                this.invitationService,
+                this.diContainer.get('rsvpFacade'),
                 this.validationService
             );
         }
@@ -413,8 +413,7 @@ export class AppController {
      * @param {Object} context - Contexto adicional
      */
     logError(type, error, context = {}) {
-        // Aquí se podría enviar a un servicio de logging externo
-        // this.sendErrorToService(errorInfo);
+        // Implementar lógica de logging si es necesario
     }
 
     /**

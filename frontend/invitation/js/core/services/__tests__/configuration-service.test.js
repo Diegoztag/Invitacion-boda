@@ -127,7 +127,7 @@ describe('ConfigurationService', () => {
 
             // No debe lanzar error accediendo a propiedades inexistentes
             expect(() => {
-                const value = configService.config.nonexistent?.property?.value;
+                configService.config.nonexistent?.property?.value;
             }).not.toThrow();
         });
     });

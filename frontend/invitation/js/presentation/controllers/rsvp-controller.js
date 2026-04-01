@@ -1,13 +1,12 @@
 import { EVENTS } from '../../shared/constants/events.js';
-import { RSVPService } from '../../core/services/rsvp-service.js';
 import { RSVPUI } from '../ui/rsvp-ui.js';
 import { FormValidator } from '../components/ui/form-validator.js';
 import { sanitize } from '../../shared/helpers/sanitizer.js';
 
 export class RSVPController {
-    constructor(container, rsvpService, validationService, options = {}) {
+    constructor(container, rsvpFacade, validationService, options = {}) {
         this.container = container;
-        this.rsvpService = rsvpService;
+        this.rsvpFacade = rsvpFacade;
         this.validationService = validationService; // Still needed for FormValidator
         this.options = {
             allowReconfirmation: false,
@@ -49,7 +48,7 @@ export class RSVPController {
         const invitationId = this._getInvitationId();
         if (invitationId) {
             try {
-                this.currentInvitation = await this.rsvpService.loadInvitation(invitationId);
+                this.currentInvitation = await this.rsvpFacade.loadInvitation(invitationId);
                 this.ui.populateInvitationDetails(this.currentInvitation);
                 this._handleInvitationStatus();
             } catch (error) {
@@ -73,9 +72,9 @@ export class RSVPController {
         this.ui.showForm();
     }
 
-    _handleFormChange(e) {
-        if (e.target.classList.contains('attendance-check')) {
-            this._handleAttendanceChange(e.target.value);
+    _handleFormChange(event) {
+        if (event.target.classList.contains('attendance-check')) {
+            this._handleAttendanceChange(event.target.value);
         }
     }
 
@@ -83,8 +82,8 @@ export class RSVPController {
         this.ui.updateAttendanceDetails(value, this.currentInvitation);
     }
 
-    async _handleFormSubmit(e) {
-        e.preventDefault();
+    async _handleFormSubmit(event) {
+        event.preventDefault();
         if (this.isSubmitting) {
             return;
         }
@@ -110,7 +109,7 @@ export class RSVPController {
         }, {});
 
         try {
-            const result = await this.rsvpService.submitConfirmation(invitationId, formData);
+            const result = await this.rsvpFacade.submitConfirmation(invitationId, formData);
             this.emit(EVENTS.RSVP.SUBMITTED, { result });
             this.ui.showStatusMessage(formData.attending ? 'confirmed' : 'cancelled');
         } catch (error) {
@@ -131,7 +130,7 @@ export class RSVPController {
     }
 
     on(event, callback) {
-        this.container.addEventListener(event, e => callback(e.detail));
+        this.container.addEventListener(event, event_ => callback(event_.detail));
     }
 
     emit(event, data) {

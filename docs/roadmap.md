@@ -14,9 +14,9 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Normalizar nomenclatura y DTOs entre capas.
 - [x] Evitar imports cruzados entre frontend y backend; usar contratos o variables de entorno.
 - [ ] Definir estrategia incremental para migración a TypeScript (ver `docs/MIGRATION_ROADMAP.md`).
-- [ ] **Refactorizar `AppController`**: Dividir el método `init` en métodos más pequeños y abstraer la inicialización de componentes a una `ComponentFactory`.
-- [ ] **Refactorizar `RSVPController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
-- [ ] **Introducir Capa de `Facades` en Frontend**: Crear una capa de `facades` o casos de uso del frontend para mediar entre los controladores y los servicios del dominio.
+- [x] **Refactorizar `AppController`**: Dividir el método `init` en métodos más pequeños y abstraer la inicialización de componentes a una `ComponentFactory`.
+- [x] **Refactorizar `RSVPController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
+- [x] **Introducir Capa de `Facades` en Frontend**: Crear una capa de `facades` o casos de uso del frontend para mediar entre los controladores y los servicios del dominio.
 - [ ] **Abstraer la Lógica de Consulta del Backend**: Crear un servicio de `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores del backend.
 - [ ] **Mover Lógica de Negocio a Casos de Uso del Backend**: Refactorizar los controladores del backend para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`).
 - [ ] **Desacoplar Controladores de Repositorios en Backend**: Crear casos de uso para todas las operaciones de lectura y utilizarlos en los controladores en lugar de los repositorios.

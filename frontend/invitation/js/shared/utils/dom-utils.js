@@ -11,7 +11,7 @@ export class DOMUtils {
     static getElementById(id) {
         const element = document.getElementById(id);
         if (!element) {
-            console.warn(`Element with id '${id}' not found`);
+            //
         }
         return element;
     }
@@ -26,7 +26,6 @@ export class DOMUtils {
         try {
             return context.querySelector(selector);
         } catch (error) {
-            console.error(`Invalid selector: ${selector}`, error);
             return null;
         }
     }
@@ -41,7 +40,6 @@ export class DOMUtils {
         try {
             return context.querySelectorAll(selector);
         } catch (error) {
-            console.error(`Invalid selector: ${selector}`, error);
             return [];
         }
     }

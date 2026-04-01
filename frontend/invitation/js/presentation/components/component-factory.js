@@ -15,7 +15,7 @@ export class ComponentFactory {
             const countdown = new CountdownComponent(element, targetDate);
             await countdown.init();
             return countdown;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -31,7 +31,7 @@ export class ComponentFactory {
             const modal = new ModalComponent(element);
             await modal.init();
             return modal;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -46,7 +46,7 @@ export class ComponentFactory {
             const mobileMenu = new MobileMenuComponent();
             mobileMenu.init();
             return mobileMenu;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -62,7 +62,7 @@ export class ComponentFactory {
             const loader = new LoaderComponent(element);
             await loader.init();
             return loader;
-        } catch (error) {
+        } catch {
             return null;
         }
     }

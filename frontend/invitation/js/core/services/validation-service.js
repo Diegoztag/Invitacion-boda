@@ -51,10 +51,13 @@ export class ValidationService {
             phone: val => !this.isValidPhone(val)
         };
 
-        for (const [rule, validation] of Object.entries(ruleValidations)) {
-            if (rules[rule] && validation(value, rules[rule])) {
+        for (const [ruleName, validationFn] of Object.entries(ruleValidations)) {
+            if (rules[ruleName] && validationFn(value, rules[ruleName])) {
                 errors.push(
-                    this.getMessage(rule, fieldName, { min: rules.minLength, max: rules.maxLength })
+                    this.getMessage(ruleName, fieldName, {
+                        min: rules.minLength,
+                        max: rules.maxLength
+                    })
                 );
             }
         }

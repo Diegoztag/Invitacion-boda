@@ -34,11 +34,8 @@ export class CountdownComponent extends Component {
             return;
         }
 
-        console.log('⏰ Initializing CountdownComponent...');
-
         // Validar fecha objetivo
         if (!this.isValidTargetDate()) {
-            console.error('❌ Invalid target date for countdown');
             this.showError('Fecha de evento inválida');
             return;
         }
@@ -53,9 +50,6 @@ export class CountdownComponent extends Component {
         this.start();
 
         await super.init();
-        console.log(
-            `✅ CountdownComponent initialized - Target: ${this.targetDate.toLocaleDateString()}`
-        );
     }
 
     /**
@@ -63,7 +57,6 @@ export class CountdownComponent extends Component {
      */
     initializeElements() {
         if (!this.element) {
-            console.error('❌ Countdown container element not found');
             return;
         }
 
@@ -162,8 +155,6 @@ export class CountdownComponent extends Component {
         this.interval = setInterval(() => {
             this.updateCountdown();
         }, intervalTime);
-
-        console.log('▶️ Countdown started');
     }
 
     /**
@@ -173,7 +164,6 @@ export class CountdownComponent extends Component {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
-            console.log('⏸️ Countdown stopped');
         }
     }
 
@@ -182,7 +172,6 @@ export class CountdownComponent extends Component {
      */
     pause() {
         this.stop();
-        console.log('⏸️ Countdown paused');
     }
 
     /**
@@ -191,7 +180,6 @@ export class CountdownComponent extends Component {
     resume() {
         if (!this.interval && !this.isFinished) {
             this.start();
-            console.log('▶️ Countdown resumed');
         }
     }
 
@@ -318,8 +306,6 @@ export class CountdownComponent extends Component {
             targetDate: this.targetDate,
             finishedAt: new Date()
         });
-
-        console.log('🎉 Countdown finished - Event day has arrived!');
     }
 
     /**
@@ -416,7 +402,6 @@ export class CountdownComponent extends Component {
         const newDate = new Date(newTargetDate);
 
         if (!this.isValidTargetDate.call({ targetDate: newDate })) {
-            console.error('❌ Invalid new target date');
             return;
         }
 
@@ -427,8 +412,6 @@ export class CountdownComponent extends Component {
         if (this.interval) {
             this.start();
         }
-
-        console.log(`📅 Target date updated: ${this.targetDate.toLocaleDateString()}`);
     }
 
     /**
@@ -495,6 +478,5 @@ export class CountdownComponent extends Component {
         this.millisecondsElement = null;
 
         super.destroy();
-        console.log('🗑️ CountdownComponent destroyed');
     }
 }

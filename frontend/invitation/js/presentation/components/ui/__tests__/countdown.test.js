@@ -25,7 +25,6 @@ jest.mock('../../base/component.js', () => {
             }
 
             emit(event, data) {
-                // Mock emit method
                 if (this.element) {
                     const customEvent = new CustomEvent(event, { detail: data });
                     this.element.dispatchEvent(customEvent);
@@ -237,10 +236,8 @@ describe('CountdownComponent', () => {
 
             // Verificar que los números están formateados correctamente
             const daysText = countdown.daysElement.textContent;
-            const hoursText = countdown.hoursElement.textContent;
 
-            // Debe ser 2 dígitos
-            if (parseInt(daysText) < 10) {
+            if (parseInt(daysText, 10) < 10) {
                 expect(daysText).toMatch(/^0\d/);
             }
         });
@@ -365,8 +362,6 @@ describe('CountdownComponent', () => {
 
         it('debe limpiar recursos al destruir', async () => {
             await countdown.init();
-            const spy = jest.spyOn(clearInterval, 'call');
-
             countdown.destroy();
 
             expect(countdown.interval).toBeNull();
