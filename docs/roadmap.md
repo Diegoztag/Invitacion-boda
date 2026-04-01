@@ -48,7 +48,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Endurecer middleware de autenticación del dashboard (pasar de basic a JWT/OAuth).
 - [x] Implementar protección CSRF para formularios POST.
 - [ ] Forzar HTTPS y configurar HSTS con flags de cookies en producción.
-- [ ] **Fortalecer la Gestión de Secretos**: Eliminar credenciales y secretos hardcodeados de `authMiddleware.js` y forzar su configuración a través de variables de entorno.
+- [x] **Fortalecer la Gestión de Secretos**: Eliminar credenciales y secretos hardcodeados de `authMiddleware.js` y forzar su configuración a través de variables de entorno.
 - [ ] **Implementar Rate Limiting**: Añadir `rate limiting` al endpoint de `login` para prevenir ataques de fuerza bruta.
 - [ ] **Integrar Protección CSRF**: Integrar el `validateMiddleware` de CSRF en todas las rutas POST, PUT, DELETE y PATCH.
 - [ ] **Forzar HTTPS en Producción**: Añadir un middleware que fuerce HTTPS y configure HSTS.
