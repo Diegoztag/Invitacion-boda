@@ -6,9 +6,9 @@ import { getTimeAgo, formatGuestNames } from '../dashboard-utils.js';
  */
 class NotificationService {
     /**
-     * @param {object} config - Configuración del servicio.
+     * @param {object} config - Configuraciรณn del servicio.
      * @param {string} config.backendUrl - URL del backend.
-     * @param {number} config.maxReconnectAttempts - Intentos máximos de reconexión.
+     * @param {number} config.maxReconnectAttempts - Intentos mรกximos de reconexiรณn.
      */
     constructor(config = {}) {
         this.config = {
@@ -24,7 +24,7 @@ class NotificationService {
         this.notificationSound = null;
         this.panelOpen = false;
 
-        // Estado de reconexión SSE
+        // Estado de reconexiรณn SSE
         this.reconnectAttempts = 0;
         this.reconnectTimeout = null;
         this.isConnected = false;
@@ -154,8 +154,8 @@ class NotificationService {
     }
 
     /**
-     * Genera el HTML para un item de notificación.
-     * @param {object} notification - El objeto de notificación.
+     * Genera el HTML para un item de notificaciรณn.
+     * @param {object} notification - El objeto de notificaciรณn.
      * @returns {string} HTML del item.
      */
     renderNotificationItem(notification) {
@@ -163,7 +163,7 @@ class NotificationService {
         const isUnread = !notification.read;
         const statusClass = notification.willAttend ? 'confirmed' : 'cancelled';
         const iconClass = notification.willAttend ? 'fa-check-circle' : 'fa-times-circle';
-        const message = notification.willAttend ? 'Confirmó' : 'Rechazó';
+        const message = notification.willAttend ? 'Confirmรณ' : 'Rechazรณ';
 
         return `
             <div class="notification-item ${isUnread ? 'unread' : ''}" 
@@ -186,8 +186,8 @@ class NotificationService {
     }
 
     /**
-     * Maneja el click en una notificación.
-     * @param {string} code - El código de la invitación.
+     * Maneja el click en una notificaciรณn.
+     * @param {string} code - El cรณdigo de la invitaciรณn.
      */
     handleNotificationClick(code) {
         this.closePanel();
@@ -201,7 +201,7 @@ class NotificationService {
     }
 
     /**
-     * Marca todas las notificaciones como leídas.
+     * Marca todas las notificaciones como leรญdas.
      */
     markNotificationsAsRead() {
         this.notifications.forEach(n => (n.read = true));
@@ -209,7 +209,7 @@ class NotificationService {
     }
 
     /**
-     * Inicia la conexión SSE para monitorear confirmaciones.
+     * Inicia la conexiรณn SSE para monitorear confirmaciones.
      */
     startMonitoring() {
         if (this.eventSource) {
@@ -230,11 +230,11 @@ class NotificationService {
     }
 
     /**
-     * Maneja la apertura de la conexión SSE.
+     * Maneja la apertura de la conexiรณn SSE.
      */
     handleSseOpen() {
         if (!this.isConnected && this.reconnectAttempts > 0) {
-            this.showSystemToast('Conexión restablecida', 'success');
+            this.showSystemToast('Conexiรณn restablecida', 'success');
         }
         this.isConnected = true;
         this.reconnectAttempts = 0;
@@ -256,28 +256,28 @@ class NotificationService {
     }
 
     /**
-     * Maneja errores en la conexión SSE y programa la reconexión.
+     * Maneja errores en la conexiรณn SSE y programa la reconexiรณn.
      */
     handleSseError() {
         this.eventSource?.close();
         this.isConnected = false;
 
         if (this.reconnectAttempts === 0) {
-            this.showSystemToast('Conexión perdida. Intentando reconectar...', 'warning');
+            this.showSystemToast('Conexiรณn perdida. Intentando reconectar...', 'warning');
         }
 
         if (this.reconnectAttempts < this.config.maxReconnectAttempts) {
             this.scheduleReconnect();
         } else {
             this.showSystemToast(
-                'No se pudo conectar al servidor de notificaciones. Recarga la página.',
+                'No se pudo conectar al servidor de notificaciones. Recarga la pรกgina.',
                 'error'
             );
         }
     }
 
     /**
-     * Programa un intento de reconexión con exponential backoff.
+     * Programa un intento de reconexiรณn con exponential backoff.
      */
     scheduleReconnect() {
         this.reconnectAttempts++;
@@ -299,8 +299,8 @@ class NotificationService {
     }
 
     /**
-     * Procesa una nueva confirmación recibida.
-     * @param {object} invitation - La invitación con la nueva confirmación.
+     * Procesa una nueva confirmaciรณn recibida.
+     * @param {object} invitation - La invitaciรณn con la nueva confirmaciรณn.
      */
     handleNewConfirmation(invitation) {
         if (this.seenConfirmations.has(invitation.code)) {
@@ -316,8 +316,8 @@ class NotificationService {
     }
 
     /**
-     * Agrega una notificación a la lista interna.
-     * @param {object} invitation - La invitación confirmada.
+     * Agrega una notificaciรณn a la lista interna.
+     * @param {object} invitation - La invitaciรณn confirmada.
      */
     addNotification(invitation) {
         const newNotification = {
@@ -336,20 +336,20 @@ class NotificationService {
     }
 
     /**
-     * Muestra una notificación toast.
-     * @param {object} invitation - La invitación para la notificación.
+     * Muestra una notificaciรณn toast.
+     * @param {object} invitation - La invitaciรณn para la notificaciรณn.
      */
     showNotificationToast(invitation) {
         const guestNames = formatGuestNames(invitation.guestNames);
         const isConfirmed = invitation.status === 'confirmed' || invitation.status === 'partial';
-        const status = isConfirmed ? 'confirmó' : 'rechazó';
+        const status = isConfirmed ? 'confirmรณ' : 'rechazรณ';
 
         const toast = this.createToastElement(
             'notification-toast',
             `
             <i class="fas fa-bell toast-icon"></i>
             <div class="toast-content">
-                <div class="toast-title">Nueva confirmación</div>
+                <div class="toast-title">Nueva confirmaciรณn</div>
                 <div class="toast-message">${guestNames} ${status} su asistencia</div>
             </div>
             <button class="toast-action" onclick="window.notificationService.viewConfirmation('${invitation.code}')">
@@ -415,7 +415,7 @@ class NotificationService {
     }
 
     /**
-     * Actualiza el contador de notificaciones no leídas.
+     * Actualiza el contador de notificaciones no leรญdas.
      */
     updateNotificationCount() {
         const unreadCount = this.notifications.filter(n => !n.read).length;
@@ -432,8 +432,8 @@ class NotificationService {
     }
 
     /**
-     * Navega a la vista de una confirmación específica.
-     * @param {string} code - El código de la invitación.
+     * Navega a la vista de una confirmaciรณn especรญfica.
+     * @param {string} code - El cรณdigo de la invitaciรณn.
      */
     viewConfirmation(code) {
         window.location.hash = '#dashboard';
@@ -441,7 +441,7 @@ class NotificationService {
     }
 
     /**
-     * Crea un sonido de notificación usando la Web Audio API.
+     * Crea un sonido de notificaciรณn usando la Web Audio API.
      */
     createNotificationSound() {
         this.notificationSound = {
@@ -471,7 +471,7 @@ class NotificationService {
     }
 
     /**
-     * Reproduce el sonido de notificación si está habilitado.
+     * Reproduce el sonido de notificaciรณn si estรก habilitado.
      */
     playNotificationSound() {
         if (this.soundEnabled && this.notificationSound) {

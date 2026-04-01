@@ -15,6 +15,19 @@ export class ApiClient {
             'Content-Type': 'application/json',
             Accept: 'application/json'
         };
+        this.csrfToken = null;
+    }
+
+    async _getCsrfToken() {
+        if (!this.csrfToken) {
+            try {
+                const response = await this.get('/csrf-token');
+                this.csrfToken = response.csrfToken;
+            } catch (error) {
+                console.error('Error al obtener el token CSRF', error);
+            }
+        }
+        return this.csrfToken;
     }
 
     /**
@@ -25,9 +38,15 @@ export class ApiClient {
      */
     async request(endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
+        const csrfToken = await this._getCsrfToken();
+        const headers = { ...this.defaultHeaders };
+        if (csrfToken) {
+            headers['X-CSRF-Token'] = csrfToken;
+        }
+
         const config = {
             method: 'GET',
-            headers: { ...this.defaultHeaders },
+            headers,
             ...options
         };
 

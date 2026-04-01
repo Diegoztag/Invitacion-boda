@@ -266,6 +266,7 @@ class Server {
         this.app.use(middleware.cors);
         this.app.use(middleware.requestId);
         this.app.use(middleware.requestLogger);
+        this.app.use(middleware.csrfProtection);
 
         // Hacer logger disponible globalmente en la app
         this.app.locals.logger = logger;

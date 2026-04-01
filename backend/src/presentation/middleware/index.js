@@ -6,6 +6,7 @@
 
 const AuthMiddleware = require('./authMiddleware');
 const SecurityMiddleware = require('./securityMiddleware');
+const csrfMiddleware = require('./csrf');
 
 /**
  * Configura todos los middlewares de la aplicación
@@ -28,6 +29,7 @@ function configureMiddleware(dependencies) {
         authRateLimit: securityMiddleware.authRateLimit,
         requestId: securityMiddleware.requestId,
         requestLogger: securityMiddleware.requestLogger,
+        csrfProtection: csrfMiddleware,
 
         // Middleware de validación
         validateParams: securityMiddleware.validateParams,
