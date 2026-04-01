@@ -1,15 +1,16 @@
+import { Component } from '../../../shared/base/component.js';
+
 /**
  * Componente de Menú Móvil
  * Maneja la funcionalidad del menú hamburguesa
  */
-
-export class MobileMenu {
-    constructor() {
+export class MobileMenuComponent extends Component {
+    constructor(container) {
+        super(container || document.body);
         this.navToggle = null;
         this.navMenu = null;
         this.navLinks = [];
         this.isOpen = false;
-        this.isInitialized = false;
     }
 
     /**
@@ -21,9 +22,9 @@ export class MobileMenu {
         }
 
         // Obtener elementos del DOM
-        this.navToggle = document.getElementById('navToggle');
-        this.navMenu = document.getElementById('navMenu');
-        this.navLinks = document.querySelectorAll('.nav-link');
+        this.navToggle = this.container.querySelector('#navToggle');
+        this.navMenu = this.container.querySelector('#navMenu');
+        this.navLinks = this.container.querySelectorAll('.nav-link');
 
         if (!this.navToggle || !this.navMenu) {
             return;
@@ -37,7 +38,7 @@ export class MobileMenu {
         // Configurar event listeners
         this.setupEventListeners();
 
-        this.isInitialized = true;
+        super.init();
     }
 
     /**
@@ -166,6 +167,6 @@ export class MobileMenu {
         this.navToggle = null;
         this.navMenu = null;
         this.navLinks = [];
-        this.isInitialized = false;
+        super.destroy();
     }
 }

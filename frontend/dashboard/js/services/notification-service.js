@@ -1,20 +1,31 @@
-// notification-service.js - Servicio para manejar notificaciones de nuevas confirmaciones
-
 import { getTimeAgo, formatGuestNames } from '../dashboard-utils.js';
 
+/**
+ * Servicio para manejar notificaciones de nuevas confirmaciones.
+ * Utiliza Server-Sent Events (SSE) para recibir actualizaciones en tiempo real.
+ */
 class NotificationService {
-    constructor() {
+    /**
+     * @param {object} config - Configuración del servicio.
+     * @param {string} config.backendUrl - URL del backend.
+     * @param {number} config.maxReconnectAttempts - Intentos máximos de reconexión.
+     */
+    constructor(config = {}) {
+        this.config = {
+            backendUrl: window.WEDDING_CONFIG?.api?.backendUrl || '/api',
+            maxReconnectAttempts: 5,
+            ...config
+        };
+
         this.seenConfirmations = new Set();
+        this.notifications = [];
         this.eventSource = null;
         this.soundEnabled = true;
         this.notificationSound = null;
-        this.notifications = [];
         this.panelOpen = false;
-        this.backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
 
-        // SSE Reconnection state
+        // Estado de reconexión SSE
         this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 5;
         this.reconnectTimeout = null;
         this.isConnected = false;
 
@@ -22,129 +33,104 @@ class NotificationService {
     }
 
     /**
-     * Inicializa el servicio de notificaciones
+     * Inicializa el servicio.
      */
     init() {
-        // Cargar confirmaciones vistas del localStorage
-        this.loadSeenConfirmations();
-
-        // Crear el elemento de audio para notificaciones
+        this.loadStateFromStorage();
         this.createNotificationSound();
-
-        // Marcar todas las confirmaciones actuales como vistas
-        // Se inicializará cuando se carguen las invitaciones
-        this.saveSeenConfirmations();
-
-        // Configurar eventos del panel
         this.setupPanelEvents();
     }
 
     /**
-     * Configura los eventos del panel de notificaciones
+     * Configura los eventos del panel de notificaciones.
      */
     setupPanelEvents() {
-        // Botón de notificaciones
         const notificationBtn = document.getElementById('notificationBtn');
+        const panel = document.getElementById('notificationPanel');
+        const overlay = document.getElementById('notificationOverlay');
+        const clearBtn = document.getElementById('notificationClearBtn');
+        const closeBtn = document.getElementById('notificationCloseBtn');
+
         if (notificationBtn) {
             notificationBtn.addEventListener('click', () => this.togglePanel());
         }
 
-        // Click fuera del panel para cerrarlo
-        document.addEventListener('click', e => {
-            const panel = document.getElementById('notificationPanel');
-            const btn = document.getElementById('notificationBtn');
-
+        document.addEventListener('click', event => {
             if (
                 this.panelOpen &&
                 panel &&
-                btn &&
-                !panel.contains(e.target) &&
-                !btn.contains(e.target)
+                notificationBtn &&
+                !panel.contains(event.target) &&
+                !notificationBtn.contains(event.target)
             ) {
                 this.closePanel();
             }
         });
 
-        // Click en el overlay para cerrar (móvil)
-        const overlay = document.getElementById('notificationOverlay');
         if (overlay) {
             overlay.addEventListener('click', () => this.closePanel());
         }
 
-        // Botón "Marcar todas como leídas"
-        const clearBtn = document.getElementById('notificationClearBtn');
         if (clearBtn) {
             clearBtn.addEventListener('click', () => this.markAllAsSeen());
         }
 
-        // Botón de cerrar del panel
-        const closeBtn = document.getElementById('notificationCloseBtn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.closePanel());
         }
     }
 
     /**
-     * Alterna el panel de notificaciones
+     * Alterna la visibilidad del panel de notificaciones.
      */
     togglePanel() {
-        if (this.panelOpen) {
-            this.closePanel();
-        } else {
-            this.openPanel();
-        }
+        this.panelOpen ? this.closePanel() : this.openPanel();
     }
 
     /**
-     * Abre el panel de notificaciones
+     * Abre el panel de notificaciones.
      */
     openPanel() {
         const panel = document.getElementById('notificationPanel');
         const overlay = document.getElementById('notificationOverlay');
         const btn = document.getElementById('notificationBtn');
 
-        if (panel) {
-            panel.classList.add('active');
-            if (btn) {
-                btn.classList.add('active');
-            }
-            this.panelOpen = true;
-            this.renderNotifications();
+        if (!panel) {
+            return;
+        }
 
-            // Marcar notificaciones como vistas
-            this.markNotificationsAsRead();
+        panel.classList.add('active');
+        btn?.classList.add('active');
+        this.panelOpen = true;
+        this.renderNotifications();
+        this.markNotificationsAsRead();
 
-            // Mostrar overlay en móvil
-            if (overlay && window.innerWidth <= 768) {
-                overlay.classList.add('active');
-            }
+        if (overlay && window.innerWidth <= 768) {
+            overlay.classList.add('active');
         }
     }
 
     /**
-     * Cierra el panel de notificaciones
+     * Cierra el panel de notificaciones.
      */
     closePanel() {
         const panel = document.getElementById('notificationPanel');
         const overlay = document.getElementById('notificationOverlay');
         const btn = document.getElementById('notificationBtn');
 
-        if (panel) {
-            panel.classList.remove('active');
-            if (btn) {
-                btn.classList.remove('active');
-            }
-            this.panelOpen = false;
+        if (!panel) {
+            return;
         }
 
-        // Ocultar overlay
-        if (overlay) {
-            overlay.classList.remove('active');
-        }
+        panel.classList.remove('active');
+        btn?.classList.remove('active');
+        this.panelOpen = false;
+
+        overlay?.classList.remove('active');
     }
 
     /**
-     * Renderiza las notificaciones en el panel
+     * Renderiza las notificaciones en el panel.
      */
     renderNotifications() {
         const notificationList = document.getElementById('notificationList');
@@ -159,35 +145,38 @@ class NotificationService {
                     <p>No hay notificaciones nuevas</p>
                 </div>
             `;
-            return;
+        } else {
+            notificationList.innerHTML = this.notifications
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(notification => this.renderNotificationItem(notification))
+                .join('');
         }
-
-        notificationList.innerHTML = this.notifications
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .map(notification => this.renderNotificationItem(notification))
-            .join('');
     }
 
     /**
-     * Renderiza un item de notificación
+     * Genera el HTML para un item de notificación.
+     * @param {object} notification - El objeto de notificación.
+     * @returns {string} HTML del item.
      */
     renderNotificationItem(notification) {
         const timeAgo = getTimeAgo(notification.date);
         const isUnread = !notification.read;
         const statusClass = notification.willAttend ? 'confirmed' : 'cancelled';
+        const iconClass = notification.willAttend ? 'fa-check-circle' : 'fa-times-circle';
+        const message = notification.willAttend ? 'Confirmó' : 'Rechazó';
 
         return `
             <div class="notification-item ${isUnread ? 'unread' : ''}" 
-                 onclick="window.notificationService.handleNotificationClick('${notification.code}')">
+                 onclick="window.notificationService.handleNotificationClick('${
+                     notification.code
+                 }')">
                 <div class="notification-item-header">
                     <div class="notification-item-icon ${statusClass}">
-                        <i class="fas ${notification.willAttend ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        <i class="fas ${iconClass}"></i>
                     </div>
                     <div class="notification-item-content">
                         <div class="notification-item-title">${notification.guestNames}</div>
-                        <div class="notification-item-message">
-                            ${notification.willAttend ? 'Confirmó' : 'Rechazó'} su asistencia
-                        </div>
+                        <div class="notification-item-message">${message} su asistencia</div>
                         <div class="notification-item-time">${timeAgo}</div>
                     </div>
                 </div>
@@ -197,16 +186,13 @@ class NotificationService {
     }
 
     /**
-     * Maneja el click en una notificación
+     * Maneja el click en una notificación.
+     * @param {string} code - El código de la invitación.
      */
     handleNotificationClick(code) {
-        // Cerrar panel
         this.closePanel();
-
-        // Navegar a la confirmación
         this.viewConfirmation(code);
 
-        // Marcar como leída
         const notification = this.notifications.find(n => n.code === code);
         if (notification) {
             notification.read = true;
@@ -215,7 +201,7 @@ class NotificationService {
     }
 
     /**
-     * Marca todas las notificaciones como leídas
+     * Marca todas las notificaciones como leídas.
      */
     markNotificationsAsRead() {
         this.notifications.forEach(n => (n.read = true));
@@ -223,7 +209,7 @@ class NotificationService {
     }
 
     /**
-     * Inicia el monitoreo de nuevas confirmaciones usando SSE
+     * Inicia la conexión SSE para monitorear confirmaciones.
      */
     startMonitoring() {
         if (this.eventSource) {
@@ -231,94 +217,92 @@ class NotificationService {
         }
 
         try {
-            this.eventSource = new EventSource(`${this.backendUrl}/notifications/stream`);
+            this.eventSource = new EventSource(`${this.config.backendUrl}/notifications/stream`);
 
-            this.eventSource.onopen = () => {
-                if (!this.isConnected && this.reconnectAttempts > 0) {
-                    this.showSystemToast('Conexión restablecida', 'success');
-                }
-                this.isConnected = true;
-                this.reconnectAttempts = 0;
-            };
-
-            this.eventSource.addEventListener('confirmation', event => {
-                try {
-                    const data = JSON.parse(event.data);
-                    if (data.type === 'new_confirmation') {
-                        this.handleNewConfirmation(data.invitation);
-                    }
-                } catch {
-                    //
-                }
-            });
-
-            this.eventSource.onerror = () => {
-                this.handleConnectionError();
-            };
-        } catch {
-            this.handleConnectionError();
+            this.eventSource.onopen = () => this.handleSseOpen();
+            this.eventSource.addEventListener('confirmation', event =>
+                this.handleSseMessage(event)
+            );
+            this.eventSource.onerror = () => this.handleSseError();
+        } catch (error) {
+            this.handleSseError(error);
         }
     }
 
     /**
-     * Maneja errores de conexión SSE implementando exponential backoff
+     * Maneja la apertura de la conexión SSE.
      */
-    handleConnectionError() {
-        if (this.eventSource) {
-            this.eventSource.close();
+    handleSseOpen() {
+        if (!this.isConnected && this.reconnectAttempts > 0) {
+            this.showSystemToast('Conexión restablecida', 'success');
         }
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
+    }
 
+    /**
+     * Maneja los mensajes recibidos por SSE.
+     * @param {MessageEvent} event - El evento SSE.
+     */
+    handleSseMessage(event) {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'new_confirmation') {
+                this.handleNewConfirmation(data.invitation);
+            }
+        } catch (error) {
+            // Silently ignore parsing errors
+        }
+    }
+
+    /**
+     * Maneja errores en la conexión SSE y programa la reconexión.
+     */
+    handleSseError() {
+        this.eventSource?.close();
         this.isConnected = false;
 
         if (this.reconnectAttempts === 0) {
             this.showSystemToast('Conexión perdida. Intentando reconectar...', 'warning');
         }
 
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        if (this.reconnectAttempts < this.config.maxReconnectAttempts) {
             this.scheduleReconnect();
         } else {
             this.showSystemToast(
-                'No se pudo establecer conexión con el servidor de notificaciones. Por favor, recarga la página más tarde.',
+                'No se pudo conectar al servidor de notificaciones. Recarga la página.',
                 'error'
             );
         }
     }
 
     /**
-     * Programa un intento de reconexión con exponential backoff
+     * Programa un intento de reconexión con exponential backoff.
      */
     scheduleReconnect() {
         this.reconnectAttempts++;
-        // Exponential backoff: 2s, 4s, 8s, 16s, 32s
-        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+        const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
 
-        if (this.reconnectTimeout) {
-            clearTimeout(this.reconnectTimeout);
-        }
-
+        clearTimeout(this.reconnectTimeout);
         this.reconnectTimeout = setTimeout(() => this.startMonitoring(), delay);
     }
 
     /**
-     * Detiene el monitoreo
+     * Detiene el monitoreo SSE.
      */
     stopMonitoring() {
-        if (this.eventSource) {
-            this.eventSource.close();
-            this.eventSource = null;
-        }
-        if (this.reconnectTimeout) {
-            clearTimeout(this.reconnectTimeout);
-            this.reconnectTimeout = null;
-        }
+        this.eventSource?.close();
+        this.eventSource = null;
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
         this.isConnected = false;
     }
 
     /**
-     * Maneja una nueva confirmación recibida por SSE
+     * Procesa una nueva confirmación recibida.
+     * @param {object} invitation - La invitación con la nueva confirmación.
      */
     handleNewConfirmation(invitation) {
-        // Verificar si ya vimos esta confirmación
         if (this.seenConfirmations.has(invitation.code)) {
             return;
         }
@@ -326,46 +310,43 @@ class NotificationService {
         this.addNotification(invitation);
         this.showNotificationToast(invitation);
         this.updateNotificationCount();
+        this.playNotificationSound();
 
-        if (this.soundEnabled) {
-            this.playNotificationSound();
-        }
-
-        // Actualizar lista de invitaciones si estamos en el dashboard
-        if (window.dashboardController) {
-            window.dashboardController.loadInvitations();
-        }
+        window.dashboardController?.loadInvitations();
     }
 
     /**
-     * Agrega una notificación a la lista
+     * Agrega una notificación a la lista interna.
+     * @param {object} invitation - La invitación confirmada.
      */
     addNotification(invitation) {
-        this.notifications.push({
+        const newNotification = {
             code: invitation.code,
             guestNames: formatGuestNames(invitation.guestNames),
             willAttend: invitation.status === 'confirmed' || invitation.status === 'partial',
             date: invitation.confirmationDate,
             read: false
-        });
+        };
 
-        // Mantener solo las últimas 20 notificaciones
+        this.notifications.unshift(newNotification);
+
         if (this.notifications.length > 20) {
-            this.notifications = this.notifications.slice(-20);
+            this.notifications = this.notifications.slice(0, 20);
         }
     }
 
     /**
-     * Muestra una notificación toast
+     * Muestra una notificación toast.
+     * @param {object} invitation - La invitación para la notificación.
      */
     showNotificationToast(invitation) {
         const guestNames = formatGuestNames(invitation.guestNames);
         const isConfirmed = invitation.status === 'confirmed' || invitation.status === 'partial';
         const status = isConfirmed ? 'confirmó' : 'rechazó';
 
-        const toast = document.createElement('div');
-        toast.className = 'notification-toast';
-        toast.innerHTML = `
+        const toast = this.createToastElement(
+            'notification-toast',
+            `
             <i class="fas fa-bell toast-icon"></i>
             <div class="toast-content">
                 <div class="toast-title">Nueva confirmación</div>
@@ -374,51 +355,59 @@ class NotificationService {
             <button class="toast-action" onclick="window.notificationService.viewConfirmation('${invitation.code}')">
                 Ver
             </button>
-        `;
+        `
+        );
 
-        document.body.appendChild(toast);
-
-        // Trigger animation
-        setTimeout(() => toast.classList.add('show'), 100);
-
-        // Remove after 5 seconds
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 5000);
+        this.displayToast(toast);
     }
 
     /**
-     * Muestra un toast del sistema (errores, reconexiones)
+     * Muestra un toast del sistema (errores, reconexiones).
+     * @param {string} message - El mensaje a mostrar.
+     * @param {string} type - El tipo de toast (info, success, warning, error).
      */
     showSystemToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `notification-toast system-toast ${type}`;
+        const icons = {
+            info: 'fa-info-circle',
+            success: 'fa-check-circle',
+            warning: 'fa-exclamation-triangle',
+            error: 'fa-times-circle'
+        };
+        const icon = icons[type] || icons.info;
 
-        let icon = 'fa-info-circle';
-        if (type === 'success') {
-            icon = 'fa-check-circle';
-        }
-        if (type === 'warning') {
-            icon = 'fa-exclamation-triangle';
-        }
-        if (type === 'error') {
-            icon = 'fa-times-circle';
-        }
-
-        toast.innerHTML = `
+        const toast = this.createToastElement(
+            `notification-toast system-toast ${type}`,
+            `
             <i class="fas ${icon} toast-icon"></i>
             <div class="toast-content">
                 <div class="toast-message">${message}</div>
             </div>
-        `;
+        `
+        );
 
+        this.displayToast(toast);
+    }
+
+    /**
+     * Crea un elemento de toast.
+     * @param {string} className - Clases CSS para el toast.
+     * @param {string} innerHTML - Contenido HTML del toast.
+     * @returns {HTMLElement} El elemento de toast creado.
+     */
+    createToastElement(className, innerHTML) {
+        const toast = document.createElement('div');
+        toast.className = className;
+        toast.innerHTML = innerHTML;
+        return toast;
+    }
+
+    /**
+     * Muestra y oculta un elemento de toast.
+     * @param {HTMLElement} toast - El elemento de toast.
+     */
+    displayToast(toast) {
         document.body.appendChild(toast);
-
-        // Trigger animation
         setTimeout(() => toast.classList.add('show'), 100);
-
-        // Remove after 5 seconds
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
@@ -426,43 +415,35 @@ class NotificationService {
     }
 
     /**
-     * Actualiza el contador de notificaciones
+     * Actualiza el contador de notificaciones no leídas.
      */
     updateNotificationCount() {
         const unreadCount = this.notifications.filter(n => !n.read).length;
+        const notificationCountEl = document.getElementById('notificationCount');
 
-        // Actualizar contador en el botón del header
-        const notificationCount = document.getElementById('notificationCount');
-        if (notificationCount) {
+        if (notificationCountEl) {
             if (unreadCount > 0) {
-                notificationCount.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                notificationCount.style.display = 'flex';
+                notificationCountEl.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                notificationCountEl.style.display = 'flex';
             } else {
-                notificationCount.style.display = 'none';
+                notificationCountEl.style.display = 'none';
             }
         }
     }
 
     /**
-     * Navega a una confirmación específica
+     * Navega a la vista de una confirmación específica.
+     * @param {string} code - El código de la invitación.
      */
     viewConfirmation(code) {
-        // Cambiar a la sección de dashboard
         window.location.hash = '#dashboard';
-
-        // Abrir el modal de detalles después de un pequeño delay
-        setTimeout(() => {
-            if (window.viewInvitation) {
-                window.viewInvitation(code);
-            }
-        }, 300);
+        setTimeout(() => window.viewInvitation?.(code), 300);
     }
 
     /**
-     * Crea el elemento de audio para notificaciones
+     * Crea un sonido de notificación usando la Web Audio API.
      */
     createNotificationSound() {
-        // Crear un sonido simple usando Web Audio API
         this.notificationSound = {
             play: () => {
                 try {
@@ -482,15 +463,15 @@ class NotificationService {
 
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.5);
-                } catch {
-                    //
+                } catch (error) {
+                    // Silently fail if Web Audio API is not supported
                 }
             }
         };
     }
 
     /**
-     * Reproduce el sonido de notificación
+     * Reproduce el sonido de notificación si está habilitado.
      */
     playNotificationSound() {
         if (this.soundEnabled && this.notificationSound) {
@@ -499,46 +480,46 @@ class NotificationService {
     }
 
     /**
-     * Alterna el sonido de notificaciones
+     * Alterna el estado del sonido de notificaciones.
+     * @returns {boolean} El nuevo estado del sonido.
      */
     toggleSound() {
         this.soundEnabled = !this.soundEnabled;
-        localStorage.setItem('notificationSoundEnabled', this.soundEnabled);
+        localStorage.setItem('notificationSoundEnabled', this.soundEnabled.toString());
         return this.soundEnabled;
     }
 
     /**
-     * Carga las confirmaciones vistas del localStorage
+     * Carga el estado (confirmaciones vistas, sonido) desde localStorage.
      */
-    loadSeenConfirmations() {
-        const saved = localStorage.getItem('seenConfirmations');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                this.seenConfirmations = new Set(parsed);
-            } catch {
-                this.seenConfirmations = new Set();
+    loadStateFromStorage() {
+        try {
+            const savedConfirmations = localStorage.getItem('seenConfirmations');
+            if (savedConfirmations) {
+                this.seenConfirmations = new Set(JSON.parse(savedConfirmations));
             }
+        } catch (error) {
+            this.seenConfirmations = new Set();
         }
 
-        // Cargar preferencia de sonido
         const soundPref = localStorage.getItem('notificationSoundEnabled');
         this.soundEnabled = soundPref !== 'false';
     }
 
     /**
-     * Guarda las confirmaciones vistas en localStorage
+     * Guarda las confirmaciones vistas en localStorage.
      */
     saveSeenConfirmations() {
-        const toSave = Array.from(this.seenConfirmations);
-        localStorage.setItem('seenConfirmations', JSON.stringify(toSave));
+        localStorage.setItem(
+            'seenConfirmations',
+            JSON.stringify(Array.from(this.seenConfirmations))
+        );
     }
 
     /**
-     * Marca todas las confirmaciones como vistas
+     * Marca todas las notificaciones como vistas y guarda el estado.
      */
     markAllAsSeen() {
-        // Marcar todas las notificaciones como leídas
         this.notifications.forEach(n => {
             n.read = true;
             this.seenConfirmations.add(n.code);
@@ -547,44 +528,37 @@ class NotificationService {
         this.saveSeenConfirmations();
         this.updateNotificationCount();
 
-        // Re-renderizar si el panel está abierto
         if (this.panelOpen) {
             this.renderNotifications();
         }
     }
 
     /**
-     * Carga las notificaciones iniciales
-     * @param {Array} invitations - Array de invitaciones para inicializar
+     * Carga las notificaciones iniciales a partir de una lista de invitaciones.
+     * @param {Array} invitations - Lista de invitaciones.
      */
     loadInitialNotifications(invitations = []) {
         const confirmations = invitations
             .filter(
                 inv =>
-                    inv.status === 'confirmed' ||
-                    inv.status === 'partial' ||
-                    inv.status === 'cancelled'
+                    ['confirmed', 'partial', 'cancelled'].includes(inv.status) &&
+                    inv.confirmationDate
             )
-            .filter(inv => inv.confirmationDate) // Ensure there is a confirmation date
             .sort((a, b) => new Date(b.confirmationDate) - new Date(a.confirmationDate))
             .slice(0, 20);
 
-        confirmations.forEach(inv => {
-            this.notifications.push({
-                code: inv.code,
-                guestNames: formatGuestNames(inv.guestNames),
-                willAttend: inv.status === 'confirmed' || inv.status === 'partial',
-                date: inv.confirmationDate,
-                read: this.seenConfirmations.has(inv.code)
-            });
-        });
+        this.notifications = confirmations.map(inv => ({
+            code: inv.code,
+            guestNames: formatGuestNames(inv.guestNames),
+            willAttend: inv.status === 'confirmed' || inv.status === 'partial',
+            date: inv.confirmationDate,
+            read: this.seenConfirmations.has(inv.code)
+        }));
 
         this.updateNotificationCount();
     }
 }
 
-// Crear instancia singleton
+// Crear instancia singleton y exponerla globalmente
 export const notificationService = new NotificationService();
-
-// Exponer globalmente para acceso desde HTML
 window.notificationService = notificationService;

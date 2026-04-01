@@ -144,17 +144,16 @@ export class AppController {
      * Inicializa componentes UI base
      */
     async _initializeUIComponents() {
-        const componentInitializers = [
-            {
-                selector: '[data-countdown]',
-                factory: ComponentFactory.createCountdown,
-                name: 'countdown'
-            },
-            { selector: '[data-modal]', factory: ComponentFactory.createModal, name: 'modal' },
-            { selector: '[data-loader]', factory: ComponentFactory.createLoader, name: 'loader' }
-        ];
+        const componentInitializers = new Map([
+            [
+                'countdown',
+                { selector: '[data-countdown]', factory: ComponentFactory.createCountdown }
+            ],
+            ['modal', { selector: '[data-modal]', factory: ComponentFactory.createModal }],
+            ['loader', { selector: '[data-loader]', factory: ComponentFactory.createLoader }]
+        ]);
 
-        for (const { selector, factory, name } of componentInitializers) {
+        for (const [name, { selector, factory }] of componentInitializers.entries()) {
             const elements = this.container.querySelectorAll(selector);
             for (const element of elements) {
                 const component = await factory(element);
@@ -184,6 +183,11 @@ export class AppController {
         );
         this.scrollAnimationController = await ControllerFactory.createScrollAnimationController(
             this.container
+        );
+
+        this.themeController = await ControllerFactory.createThemeController(
+            this.container,
+            this.configurationService
         );
 
         const rsvpContainer =

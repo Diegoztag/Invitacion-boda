@@ -253,7 +253,7 @@ export class InvitationService {
             });
 
             return response.invitations.map(data => new Invitation(data));
-        } catch {
+        } catch (error) {
             throw new Error('Error al buscar invitaciones');
         }
     }
@@ -265,7 +265,7 @@ export class InvitationService {
     async getInvitationStats() {
         try {
             return await this.apiClient.getInvitationStats();
-        } catch {
+        } catch (error) {
             throw new Error('Error al obtener estadísticas');
         }
     }
@@ -312,7 +312,7 @@ export class InvitationService {
         this.eventListeners.get(event).forEach(callback => {
             try {
                 callback(data);
-            } catch {
+            } catch (error) {
                 //
             }
         });

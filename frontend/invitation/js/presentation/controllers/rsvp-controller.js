@@ -51,7 +51,7 @@ export class RSVPController {
                 this.currentInvitation = await this.rsvpFacade.loadInvitation(invitationId);
                 this.ui.populateInvitationDetails(this.currentInvitation);
                 this._handleInvitationStatus();
-            } catch (error) {
+            } catch {
                 this.emit(EVENTS.RSVP.ERROR, { message: 'Error al cargar la invitación.' });
             }
         }

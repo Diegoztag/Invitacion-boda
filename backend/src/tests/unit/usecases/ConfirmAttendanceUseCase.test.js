@@ -824,4 +824,31 @@ describe('ConfirmAttendanceUseCase', () => {
             expect(result.error).toBe('No existe una confirmación para esta invitación');
         });
     });
+
+    describe('getConfirmation', () => {
+        test('should get confirmation successfully', async () => {
+            const existingConfirmation = new Confirmation({
+                code: 'INV001',
+                willAttend: true,
+                attendingGuests: 1,
+                attendingNames: ['Juan Pérez']
+            });
+
+            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
+
+            const result = await useCase.getConfirmation('INV001');
+
+            expect(result.success).toBe(true);
+            expect(result.confirmation).toEqual(existingConfirmation.toObject());
+        });
+
+        test('should return error if confirmation not found', async () => {
+            mockConfirmationRepository.findByCode.mockResolvedValue(null);
+
+            const result = await useCase.getConfirmation('INV001');
+
+            expect(result.success).toBe(false);
+            expect(result.error).toBe('Confirmación no encontrada');
+        });
+    });
 });

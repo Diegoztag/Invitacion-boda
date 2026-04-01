@@ -509,4 +509,15 @@ describe('Invitation Entity', () => {
             expect(invitation.numberOfPasses).toBe(10);
         });
     });
+
+    describe('validate', () => {
+        test('should validate a valid invitation', () => {
+            const invitation = new Invitation({
+                code: 'INV001',
+                guestNames: ['Juan Pérez'],
+                numberOfPasses: 1
+            });
+            expect(() => invitation.validate()).not.toThrow();
+        });
+    });
 });

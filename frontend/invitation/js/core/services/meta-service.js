@@ -304,7 +304,7 @@ export class MetaService {
             } else {
                 this.updateWeddingMeta();
             }
-        } catch {
+        } catch (error) {
             this.updateWeddingMeta();
         }
     }
@@ -408,7 +408,7 @@ export class MetaService {
 
             // Actualizar meta tags basado en la URL
             this.updateMetaFromUrl();
-        } catch {
+        } catch (error) {
             // Fallback: al menos cargar meta tags básicos de la boda
             this.updateWeddingMeta();
         }

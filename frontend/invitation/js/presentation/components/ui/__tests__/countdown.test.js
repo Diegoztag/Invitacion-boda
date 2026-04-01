@@ -254,7 +254,6 @@ describe('CountdownComponent', () => {
 
         it('debe detener el intervalo al destruir', async () => {
             await countdown.init();
-            const interval = countdown.interval;
 
             countdown.destroy();
 

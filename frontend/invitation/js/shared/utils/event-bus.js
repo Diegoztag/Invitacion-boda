@@ -62,7 +62,13 @@ class EventBus {
             finalData = mw(event, finalData);
         }
 
-        this.events[event].forEach(callback => callback(finalData));
+        this.events[event].forEach(callback => {
+            try {
+                callback(finalData);
+            } catch (error) {
+                //
+            }
+        });
     }
 
     /**

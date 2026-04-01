@@ -8,10 +8,10 @@ import { EVENTS } from '../../../shared/constants/events.js';
 import { SELECTORS } from '../../../shared/constants/selectors.js';
 import { getConfig } from '../../../config/app-config.js';
 
-export class Modal extends Component {
+export class ModalComponent extends Component {
     constructor(options = {}) {
         // Crear elemento modal si no se proporciona
-        const element = options.element || Modal.createModalElement();
+        const element = options.element || ModalComponent.createModalElement();
         super(element);
 
         this.options = {

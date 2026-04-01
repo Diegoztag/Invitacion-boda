@@ -41,8 +41,6 @@ export class SectionGeneratorService {
         Object.entries(sectionsConfig).forEach(([sectionId, config]) => {
             if (config.enabled) {
                 this.generateSection(sectionId, config);
-            } else {
-                console.log(`🚫 Section skipped: ${sectionId} (disabled)`);
             }
         });
 
@@ -75,14 +73,12 @@ export class SectionGeneratorService {
      */
     generateSection(sectionId, config) {
         if (this.generatedSections.has(sectionId)) {
-            console.log(`⚠️ Section ${sectionId} already generated`);
             return;
         }
 
         try {
             config.generator();
             this.generatedSections.add(sectionId);
-            console.log(`✅ Section generated: ${sectionId}`);
         } catch (error) {
             console.error(`❌ Error generating section ${sectionId}:`, error);
         }
@@ -246,8 +242,6 @@ export class SectionGeneratorService {
         } else {
             document.body.appendChild(section);
         }
-
-        console.log(`🎁 Generated ${this.config.giftRegistry.stores?.length || 0} gift stores`);
     }
 
     /**
@@ -318,7 +312,6 @@ export class SectionGeneratorService {
     generateNavigation(sectionsConfig) {
         const navMenu = document.getElementById('navMenu');
         if (!navMenu) {
-            console.warn('Navigation menu not found');
             return;
         }
 
@@ -336,13 +329,10 @@ export class SectionGeneratorService {
                     const listItem = link.closest('li');
                     if (listItem) {
                         listItem.remove();
-                        console.log(`🗑️ Navigation link removed: ${sectionId}`);
                     }
                 }
             }
         });
-
-        console.log('✅ Navigation updated for enabled sections');
     }
 
     /**
@@ -377,8 +367,6 @@ export class SectionGeneratorService {
      * Regenera todas las secciones
      */
     regenerateAllSections() {
-        console.log('🔄 Regenerating all sections...');
-
         // Limpiar secciones generadas
         this.generatedSections.clear();
 
@@ -393,8 +381,6 @@ export class SectionGeneratorService {
 
         // Regenerar secciones
         this.generateEnabledSections();
-
-        console.log('✅ All sections regenerated');
     }
 
     /**
@@ -403,7 +389,6 @@ export class SectionGeneratorService {
     updateConfiguration(newConfig) {
         this.config = { ...this.config, ...newConfig };
         this.regenerateAllSections();
-        console.log('🔄 Configuration updated and sections regenerated');
     }
 
     /**
@@ -413,6 +398,5 @@ export class SectionGeneratorService {
         this.config = null;
         this.generatedSections.clear();
         this.isInitialized = false;
-        console.log('🗑️ SectionGeneratorService destroyed');
     }
 }

@@ -113,7 +113,7 @@ export class FormValidator extends Component {
             try {
                 const customRules = JSON.parse(element.getAttribute('data-validation-rules'));
                 Object.assign(rules, customRules);
-            } catch {
+            } catch (error) {
                 // Silently ignore JSON parsing errors
             }
         }
@@ -273,7 +273,7 @@ export class FormValidator extends Component {
             this.updateFormValidationState();
 
             return result;
-        } catch {
+        } catch (error) {
             return { isValid: false, errors: ['Error de validación'] };
         }
     }
@@ -319,7 +319,7 @@ export class FormValidator extends Component {
             });
 
             return result.isValid;
-        } catch {
+        } catch (error) {
             return false;
         }
     }

@@ -40,7 +40,8 @@ const config = {
     transform: {
         '^.+\\.js$': 'babel-jest'
     },
-    verbose: true
+    verbose: true,
+    clearMocks: true
 };
 
 module.exports = config;

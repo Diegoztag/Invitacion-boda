@@ -89,6 +89,14 @@ jest.mock('../scroll-animation-controller.js', () => ({
     }))
 }));
 
+jest.mock('../theme-controller.js', () => ({
+    ThemeController: jest.fn().mockImplementation(() => ({
+        init: jest.fn().mockResolvedValue(),
+        on: jest.fn(),
+        emit: jest.fn()
+    }))
+}));
+
 // Mock de componentes UI
 jest.mock('../../components/ui/countdown.js', () => ({
     CountdownComponent: jest.fn().mockImplementation(() => ({

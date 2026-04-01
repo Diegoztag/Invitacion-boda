@@ -18,6 +18,7 @@ export class ThemeController {
 
         this.themeToggleButton = null;
         this.currentTheme = this.options.defaultTheme;
+        this.eventListeners = new Map();
         this.isInitialized = false;
     }
 

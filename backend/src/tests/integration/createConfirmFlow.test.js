@@ -37,12 +37,12 @@ describe('Integration - Create + Confirm Flow', () => {
         }
     });
 
-    test('debe crear invitación exitosamente', async () => {
+    const createTestInvitation = async (guestNames, numberOfPasses, phone = '') => {
         const invitationData = {
-            guestNames: ['Juan Pérez', 'María García'],
-            numberOfPasses: 2,
-            phone: '+1234567890',
-            adultPasses: 2,
+            guestNames,
+            numberOfPasses,
+            phone,
+            adultPasses: numberOfPasses,
             childPasses: 0,
             staffPasses: 0
         };
@@ -50,21 +50,26 @@ describe('Integration - Create + Confirm Flow', () => {
         const response = await request(app)
             .post('/api/v1/invitations')
             .set('Authorization', `Bearer ${token}`)
-            .send(invitationData);
+            .send(invitationData)
+            .expect(201);
 
-        if (response.status !== 201) {
-        }
+        return response.body.invitation;
+    };
 
-        expect(response.status).toBe(201);
-        expect(response.body.success).toBe(true);
-        expect(response.body.invitation).toBeDefined();
-        expect(response.body.invitation.code).toBeDefined();
-        expect(response.body.invitation.guestNames).toEqual(['Juan Pérez', 'María García']);
-        expect(response.body.invitation.numberOfPasses).toBe(2);
-        expect(response.body.invitation.status).toBe('active');
+    test('debe crear invitación exitosamente', async () => {
+        const invitation = await createTestInvitation(
+            ['Juan Pérez', 'María García'],
+            2,
+            '+1234567890'
+        );
 
-        // Guardar el código para las siguientes pruebas
-        createdInvitationCode = response.body.invitation.code;
+        expect(invitation).toBeDefined();
+        expect(invitation.code).toBeDefined();
+        expect(invitation.guestNames).toEqual(['Juan Pérez', 'María García']);
+        expect(invitation.numberOfPasses).toBe(2);
+        expect(invitation.status).toBe('active');
+
+        createdInvitationCode = invitation.code;
     });
 
     test('debe obtener la invitación creada', async () => {

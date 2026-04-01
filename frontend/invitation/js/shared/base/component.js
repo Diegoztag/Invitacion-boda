@@ -353,8 +353,8 @@ export class Component {
      * Verifica si el componente está destruido
      * @returns {boolean}
      */
-    isDestroyed() {
-        return this.isDestroyed;
+    get isDestroyed() {
+        return this._isDestroyed;
     }
 
     /**

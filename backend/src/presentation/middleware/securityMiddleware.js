@@ -5,6 +5,7 @@
  */
 
 const rateLimit = require('express-rate-limit');
+const { authLimiter } = require('./rateLimiter');
 const helmet = require('helmet');
 const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
@@ -153,26 +154,7 @@ class SecurityMiddleware {
      * Rate limiting estricto para endpoints de autenticación
      */
     get authRateLimit() {
-        return rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutos
-            max: 20, // máximo 20 intentos de login por ventana
-            message: {
-                success: false,
-                error: 'Demasiados intentos de login, intenta de nuevo más tarde'
-            },
-            skipSuccessfulRequests: true,
-            handler: (req, res) => {
-                this.logger.warn('Auth rate limit exceeded', {
-                    ip: req.ip,
-                    userAgent: req.get('User-Agent')
-                });
-
-                res.status(429).json({
-                    success: false,
-                    error: 'Demasiados intentos de login, intenta de nuevo más tarde'
-                });
-            }
-        });
+        return authLimiter;
     }
 
     /**

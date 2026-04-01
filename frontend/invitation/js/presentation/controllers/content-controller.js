@@ -231,30 +231,15 @@ export class ContentController {
             return 'Fecha inválida';
         }
 
-        switch (format) {
-            case 'short':
-                return dateObj.toLocaleDateString('es-ES');
+        const formatOptions = {
+            short: {},
+            long: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+            time: { hour: '2-digit', minute: '2-digit' },
+            datetime: { dateStyle: 'short', timeStyle: 'short' }
+        };
 
-            case 'long':
-                return dateObj.toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-            case 'time':
-                return dateObj.toLocaleTimeString('es-ES', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-            case 'datetime':
-                return dateObj.toLocaleString('es-ES');
-
-            default:
-                return dateObj.toLocaleDateString('es-ES');
-        }
+        const options = formatOptions[format] || {};
+        return dateObj.toLocaleString('es-ES', options);
     }
 
     /**

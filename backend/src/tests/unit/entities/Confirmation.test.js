@@ -523,4 +523,16 @@ describe('Confirmation Entity', () => {
             expect(confirmation.attendingNames).toEqual(['Juan', 'Maria']);
         });
     });
+
+    describe('validate', () => {
+        test('debe validar una confirmación correcta', () => {
+            const confirmation = new Confirmation({
+                code: 'ABC123',
+                willAttend: true,
+                attendingGuests: 2,
+                attendingNames: ['Juan', 'Maria']
+            });
+            expect(() => confirmation.validate()).not.toThrow();
+        });
+    });
 });

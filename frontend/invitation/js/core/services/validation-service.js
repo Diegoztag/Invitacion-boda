@@ -403,7 +403,6 @@ export class ValidationService {
      */
     validateAndSanitize(data, rules = {}) {
         const sanitizedData = {};
-        const errors = [];
 
         // Sanitizar datos primero
         Object.keys(data).forEach(key => {

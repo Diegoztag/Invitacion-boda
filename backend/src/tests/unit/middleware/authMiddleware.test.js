@@ -149,4 +149,18 @@ describe('AuthMiddleware (unit)', () => {
             expect(res.status).toHaveBeenCalledWith(403);
         });
     });
+
+    describe('authenticate', () => {
+        test('should authenticate with valid token', () => {
+            const token = auth.generateToken({ id: 'admin', role: 'admin' });
+            const req = { headers: { authorization: `Bearer ${token}` } };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const next = jest.fn();
+
+            auth.authenticate(req, res, next);
+
+            expect(req.user).toHaveProperty('id', 'admin');
+            expect(next).toHaveBeenCalled();
+        });
+    });
 });

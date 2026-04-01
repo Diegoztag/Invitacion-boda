@@ -696,4 +696,36 @@ describe('CreateInvitationUseCase', () => {
             expect(mockLogger.error).toHaveBeenCalled();
         });
     });
+
+    describe('execute', () => {
+        test('should create invitation successfully', async () => {
+            const invitationData = {
+                guestNames: ['Juan Pérez', 'María García'],
+                numberOfPasses: 2,
+                phone: '+1234567890'
+            };
+
+            const generatedCode = 'INV001';
+            const savedInvitation = new Invitation({
+                code: generatedCode,
+                ...invitationData
+            });
+
+            // Setup mocks
+            mockValidationService.validateInvitationData.mockReturnValue({
+                isValid: true,
+                sanitized: invitationData
+            });
+            mockValidationService.generateInvitationCode.mockReturnValue(generatedCode);
+            mockInvitationRepository.findByCode.mockResolvedValue(null);
+            mockInvitationRepository.save.mockResolvedValue(savedInvitation);
+
+            const result = await useCase.execute(invitationData);
+
+            expect(result.success).toBe(true);
+            expect(result.invitation).toEqual(savedInvitation);
+            expect(result.message).toBe('Invitación creada exitosamente');
+            expect(mockInvitationRepository.save).toHaveBeenCalledWith(expect.any(Invitation));
+        });
+    });
 });

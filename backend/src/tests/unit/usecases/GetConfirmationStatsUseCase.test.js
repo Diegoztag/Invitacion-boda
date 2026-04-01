@@ -445,6 +445,60 @@ describe('GetConfirmationStatsUseCase', () => {
             expect(result.success).toBe(false);
             expect(result.error).toBe('Formato de exportación no válido');
         });
+
+        test('debe obtener estadísticas exitosamente con datos completos', async () => {
+            const mockInvitationStats = {
+                total: 10,
+                totalIssuedPasses: 25,
+                confirmed: 6,
+                partial: 2,
+                pending: 1,
+                cancelled: 1,
+                inactive: 0,
+                confirmedPasses: 18,
+                pendingPasses: 3,
+                confirmedAdultPasses: 12,
+                confirmedChildPasses: 4,
+                confirmedStaffPasses: 2,
+                activeAdultPasses: 15,
+                activeChildPasses: 5,
+                activeStaffPasses: 2,
+                totalActivePasses: 22,
+                distributionPercentages: { adults: 68, children: 23, staff: 9 }
+            };
+
+            const mockConfirmations = [
+                {
+                    isPositive: () => true,
+                    hasDietaryRestrictions: () => true,
+                    hasMessage: () => true,
+                    hasPhone: () => true
+                },
+                {
+                    isPositive: () => true,
+                    hasDietaryRestrictions: () => false,
+                    hasMessage: () => true,
+                    hasPhone: () => false
+                },
+                {
+                    isPositive: () => false,
+                    hasDietaryRestrictions: () => false,
+                    hasMessage: () => false,
+                    hasPhone: () => true
+                }
+            ];
+
+            const mockInactiveInvitations = [{ code: 'INACTIVE001' }];
+
+            mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
+            mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
+            mockInvitationRepository.findAll.mockResolvedValue(mockInactiveInvitations);
+
+            const result = await useCase.execute();
+
+            expect(result.success).toBe(true);
+            expect(result.stats).toBeDefined();
+        });
     });
 
     describe('_getActiveConfirmations (método privado)', () => {
