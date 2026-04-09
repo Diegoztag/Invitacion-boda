@@ -1,7 +1,4 @@
-/**
- * Tests para CountdownComponent
- * Valida: inicialización, cálculo de tiempos, actualización DOM, lifecycle
- */
+import { CountdownComponent } from '../countdown.js';
 
 // Mock de la clase Component base
 jest.mock('../../base/component.js', () => {
@@ -26,7 +23,9 @@ jest.mock('../../base/component.js', () => {
 
             emit(event, data) {
                 if (this.element) {
-                    const customEvent = new CustomEvent(event, { detail: data });
+                    const customEvent = new CustomEvent(event, {
+                        detail: data
+                    });
                     this.element.dispatchEvent(customEvent);
                 }
             }
@@ -72,8 +71,6 @@ jest.mock('../../../../config/app-config.js', () => ({
         return configs[key] !== undefined ? configs[key] : defaultValue;
     })
 }));
-
-import { CountdownComponent } from '../countdown.js';
 
 describe('CountdownComponent', () => {
     let countdown;

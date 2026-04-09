@@ -3,7 +3,7 @@
  * Valida: actualización de meta tags, título, Open Graph, restauración
  */
 
-import { MetaService } from '../meta-service.js';
+import MetaService from '../meta-service';
 
 describe('MetaService', () => {
     let metaService;
@@ -48,7 +48,7 @@ describe('MetaService', () => {
 
         it('debe capturar meta tags originales', () => {
             expect(metaService.originalMeta).toBeDefined();
-            expect(metaService.originalMeta['description']).toBe('Original Description');
+            expect(metaService.originalMeta.description).toBe('Original Description');
         });
 
         it('debe guardar título original', () => {
@@ -186,9 +186,18 @@ describe('MetaService', () => {
 
         it('debe mantener el estado de los meta tags después de múltiples actualizaciones', () => {
             const tags = [
-                { name: 'description', content: 'Desc 1' },
-                { name: 'keywords', content: 'Key 1, Key 2' },
-                { name: 'author', content: 'Author Name' }
+                {
+                    name: 'description',
+                    content: 'Desc 1'
+                },
+                {
+                    name: 'keywords',
+                    content: 'Key 1, Key 2'
+                },
+                {
+                    name: 'author',
+                    content: 'Author Name'
+                }
             ];
 
             // Actualizar todos

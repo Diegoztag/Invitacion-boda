@@ -312,7 +312,7 @@ export class InvitationService {
         this.eventListeners.get(event).forEach(callback => {
             try {
                 callback(data);
-            } catch (error) {
+            } catch (err) {
                 //
             }
         });

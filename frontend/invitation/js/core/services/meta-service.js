@@ -304,7 +304,7 @@ export class MetaService {
             } else {
                 this.updateWeddingMeta();
             }
-        } catch (error) {
+        } catch (err) {
             this.updateWeddingMeta();
         }
     }

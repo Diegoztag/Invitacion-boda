@@ -3,37 +3,39 @@
  * Valida: descubrimiento de campos, validación en tiempo real, errores, submit
  */
 
+import { FormValidatorComponent } from '../form-validator';
+
 // Mock de Component MUST be before any imports
-jest.mock('../../base/component.js', () => {
-    return {
-        Component: class {
-            constructor(element) {
-                this.element = element;
-                this.isInitialized = false;
-            }
+jest.mock('../../base/component.js', () => ({
+    Component: class {
+        constructor(element) {
+            this.element = element;
+            this.isInitialized = false;
+        }
 
-            find(selector) {
-                return this.element ? this.element.querySelector(selector) : null;
-            }
+        find(selector) {
+            return this.element ? this.element.querySelector(selector) : null;
+        }
 
-            async init() {
-                this.isInitialized = true;
-            }
+        async init() {
+            this.isInitialized = true;
+        }
 
-            destroy() {
-                this.isInitialized = false;
-            }
+        destroy() {
+            this.isInitialized = false;
+        }
 
-            emit(event, data) {
-                // Mock emit method
-                if (this.element) {
-                    const customEvent = new CustomEvent(event, { detail: data });
-                    this.element.dispatchEvent(customEvent);
-                }
+        emit(event, data) {
+            // Mock emit method
+            if (this.element) {
+                const customEvent = new CustomEvent(event, {
+                    detail: data
+                });
+                this.element.dispatchEvent(customEvent);
             }
         }
-    };
-});
+    }
+}));
 
 // Mock de debounce
 jest.mock('../../../../shared/helpers/debounce.js', () => ({
@@ -41,8 +43,6 @@ jest.mock('../../../../shared/helpers/debounce.js', () => ({
 }));
 
 // NOW import the component after all mocks are defined
-import { FormValidatorComponent } from '../form-validator.js';
-
 describe('FormValidatorComponent', () => {
     let form;
     let validationService;
@@ -265,7 +265,9 @@ describe('FormValidatorComponent', () => {
             const fullNameInput = form.querySelector('#fullName');
             fullNameInput.value = 'Test';
 
-            const inputEvent = new Event('input', { bubbles: true });
+            const inputEvent = new Event('input', {
+                bubbles: true
+            });
             fullNameInput.dispatchEvent(inputEvent);
 
             // El evento debe haber sido capturado
@@ -284,7 +286,9 @@ describe('FormValidatorComponent', () => {
             const emailInput = form.querySelector('#email');
             emailInput.value = 'test@example.com';
 
-            const blurEvent = new Event('blur', { bubbles: true });
+            const blurEvent = new Event('blur', {
+                bubbles: true
+            });
             emailInput.dispatchEvent(blurEvent);
 
             expect(customValidator.options.validateOnBlur).toBe(true);
@@ -293,7 +297,9 @@ describe('FormValidatorComponent', () => {
         it('debe validar en submit', async () => {
             await formValidator.init();
 
-            const submitEvent = new Event('submit', { bubbles: true });
+            const submitEvent = new Event('submit', {
+                bubbles: true
+            });
             form.dispatchEvent(submitEvent);
 
             // El formulario debe procesarse

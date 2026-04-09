@@ -1,8 +1,3 @@
-/**
- * Tests para ConfigurationService
- * Valida: carga de configuración, aplicación al DOM, valores por defecto
- */
-
 import { ConfigurationService } from '../configuration-service.js';
 
 describe('ConfigurationService', () => {
@@ -39,7 +34,10 @@ describe('ConfigurationService', () => {
     describe('Configuration Loading', () => {
         it('debe cargar WEDDING_CONFIG desde window', () => {
             const testConfig = {
-                couple: { brideName: 'María', groomName: 'Juan' },
+                couple: {
+                    brideName: 'María',
+                    groomName: 'Juan'
+                },
                 eventDate: '2026-06-15'
             };
             window.WEDDING_CONFIG = testConfig;
@@ -111,8 +109,14 @@ describe('ConfigurationService', () => {
     describe('Configuration Retrieval', () => {
         it('debe permitir obtener valores de configuración', () => {
             const testConfig = {
-                couple: { brideName: 'María' },
-                nest: { level1: { level2: 'value' } }
+                couple: {
+                    brideName: 'María'
+                },
+                nest: {
+                    level1: {
+                        level2: 'value'
+                    }
+                }
             };
 
             window.WEDDING_CONFIG = testConfig;
@@ -127,7 +131,10 @@ describe('ConfigurationService', () => {
 
             // No debe lanzar error accediendo a propiedades inexistentes
             expect(() => {
-                configService.config.nonexistent?.property?.value;
+                const { nonexistent } = configService.config;
+                if (nonexistent && nonexistent.property) {
+                    // Access value only if properties exist
+                }
             }).not.toThrow();
         });
     });
@@ -135,7 +142,10 @@ describe('ConfigurationService', () => {
     describe('Configuration Application', () => {
         it('debe aplicar configuración al DOM', async () => {
             const testConfig = {
-                couple: { brideName: 'María', groomName: 'Juan' }
+                couple: {
+                    brideName: 'María',
+                    groomName: 'Juan'
+                }
             };
             window.WEDDING_CONFIG = testConfig;
 
@@ -166,7 +176,10 @@ describe('ConfigurationService', () => {
             const testConfig = {
                 numbers: [1, 2, 3],
                 dates: new Date('2026-06-15'),
-                booleans: { isOpen: true, isClosed: false }
+                booleans: {
+                    isOpen: true,
+                    isClosed: false
+                }
             };
 
             window.WEDDING_CONFIG = testConfig;

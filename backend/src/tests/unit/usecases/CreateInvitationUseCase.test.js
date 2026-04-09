@@ -230,7 +230,10 @@ describe('CreateInvitationUseCase', () => {
             mockValidationService.generateInvitationCode.mockReturnValue('INV001');
             mockInvitationRepository.findByCode.mockResolvedValue(null);
             mockInvitationRepository.save.mockResolvedValue(
-                new Invitation({ code: 'INV001', ...invitationData })
+                new Invitation({
+                    code: 'INV001',
+                    ...invitationData
+                })
             );
 
             await useCase.execute(invitationData);
@@ -267,7 +270,10 @@ describe('CreateInvitationUseCase', () => {
 
             mockInvitationRepository.findByPhone = jest.fn().mockResolvedValue([mockInv]);
             mockInvitationRepository.save.mockResolvedValue(
-                new Invitation({ code: 'INV001', ...invitationData })
+                new Invitation({
+                    code: 'INV001',
+                    ...invitationData
+                })
             );
 
             await useCase.execute(invitationData);
@@ -358,8 +364,14 @@ describe('CreateInvitationUseCase', () => {
 
             const batchResult = {
                 success: [
-                    { index: 0, code: 'INV001' },
-                    { index: 1, code: 'INV002' }
+                    {
+                        index: 0,
+                        code: 'INV001'
+                    },
+                    {
+                        index: 1,
+                        code: 'INV002'
+                    }
                 ],
                 errors: [],
                 total: 2
@@ -387,8 +399,18 @@ describe('CreateInvitationUseCase', () => {
             ];
 
             const batchResult = {
-                success: [{ index: 0, code: 'INV001' }],
-                errors: [{ index: 1, error: 'Datos inválidos' }],
+                success: [
+                    {
+                        index: 0,
+                        code: 'INV001'
+                    }
+                ],
+                errors: [
+                    {
+                        index: 1,
+                        error: 'Datos inválidos'
+                    }
+                ],
                 total: 2
             };
 
@@ -524,7 +546,9 @@ describe('CreateInvitationUseCase', () => {
             expect(result.errors[0].error).toBe('Error al guardar lote: saveBatch error');
             expect(mockLogger.error).toHaveBeenCalledWith(
                 'Batch save failed',
-                expect.objectContaining({ error: 'saveBatch error' })
+                expect.objectContaining({
+                    error: 'saveBatch error'
+                })
             );
         });
 

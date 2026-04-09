@@ -56,7 +56,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 5,
                 activeStaffPasses: 2,
                 totalActivePasses: 22,
-                distributionPercentages: { adults: 68, children: 23, staff: 9 }
+                distributionPercentages: {
+                    adults: 68,
+                    children: 23,
+                    staff: 9
+                }
             };
 
             // Mock de confirmaciones
@@ -82,7 +86,11 @@ describe('GetConfirmationStatsUseCase', () => {
             ];
 
             // Mock de invitaciones inactivas
-            const mockInactiveInvitations = [{ code: 'INACTIVE001' }];
+            const mockInactiveInvitations = [
+                {
+                    code: 'INACTIVE001'
+                }
+            ];
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -123,7 +131,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 5,
                 activeStaffPasses: 2,
                 totalActivePasses: 22,
-                distributionPercentages: { adults: 68, children: 23, staff: 9 }
+                distributionPercentages: {
+                    adults: 68,
+                    children: 23,
+                    staff: 9
+                }
             });
 
             // Verificar tasas
@@ -151,7 +163,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 0,
                 activeStaffPasses: 0,
                 totalActivePasses: 8,
-                distributionPercentages: { adults: 100, children: 0, staff: 0 }
+                distributionPercentages: {
+                    adults: 100,
+                    children: 0,
+                    staff: 0
+                }
             };
 
             const mockConfirmations = [
@@ -171,7 +187,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 }
             ];
 
-            const mockInactiveInvitations = [{ code: 'INACTIVE001' }];
+            const mockInactiveInvitations = [
+                {
+                    code: 'INACTIVE001'
+                }
+            ];
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -203,7 +223,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 0,
                 activeStaffPasses: 0,
                 totalActivePasses: 8,
-                distributionPercentages: { adults: 100, children: 0, staff: 0 }
+                distributionPercentages: {
+                    adults: 100,
+                    children: 0,
+                    staff: 0
+                }
             };
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
@@ -238,7 +262,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 0,
                 activeStaffPasses: 0,
                 totalActivePasses: 0,
-                distributionPercentages: { adults: 0, children: 0, staff: 0 }
+                distributionPercentages: {
+                    adults: 0,
+                    children: 0,
+                    staff: 0
+                }
             };
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
@@ -266,7 +294,9 @@ describe('GetConfirmationStatsUseCase', () => {
         });
 
         test('debe manejar errores del repositorio de confirmaciones', async () => {
-            mockInvitationRepository.getStats.mockResolvedValue({ total: 1 });
+            mockInvitationRepository.getStats.mockResolvedValue({
+                total: 1
+            });
             mockConfirmationRepository.findAll.mockRejectedValue(
                 new Error('Confirmation DB error')
             );
@@ -279,8 +309,20 @@ describe('GetConfirmationStatsUseCase', () => {
 
         test('debe obtener confirmaciones positivas', async () => {
             const mockConfirmations = [
-                { code: 'INV01', isPositive: () => true, toObject: () => ({ code: 'INV01' }) },
-                { code: 'INV02', isPositive: () => false, toObject: () => ({ code: 'INV02' }) }
+                {
+                    code: 'INV01',
+                    isPositive: () => true,
+                    toObject: () => ({
+                        code: 'INV01'
+                    })
+                },
+                {
+                    code: 'INV02',
+                    isPositive: () => false,
+                    toObject: () => ({
+                        code: 'INV02'
+                    })
+                }
             ];
 
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -290,13 +332,29 @@ describe('GetConfirmationStatsUseCase', () => {
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
-            expect(result.confirmations).toEqual([{ code: 'INV01' }]);
+            expect(result.confirmations).toEqual([
+                {
+                    code: 'INV01'
+                }
+            ]);
         });
 
         test('debe obtener confirmaciones negativas', async () => {
             const mockConfirmations = [
-                { code: 'INV01', isNegative: () => true, toObject: () => ({ code: 'INV01' }) },
-                { code: 'INV02', isNegative: () => false, toObject: () => ({ code: 'INV02' }) }
+                {
+                    code: 'INV01',
+                    isNegative: () => true,
+                    toObject: () => ({
+                        code: 'INV01'
+                    })
+                },
+                {
+                    code: 'INV02',
+                    isNegative: () => false,
+                    toObject: () => ({
+                        code: 'INV02'
+                    })
+                }
             ];
 
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -306,7 +364,11 @@ describe('GetConfirmationStatsUseCase', () => {
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
-            expect(result.confirmations).toEqual([{ code: 'INV01' }]);
+            expect(result.confirmations).toEqual([
+                {
+                    code: 'INV01'
+                }
+            ]);
         });
 
         test('debe obtener confirmaciones con restricciones dietarias', async () => {
@@ -314,12 +376,16 @@ describe('GetConfirmationStatsUseCase', () => {
                 {
                     code: 'INV01',
                     hasDietaryRestrictions: () => true,
-                    toObject: () => ({ code: 'INV01' })
+                    toObject: () => ({
+                        code: 'INV01'
+                    })
                 },
                 {
                     code: 'INV02',
                     hasDietaryRestrictions: () => false,
-                    toObject: () => ({ code: 'INV02' })
+                    toObject: () => ({
+                        code: 'INV02'
+                    })
                 }
             ];
 
@@ -330,7 +396,11 @@ describe('GetConfirmationStatsUseCase', () => {
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
-            expect(result.confirmations).toEqual([{ code: 'INV01' }]);
+            expect(result.confirmations).toEqual([
+                {
+                    code: 'INV01'
+                }
+            ]);
         });
 
         test('debe obtener confirmaciones con mensajes', async () => {
@@ -338,12 +408,16 @@ describe('GetConfirmationStatsUseCase', () => {
                 {
                     code: 'INV01',
                     hasMessage: () => true,
-                    toObject: () => ({ code: 'INV01' })
+                    toObject: () => ({
+                        code: 'INV01'
+                    })
                 },
                 {
                     code: 'INV02',
                     hasMessage: () => false,
-                    toObject: () => ({ code: 'INV02' })
+                    toObject: () => ({
+                        code: 'INV02'
+                    })
                 }
             ];
 
@@ -354,7 +428,11 @@ describe('GetConfirmationStatsUseCase', () => {
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
-            expect(result.confirmations).toEqual([{ code: 'INV01' }]);
+            expect(result.confirmations).toEqual([
+                {
+                    code: 'INV01'
+                }
+            ]);
         });
 
         test('debe obtener confirmaciones recientes', async () => {
@@ -366,12 +444,16 @@ describe('GetConfirmationStatsUseCase', () => {
                 {
                     code: 'INV01',
                     confirmedAt: recent.toISOString(),
-                    toObject: () => ({ code: 'INV01' })
+                    toObject: () => ({
+                        code: 'INV01'
+                    })
                 },
                 {
                     code: 'INV02',
                     confirmedAt: '2000-01-01T00:00:00.000Z',
-                    toObject: () => ({ code: 'INV02' })
+                    toObject: () => ({
+                        code: 'INV02'
+                    })
                 }
             ];
 
@@ -404,8 +486,16 @@ describe('GetConfirmationStatsUseCase', () => {
 
         test('debe obtener total de invitados confirmados', async () => {
             const mockConfirmations = [
-                { code: 'INV01', isPositive: () => true, attendingGuests: 2 },
-                { code: 'INV02', isPositive: () => false, attendingGuests: 3 }
+                {
+                    code: 'INV01',
+                    isPositive: () => true,
+                    attendingGuests: 2
+                },
+                {
+                    code: 'INV02',
+                    isPositive: () => false,
+                    attendingGuests: 3
+                }
             ];
 
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -418,7 +508,10 @@ describe('GetConfirmationStatsUseCase', () => {
         });
 
         test('debe exportar confirmaciones en formato csv', async () => {
-            const mockExport = { data: 'id,name', count: 1 };
+            const mockExport = {
+                data: 'id,name',
+                count: 1
+            };
             mockConfirmationRepository.exportAll = jest.fn().mockResolvedValue(mockExport);
 
             const result = await useCase.executeExport('csv');
@@ -430,7 +523,10 @@ describe('GetConfirmationStatsUseCase', () => {
         });
 
         test('debe exportar confirmaciones con formato por defecto', async () => {
-            const mockExport = { data: 'id,name', count: 1 };
+            const mockExport = {
+                data: 'id,name',
+                count: 1
+            };
             mockConfirmationRepository.exportAll = jest.fn().mockResolvedValue(mockExport);
 
             const result = await useCase.executeExport();
@@ -464,7 +560,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 5,
                 activeStaffPasses: 2,
                 totalActivePasses: 22,
-                distributionPercentages: { adults: 68, children: 23, staff: 9 }
+                distributionPercentages: {
+                    adults: 68,
+                    children: 23,
+                    staff: 9
+                }
             };
 
             const mockConfirmations = [
@@ -488,7 +588,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 }
             ];
 
-            const mockInactiveInvitations = [{ code: 'INACTIVE001' }];
+            const mockInactiveInvitations = [
+                {
+                    code: 'INACTIVE001'
+                }
+            ];
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
@@ -504,12 +608,25 @@ describe('GetConfirmationStatsUseCase', () => {
     describe('_getActiveConfirmations (método privado)', () => {
         test('debe filtrar confirmaciones de invitaciones inactivas', async () => {
             const mockConfirmations = [
-                { code: 'ACTIVE001' },
-                { code: 'ACTIVE002' },
-                { code: 'INACTIVE001' }
+                {
+                    code: 'ACTIVE001'
+                },
+                {
+                    code: 'ACTIVE002'
+                },
+                {
+                    code: 'INACTIVE001'
+                }
             ];
 
-            const mockInactiveInvitations = [{ code: 'INACTIVE001' }, { code: 'INACTIVE002' }];
+            const mockInactiveInvitations = [
+                {
+                    code: 'INACTIVE001'
+                },
+                {
+                    code: 'INACTIVE002'
+                }
+            ];
 
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue(mockInactiveInvitations);
@@ -521,7 +638,14 @@ describe('GetConfirmationStatsUseCase', () => {
         });
 
         test('debe devolver todas las confirmaciones si no hay invitaciones inactivas', async () => {
-            const mockConfirmations = [{ code: 'CODE001' }, { code: 'CODE002' }];
+            const mockConfirmations = [
+                {
+                    code: 'CODE001'
+                },
+                {
+                    code: 'CODE002'
+                }
+            ];
 
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
@@ -551,7 +675,11 @@ describe('GetConfirmationStatsUseCase', () => {
                 activeChildPasses: 0,
                 activeStaffPasses: 0,
                 totalActivePasses: 1,
-                distributionPercentages: { adults: 100, children: 0, staff: 0 }
+                distributionPercentages: {
+                    adults: 100,
+                    children: 0,
+                    staff: 0
+                }
             };
 
             mockInvitationRepository.getStats.mockResolvedValue(mockInvitationStats);

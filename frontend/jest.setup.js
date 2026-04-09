@@ -1,8 +1,3 @@
-/**
- * Frontend Jest Setup
- * Global configuration for frontend tests
- */
-
 import '@testing-library/jest-dom';
 
 const setupGlobalMocks = () => {

@@ -21,10 +21,10 @@ export class AppController {
 
         // Servicios principales
         this.diContainer = null;
-        this.invitationService = null;
-        this.metaService = null;
-        this.validationService = null;
-        this.configurationService = null;
+        this.appFacade = null;
+        this.metaService = null; // Kept for ContentController dependency
+        this.validationService = null; // Kept for RSVPController dependency
+        this.configurationService = null; // Kept for ThemeController dependency
 
         // Controladores
         this.navigationController = null;
@@ -113,31 +113,16 @@ export class AppController {
         this.diContainer = DIContainer.getInstance();
         await this.diContainer.init();
 
-        // 1. Generar estructura HTML primero (SectionGeneratorService)
-        this.sectionGeneratorService = await this.diContainer.get('sectionGeneratorService');
-        this.sectionGeneratorService.generateEnabledSections();
+        // Obtener AppFacade
+        this.appFacade = await this.diContainer.get('appFacade');
 
-        // 2. Aplicar configuración y contenido sobre la estructura generada (ConfigurationService)
-        this.configurationService = await this.diContainer.get('configurationService');
-        if (this.configurationService && this.configurationService.init) {
-            await this.configurationService.init();
-        }
+        // Inicializar servicios a través del facade
+        const services = await this.appFacade.initializeServices();
 
-        // 3. Inicializar resto de servicios
-        this.invitationService = await this.diContainer.get('invitationService');
-        if (this.invitationService && this.invitationService.init) {
-            await this.invitationService.init();
-        }
-
-        this.metaService = await this.diContainer.get('metaService');
-        if (this.metaService && this.metaService.init) {
-            await this.metaService.init();
-        }
-
-        this.validationService = await this.diContainer.get('validationService');
-        if (this.validationService && this.validationService.init) {
-            await this.validationService.init();
-        }
+        // Guardar referencias necesarias para otros controladores
+        this.metaService = services.metaService;
+        this.validationService = services.validationService;
+        this.configurationService = services.configurationService;
     }
 
     /**
@@ -147,10 +132,25 @@ export class AppController {
         const componentInitializers = new Map([
             [
                 'countdown',
-                { selector: '[data-countdown]', factory: ComponentFactory.createCountdown }
+                {
+                    selector: '[data-countdown]',
+                    factory: ComponentFactory.createCountdown
+                }
             ],
-            ['modal', { selector: '[data-modal]', factory: ComponentFactory.createModal }],
-            ['loader', { selector: '[data-loader]', factory: ComponentFactory.createLoader }]
+            [
+                'modal',
+                {
+                    selector: '[data-modal]',
+                    factory: ComponentFactory.createModal
+                }
+            ],
+            [
+                'loader',
+                {
+                    selector: '[data-loader]',
+                    factory: ComponentFactory.createLoader
+                }
+            ]
         ]);
 
         for (const [name, { selector, factory }] of componentInitializers.entries()) {
@@ -279,32 +279,22 @@ export class AppController {
      */
     async _loadInitialData() {
         try {
-            // Cargar configuración de meta tags
-            if (this.metaService) {
-                await this.metaService.loadDefaultMeta();
-            }
-
-            // Cargar datos de invitación si hay ID en URL
             const urlParams = new URLSearchParams(window.location.search);
             const invitationId = urlParams.get('id') || urlParams.get('invitation');
 
-            if (invitationId && this.invitationService) {
-                try {
-                    this.currentInvitation =
-                        await this.invitationService.loadInvitation(invitationId);
-                    if (this.currentInvitation) {
-                        // Actualizar RSVP Controller explícitamente
-                        if (this.rsvpController) {
-                            this.rsvpController.populateFormWithInvitation(this.currentInvitation);
-                            this.rsvpController.currentInvitation = this.currentInvitation;
-                        }
+            if (this.appFacade) {
+                this.currentInvitation = await this.appFacade.loadInitialData(invitationId);
 
-                        this.emit(EVENTS.APP.INVITATION_LOADED, {
-                            invitation: this.currentInvitation
-                        });
+                if (this.currentInvitation) {
+                    // Actualizar RSVP Controller explícitamente
+                    if (this.rsvpController) {
+                        this.rsvpController.populateFormWithInvitation(this.currentInvitation);
+                        this.rsvpController.currentInvitation = this.currentInvitation;
                     }
-                } catch (error) {
-                    console.error('Error loading invitation:', error);
+
+                    this.emit(EVENTS.APP.INVITATION_LOADED, {
+                        invitation: this.currentInvitation
+                    });
                 }
             }
         } catch (error) {
@@ -395,7 +385,10 @@ export class AppController {
         document.body.appendChild(errorMessage);
 
         // Emitir evento de error
-        this.emit(EVENTS.APP.ERROR, { error, phase: 'initialization' });
+        this.emit(EVENTS.APP.ERROR, {
+            error,
+            phase: 'initialization'
+        });
     }
 
     /**
@@ -404,10 +397,15 @@ export class AppController {
      * @param {Event} event - Evento de error
      */
     handleGlobalError(error, event) {
-        this.logError('Global Error', error, { event });
+        this.logError('Global Error', error, {
+            event
+        });
 
         // Emitir evento de error
-        this.emit(EVENTS.APP.ERROR, { error, event });
+        this.emit(EVENTS.APP.ERROR, {
+            error,
+            event
+        });
     }
 
     /**
@@ -418,6 +416,7 @@ export class AppController {
      */
     logError(type, error, context = {}) {
         // Implementar lógica de logging si es necesario
+        console.error(type, error, context);
     }
 
     /**
@@ -502,7 +501,9 @@ export class AppController {
         });
 
         // Emitir evento de visibilidad
-        this.emit(EVENTS.APP.VISIBILITY_CHANGED, { hidden: isHidden });
+        this.emit(EVENTS.APP.VISIBILITY_CHANGED, {
+            hidden: isHidden
+        });
     }
 
     /**
@@ -648,7 +649,9 @@ export class AppController {
 
         // También emitir en el contenedor como evento DOM
         if (this.container) {
-            const customEvent = new CustomEvent(event, { detail: data });
+            const customEvent = new CustomEvent(event, {
+                detail: data
+            });
             this.container.dispatchEvent(customEvent);
         }
     }
@@ -700,7 +703,7 @@ export class AppController {
         this.components.clear();
 
         // Remover event listeners
-        this.eventListeners.forEach((listener, key) => {
+        this.eventListeners.forEach(listener => {
             if (listener.element && listener.handler) {
                 listener.element.removeEventListener(listener.event, listener.handler);
             }
@@ -709,9 +712,10 @@ export class AppController {
 
         // Limpiar referencias
         this.diContainer = null;
-        this.invitationService = null;
+        this.appFacade = null;
         this.metaService = null;
         this.validationService = null;
+        this.configurationService = null;
         this.currentInvitation = null;
 
         // Remover clase de app inicializada

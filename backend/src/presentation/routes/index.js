@@ -39,7 +39,9 @@ function configureRoutes(controllers, middleware) {
 
     // Ruta para obtener el token CSRF
     apiV1.get('/csrf-token', middleware.csrfProtection, (req, res) => {
-        res.json({ csrfToken: req.csrfToken() });
+        res.json({
+            csrfToken: req.csrfToken()
+        });
     });
 
     // Configurar rutas de autenticación (acceso público para login)

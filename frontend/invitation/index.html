@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boda Fernanda & Diego - 28 de Febrero 2026</title>
-    
+
     <!-- Meta etiquetas estáticas para compatibilidad con WhatsApp -->
     <!-- Los valores se actualizan desde config.js pero el HTML inicial los tiene para WhatsApp -->
     <meta name="description" content="Invitación de boda de Fernanda & Diego. 28 de Febrero 2026 en Campestre los Reyes, Sinaloa. Confirma tu asistencia.">
-    
+
     <!-- Meta etiquetas Open Graph para WhatsApp, Facebook, etc. -->
     <meta property="og:title" content="Fernanda & Diego">
     <meta property="og:description" content="28 de Febrero 2026">
@@ -19,25 +20,26 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_MX">
     <meta property="og:site_name" content="Boda Fernanda & Diego">
-    
+
     <!-- Meta etiquetas Twitter Card (también las usa WhatsApp) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Boda Fernanda & Diego - 28 de Febrero 2026">
     <meta name="twitter:description" content="Están cordialmente invitados a celebrar nuestra boda. Sábado 28 de Febrero 2026 en Campestre los Reyes, Sinaloa.">
     <meta name="twitter:image" content="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
-    
+
     <!-- WhatsApp específico -->
     <meta property="og:image:secure_url" content="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
     <meta property="og:image:type" content="image/jpeg">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
-    
+
     <link rel="stylesheet" href="./styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="/config.js"></script>
 </head>
+
 <body>
     <!-- Loader -->
     <div id="loader" class="loader">
@@ -223,20 +225,20 @@
         <div class="container">
             <h2 class="section-title" id="rsvpTitle">Confirma tu Asistencia</h2>
             <p class="section-subtitle" id="rsvpSubtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
-            
+
             <!-- Nota de no niños -->
             <div id="noChildrenNote" class="no-children-note-rsvp" style="display: none;">
                 <div class="no-children-content">
                     <p id="noChildrenMessage"></p>
                 </div>
             </div>
-            
+
             <!-- Información de la invitación -->
             <div class="invitation-info" id="invitationInfo" style="display: none;">
                 <p class="guest-names">Invitación para: <span id="guestNames"></span></p>
                 <p class="guest-passes"><span id="numberOfPasses"></span> pases disponibles</p>
             </div>
-            
+
             <!-- Mensaje de invitación ya confirmada -->
             <div id="alreadyConfirmed" class="already-confirmed" style="display: none;">
                 <i class="fas fa-check-circle"></i>
@@ -250,11 +252,11 @@
                 <h3>Invitación Declinada</h3>
                 <p>Lamentamos que no puedas acompañarnos. Gracias por avisarnos.</p>
             </div>
-            
+
             <!-- Formulario de confirmación -->
             <form id="rsvpForm" class="rsvp-form" autocomplete="off" aria-labelledby="rsvpTitle">
                 <div class="form-group" role="group" aria-labelledby="attendanceLabel">
-                    <label id="attendanceLabel">¿Asistirás? *</label>
+                    <p id="attendanceLabel">¿Asistirás? *</p>
                     <div class="radio-group">
                         <label class="radio-label checkbox-style">
                             <input type="checkbox" name="attendance_check" value="si" class="attendance-check" aria-required="true">
@@ -267,7 +269,7 @@
                     </div>
                     <input type="hidden" name="attendance" id="attendanceValue" required aria-hidden="true">
                 </div>
-                
+
                 <div id="attendanceDetails" style="display: none;" aria-live="polite">
                     <div class="form-group">
                         <label for="attendingGuests">¿Cuántos asistirán? *</label>
@@ -275,41 +277,32 @@
                             <!-- Las opciones se llenarán dinámicamente -->
                         </select>
                     </div>
-                    
+
                     <div class="form-group" id="attendingNamesGroup" style="display: none;" role="group" aria-labelledby="namesLabel">
-                        <label id="namesLabel">Nombres de los asistentes *</label>
+                        <p id="namesLabel">Nombres de los asistentes *</p>
                         <small id="namesHelp" class="form-text text-muted" style="display: block; margin-bottom: 10px; font-size: 0.85em; color: #666;">Marca con un check los invitados que asistirán</small>
                         <div id="attendingNamesList" aria-describedby="namesHelp">
                             <!-- Los campos de nombres se agregarán dinámicamente -->
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-group" id="phoneGroup" style="display: none;" aria-live="polite">
                     <label for="phone">Teléfono (WhatsApp) <span id="phoneRequired" aria-hidden="true">*</span></label>
-                    <input type="tel" id="phone" name="phone" 
-                           pattern="[+]?[0-9]{10,15}" 
-                           placeholder="+521234567890"
-                           title="Ingrese un número telefónico válido (10-15 dígitos, puede incluir +)"
-                           class="form-control"
-                           aria-describedby="phoneHelp">
+                    <input type="tel" id="phone" name="phone" pattern="[+]?[0-9]{10,15}" placeholder="+521234567890" title="Ingrese un número telefónico válido (10-15 dígitos, puede incluir +)" class="form-control" aria-describedby="phoneHelp">
                     <small id="phoneHelp">Formato: +521234567890 o 1234567890</small>
                 </div>
-                
+
                 <div class="form-group" id="dietaryGroup" style="display: none;" aria-live="polite">
                     <label for="dietaryRestrictions">Restricciones Alimentarias</label>
-                    <input type="text" id="dietaryRestrictions" name="dietaryRestrictions" 
-                           placeholder="Ej: Vegetariano, sin gluten, alergias..."
-                           aria-label="Restricciones Alimentarias">
+                    <input type="text" id="dietaryRestrictions" name="dietaryRestrictions" placeholder="Ej: Vegetariano, sin gluten, alergias..." aria-label="Restricciones Alimentarias">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="message">Mensaje para los Novios</label>
-                    <textarea id="message" name="message" rows="4" 
-                              placeholder="Comparte tus buenos deseos..."
-                              aria-label="Mensaje para los Novios"></textarea>
+                    <textarea id="message" name="message" rows="4" placeholder="Comparte tus buenos deseos..." aria-label="Mensaje para los Novios"></textarea>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-block" aria-label="Enviar Confirmación">
                     <i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar Confirmación
                 </button>
@@ -356,4 +349,5 @@
     <!-- Scripts -->
     <script type="module" src="./js/app.js"></script>
 </body>
+
 </html>

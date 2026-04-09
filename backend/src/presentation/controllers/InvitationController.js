@@ -5,8 +5,10 @@
  */
 
 import BaseController from './BaseController.js';
+
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
+const QueryBuilder = require('../../shared/utils/QueryBuilder');
 
 class InvitationController extends BaseController {
     constructor(
@@ -90,7 +92,12 @@ class InvitationController extends BaseController {
                 201
             );
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -106,50 +113,14 @@ class InvitationController extends BaseController {
         });
 
         try {
-            const {
-                page = 1,
-                limit = this.config.validation.pagination.defaultLimit,
-                status,
-                confirmed,
-                search,
-                passes,
-                table,
-                phone,
-                sortBy = 'createdAt',
-                sortOrder = 'desc',
-                includeInactive = 'false'
-            } = req.query;
-
-            // Construir filtros
-            const filters = {};
-            if (status) {
-                filters.status = status;
-            }
-            if (confirmed !== undefined) {
-                filters.confirmed = confirmed === 'true';
-            }
-            if (search) {
-                filters.search = search;
-            }
-            if (passes) {
-                filters.passes = passes;
-            }
-            if (table) {
-                filters.table = table;
-            }
-            if (phone) {
-                filters.phone = phone;
-            }
-
-            // Construir opciones de ordenamiento
-            const sort = { field: sortBy, direction: sortOrder };
+            const queryParams = QueryBuilder.buildFromRequest(req.query, this.config);
 
             const result = await this.getInvitationsUseCase.execute(
-                page,
-                limit,
-                filters,
-                sort,
-                includeInactive === 'true'
+                queryParams.page,
+                queryParams.limit,
+                queryParams.filters,
+                queryParams.sort,
+                queryParams.includeInactive
             );
 
             if (!result.success) {
@@ -163,7 +134,12 @@ class InvitationController extends BaseController {
 
             this.sendSuccess(res, result);
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -211,14 +187,21 @@ class InvitationController extends BaseController {
             // Guardar cambios
             const result = await this.invitationRepository.update(code, updatedInvitation);
 
-            endOperation({ updated: true });
+            endOperation({
+                updated: true
+            });
 
             this.sendSuccess(res, {
                 invitation: result.toObject(),
                 message: 'Invitaciรณn actualizada exitosamente'
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -284,7 +267,9 @@ class InvitationController extends BaseController {
                       ).toFixed(2)
                     : '0.00';
 
-            endOperation({ statsGenerated: true });
+            endOperation({
+                statsGenerated: true
+            });
 
             // Estructura optimizada sin duplicaciones
             this.sendSuccess(res, {
@@ -335,13 +320,18 @@ class InvitationController extends BaseController {
                         totalConfirmedPasses: invitationStats.totalConfirmedPasses || 0
                     },
                     rates: {
-                        confirmationRate: confirmationRate,
-                        attendanceRate: attendanceRate
+                        confirmationRate,
+                        attendanceRate
                     }
                 }
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -375,7 +365,12 @@ class InvitationController extends BaseController {
                 message: `Importaciรณn completada: ${result.success.length} exitosas, ${result.errors.length} fallidas`
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -410,7 +405,12 @@ class InvitationController extends BaseController {
                 this.sendSuccess(res, result);
             }
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }

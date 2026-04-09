@@ -1,10 +1,5 @@
-/**
- * Integration Tests - Create + Confirm Flow
- * Pruebas de integración que validan el flujo completo de crear invitación y confirmar asistencia
- */
-
-const request = require('supertest');
-const Server = require('../../server');
+import request from 'supertest';
+import Server from '../../server';
 
 describe('Integration - Create + Confirm Flow', () => {
     let app;
@@ -25,7 +20,10 @@ describe('Integration - Create + Confirm Flow', () => {
         const authMiddleware = server.container.resolve('authMiddleware');
         const loginResponse = await request(app)
             .post('/api/v1/auth/login')
-            .send({ username: 'admin', password: authMiddleware.adminPassword })
+            .send({
+                username: 'admin',
+                password: authMiddleware.adminPassword
+            })
             .expect(200);
 
         token = loginResponse.body.token;

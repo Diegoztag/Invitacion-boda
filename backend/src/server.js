@@ -171,10 +171,18 @@ class Server {
         const notificationController = new NotificationController(sseService, logger);
 
         // 5. Registrar en el contenedor (para compatibilidad con tests y otras partes)
-        this.container.register('logger', () => logger, { singleton: true });
-        this.container.register('validationService', () => validationService, { singleton: true });
-        this.container.register('csvStorage', () => csvStorage, { singleton: true });
-        this.container.register('sseService', () => sseService, { singleton: true });
+        this.container.register('logger', () => logger, {
+            singleton: true
+        });
+        this.container.register('validationService', () => validationService, {
+            singleton: true
+        });
+        this.container.register('csvStorage', () => csvStorage, {
+            singleton: true
+        });
+        this.container.register('sseService', () => sseService, {
+            singleton: true
+        });
         this.container.register('invitationRepository', () => invitationRepository, {
             singleton: true
         });
@@ -248,12 +256,24 @@ class Server {
         const validationService = this.container.resolve('validationService');
 
         // Middleware básico de Express
-        this.app.use(express.json({ limit: '10mb' }));
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(
+            express.json({
+                limit: '10mb'
+            })
+        );
+        this.app.use(
+            express.urlencoded({
+                extended: true
+            })
+        );
         this.app.use(cookieParser());
 
         // Configurar middleware personalizado
-        const middleware = configureMiddleware({ validationService, logger, config });
+        const middleware = configureMiddleware({
+            validationService,
+            logger,
+            config
+        });
 
         // Registrar middleware en el contenedor para acceso en tests
         this.container.register('authMiddleware', () => middleware.authMiddleware, {
@@ -310,7 +330,11 @@ class Server {
         };
 
         // Configurar middleware
-        const middleware = configureMiddleware({ validationService, logger, config });
+        const middleware = configureMiddleware({
+            validationService,
+            logger,
+            config
+        });
 
         // Redirección de la raíz a landing (debe ir ANTES de las rutas principales)
         this.app.get('/', (req, res) => {
@@ -367,9 +391,9 @@ class Server {
             process.exit(1);
         });
 
-        process.on('unhandledRejection', (reason, _promise) => {
+        process.on('unhandledRejection', reason => {
             logger.error('Unhandled Rejection', {
-                reason: reason
+                reason
             });
         });
 
@@ -420,7 +444,9 @@ class Server {
         try {
             await fs.access(dataDir);
         } catch {
-            await fs.mkdir(dataDir, { recursive: true });
+            await fs.mkdir(dataDir, {
+                recursive: true
+            });
         }
     }
 

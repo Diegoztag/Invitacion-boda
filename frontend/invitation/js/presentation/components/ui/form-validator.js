@@ -87,11 +87,11 @@ export class FormValidator extends Component {
 
         // Min/Max length
         if (element.hasAttribute('minlength')) {
-            rules.minLength = parseInt(element.getAttribute('minlength'));
+            rules.minLength = parseInt(element.getAttribute('minlength'), 10);
         }
 
         if (element.hasAttribute('maxlength')) {
-            rules.maxLength = parseInt(element.getAttribute('maxlength'));
+            rules.maxLength = parseInt(element.getAttribute('maxlength'), 10);
         }
 
         // Pattern
@@ -113,7 +113,7 @@ export class FormValidator extends Component {
             try {
                 const customRules = JSON.parse(element.getAttribute('data-validation-rules'));
                 Object.assign(rules, customRules);
-            } catch (error) {
+            } catch (err) {
                 // Silently ignore JSON parsing errors
             }
         }
@@ -235,15 +235,16 @@ export class FormValidator extends Component {
         }
 
         const field = this.fields.get(fieldName);
+        let val = value;
 
         // Usar el valor actual si no se proporciona
-        if (value === undefined) {
-            value = field.element.value;
+        if (val === undefined) {
+            val = field.element.value;
         }
 
         try {
             // Validar usando el servicio de validación
-            const validationArgs = [fieldName, value];
+            const validationArgs = [fieldName, val];
             if (field.rules && Object.keys(field.rules).length > 0) {
                 validationArgs.push(field.rules);
             }
@@ -264,7 +265,7 @@ export class FormValidator extends Component {
             // Emitir evento de validación de campo
             this.emit(EVENTS.FORM.FIELD_VALIDATED, {
                 fieldName,
-                value,
+                value: val,
                 isValid: result.isValid,
                 errors: result.errors
             });
@@ -273,7 +274,7 @@ export class FormValidator extends Component {
             this.updateFormValidationState();
 
             return result;
-        } catch (error) {
+        } catch (err) {
             return { isValid: false, errors: ['Error de validación'] };
         }
     }
@@ -319,7 +320,7 @@ export class FormValidator extends Component {
             });
 
             return result.isValid;
-        } catch (error) {
+        } catch (err) {
             return false;
         }
     }

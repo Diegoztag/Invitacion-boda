@@ -37,7 +37,10 @@ class AuthMiddleware {
             const authHeader = req.headers.authorization;
 
             if (!authHeader) {
-                endOperation({ authenticated: false, reason: 'no_auth_header' });
+                endOperation({
+                    authenticated: false,
+                    reason: 'no_auth_header'
+                });
                 return res.status(401).json({
                     success: false,
                     error: 'Token de autorizaciรณn requerido'
@@ -56,13 +59,21 @@ class AuthMiddleware {
                 return this.verifyBasicAuth(credentials, req, res, next, endOperation);
             }
 
-            endOperation({ authenticated: false, reason: 'invalid_auth_type' });
+            endOperation({
+                authenticated: false,
+                reason: 'invalid_auth_type'
+            });
             return res.status(401).json({
                 success: false,
                 error: 'Tipo de autorizaciรณn no vรกlido'
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
 
             this.logger.error('Error in authentication middleware', {
                 error: error.message,
@@ -90,8 +101,11 @@ class AuthMiddleware {
 
             // Verificar expiraciรณn
             if (decoded.exp && Date.now() >= decoded.exp * 1000) {
-                endOperation({ authenticated: false, reason: 'token_expired' });
-                return res.status(401).json({
+                endOperation({
+                    authenticated: false,
+                    reason: 'token_expired'
+                });
+                return _res.status(401).json({
                     success: false,
                     error: 'Token expirado'
                 });
@@ -104,20 +118,26 @@ class AuthMiddleware {
                 permissions: decoded.permissions || ['read', 'write', 'delete']
             };
 
-            endOperation({ authenticated: true, method: 'jwt' });
+            endOperation({
+                authenticated: true,
+                method: 'jwt'
+            });
             next();
         } catch (error) {
-            endOperation({ authenticated: false, reason: 'invalid_jwt' });
+            endOperation({
+                authenticated: false,
+                reason: 'invalid_jwt'
+            });
 
             if (error.name === 'JsonWebTokenError') {
-                return res.status(401).json({
+                return _res.status(401).json({
                     success: false,
                     error: 'Token invรกlido'
                 });
             }
 
             if (error.name === 'TokenExpiredError') {
-                return res.status(401).json({
+                return _res.status(401).json({
                     success: false,
                     error: 'Token expirado'
                 });
@@ -147,17 +167,26 @@ class AuthMiddleware {
                     permissions: ['read', 'write', 'delete']
                 };
 
-                endOperation({ authenticated: true, method: 'basic' });
+                endOperation({
+                    authenticated: true,
+                    method: 'basic'
+                });
                 next();
             } else {
-                endOperation({ authenticated: false, reason: 'invalid_credentials' });
+                endOperation({
+                    authenticated: false,
+                    reason: 'invalid_credentials'
+                });
                 return res.status(401).json({
                     success: false,
                     error: 'Credenciales invรกlidas'
                 });
             }
         } catch {
-            endOperation({ authenticated: false, reason: 'basic_auth_error' });
+            endOperation({
+                authenticated: false,
+                reason: 'basic_auth_error'
+            });
             return res.status(401).json({
                 success: false,
                 error: 'Error en autenticaciรณn bรกsica'
@@ -191,12 +220,15 @@ class AuthMiddleware {
         return (req, res, next) => {
             const endOperation = this.logger.startOperation('checkPermissions', {
                 requiredPermissions,
-                userPermissions: req.user?.permissions
+                userPermissions: req.user ? req.user.permissions : undefined
             });
 
             try {
                 if (!req.user) {
-                    endOperation({ authorized: false, reason: 'no_user' });
+                    endOperation({
+                        authorized: false,
+                        reason: 'no_user'
+                    });
                     return res.status(401).json({
                         success: false,
                         error: 'Usuario no autenticado'
@@ -209,17 +241,27 @@ class AuthMiddleware {
                 );
 
                 if (!hasPermission) {
-                    endOperation({ authorized: false, reason: 'insufficient_permissions' });
+                    endOperation({
+                        authorized: false,
+                        reason: 'insufficient_permissions'
+                    });
                     return res.status(403).json({
                         success: false,
                         error: 'Permisos insuficientes'
                     });
                 }
 
-                endOperation({ authorized: true });
+                endOperation({
+                    authorized: true
+                });
                 next();
             } catch (error) {
-                endOperation({ error: error.message }, 'error');
+                endOperation(
+                    {
+                        error: error.message
+                    },
+                    'error'
+                );
 
                 this.logger.error('Error checking permissions', {
                     error: error.message,
@@ -248,7 +290,10 @@ class AuthMiddleware {
             const { username, password } = req.body;
 
             if (!username || !password) {
-                endOperation({ success: false, reason: 'missing_credentials' });
+                endOperation({
+                    success: false,
+                    reason: 'missing_credentials'
+                });
                 return res.status(400).json({
                     success: false,
                     error: 'Usuario y contraseรฑa requeridos'
@@ -258,7 +303,9 @@ class AuthMiddleware {
             if (username === 'admin' && password === this.adminPassword) {
                 const token = this.generateToken();
 
-                endOperation({ success: true });
+                endOperation({
+                    success: true
+                });
 
                 return res.json({
                     success: true,
@@ -272,13 +319,21 @@ class AuthMiddleware {
                 });
             }
 
-            endOperation({ success: false, reason: 'invalid_credentials' });
+            endOperation({
+                success: false,
+                reason: 'invalid_credentials'
+            });
             return res.status(401).json({
                 success: false,
                 error: 'Credenciales invรกlidas'
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
 
             this.logger.error('Error in login', {
                 error: error.message,
@@ -303,21 +358,30 @@ class AuthMiddleware {
 
         try {
             if (!req.user) {
-                endOperation({ valid: false });
+                endOperation({
+                    valid: false
+                });
                 return res.status(401).json({
                     success: false,
                     error: 'Token invรกlido'
                 });
             }
 
-            endOperation({ valid: true });
+            endOperation({
+                valid: true
+            });
             return res.json({
                 success: true,
                 user: req.user,
                 valid: true
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
 
             this.logger.error('Error verifying token', {
                 error: error.message,

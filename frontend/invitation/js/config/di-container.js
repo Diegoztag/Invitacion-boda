@@ -44,7 +44,9 @@ export class DIContainer {
             metaService: this.createMetaService,
             configurationService: this.createConfigurationService,
             validationService: this.createValidationService,
-            sectionGeneratorService: this.createSectionGeneratorService
+            sectionGeneratorService: this.createSectionGeneratorService,
+            appFacade: this.createAppFacade,
+            rsvpFacade: this.createRSVPFacade
         };
 
         for (const [name, factory] of Object.entries(serviceFactories)) {
@@ -89,6 +91,19 @@ export class DIContainer {
         const sectionGeneratorService = new SectionGeneratorService();
         sectionGeneratorService.init();
         return sectionGeneratorService;
+    }
+
+    async createAppFacade(container) {
+        const { AppFacade } = await import('../core/facades/AppFacade.js');
+        return new AppFacade(container);
+    }
+
+    async createRSVPFacade(container) {
+        const { RSVPFacade } = await import('../core/facades/RSVPFacade.js');
+        const { RSVPService } = await import('../core/services/rsvp-service.js');
+        const apiClient = await container.resolve('apiClient');
+        const rsvpService = new RSVPService(apiClient);
+        return new RSVPFacade(rsvpService);
     }
 
     /**

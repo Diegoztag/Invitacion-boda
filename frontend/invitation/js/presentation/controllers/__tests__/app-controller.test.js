@@ -215,15 +215,25 @@ describe('AppController', () => {
             mockDIContainer.get.mockImplementation(serviceName => {
                 switch (serviceName) {
                     case 'sectionGeneratorService':
-                        return Promise.resolve({ generateEnabledSections: jest.fn() });
+                        return Promise.resolve({
+                            generateEnabledSections: jest.fn()
+                        });
                     case 'configurationService':
-                        return Promise.resolve({ init: jest.fn().mockResolvedValue() });
+                        return Promise.resolve({
+                            init: jest.fn().mockResolvedValue()
+                        });
                     case 'invitationService':
-                        return Promise.resolve({ init: jest.fn().mockResolvedValue() });
+                        return Promise.resolve({
+                            init: jest.fn().mockResolvedValue()
+                        });
                     case 'metaService':
-                        return Promise.resolve({ init: jest.fn().mockResolvedValue() });
+                        return Promise.resolve({
+                            init: jest.fn().mockResolvedValue()
+                        });
                     case 'validationService':
-                        return Promise.resolve({ init: jest.fn().mockResolvedValue() });
+                        return Promise.resolve({
+                            init: jest.fn().mockResolvedValue()
+                        });
                     default:
                         return Promise.resolve({});
                 }
@@ -330,7 +340,9 @@ describe('AppController', () => {
 
         it('no debe inicializar dos veces', async () => {
             // Configurar mocks
-            mockDIContainer.get.mockResolvedValue({ generateEnabledSections: jest.fn() });
+            mockDIContainer.get.mockResolvedValue({
+                generateEnabledSections: jest.fn()
+            });
 
             // Mockear imports dinámicos
             global.import = jest.fn().mockImplementation(modulePath => {
@@ -424,11 +436,21 @@ describe('AppController', () => {
 
     describe('Service Initialization', () => {
         it('debe inicializar servicios correctamente', async () => {
-            const mockSectionGenerator = { generateEnabledSections: jest.fn() };
-            const mockConfigService = { init: jest.fn().mockResolvedValue() };
-            const mockInvitationService = { init: jest.fn().mockResolvedValue() };
-            const mockMetaService = { init: jest.fn().mockResolvedValue() };
-            const mockValidationService = { init: jest.fn().mockResolvedValue() };
+            const mockSectionGenerator = {
+                generateEnabledSections: jest.fn()
+            };
+            const mockConfigService = {
+                init: jest.fn().mockResolvedValue()
+            };
+            const mockInvitationService = {
+                init: jest.fn().mockResolvedValue()
+            };
+            const mockMetaService = {
+                init: jest.fn().mockResolvedValue()
+            };
+            const mockValidationService = {
+                init: jest.fn().mockResolvedValue()
+            };
 
             mockDIContainer.get.mockImplementation(serviceName => {
                 switch (serviceName) {
@@ -447,7 +469,7 @@ describe('AppController', () => {
                 }
             });
 
-            await appController.initializeServices();
+            await appController._initializeServices();
 
             expect(mockSectionGenerator.generateEnabledSections).toHaveBeenCalled();
             expect(appController.configurationService).toBe(mockConfigService);
@@ -492,7 +514,7 @@ describe('AppController', () => {
                 return Promise.reject(new Error(`Module not found: ${modulePath}`));
             });
 
-            await appController.initializeBaseComponents();
+            await appController._initializeUIComponents();
 
             // Verificar que se crearon componentes
             expect(appController.components.size).toBeGreaterThan(0);
@@ -539,7 +561,7 @@ describe('AppController', () => {
             });
 
             // No debería lanzar error, solo warning
-            await expect(appController.initializeBaseComponents()).resolves.not.toThrow();
+            await expect(appController._initializeUIComponents()).resolves.not.toThrow();
 
             // Debería continuar inicializando otros componentes
             expect(appController.components.size).toBeGreaterThan(0);
@@ -551,7 +573,7 @@ describe('AppController', () => {
 
     describe('Controller Initialization', () => {
         it('debe inicializar controladores principales', async () => {
-            await appController.initializeControllers();
+            await appController._initializeControllers();
 
             expect(appController.navigationController).toBeDefined();
             expect(appController.contentController).toBeDefined();
@@ -563,7 +585,7 @@ describe('AppController', () => {
 
     describe('Event Handling', () => {
         it('debe configurar event listeners globales', () => {
-            appController.setupGlobalEventListeners();
+            appController._setupEventListeners();
 
             // Verificar que se configuraron listeners
             expect(appController.eventListeners.size).toBeGreaterThan(0);
@@ -573,11 +595,15 @@ describe('AppController', () => {
             const mockCallback = jest.fn();
             container.addEventListener('app:ready', mockCallback);
 
-            appController.emit('app:ready', { test: 'data' });
+            appController.emit('app:ready', {
+                test: 'data'
+            });
 
             expect(mockCallback).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    detail: { test: 'data' }
+                    detail: {
+                        test: 'data'
+                    }
                 })
             );
         });
@@ -585,17 +611,25 @@ describe('AppController', () => {
 
     describe('Data Loading', () => {
         it('debe cargar datos iniciales', async () => {
-            const mockSectionGenerator = { generateEnabledSections: jest.fn() };
-            const mockConfigService = { init: jest.fn().mockResolvedValue() };
+            const mockSectionGenerator = {
+                generateEnabledSections: jest.fn()
+            };
+            const mockConfigService = {
+                init: jest.fn().mockResolvedValue()
+            };
             const mockInvitationService = {
                 init: jest.fn().mockResolvedValue(),
-                loadInvitation: jest.fn().mockResolvedValue({ id: 'test-invitation' })
+                loadInvitation: jest.fn().mockResolvedValue({
+                    id: 'test-invitation'
+                })
             };
             const mockMetaService = {
                 init: jest.fn().mockResolvedValue(),
                 loadDefaultMeta: jest.fn().mockResolvedValue()
             };
-            const mockValidationService = { init: jest.fn().mockResolvedValue() };
+            const mockValidationService = {
+                init: jest.fn().mockResolvedValue()
+            };
 
             mockDIContainer.get.mockImplementation(serviceName => {
                 switch (serviceName) {
@@ -625,11 +659,13 @@ describe('AppController', () => {
                 }
             };
 
-            await appController.initializeServices();
-            await appController.loadInitialData();
+            await appController._initializeServices();
+            await appController._loadInitialData();
 
             expect(mockInvitationService.loadInvitation).toHaveBeenCalledWith('test-invitation');
-            expect(appController.currentInvitation).toEqual({ id: 'test-invitation' });
+            expect(appController.currentInvitation).toEqual({
+                id: 'test-invitation'
+            });
 
             // Restaurar URLSearchParams
             global.URLSearchParams = originalURLSearchParams;
@@ -641,7 +677,9 @@ describe('AppController', () => {
             // Simular estado inicializado sin llamar init()
             appController.isInitialized = true;
             appController.isLoading = false;
-            appController.components.set('test-component', { destroy: jest.fn() });
+            appController.components.set('test-component', {
+                destroy: jest.fn()
+            });
             appController.controllers = [
                 appController.navigationController,
                 appController.contentController
@@ -654,13 +692,13 @@ describe('AppController', () => {
         });
 
         it('debe verificar estado de readiness', async () => {
-            expect(appController.isInitialized && !appController.isLoading).toBe(false);
+            expect(appController.isReady()).toBe(false);
 
             // Simular estado inicializado
             appController.isInitialized = true;
             appController.isLoading = false;
 
-            expect(appController.isInitialized && !appController.isLoading).toBe(true);
+            expect(appController.isReady()).toBe(true);
         });
     });
 });

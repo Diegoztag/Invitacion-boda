@@ -3,8 +3,8 @@
  * Verifica la lógica de generación/verificación de JWT y autenticación básica
  */
 
-const jwt = require('jsonwebtoken');
-const AuthMiddleware = require('../../../presentation/middleware/authMiddleware');
+import jwt from 'jsonwebtoken';
+import AuthMiddleware from '../../../presentation/middleware/authMiddleware';
 
 let auth;
 let logger;
@@ -28,12 +28,18 @@ beforeEach(() => {
 describe('AuthMiddleware (unit)', () => {
     describe('generateToken / verifyJWT', () => {
         test('should create and validate a token', () => {
-            const token = auth.generateToken({ id: 'admin', role: 'admin' });
+            const token = auth.generateToken({
+                id: 'admin',
+                role: 'admin'
+            });
             expect(typeof token).toBe('string');
 
             // build fake express objects
             const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
             const endOp = jest.fn();
 
@@ -45,24 +51,36 @@ describe('AuthMiddleware (unit)', () => {
 
         test('should reject invalid token', () => {
             const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
             const endOp = jest.fn();
 
             auth.verifyJWT('not-a-token', req, res, next, endOp);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: false
+                })
+            );
         });
 
         test('should reject expired token', () => {
             const expiredToken = jwt.sign(
-                { exp: Math.floor(Date.now() / 1000) - 10 },
+                {
+                    exp: Math.floor(Date.now() / 1000) - 10
+                },
                 auth.secretKey
             );
 
             const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
             const endOp = jest.fn();
 
@@ -70,16 +88,22 @@ describe('AuthMiddleware (unit)', () => {
 
             expect(res.status).toHaveBeenCalledWith(401);
             expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ success: false, error: 'Token expirado' })
+                expect.objectContaining({
+                    success: false,
+                    error: 'Token expirado'
+                })
             );
         });
     });
 
     describe('verifyBasicAuth', () => {
         test('should accept correct credentials', () => {
-            const credentials = Buffer.from('admin:' + auth.adminPassword).toString('base64');
+            const credentials = Buffer.from(`admin:${auth.adminPassword}`).toString('base64');
             const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
             const endOp = jest.fn();
 
@@ -92,35 +116,57 @@ describe('AuthMiddleware (unit)', () => {
         test('should reject wrong credentials', () => {
             const credentials = Buffer.from('admin:wrong').toString('base64');
             const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
             const endOp = jest.fn();
 
             auth.verifyBasicAuth(credentials, req, res, next, endOp);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    success: false
+                })
+            );
         });
     });
 
     describe('login endpoint', () => {
         test('should return token with valid creds', () => {
             const req = {
-                body: { username: 'admin', password: auth.adminPassword },
+                body: {
+                    username: 'admin',
+                    password: auth.adminPassword
+                },
                 ip: '127.0.0.1'
             };
-            const res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
+            const res = {
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis()
+            };
 
             auth.login(req, res);
 
             expect(res.json).toHaveBeenCalledWith(
-                expect.objectContaining({ success: true, token: expect.any(String) })
+                expect.objectContaining({
+                    success: true,
+                    token: expect.any(String)
+                })
             );
         });
 
         test('should reject missing fields', () => {
-            const req = { body: {}, ip: '127.0.0.1' };
-            const res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
+            const req = {
+                body: {},
+                ip: '127.0.0.1'
+            };
+            const res = {
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis()
+            };
 
             auth.login(req, res);
 
@@ -131,8 +177,15 @@ describe('AuthMiddleware (unit)', () => {
     describe('requirePermissions', () => {
         test('allows when permission exists', () => {
             const middleware = auth.requirePermissions(['read']);
-            const req = { user: { permissions: ['read', 'write'] } };
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const req = {
+                user: {
+                    permissions: ['read', 'write']
+                }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
 
             middleware(req, res, next);
@@ -141,8 +194,15 @@ describe('AuthMiddleware (unit)', () => {
 
         test('blocks when permission missing', () => {
             const middleware = auth.requirePermissions(['delete']);
-            const req = { user: { permissions: ['read'] } };
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const req = {
+                user: {
+                    permissions: ['read']
+                }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
 
             middleware(req, res, next);
@@ -152,9 +212,19 @@ describe('AuthMiddleware (unit)', () => {
 
     describe('authenticate', () => {
         test('should authenticate with valid token', () => {
-            const token = auth.generateToken({ id: 'admin', role: 'admin' });
-            const req = { headers: { authorization: `Bearer ${token}` } };
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+            const token = auth.generateToken({
+                id: 'admin',
+                role: 'admin'
+            });
+            const req = {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            };
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            };
             const next = jest.fn();
 
             auth.authenticate(req, res, next);

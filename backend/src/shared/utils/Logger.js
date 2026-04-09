@@ -166,10 +166,12 @@ class Logger {
 
             // Crear directorio si no existe
             const logDir = path.dirname(this.filePath);
-            await fs.mkdir(logDir, { recursive: true });
+            await fs.mkdir(logDir, {
+                recursive: true
+            });
 
             // Escribir al archivo
-            const logLine = JSON.stringify(logEntry) + '\n';
+            const logLine = `${JSON.stringify(logEntry)}\n`;
             await fs.appendFile(this.filePath, logLine);
         } catch (error) {
             // Si falla el logging a archivo, al menos mostrar en consola
@@ -201,7 +203,7 @@ class Logger {
                 operationId,
                 operation,
                 duration: `${duration}ms`,
-                ...result
+                ..._result
             });
         };
     }
@@ -369,7 +371,9 @@ class Logger {
                 }
             }
         } catch (error) {
-            this.error('Error cleaning old logs', { error });
+            this.error('Error cleaning old logs', {
+                error
+            });
         }
     }
 }

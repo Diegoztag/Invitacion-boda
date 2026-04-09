@@ -101,8 +101,8 @@ export class NavigationController {
      */
     setupEventListeners() {
         this.navItems.forEach((navItem, target) => {
-            const clickHandler = event => {
-                event.preventDefault();
+            const clickHandler = e => {
+                e.preventDefault();
                 this.navigateToSection(target);
             };
 

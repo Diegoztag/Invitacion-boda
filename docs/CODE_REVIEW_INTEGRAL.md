@@ -427,14 +427,14 @@ describe('RSVPController', () => {
 
 ### **🚀 OPORTUNIDADES DE MEJORA EN LA ARQUITECTURA FRONTEND**
 
-1.  **Refactorizar `AppController`**:
-    - **Recomendación**: Dividir el método `init` en métodos más pequeños y enfocados. Abstraer la lógica de inicialización de componentes a una `ComponentFactory` o un servicio similar para reducir la complejidad y mejorar la cohesión.
+1.  ✅ **Refactorizar `AppController`**:
+    - **Estado**: Completado. Se dividió el método `init` y se abstrajo la inicialización de componentes a `ComponentFactory`.
 
-2.  **Refactorizar `RSVPController`**:
-    - **Recomendación**: Desacoplar el controlador de los servicios del dominio (`invitationService`, `validationService`) utilizando una capa de abstracción (ej. un `facade` o un caso de uso del frontend). Utilizar un enfoque más declarativo para la manipulación del DOM, posiblemente a través de un motor de plantillas o una librería de UI ligera.
+2.  ✅ **Refactorizar `RSVPController`**:
+    - **Estado**: Completado. Se desacopló el controlador de los servicios del dominio utilizando `RSVPFacade` y se mejoró la manipulación del DOM con `RSVPUI`.
 
-3.  **Mejorar la Arquitectura General**:
-    - **Recomendación**: Introducir una capa de `facades` o casos de uso del frontend para mediar entre los controladores de la capa de presentación y los servicios de la capa de dominio. Esto reducirá el acoplamiento y mejorará la separación de responsabilidades.
+3.  ✅ **Mejorar la Arquitectura General**:
+    - **Estado**: Completado. Se introdujo la capa de `facades` (`AppFacade`, `RSVPFacade`) para mediar entre los controladores y los servicios del dominio.
 
 ---
 

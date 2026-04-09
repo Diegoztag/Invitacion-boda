@@ -483,7 +483,7 @@ export class ContentController {
      * @param {string} sectionId - ID de la sección
      * @returns {Object|null}
      */
-    getSectionSpecificData(sectionId) {
+    getSectionSpecificData() {
         // Esta función puede ser extendida para manejar datos específicos por sección
         // Por ahora retorna null, pero puede ser implementada según necesidades
         return null;

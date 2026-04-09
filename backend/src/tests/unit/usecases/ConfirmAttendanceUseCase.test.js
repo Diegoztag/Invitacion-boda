@@ -277,7 +277,9 @@ describe('ConfirmAttendanceUseCase', () => {
 
     describe('Validation and Business Rules', () => {
         test('should fail if invitationCode is not provided', async () => {
-            const result = await useCase.execute(null, { willAttend: true });
+            const result = await useCase.execute(null, {
+                willAttend: true
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('El código de invitación es requerido');
         });
@@ -295,52 +297,72 @@ describe('ConfirmAttendanceUseCase', () => {
         });
 
         test('should fail if invitationCode is not a string', async () => {
-            const result = await useCase.execute(123, { willAttend: true });
+            const result = await useCase.execute(123, {
+                willAttend: true
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('El código de invitación es requerido');
         });
 
         test('should fail if willAttend is not a boolean', async () => {
-            const result = await useCase.execute('INV001', { willAttend: 'yes' });
+            const result = await useCase.execute('INV001', {
+                willAttend: 'yes'
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('willAttend debe ser un boolean');
         });
 
         test('should fail if willAttend is not a boolean (number)', async () => {
-            const result = await useCase.execute('INV001', { willAttend: 1 });
+            const result = await useCase.execute('INV001', {
+                willAttend: 1
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('willAttend debe ser un boolean');
         });
 
         test('should fail if attendingGuests is not a non-negative integer', async () => {
-            const result = await useCase.execute('INV001', { attendingGuests: -1 });
+            const result = await useCase.execute('INV001', {
+                attendingGuests: -1
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('El número de invitados debe ser un entero no negativo');
 
-            const result2 = await useCase.execute('INV001', { attendingGuests: 1.5 });
+            const result2 = await useCase.execute('INV001', {
+                attendingGuests: 1.5
+            });
             expect(result2.success).toBe(false);
             expect(result2.error).toBe('El número de invitados debe ser un entero no negativo');
 
-            const result3 = await useCase.execute('INV001', { attendingGuests: '2' });
+            const result3 = await useCase.execute('INV001', {
+                attendingGuests: '2'
+            });
             expect(result3.success).toBe(false);
             expect(result3.error).toBe('El número de invitados debe ser un entero no negativo');
         });
 
         test('should fail if attendingNames is not an array', async () => {
-            const result = await useCase.execute('INV001', { attendingNames: 'Juan' });
+            const result = await useCase.execute('INV001', {
+                attendingNames: 'Juan'
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('Los nombres de invitados deben ser un array');
         });
 
         test('should fail if attendingNames is not an array (object)', async () => {
-            const result = await useCase.execute('INV001', { attendingNames: { name: 'Juan' } });
+            const result = await useCase.execute('INV001', {
+                attendingNames: {
+                    name: 'Juan'
+                }
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('Los nombres de invitados deben ser un array');
         });
 
         test('should fail if phone format is invalid', async () => {
             mockValidationService.validatePhone.mockReturnValueOnce(false);
-            const result = await useCase.execute('INV001', { phone: 'invalid' });
+            const result = await useCase.execute('INV001', {
+                phone: 'invalid'
+            });
             expect(result.success).toBe(false);
             expect(result.error).toBe('El formato del teléfono no es válido');
         });
@@ -353,7 +375,11 @@ describe('ConfirmAttendanceUseCase', () => {
             });
             mockInvitationRepository.findByCode.mockResolvedValue(invitation);
             mockConfirmationRepository.findByCode.mockResolvedValue(null);
-            mockConfirmationRepository.save.mockResolvedValue(new Confirmation({ code: 'INV001' }));
+            mockConfirmationRepository.save.mockResolvedValue(
+                new Confirmation({
+                    code: 'INV001'
+                })
+            );
             mockInvitationRepository.update.mockResolvedValue(invitation);
 
             const result = await useCase.execute('INV001', {
@@ -475,7 +501,11 @@ describe('ConfirmAttendanceUseCase', () => {
             });
             mockInvitationRepository.findByCode.mockResolvedValue(invitation);
             mockConfirmationRepository.findByCode.mockResolvedValue(null);
-            mockConfirmationRepository.save.mockResolvedValue(new Confirmation({ code: 'INV001' }));
+            mockConfirmationRepository.save.mockResolvedValue(
+                new Confirmation({
+                    code: 'INV001'
+                })
+            );
             mockInvitationRepository.update.mockResolvedValue(invitation);
 
             mockValidationService.sanitizePhone = jest.fn().mockReturnValue('1234567890');
@@ -501,7 +531,11 @@ describe('ConfirmAttendanceUseCase', () => {
             });
             mockInvitationRepository.findByCode.mockResolvedValue(invitation);
             mockConfirmationRepository.findByCode.mockResolvedValue(null);
-            mockConfirmationRepository.save.mockResolvedValue(new Confirmation({ code: 'INV001' }));
+            mockConfirmationRepository.save.mockResolvedValue(
+                new Confirmation({
+                    code: 'INV001'
+                })
+            );
             mockInvitationRepository.update.mockResolvedValue(invitation);
 
             mockValidationService.sanitizeString = jest.fn().mockImplementation(str => str.trim());
@@ -525,7 +559,11 @@ describe('ConfirmAttendanceUseCase', () => {
             });
             mockInvitationRepository.findByCode.mockResolvedValue(invitation);
             mockConfirmationRepository.findByCode.mockResolvedValue(null);
-            mockConfirmationRepository.save.mockResolvedValue(new Confirmation({ code: 'INV001' }));
+            mockConfirmationRepository.save.mockResolvedValue(
+                new Confirmation({
+                    code: 'INV001'
+                })
+            );
             mockInvitationRepository.update.mockResolvedValue(invitation);
 
             mockValidationService.sanitizeString = jest.fn().mockImplementation(str => str.trim());

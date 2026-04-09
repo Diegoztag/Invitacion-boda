@@ -113,22 +113,30 @@ describe('Invitation Entity', () => {
         });
 
         test('confirm should throw error if already confirmed', () => {
-            invitation.confirm({ confirmedPasses: 2 });
-            expect(() => invitation.confirm({ confirmedPasses: 1 })).toThrow(
-                'Esta invitación ya ha sido confirmada'
-            );
+            invitation.confirm({
+                confirmedPasses: 2
+            });
+            expect(() =>
+                invitation.confirm({
+                    confirmedPasses: 1
+                })
+            ).toThrow('Esta invitación ya ha sido confirmada');
         });
 
         test('confirm should set status to cancelled if confirmedPasses is 0', () => {
-            invitation.confirm({ confirmedPasses: 0 });
+            invitation.confirm({
+                confirmedPasses: 0
+            });
             expect(invitation.status).toBe('cancelled');
         });
 
         test('confirm should throw error if inactive', () => {
             invitation.deactivate();
-            expect(() => invitation.confirm({ confirmedPasses: 1 })).toThrow(
-                'No se puede confirmar una invitación inactiva'
-            );
+            expect(() =>
+                invitation.confirm({
+                    confirmedPasses: 1
+                })
+            ).toThrow('No se puede confirmar una invitación inactiva');
         });
 
         test('cancel should set cancellation data', () => {
@@ -309,10 +317,18 @@ describe('Invitation Entity', () => {
 
         test('updatePasses should enforce consistency', () => {
             expect(() =>
-                invitation.updatePasses({ adultPasses: 1, childPasses: 1, staffPasses: 1 })
+                invitation.updatePasses({
+                    adultPasses: 1,
+                    childPasses: 1,
+                    staffPasses: 1
+                })
             ).toThrow('La suma de pases (3) debe coincidir con el total (2)');
 
-            invitation.updatePasses({ adultPasses: 2, childPasses: 0, staffPasses: 0 });
+            invitation.updatePasses({
+                adultPasses: 2,
+                childPasses: 0,
+                staffPasses: 0
+            });
             expect(invitation.adultPasses).toBe(2);
         });
 
@@ -448,9 +464,11 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 2
             });
 
-            expect(() => invitation.confirm({ confirmedPasses: 3 })).toThrow(
-                'Solo tienes 2 pases disponibles'
-            );
+            expect(() =>
+                invitation.confirm({
+                    confirmedPasses: 3
+                })
+            ).toThrow('Solo tienes 2 pases disponibles');
         });
 
         test('should throw error if confirmed passes exceed total in constructor', () => {
@@ -496,7 +514,12 @@ describe('Invitation Entity', () => {
         });
 
         test('should handle large number of guests', () => {
-            const guestNames = Array.from({ length: 10 }, (_, i) => `Guest ${i + 1}`);
+            const guestNames = Array.from(
+                {
+                    length: 10
+                },
+                (_, i) => `Guest ${i + 1}`
+            );
             const data = {
                 code: 'INV001',
                 guestNames,

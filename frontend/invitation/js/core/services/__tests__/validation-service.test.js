@@ -1,8 +1,3 @@
-/**
- * Tests para ValidationService
- * Valida: email, phone, required fields, min/max length, custom rules
- */
-
 import { ValidationService } from '../validation-service.js';
 
 // Mock del config
@@ -10,10 +5,24 @@ jest.mock('../../../config/app-config.js', () => ({
     getConfig: jest.fn((key, defaultValue) => {
         const configs = {
             'validation.rules': {
-                email: { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
-                phone: { required: false, minLength: 10, maxLength: 15 },
-                name: { required: true, minLength: 2, maxLength: 100 },
-                message: { required: false, maxLength: 500 }
+                email: {
+                    required: true,
+                    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                },
+                phone: {
+                    required: false,
+                    minLength: 10,
+                    maxLength: 15
+                },
+                name: {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 100
+                },
+                message: {
+                    required: false,
+                    maxLength: 500
+                }
             },
             'validation.messages': {
                 required: 'El campo {field} es obligatorio',
@@ -104,13 +113,17 @@ describe('ValidationService', () => {
 
     describe('validateField - Custom Rules', () => {
         it('debe aplicar reglas personalizadas', () => {
-            const customRules = { minLength: 5 };
+            const customRules = {
+                minLength: 5
+            };
             const result = validationService.validateField('name', 'Juan', customRules);
             expect(result.isValid).toBe(false);
         });
 
         it('debe sobrescribir reglas por defecto con custom rules', () => {
-            const customRules = { minLength: 20 };
+            const customRules = {
+                minLength: 20
+            };
             const result = validationService.validateField(
                 'email',
                 'test@example.com',

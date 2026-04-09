@@ -62,7 +62,7 @@ export class ConfigurationService {
             if (Object.prototype.hasOwnProperty.call(sections, key)) {
                 try {
                     sections[key].call(this);
-                } catch (error) {
+                } catch (err) {
                     //
                 }
             }

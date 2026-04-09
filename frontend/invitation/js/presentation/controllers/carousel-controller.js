@@ -413,6 +413,8 @@ export class CarouselController {
                     event.preventDefault();
                     this.toggleAutoPlay();
                     break;
+                default:
+                    break;
             }
         };
 

@@ -29,7 +29,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] **Optimizar Consultas de Datos**: Mejorar la eficiencia de las consultas en `GetConfirmationStatsUseCase` para evitar obtener grandes cantidades de datos en memoria.
 - [ ] **Refactorizar y Simplificar Casos de Uso**: Mover la lógica de negocio de los casos de uso a las entidades o a servicios de dominio.
 
-### Ciclo 29: Arquitectura del Frontend (En Progreso)
+### Ciclo 29: Arquitectura del Frontend (Finalizado)
 
 - [x] **Refactorizar `AppController`**: Dividir el método `init` en métodos más pequeños y abstraer la inicialización de componentes a una `ComponentFactory`.
 - [x] **Refactorizar `ContentController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
@@ -40,8 +40,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Refactorizar `EventLogger`**: Crear un `EventLogger` para registrar eventos importantes de la aplicación.
 - [x] **Refactorizar `jest.setup.js`**: Simplificar la configuración de Jest y eliminar código duplicado.
 - [x] **Refactorizar `jest.config.frontend.js`**: Consolidar la configuración de Jest para el frontend.
-- [ ] **Refactorizar `RSVPController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
-- [ ] **Mejorar la Arquitectura General**: Introducir una capa de `Facades` o casos de uso del frontend para mediar entre los controladores y los servicios del dominio.
+- [x] **Refactorizar `RSVPController`**: Desacoplar el controlador de los servicios y utilizar un enfoque más declarativo para la manipulación del DOM.
+- [x] **Mejorar la Arquitectura General**: Introducir una capa de `Facades` o casos de uso del frontend para mediar entre los controladores y los servicios del dominio.
 
 ### Ciclo 30: Testing (Finalizado)
 

@@ -26,7 +26,9 @@ jest.mock('../../base/component.js', () => {
         emit(event, data) {
             // Mock emit method
             if (this.element) {
-                const customEvent = new CustomEvent(event, { detail: data });
+                const customEvent = new CustomEvent(event, {
+                    detail: data
+                });
                 this.element.dispatchEvent(customEvent);
             }
         }
@@ -95,7 +97,7 @@ jest.mock('../../../../config/app-config.js', () => ({
 }));
 
 // AHORA importamos el componente DESPUÉS de todos los mocks
-import { ModalComponent } from '../modal.js';
+import { ModalComponent } from '../modal';
 
 describe('ModalComponent', () => {
     let modal;
@@ -261,7 +263,9 @@ describe('ModalComponent', () => {
             overlayModal.open();
 
             const overlay = overlayModal.overlay || container;
-            const clickEvent = new MouseEvent('click', { bubbles: true });
+            const clickEvent = new MouseEvent('click', {
+                bubbles: true
+            });
             overlay.dispatchEvent(clickEvent);
 
             // Debe cerrarse después del click en backdrop

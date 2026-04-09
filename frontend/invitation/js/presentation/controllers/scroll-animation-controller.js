@@ -36,7 +36,7 @@ export class ScrollAnimationController {
      * Configura el IntersectionObserver
      */
     setupObserver() {
-        const options = {
+        const observerOptions = {
             root: null, // viewport
             rootMargin: this.options.rootMargin,
             threshold: this.options.threshold
@@ -50,7 +50,7 @@ export class ScrollAnimationController {
                     this.observer.unobserve(entry.target);
                 }
             });
-        }, options);
+        }, observerOptions);
     }
 
     /**

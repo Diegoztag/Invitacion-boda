@@ -197,7 +197,7 @@ class SecurityMiddleware {
                     path: req.path,
                     statusCode: res.statusCode,
                     duration: `${duration}ms`,
-                    contentLength: res.get('Content-Length') || data?.length || 0
+                    contentLength: res.get('Content-Length') || (data ? data.length : 0)
                 });
 
                 return originalSend.call(this, data);
@@ -499,7 +499,9 @@ class SecurityMiddleware {
      * Middleware to send CSRF token to the client
      */
     sendCsrfToken = (req, res) => {
-        res.json({ csrfToken: req.csrfToken() });
+        res.json({
+            csrfToken: req.csrfToken()
+        });
     };
 }
 

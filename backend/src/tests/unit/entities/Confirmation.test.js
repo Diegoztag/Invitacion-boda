@@ -3,7 +3,7 @@
  * Cubre la funcionalidad completa de la entidad Confirmation
  */
 
-const Confirmation = require('../../../core/entities/Confirmation');
+import Confirmation from '../../../core/entities/Confirmation';
 
 describe('Confirmation Entity', () => {
     describe('Constructor', () => {
@@ -49,32 +49,61 @@ describe('Confirmation Entity', () => {
 
         test('debe validar código requerido', () => {
             expect(() => new Confirmation({})).toThrow('El código de invitación es requerido');
-            expect(() => new Confirmation({ code: null })).toThrow(
-                'El código de invitación es requerido'
-            );
-            expect(() => new Confirmation({ code: 123 })).toThrow(
-                'El código de invitación es requerido'
-            );
+            expect(
+                () =>
+                    new Confirmation({
+                        code: null
+                    })
+            ).toThrow('El código de invitación es requerido');
+            expect(
+                () =>
+                    new Confirmation({
+                        code: 123
+                    })
+            ).toThrow('El código de invitación es requerido');
         });
 
         test('debe validar willAttend como boolean', () => {
-            expect(() => new Confirmation({ code: 'ABC123', willAttend: 'true' })).toThrow(
-                'willAttend debe ser un boolean'
-            );
-            expect(() => new Confirmation({ code: 'ABC123', willAttend: null })).toThrow(
-                'willAttend debe ser un boolean'
-            );
+            expect(
+                () =>
+                    new Confirmation({
+                        code: 'ABC123',
+                        willAttend: 'true'
+                    })
+            ).toThrow('willAttend debe ser un boolean');
+            expect(
+                () =>
+                    new Confirmation({
+                        code: 'ABC123',
+                        willAttend: null
+                    })
+            ).toThrow('willAttend debe ser un boolean');
         });
 
         test('debe validar attendingGuests como entero no negativo', () => {
             expect(
-                () => new Confirmation({ code: 'ABC123', willAttend: true, attendingGuests: '2' })
+                () =>
+                    new Confirmation({
+                        code: 'ABC123',
+                        willAttend: true,
+                        attendingGuests: '2'
+                    })
             ).toThrow('attendingGuests debe ser un entero no negativo');
             expect(
-                () => new Confirmation({ code: 'ABC123', willAttend: true, attendingGuests: -1 })
+                () =>
+                    new Confirmation({
+                        code: 'ABC123',
+                        willAttend: true,
+                        attendingGuests: -1
+                    })
             ).toThrow('attendingGuests debe ser un entero no negativo');
             expect(
-                () => new Confirmation({ code: 'ABC123', willAttend: true, attendingGuests: 2.5 })
+                () =>
+                    new Confirmation({
+                        code: 'ABC123',
+                        willAttend: true,
+                        attendingGuests: 2.5
+                    })
             ).toThrow('attendingGuests debe ser un entero no negativo');
         });
 
@@ -178,19 +207,19 @@ describe('Confirmation Entity', () => {
             );
         });
 
-        test('updateAttendingGuests debe validar lógica de negocio', () => {
+        test('debe validar lógica de negocio', () => {
             confirmation.updateAttendance(false);
             expect(() => confirmation.updateAttendingGuests(1)).toThrow(
                 'No se pueden tener invitados si no va a asistir'
             );
         });
 
-        test('updateAttendingGuests debe ajustar nombres si es necesario', () => {
+        test('debe ajustar nombres si es necesario', () => {
             confirmation.updateAttendingGuests(1);
             expect(confirmation.attendingNames).toEqual(['Juan']);
         });
 
-        test('updateAttendingNames debe validar y actualizar nombres', () => {
+        test('debe validar y actualizar nombres', () => {
             confirmation.updateAttendingNames(['Pedro', 'Ana']);
             expect(confirmation.attendingNames).toEqual(['Pedro', 'Ana']);
 
@@ -199,19 +228,19 @@ describe('Confirmation Entity', () => {
             );
         });
 
-        test('updateAttendingNames debe filtrar nombres válidos', () => {
+        test('debe filtrar nombres válidos', () => {
             confirmation.updateAttendingGuests(3);
             confirmation.updateAttendingNames(['Pedro', '', '  ', 'Ana']);
             expect(confirmation.attendingNames).toEqual(['Pedro', 'Ana']);
         });
 
-        test('updateAttendingNames debe validar cantidad máxima', () => {
+        test('debe validar cantidad máxima', () => {
             expect(() => confirmation.updateAttendingNames(['Pedro', 'Ana', 'Luis'])).toThrow(
                 'No se pueden tener más nombres'
             );
         });
 
-        test('updatePhone debe validar y actualizar teléfono', () => {
+        test('debe validar y actualizar teléfono', () => {
             confirmation.updatePhone('+1234567890');
             expect(confirmation.phone).toBe('+1234567890');
 
@@ -223,7 +252,7 @@ describe('Confirmation Entity', () => {
             );
         });
 
-        test('updateDietaryRestrictions debe validar y actualizar restricciones', () => {
+        test('debe validar y actualizar restricciones', () => {
             confirmation.updateDietaryRestrictions('Vegetariano');
             expect(confirmation.dietaryRestrictions).toBe('Vegetariano');
 
@@ -235,7 +264,7 @@ describe('Confirmation Entity', () => {
             );
         });
 
-        test('updateMessage debe validar y actualizar mensaje', () => {
+        test('debe validar y actualizar mensaje', () => {
             confirmation.updateMessage('Felicidades!');
             expect(confirmation.message).toBe('Felicidades!');
 

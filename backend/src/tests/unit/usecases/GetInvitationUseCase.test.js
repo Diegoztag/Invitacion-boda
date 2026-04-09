@@ -3,7 +3,7 @@
  * Cubre todos los métodos del caso de uso GetInvitationUseCase
  */
 
-const GetInvitationUseCase = require('../../../application/usecases/GetInvitationUseCase');
+import GetInvitationUseCase from '../../../application/usecases/GetInvitationUseCase';
 
 describe('GetInvitationUseCase', () => {
     let mockInvitationRepository;
@@ -33,7 +33,10 @@ describe('GetInvitationUseCase', () => {
         test('debe obtener invitación exitosamente', async () => {
             const mockInvitation = {
                 isActive: jest.fn().mockReturnValue(true),
-                toObject: jest.fn().mockReturnValue({ code: 'ABC123', guestNames: ['Juan'] })
+                toObject: jest.fn().mockReturnValue({
+                    code: 'ABC123',
+                    guestNames: ['Juan']
+                })
             };
 
             mockInvitationRepository.findByCode.mockResolvedValue(mockInvitation);
@@ -41,7 +44,10 @@ describe('GetInvitationUseCase', () => {
             const result = await useCase.execute('ABC123');
 
             expect(result.success).toBe(true);
-            expect(result.invitation).toEqual({ code: 'ABC123', guestNames: ['Juan'] });
+            expect(result.invitation).toEqual({
+                code: 'ABC123',
+                guestNames: ['Juan']
+            });
             expect(result.message).toBe('Invitación encontrada');
             expect(mockInvitationRepository.findByCode).toHaveBeenCalledWith('ABC123');
             expect(mockInvitation.isActive).toHaveBeenCalled();
@@ -104,8 +110,16 @@ describe('GetInvitationUseCase', () => {
         test('debe obtener invitaciones con paginación por defecto', async () => {
             const mockResult = {
                 data: [
-                    { toObject: jest.fn().mockReturnValue({ code: 'INV001' }) },
-                    { toObject: jest.fn().mockReturnValue({ code: 'INV002' }) }
+                    {
+                        toObject: jest.fn().mockReturnValue({
+                            code: 'INV001'
+                        })
+                    },
+                    {
+                        toObject: jest.fn().mockReturnValue({
+                            code: 'INV002'
+                        })
+                    }
                 ],
                 total: 25,
                 page: 1,
@@ -156,13 +170,25 @@ describe('GetInvitationUseCase', () => {
             await useCase.executeGetAll(options);
 
             expect(mockInvitationRepository.findPaginated).toHaveBeenCalledWith(
-                { status: 'active', confirmed: true, search: 'Juan' },
-                { page: 2, limit: 5, sortBy: 'createdAt', sortOrder: 'desc' }
+                {
+                    status: 'active',
+                    confirmed: true,
+                    search: 'Juan'
+                },
+                {
+                    page: 2,
+                    limit: 5,
+                    sortBy: 'createdAt',
+                    sortOrder: 'desc'
+                }
             );
         });
 
         test('debe validar parámetros de paginación', async () => {
-            const result = await useCase.executeGetAll({ page: 0, limit: 150 });
+            const result = await useCase.executeGetAll({
+                page: 0,
+                limit: 150
+            });
 
             expect(result.success).toBe(false);
             expect(result.error).toBe('Parámetros de paginación inválidos');
@@ -186,14 +212,16 @@ describe('GetInvitationUseCase', () => {
         test('debe buscar invitaciones exitosamente', async () => {
             const mockInvitations = [
                 {
-                    toObject: jest
-                        .fn()
-                        .mockReturnValue({ code: 'INV001', guestNames: ['Juan Pérez'] })
+                    toObject: jest.fn().mockReturnValue({
+                        code: 'INV001',
+                        guestNames: ['Juan Pérez']
+                    })
                 },
                 {
-                    toObject: jest
-                        .fn()
-                        .mockReturnValue({ code: 'INV002', guestNames: ['Juan García'] })
+                    toObject: jest.fn().mockReturnValue({
+                        code: 'INV002',
+                        guestNames: ['Juan García']
+                    })
                 }
             ];
 
@@ -329,7 +357,9 @@ describe('GetInvitationUseCase', () => {
         test('debe registrar operaciones exitosas', async () => {
             const mockInvitation = {
                 isActive: jest.fn().mockReturnValue(true),
-                toObject: jest.fn().mockReturnValue({ code: 'ABC123' })
+                toObject: jest.fn().mockReturnValue({
+                    code: 'ABC123'
+                })
             };
 
             mockInvitationRepository.findByCode.mockResolvedValue(mockInvitation);

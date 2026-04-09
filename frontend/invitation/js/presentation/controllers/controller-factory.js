@@ -18,7 +18,7 @@ export class ControllerFactory {
             });
             await controller.init();
             return controller;
-        } catch (error) {
+        } catch {
             return null;
         }
     }

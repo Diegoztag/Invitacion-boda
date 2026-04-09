@@ -5,11 +5,13 @@
  */
 
 import BaseController from './BaseController.js';
+
 const {
     CreateConfirmationDTO,
     UpdateConfirmationDTO
 } = require('../../application/dto/ConfirmationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
+const QueryBuilder = require('../../shared/utils/QueryBuilder');
 
 class ConfirmationController extends BaseController {
     constructor(
@@ -84,7 +86,12 @@ class ConfirmationController extends BaseController {
 
             this.sendSuccess(res, result, 201);
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -139,11 +146,18 @@ class ConfirmationController extends BaseController {
                 return this.sendError(res, new Error(result.error), next);
             }
 
-            endOperation({ updated: true });
+            endOperation({
+                updated: true
+            });
 
             this.sendSuccess(res, result);
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -176,26 +190,14 @@ class ConfirmationController extends BaseController {
         });
 
         try {
-            const {
-                page = 1,
-                limit = this.config.validation.pagination.defaultLimit,
-                willAttend,
-                search,
-                sortBy = 'confirmedAt',
-                sortOrder = 'desc'
-            } = req.query;
+            const queryParams = QueryBuilder.buildFromRequest(req.query, this.config);
 
-            const filters = {};
-            if (willAttend !== undefined) {
-                filters.willAttend = willAttend === 'true';
-            }
-            if (search) {
-                filters.search = search;
-            }
-
-            const sort = { field: sortBy, direction: sortOrder };
-
-            const result = await this.getConfirmationsUseCase.execute(page, limit, filters, sort);
+            const result = await this.getConfirmationsUseCase.execute(
+                queryParams.page,
+                queryParams.limit,
+                queryParams.filters,
+                queryParams.sort
+            );
 
             if (!result.success) {
                 return this.sendError(res, new Error(result.error), next);
@@ -211,7 +213,12 @@ class ConfirmationController extends BaseController {
                 pagination: result.pagination
             });
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
@@ -340,7 +347,12 @@ class ConfirmationController extends BaseController {
                 this.sendSuccess(res, result);
             }
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }

@@ -15,7 +15,7 @@ class BaseController {
     sendSuccess(res, data, statusCode = 200) {
         res.status(statusCode).json({
             success: true,
-            data: data
+            data
         });
     }
 
@@ -52,10 +52,17 @@ class BaseController {
                 // Si el caso de uso retorna un error de negocio, lo manejamos
                 return this.sendError(res, new Error(result.error), next);
             }
-            endOperation({ success: true });
+            endOperation({
+                success: true
+            });
             this.sendSuccess(res, result);
         } catch (error) {
-            endOperation({ error: error.message }, 'error');
+            endOperation(
+                {
+                    error: error.message
+                },
+                'error'
+            );
             this.sendError(res, error, next);
         }
     }
