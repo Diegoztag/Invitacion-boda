@@ -9,20 +9,20 @@ class UpdateInvitationUseCase {
         this.logger = logger;
     }
 
-    async execute(invitationId, updatedData) {
-        const endOperation = this.logger.startOperation('updateInvitation', { invitationId });
+    async execute(code, updatedData) {
+        const endOperation = this.logger.startOperation('updateInvitation', { code });
 
         try {
-            const invitation = await this.invitationRepository.findById(invitationId);
+            const invitation = await this.invitationRepository.findByCode(code);
 
             if (!invitation) {
-                throw new NotFoundException('Invitación', invitationId);
+                throw new NotFoundException('Invitación', code);
             }
 
             // Validar y aplicar actualizaciones
             this._applyUpdates(invitation, updatedData);
 
-            await this.invitationRepository.update(invitation.id, invitation);
+            await this.invitationRepository.update(code, invitation);
 
             endOperation({ success: true });
             return {
@@ -33,7 +33,7 @@ class UpdateInvitationUseCase {
         } catch (error) {
             endOperation({ error: error.message }, 'error');
             this.logger.error('Error updating invitation', {
-                invitationId,
+                code,
                 error: error.message,
                 stack: error.stack
             });

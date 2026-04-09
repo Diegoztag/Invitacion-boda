@@ -29,10 +29,14 @@ const GetInvitationsUseCase = require('./application/usecases/GetInvitationsUseC
 const SearchInvitationsByNameUseCase = require('./application/usecases/SearchInvitationsByNameUseCase');
 const RestoreInvitationUseCase = require('./application/usecases/RestoreInvitationUseCase');
 const DeleteInvitationUseCase = require('./application/usecases/DeleteInvitationUseCase'); // Añadido
+const UpdateInvitationUseCase = require('./application/usecases/UpdateInvitationUseCase'); // Añadido
+const GetInvitationStatsUseCase = require('./application/usecases/GetInvitationStatsUseCase'); // Añadido
+const ExportInvitationsUseCase = require('./application/usecases/ExportInvitationsUseCase'); // Añadido
 const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
 const UpdateConfirmationUseCase = require('./application/usecases/UpdateConfirmationUseCase');
 const CancelConfirmationUseCase = require('./application/usecases/CancelConfirmationUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
+const ExportConfirmationsUseCase = require('./application/usecases/ExportConfirmationsUseCase'); // Añadido
 const GetConfirmationUseCase = require('./application/usecases/GetConfirmationUseCase');
 const GetConfirmationsUseCase = require('./application/usecases/GetConfirmationsUseCase');
 const SearchConfirmationsByNameUseCase = require('./application/usecases/SearchConfirmationsByNameUseCase');
@@ -108,6 +112,10 @@ class Server {
             invitationRepository,
             logger
         );
+        const exportConfirmationsUseCase = new ExportConfirmationsUseCase(
+            confirmationRepository,
+            logger
+        ); // Añadido
         const getConfirmationUseCase = new GetConfirmationUseCase(
             confirmationRepository,
             validationService,
@@ -142,6 +150,12 @@ class Server {
             logger
         );
         const deleteInvitationUseCase = new DeleteInvitationUseCase(invitationRepository, logger); // Añadido
+        const updateInvitationUseCase = new UpdateInvitationUseCase(invitationRepository, logger); // Añadido
+        const getInvitationStatsUseCase = new GetInvitationStatsUseCase(
+            invitationRepository,
+            logger
+        ); // Añadido
+        const exportInvitationsUseCase = new ExportInvitationsUseCase(invitationRepository, logger); // Añadido
 
         // 4. Instanciar controladores
         const invitationController = new InvitationController(
@@ -151,6 +165,9 @@ class Server {
             searchInvitationsByNameUseCase,
             restoreInvitationUseCase,
             deleteInvitationUseCase, // Añadido
+            updateInvitationUseCase, // Añadido
+            getInvitationStatsUseCase, // Añadido
+            exportInvitationsUseCase, // Añadido
             invitationRepository,
             validationService,
             config,
@@ -161,6 +178,7 @@ class Server {
             updateConfirmationUseCase,
             cancelConfirmationUseCase,
             getConfirmationStatsUseCase,
+            exportConfirmationsUseCase, // Añadido
             getConfirmationUseCase,
             getConfirmationsUseCase,
             searchConfirmationsByNameUseCase,
@@ -204,6 +222,10 @@ class Server {
         this.container.register('getConfirmationStatsUseCase', () => getConfirmationStatsUseCase, {
             singleton: true
         });
+        this.container.register('exportConfirmationsUseCase', () => exportConfirmationsUseCase, {
+            // Añadido
+            singleton: true
+        });
         this.container.register('getConfirmationUseCase', () => getConfirmationUseCase, {
             singleton: true
         });
@@ -234,6 +256,18 @@ class Server {
             singleton: true
         });
         this.container.register('deleteInvitationUseCase', () => deleteInvitationUseCase, {
+            // Añadido
+            singleton: true
+        });
+        this.container.register('updateInvitationUseCase', () => updateInvitationUseCase, {
+            // Añadido
+            singleton: true
+        });
+        this.container.register('getInvitationStatsUseCase', () => getInvitationStatsUseCase, {
+            // Añadido
+            singleton: true
+        });
+        this.container.register('exportInvitationsUseCase', () => exportInvitationsUseCase, {
             // Añadido
             singleton: true
         });

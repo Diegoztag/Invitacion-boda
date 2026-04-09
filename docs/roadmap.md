@@ -15,9 +15,9 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ### Ciclo 27: Arquitectura del Backend
 
-- [ ] **Abstraer la Lógica de Consulta**: Crear un servicio de `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores.
-- [ ] **Mover Lógica de Negocio a Casos de Uso**: Refactorizar los controladores para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`).
-- [ ] **Desacoplar Controladores de Repositorios**: Crear casos de uso para todas las operaciones de lectura y utilizarlos en los controladores en lugar de los repositorios.
+- [x] **Abstraer la Lógica de Consulta**: Crear un servicio de `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores.
+- [x] **Mover Lógica de Negocio a Casos de Uso**: Refactorizar los controladores para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`).
+- [x] **Desacoplar Controladores de Repositorios**: Crear casos de uso para todas las operaciones de lectura y utilizarlos en los controladores en lugar de los repositorios.
 - [ ] **Centralizar Utilidades**: Extraer el código duplicado (ej. `convertToCSV`) a un módulo de utilidades compartidas.
 - [ ] **Refinar Casos de Uso**: Dividir los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
 - [ ] **Asegurar Endpoint de Notificaciones**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones.

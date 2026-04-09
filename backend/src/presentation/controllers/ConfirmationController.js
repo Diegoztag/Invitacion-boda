@@ -19,6 +19,7 @@ class ConfirmationController extends BaseController {
         updateConfirmationUseCase,
         cancelConfirmationUseCase,
         getConfirmationStatsUseCase,
+        exportConfirmationsUseCase, // Añadido
         getConfirmationUseCase,
         getConfirmationsUseCase,
         searchConfirmationsByNameUseCase,
@@ -31,6 +32,7 @@ class ConfirmationController extends BaseController {
         this.updateConfirmationUseCase = updateConfirmationUseCase;
         this.cancelConfirmationUseCase = cancelConfirmationUseCase;
         this.getConfirmationStatsUseCase = getConfirmationStatsUseCase;
+        this.exportConfirmationsUseCase = exportConfirmationsUseCase; // Añadido
         this.getConfirmationUseCase = getConfirmationUseCase;
         this.getConfirmationsUseCase = getConfirmationsUseCase;
         this.searchConfirmationsByNameUseCase = searchConfirmationsByNameUseCase;
@@ -327,7 +329,7 @@ class ConfirmationController extends BaseController {
         try {
             const { format = 'csv' } = req.query;
 
-            const result = await this.getConfirmationStatsUseCase.exportAll(format);
+            const result = await this.exportConfirmationsUseCase.execute(format);
 
             if (!result.success) {
                 return this.sendError(res, new Error(result.error), next);

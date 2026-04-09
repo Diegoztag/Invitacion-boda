@@ -18,6 +18,9 @@ class InvitationController extends BaseController {
         searchInvitationsByNameUseCase,
         restoreInvitationUseCase,
         deleteInvitationUseCase, // Añadido
+        updateInvitationUseCase, // Añadido
+        getInvitationStatsUseCase, // Añadido
+        exportInvitationsUseCase, // Añadido
         invitationRepository, // Se mantiene por ahora para update, pero se eliminará
         validationService,
         config,
@@ -30,6 +33,9 @@ class InvitationController extends BaseController {
         this.searchInvitationsByNameUseCase = searchInvitationsByNameUseCase;
         this.restoreInvitationUseCase = restoreInvitationUseCase;
         this.deleteInvitationUseCase = deleteInvitationUseCase; // Añadido
+        this.updateInvitationUseCase = updateInvitationUseCase; // Añadido
+        this.getInvitationStatsUseCase = getInvitationStatsUseCase; // Añadido
+        this.exportInvitationsUseCase = exportInvitationsUseCase; // Añadido
         this.invitationRepository = invitationRepository;
         this.validationService = validationService;
         this.config = config;
@@ -149,61 +155,17 @@ class InvitationController extends BaseController {
      * PUT /api/invitations/:code
      */
     async updateInvitation(req, res, next) {
-        const endOperation = this.logger.startOperation('updateInvitation', {
-            code: req.params.code,
-            ip: req.ip
-        });
+        const { code } = req.params;
+        const updateInvitationDTO = new UpdateInvitationDTO(req.body);
 
-        try {
-            const { code } = req.params;
-
-            // Validar cรณdigo
-            if (!this.validationService.validateInvitationCode(code)) {
-                return this.sendError(res, new Error('Cรณdigo de invitaciรณn invรกlido'), next);
-            }
-
-            // Buscar invitaciรณn existente
-            const existingInvitation = await this.invitationRepository.findByCode(code);
-            if (!existingInvitation) {
-                return this.sendError(res, new Error('Invitaciรณn no encontrada'), next);
-            }
-
-            const updateInvitationDTO = new UpdateInvitationDTO(req.body);
-
-            // Validar datos de actualizaciรณn
-            const validation = this.validationService.validateInvitationData({
-                ...existingInvitation.toObject(),
-                ...updateInvitationDTO
-            });
-
-            if (!validation.isValid) {
-                return this.sendError(res, new Error('Datos de actualizaciรณn invรกlidos'), next);
-            }
-
-            // Crear invitaciรณn actualizada
-            const updatedInvitation = existingInvitation.clone();
-            updatedInvitation.update(validation.sanitized);
-
-            // Guardar cambios
-            const result = await this.invitationRepository.update(code, updatedInvitation);
-
-            endOperation({
-                updated: true
-            });
-
-            this.sendSuccess(res, {
-                invitation: result.toObject(),
-                message: 'Invitaciรณn actualizada exitosamente'
-            });
-        } catch (error) {
-            endOperation(
-                {
-                    error: error.message
-                },
-                'error'
-            );
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.updateInvitationUseCase,
+            [code, updateInvitationDTO],
+            'updateInvitation'
+        );
     }
 
     /**
@@ -245,95 +207,14 @@ class InvitationController extends BaseController {
      * GET /api/stats
      */
     async getStats(req, res, next) {
-        const endOperation = this.logger.startOperation('getInvitationStats', {
-            ip: req.ip
-        });
-
-        try {
-            // Obtener estadรญsticas unificadas desde invitaciones
-            const invitationStats = await this.invitationRepository.getStats();
-
-            // Calcular tasas de confirmaciรณn y asistencia
-            const confirmationRate =
-                invitationStats.active > 0
-                    ? ((invitationStats.confirmed / invitationStats.active) * 100).toFixed(2)
-                    : '0.00';
-
-            const attendanceRate =
-                invitationStats.totalIssuedPasses > 0
-                    ? (
-                          (invitationStats.confirmedPasses / invitationStats.totalIssuedPasses) *
-                          100
-                      ).toFixed(2)
-                    : '0.00';
-
-            endOperation({
-                statsGenerated: true
-            });
-
-            // Estructura optimizada sin duplicaciones
-            this.sendSuccess(res, {
-                stats: {
-                    invitations: {
-                        total: invitationStats.total,
-                        confirmed: invitationStats.confirmed,
-                        pending: invitationStats.pending,
-                        cancelled: invitationStats.cancelled,
-                        partial: invitationStats.partial,
-                        active: invitationStats.active,
-                        inactive: invitationStats.inactive,
-                        totalPasses: invitationStats.totalIssuedPasses,
-                        occupiedPasses: invitationStats.occupiedPasses,
-                        cancelledPasses: invitationStats.totalLiberatedPasses
-                    },
-                    confirmations: {
-                        total: invitationStats.confirmed,
-                        positive: invitationStats.confirmed,
-                        negative: invitationStats.cancelled,
-                        totalConfirmedGuests: invitationStats.confirmedPasses,
-                        pendingPasses: invitationStats.pendingPasses,
-                        averageGuestsPerConfirmation:
-                            invitationStats.confirmed > 0
-                                ? (
-                                      invitationStats.confirmedPasses / invitationStats.confirmed
-                                  ).toFixed(2)
-                                : '0.00'
-                    },
-                    passDistribution: {
-                        // Desglose de pases activos
-                        activeAdultPasses: invitationStats.activeAdultPasses || 0,
-                        activeChildPasses: invitationStats.activeChildPasses || 0,
-                        activeStaffPasses: invitationStats.activeStaffPasses || 0,
-                        totalActivePasses: invitationStats.totalActivePasses || 0,
-
-                        // Porcentajes de distribuciรณn
-                        distributionPercentages: invitationStats.distributionPercentages || {
-                            adults: 0,
-                            children: 0,
-                            staff: 0
-                        },
-
-                        // Desglose de pases confirmados
-                        confirmedAdultPasses: invitationStats.confirmedAdultPasses || 0,
-                        confirmedChildPasses: invitationStats.confirmedChildPasses || 0,
-                        confirmedStaffPasses: invitationStats.confirmedStaffPasses || 0,
-                        totalConfirmedPasses: invitationStats.totalConfirmedPasses || 0
-                    },
-                    rates: {
-                        confirmationRate,
-                        attendanceRate
-                    }
-                }
-            });
-        } catch (error) {
-            endOperation(
-                {
-                    error: error.message
-                },
-                'error'
-            );
-            this.sendError(res, error, next);
-        }
+        await this.executeUseCase(
+            req,
+            res,
+            next,
+            this.getInvitationStatsUseCase,
+            [],
+            'getInvitationStats'
+        );
     }
 
     /**
@@ -387,7 +268,11 @@ class InvitationController extends BaseController {
         try {
             const { format = 'json' } = req.query;
 
-            const result = await this.invitationRepository.exportAll();
+            const result = await this.exportInvitationsUseCase.execute(format);
+
+            if (!result.success) {
+                return this.sendError(res, new Error(result.error), next);
+            }
 
             endOperation({
                 exported: result.count,

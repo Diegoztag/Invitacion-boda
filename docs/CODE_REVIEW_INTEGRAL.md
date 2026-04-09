@@ -477,14 +477,14 @@ describe('RSVPController', () => {
 
 ### **🚀 OPORTUNIDADES DE MEJORA EN LA ARQUITECTURA BACKEND**
 
-1.  **Abstraer la Lógica de Consulta**:
-    - **Recomendación**: Crear un servicio o una clase especializada (`QueryBuilder` o similar) para manejar la construcción de filtros, paginación y ordenamiento en los métodos `getInvitations` y `getConfirmations`. Esto simplificará los controladores y hará la lógica de consulta más reutilizable y testeable.
+1.  ✅ **Abstraer la Lógica de Consulta**:
+    - **Estado**: Completado. Se creó el servicio `QueryBuilder` para manejar la construcción de filtros, paginación y ordenamiento en los controladores.
 
-2.  **Mover la Lógica de Negocio a los Casos de Uso**:
-    - **Recomendación**: Refactorizar los controladores para mover cualquier lógica de negocio a los casos de uso correspondientes. Por ejemplo, crear un `RestoreInvitationUseCase` que contenga la lógica de validación de cupo.
+2.  ✅ **Mover la Lógica de Negocio a los Casos de Uso**:
+    - **Estado**: Completado. Se refactorizaron los controladores para mover toda la lógica de negocio a los casos de uso correspondientes (ej. `RestoreInvitationUseCase`, `UpdateInvitationUseCase`, `ExportConfirmationsUseCase`).
 
-3.  **Desacoplar Controladores de Repositorios**:
-    - **Recomendación**: Crear casos de uso específicos para todas las operaciones de lectura (ej. `GetInvitationUseCase`, `GetConfirmationsUseCase`) y utilizarlos en los controladores en lugar de interactuar directamente con los repositorios.
+3.  ✅ **Desacoplar Controladores de Repositorios**:
+    - **Estado**: Completado. Se crearon casos de uso específicos para todas las operaciones de lectura y se utilizan en los controladores en lugar de interactuar directamente con los repositorios.
 
 4.  **Centralizar Utilidades**:
     - **Recomendación**: Extraer el código duplicado, como la función `convertToCSV`, a un módulo de utilidades compartidas para mejorar la mantenibilidad y reducir la duplicación.
