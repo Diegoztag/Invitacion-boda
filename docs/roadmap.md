@@ -58,7 +58,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ### Ciclo 32: Rendimiento y Escalabilidad
 
-- [ ] Cachear respuestas frecuentes (memoria/Redis).
+- [x] Cachear respuestas frecuentes (memoria/Redis).
 - [ ] Evaluar migración de CSV a base de datos (relacional o NoSQL).
 - [ ] Optimizar paginación y consultas en repositorios.
 - [ ] Comprimir/minificar recursos front-end y habilitar Service Worker.

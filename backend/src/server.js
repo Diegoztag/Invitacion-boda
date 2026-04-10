@@ -328,6 +328,15 @@ class Server {
         this.app.use(middleware.requestLogger);
         this.app.use(middleware.csrfProtection);
 
+        // Configurar headers para Service Worker
+        this.app.use((req, res, next) => {
+            if (req.url.endsWith('sw.js')) {
+                res.setHeader('Service-Worker-Allowed', '/');
+                res.setHeader('Cache-Control', 'no-cache');
+            }
+            next();
+        });
+
         // Hacer logger disponible globalmente en la app
         this.app.locals.logger = logger;
 
