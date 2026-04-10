@@ -22,12 +22,12 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Refinar Casos de Uso**: Dividir los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
 - [x] **Asegurar Endpoint de Notificaciones**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones.
 
-### Ciclo 28: Lógica de Negocio
+### Ciclo 28: Lógica de Negocio (Finalizado)
 
-- [ ] **Mejorar Detección de Duplicados**: Implementar una lógica más robusta para detectar invitaciones duplicadas, considerando todos los nombres de los invitados.
-- [ ] **Asegurar la Transaccionalidad**: Refactorizar los casos de uso de escritura (`CreateInvitation` y `ConfirmAttendance`) para que sean transaccionales.
-- [ ] **Optimizar Consultas de Datos**: Mejorar la eficiencia de las consultas en `GetConfirmationStatsUseCase` para evitar obtener grandes cantidades de datos en memoria.
-- [ ] **Refactorizar y Simplificar Casos de Uso**: Mover la lógica de negocio de los casos de uso a las entidades o a servicios de dominio.
+- [x] **Mejorar Detección de Duplicados**: Implementar una lógica más robusta para detectar invitaciones duplicadas, considerando todos los nombres de los invitados.
+- [x] **Asegurar la Transaccionalidad**: Refactorizar los casos de uso de escritura (`CreateInvitation` y `ConfirmAttendance`) para que sean transaccionales.
+- [x] **Optimizar Consultas de Datos**: Mejorar la eficiencia de las consultas en `GetConfirmationStatsUseCase` para evitar obtener grandes cantidades de datos en memoria.
+- [x] **Refactorizar y Simplificar Casos de Uso**: Mover la lógica de negocio de los casos de uso a las entidades o a servicios de dominio.
 
 ### Ciclo 29: Arquitectura del Frontend (Finalizado)
 
