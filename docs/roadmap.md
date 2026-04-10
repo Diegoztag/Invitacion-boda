@@ -53,7 +53,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 ### Ciclo 31: UX y Accesibilidad
 
 - [x] Implementar internacionalización básica (ES/EN).
-- [ ] Revisar contrastes de colores y añadir modo oscuro opcional.
+- [x] Revisar contrastes de colores y añadir modo oscuro opcional.
 - [ ] Añadir manejo offline o mensaje de falta de conexión.
 
 ### Ciclo 32: Rendimiento y Escalabilidad

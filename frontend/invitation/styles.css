@@ -50,14 +50,18 @@
     /* ========================================
        1. COLORES Y TEMAS
        ======================================== */
-    /* Colores principales */
+    /* Colores principales (Modo Claro) */
     --primary-color: #d4a574;
     --secondary-color: #8b7355;
     --accent-color: #f8f4e6;
-    --text-dark: #333;
-    --text-light: #666;
+    --text-dark: #333333;
+    --text-light: #666666;
     --white: #ffffff;
+    --background-color: #ffffff;
     --overlay: rgba(0, 0, 0, 0.5);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(212, 165, 116, 0.2);
+    --input-bg: rgba(255, 255, 255, 0.8);
     
     /* Colores de estado */
     --color-success: #4caf50;
@@ -682,8 +686,91 @@ body {
     font-weight: 300;
     line-height: 1.6;
     color: var(--text-dark);
+    background-color: var(--background-color);
     overflow-x: hidden;
     font-size: var(--font-size-base);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================================
+   MODO OSCURO
+   ======================================== */
+body.dark-mode {
+    --primary-color: #e6b885;
+    --secondary-color: #d4a574;
+    --accent-color: #2a241d;
+    --text-dark: #f0f0f0;
+    --text-light: #b0b0b0;
+    --white: #1a1a1a;
+    --background-color: #121212;
+    --overlay: rgba(0, 0, 0, 0.7);
+    --card-bg: rgba(30, 30, 30, 0.9);
+    --border-color: rgba(230, 184, 133, 0.2);
+    --input-bg: rgba(40, 40, 40, 0.8);
+    
+    /* Ajustes específicos para modo oscuro */
+    --gradient-subtle: linear-gradient(135deg, #1a1a1a 0%, rgba(42, 36, 29, 0.5) 100%);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .navbar {
+    background: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-mode .nav-menu {
+    background: var(--background-color);
+}
+
+body.dark-mode .nav-link {
+    color: var(--text-dark);
+}
+
+body.dark-mode .event-card,
+body.dark-mode .timeline-content,
+body.dark-mode .itinerary-content,
+body.dark-mode .gift-store,
+body.dark-mode .hashtag-container,
+body.dark-mode .bank-card {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea,
+body.dark-mode .attending-name {
+    background: var(--input-bg);
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .form-group input:focus,
+body.dark-mode .form-group select:focus,
+body.dark-mode .form-group textarea:focus,
+body.dark-mode .attending-name:focus {
+    background: var(--card-bg);
+}
+
+body.dark-mode .guest-row {
+    background: var(--input-bg);
+}
+
+body.dark-mode .guest-row:hover {
+    background: var(--card-bg);
+}
+
+body.dark-mode .modal-content {
+    background: var(--card-bg);
+}
+
+body.dark-mode .controls-container {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .loader {
+    background: var(--background-color);
 }
 
 h1, h2, h3, h4, h5, h6 {
