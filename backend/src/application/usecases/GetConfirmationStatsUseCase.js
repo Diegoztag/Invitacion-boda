@@ -16,14 +16,25 @@ class GetConfirmationStatsUseCase {
      * @private
      */
     async _getActiveConfirmations() {
+        // Optimización: Obtener solo las confirmaciones necesarias si el repositorio lo soporta
+        if (typeof this.confirmationRepository.findActive === 'function') {
+            return await this.confirmationRepository.findActive();
+        }
+
+        // Fallback: Obtener todas y filtrar
         const confirmations = await this.confirmationRepository.findAll();
 
-        // Obtener invitaciones inactivas
-        const inactiveInvitations = await this.invitationRepository.findAll(
-            { status: 'inactive' },
-            true
-        );
-        const inactiveCodes = new Set(inactiveInvitations.map(inv => inv.code));
+        // Optimización: Obtener solo los códigos de invitaciones inactivas si el repositorio lo soporta
+        let inactiveCodes;
+        if (typeof this.invitationRepository.findInactiveCodes === 'function') {
+            inactiveCodes = new Set(await this.invitationRepository.findInactiveCodes());
+        } else {
+            const inactiveInvitations = await this.invitationRepository.findAll(
+                { status: 'inactive' },
+                true
+            );
+            inactiveCodes = new Set(inactiveInvitations.map(inv => inv.code));
+        }
 
         // Filtrar confirmaciones de invitaciones inactivas
         return confirmations.filter(conf => !inactiveCodes.has(conf.code));
