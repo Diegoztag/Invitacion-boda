@@ -73,7 +73,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 ### Ciclo 34: Otros Temas
 
 - [ ] Cumplir con normas de protección de datos personales (LGPD/GDPR).
-- [ ] SEO y metadata en landing page.
+- [x] SEO y metadata en landing page.
 - [ ] Migrar frontend a bundler moderno (Vite) y modularizar código.
 - [ ] Mantener sincronía con `docs/MIGRATION_ROADMAP.md`.
 
