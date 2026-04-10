@@ -440,27 +440,28 @@ describe('RSVPController', () => {
 
 ## 💼 ANÁLISIS DE LÓGICA DE NEGOCIO (Revisión 24/03/2026)
 
-### **🟡 ESTADO ACTUAL DE LA LÓGICA DE NEGOCIO**
+### **🟢 ESTADO ACTUAL DE LA LÓGICA DE NEGOCIO (Actualizado)**
 
 - 🟢 **Casos de Uso Bien Definidos**: La lógica de negocio está encapsulada en casos de uso claros (`CreateInvitation`, `ConfirmAttendance`, etc.).
 - 🟢 **Validaciones Robustas**: Existen validaciones de entrada, de estado y de reglas de negocio.
-- 🟡 **Detección de Duplicados Débil**: La detección de invitaciones duplicadas se basa solo en el primer nombre del invitado, lo que puede permitir la creación de duplicados.
-- 🔴 **Falta de Transaccionalidad**: Las operaciones de escritura que involucran múltiples pasos (ej. guardar confirmación y luego actualizar invitación) no son transaccionales, lo que podría dejar la base de datos en un estado inconsistente si uno de los pasos falla.
-- 🟡 **Ineficiencia en Consultas**: Algunos casos de uso, como `GetConfirmationStatsUseCase`, obtienen grandes cantidades de datos en memoria para luego filtrarlos, lo cual no es escalable.
+- 🟢 **Detección de Duplicados Mejorada**: Se implementó una lógica más robusta en `CreateInvitationUseCase` que considera todos los nombres de los invitados y el número de teléfono para evitar duplicados.
+- 🟢 **Transaccionalidad Simulada**: Se implementó un mecanismo de compensación (rollback) en `CreateConfirmationUseCase` para asegurar la consistencia de los datos en caso de fallos parciales.
+- 🟢 **Consultas Optimizadas**: Se mejoró la eficiencia en `GetConfirmationStatsUseCase` delegando el filtrado a los repositorios cuando es posible, reduciendo la carga en memoria.
+- 🟢 **Lógica de Negocio en Entidades**: Se refactorizó la entidad `Invitation` para encapsular mejor la validación de consistencia de pases y otras reglas de negocio, simplificando los casos de uso.
 
-### **🚀 OPORTUNIDADES DE MEJORA EN LÓGICA DE NEGOCIO**
+### **🚀 OPORTUNIDADES DE MEJORA EN LÓGICA DE NEGOCIO (Completadas)**
 
-1.  **Mejorar la Detección de Duplicados**:
-    - **Recomendación**: Implementar una lógica más robusta para detectar invitaciones duplicadas, considerando todos los nombres de los invitados y, opcionalmente, el número de teléfono.
+1.  ✅ **Mejorar la Detección de Duplicados**:
+    - **Estado**: Completado. Se implementó en `CreateInvitationUseCase`.
 
-2.  **Asegurar la Transaccionalidad**:
-    - **Recomendación**: Refactorizar los casos de uso de escritura para que sean transaccionales. Si se sigue utilizando CSV, esto podría implicar la creación de archivos temporales y un mecanismo de "commit/rollback". Si se migra a una base de datos, se deberían utilizar las transacciones que esta provea.
+2.  ✅ **Asegurar la Transaccionalidad**:
+    - **Estado**: Completado. Se implementó rollback simulado en `CreateConfirmationUseCase`.
 
-3.  **Optimizar las Consultas de Datos**:
-    - **Recomendación**: Modificar los repositorios para que puedan realizar consultas más complejas y eficientes, evitando la necesidad de filtrar grandes volúmenes de datos en memoria.
+3.  ✅ **Optimizar las Consultas de Datos**:
+    - **Estado**: Completado. Se optimizó `GetConfirmationStatsUseCase`.
 
-4.  **Refactorizar y Simplificar**:
-    - **Recomendación**: Mover la lógica de negocio que actualmente reside en los casos de uso hacia las entidades del dominio o a servicios de dominio especializados. Esto mantendrá los casos de uso más limpios y centrados en la orquestación de las operaciones.
+4.  ✅ **Refactorizar y Simplificar**:
+    - **Estado**: Completado. Se movió lógica de validación a la entidad `Invitation`.
 
 ---
 
