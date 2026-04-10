@@ -296,22 +296,47 @@ class Invitation {
      * Cancela la invitación.
      * Este método encapsula la lógica de negocio para cancelar una invitación,
      * asegurando que el estado sea consistente.
-     * @param {string} cancelledBy - Identificador de quién realiza la cancelación (ej. 'admin', 'user').
      * @param {string} reason - Motivo de la cancelación.
+     * @param {string} cancelledBy - Identificador de quién realiza la cancelación (ej. 'admin', 'user').
      */
-    cancel(cancelledBy = 'admin', reason = '') {
-        if (!this.isActive()) {
-            throw new BusinessRuleException('La invitación ya está inactiva o cancelada.');
-        }
-
-        this._status = 'inactive';
+    cancel(reason = '', cancelledBy = 'admin') {
+        this._status = 'cancelled';
         this._cancelledAt = new Date().toISOString();
         this._cancelledBy = cancelledBy;
         this._cancellationReason = reason;
+        this._confirmedPasses = 0;
+        this._confirmationDate = null;
 
-        // Opcional: resetear pases confirmados si la lógica de negocio lo requiere.
-        // this._confirmedPasses = 0;
-        // this._confirmationDate = null;
+        return this;
+    }
+
+    /**
+     * Desactiva la invitación.
+     * @param {string} deletedBy - Identificador de quién realiza la desactivación.
+     * @param {string} reason - Motivo de la desactivación.
+     */
+    deactivate(deletedBy = 'admin', reason = '') {
+        this._status = 'inactive';
+        this._cancelledAt = new Date().toISOString();
+        this._cancelledBy = deletedBy;
+        this._cancellationReason = reason;
+
+        return this;
+    }
+
+    /**
+     * Activa una invitación previamente inactiva.
+     */
+    activate() {
+        this._cancelledAt = null;
+        this._cancelledBy = null;
+        this._cancellationReason = null;
+
+        if (this._confirmedPasses > 0) {
+            this._status = this.isFullyConfirmed() ? 'confirmed' : 'partial';
+        } else {
+            this._status = 'pending';
+        }
 
         return this;
     }
@@ -321,23 +346,7 @@ class Invitation {
      * Encapsula la lógica para revertir una cancelación.
      */
     restore() {
-        if (this.isActive()) {
-            // Si ya está activa, no hay nada que hacer.
-            return this;
-        }
-
-        this._cancelledAt = null;
-        this._cancelledBy = null;
-        this._cancellationReason = null;
-
-        // Recalcula el estado basado en si ya había una confirmación previa.
-        if (this.isConfirmed()) {
-            this._status = this.isFullyConfirmed() ? 'confirmed' : 'partial';
-        } else {
-            this._status = 'pending';
-        }
-
-        return this;
+        return this.activate();
     }
 
     /**
@@ -535,6 +544,19 @@ class Invitation {
     }
 
     /**
+     * Valida la invitación
+     */
+    validate() {
+        this.validateConstructorParams({
+            code: this._code,
+            guestNames: this._guestNames,
+            numberOfPasses: this._numberOfPasses,
+            phone: this._phone
+        });
+        this.validatePassesConsistency();
+    }
+
+    /**
      * Valida los parámetros del constructor
      * @private
      */
@@ -583,11 +605,17 @@ class Invitation {
         }
 
         if (totalCalculated !== this._numberOfPasses) {
-            // Temporalmente desactivado para no romper flujos existentes.
-            // Se reactivará cuando se refactorice la creación/actualización.
-            // throw new BusinessRuleException(
-            //     `La suma de pases detallados (${totalCalculated}) debe ser igual al total de pases (${this._numberOfPasses})`
-            // );
+            // Si hay inconsistencia, intentar corregirla automáticamente
+            // Asignando la diferencia a adultPasses si es posible
+            if (this._numberOfPasses > 0) {
+                this._adultPasses = this._numberOfPasses - (this._childPasses + this._staffPasses);
+                if (this._adultPasses < 0) {
+                    // Si no se puede corregir, lanzar excepción
+                    throw new BusinessRuleException(
+                        `La suma de pases detallados (${totalCalculated}) excede el total de pases (${this._numberOfPasses})`
+                    );
+                }
+            }
         }
     }
 
