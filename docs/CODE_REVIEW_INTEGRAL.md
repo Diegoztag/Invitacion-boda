@@ -487,11 +487,11 @@ describe('RSVPController', () => {
 3.  ✅ **Desacoplar Controladores de Repositorios**:
     - **Estado**: Completado. Se crearon casos de uso específicos para todas las operaciones de lectura y se utilizan en los controladores en lugar de interactuar directamente con los repositorios.
 
-4.  **Centralizar Utilidades**:
-    - **Recomendación**: Extraer el código duplicado, como la función `convertToCSV`, a un módulo de utilidades compartidas para mejorar la mantenibilidad y reducir la duplicación.
+4.  ✅ **Centralizar Utilidades**:
+    - **Estado**: Completado. Se extrajo el código duplicado a un módulo de utilidades compartidas.
 
-5.  **Refinar los Casos de Uso**:
-    - **Recomendación**: Dividir los casos de uso que tienen múltiples responsabilidades en casos de uso más pequeños y enfocados. Por ejemplo, dividir `ConfirmAttendanceUseCase` en `CreateConfirmationUseCase`, `UpdateConfirmationUseCase` y `CancelConfirmationUseCase`.
+5.  ✅ **Refinar los Casos de Uso**:
+    - **Estado**: Completado. Se dividieron los casos de uso con múltiples responsabilidades en casos de uso más pequeños y enfocados.
 
-6.  **Asegurar Endpoints Sensibles**:
-    - **Recomendación**: Añadir autenticación y autorización al endpoint de suscripción de notificaciones (`/api/notifications/subscribe`) para asegurar que solo los clientes autorizados puedan acceder a él.
+6.  ✅ **Asegurar Endpoints Sensibles**:
+    - **Estado**: Completado. Se añadió autenticación y autorización al endpoint de suscripción de notificaciones.
