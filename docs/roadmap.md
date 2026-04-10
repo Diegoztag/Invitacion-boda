@@ -59,16 +59,16 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 ### Ciclo 32: Rendimiento y Escalabilidad
 
 - [x] Cachear respuestas frecuentes (memoria/Redis).
-- [ ] Evaluar migración de CSV a base de datos (relacional o NoSQL).
-- [ ] Optimizar paginación y consultas en repositorios.
+- [x] Evaluar migración de CSV a base de datos (relacional o NoSQL).
+- [x] Optimizar paginación y consultas en repositorios.
 - [x] Comprimir/minificar recursos front-end y habilitar Service Worker.
 - [x] Monitorizar tiempos de respuesta (APM) y definir alertas.
 
 ### Ciclo 33: Documentación y Operaciones
 
-- [ ] Documentar API con Swagger/OpenAPI.
-- [ ] Configurar CI/CD para build, lint, test y deploy.
-- [ ] Definir entorno de staging y gestionar variables sensibles.
+- [x] Documentar API con Swagger/OpenAPI.
+- [x] Configurar CI/CD para build, lint, test y deploy.
+- [x] Definir entorno de staging y gestionar variables sensibles.
 
 ### Ciclo 34: Otros Temas
 

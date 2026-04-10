@@ -9,6 +9,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpecs = require('./config/swagger');
 
 // Cargar configuración centralizada
 const config = require('./config');
@@ -390,6 +392,9 @@ class Server {
             res.redirect('/landing');
         });
 
+        // Documentación Swagger
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
         // Ruta para obtener el token CSRF
         this.app.get('/api/csrf-token', middleware.csrfProtection, middleware.sendCsrfToken);
 
@@ -565,4 +570,3 @@ if (require.main === module) {
 }
 
 module.exports = Server;
-// Force restart 5

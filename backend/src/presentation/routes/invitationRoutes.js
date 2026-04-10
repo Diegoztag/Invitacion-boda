@@ -8,6 +8,13 @@ const express = require('express');
 const router = express.Router();
 
 /**
+ * @swagger
+ * tags:
+ *   name: Invitations
+ *   description: API para gestión de invitaciones
+ */
+
+/**
  * Envuelve un método del controlador para asegurar que `next` se pase correctamente.
  * @param {Function} fn - El método del controlador.
  * @returns {Function} Un manejador de ruta de Express.
@@ -32,6 +39,23 @@ function configureInvitationRoutes(invitationController, middleware) {
     // 1. Rutas Específicas (Prioridad Alta)
     // ==========================================
 
+    /**
+     * @swagger
+     * /api/invitations/search/{name}:
+     *   get:
+     *     summary: Busca invitaciones por nombre
+     *     tags: [Invitations]
+     *     parameters:
+     *       - in: path
+     *         name: name
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: Nombre a buscar
+     *     responses:
+     *       200:
+     *         description: Lista de invitaciones encontradas
+     */
     // Búsqueda por nombre (Pública)
     router.get(
         '/search/:name',
@@ -86,6 +110,18 @@ function configureInvitationRoutes(invitationController, middleware) {
     // 2. Rutas Raíz (Colección)
     // ==========================================
 
+    /**
+     * @swagger
+     * /api/invitations:
+     *   get:
+     *     summary: Obtiene todas las invitaciones
+     *     tags: [Invitations]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Lista de invitaciones
+     */
     // Obtener todas (Privada)
     router.get(
         '/',
@@ -119,6 +155,25 @@ function configureInvitationRoutes(invitationController, middleware) {
         asyncHandler(invitationController.restoreInvitation.bind(invitationController))
     );
 
+    /**
+     * @swagger
+     * /api/invitations/{code}:
+     *   get:
+     *     summary: Obtiene una invitación por código
+     *     tags: [Invitations]
+     *     parameters:
+     *       - in: path
+     *         name: code
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: Código de la invitación
+     *     responses:
+     *       200:
+     *         description: Detalles de la invitación
+     *       404:
+     *         description: Invitación no encontrada
+     */
     // Obtener una (Pública)
     router.get(
         '/:code',

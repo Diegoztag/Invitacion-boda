@@ -3,7 +3,23 @@
  * Centraliza la lectura de variables de entorno con valores por defecto.
  */
 
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Determinar el entorno actual
+const env = process.env.NODE_ENV || 'development';
+
+// Cargar el archivo .env correspondiente al entorno, con fallback a .env
+const envPath = path.resolve(__dirname, `../../.env.${env}`);
+const defaultEnvPath = path.resolve(__dirname, '../../.env');
+
+// Intentar cargar el archivo específico del entorno primero
+const envConfig = dotenv.config({ path: envPath });
+
+// Si no se encuentra el archivo específico, cargar el .env por defecto
+if (envConfig.error) {
+    dotenv.config({ path: defaultEnvPath });
+}
 
 const parseList = (value, defaultVal = []) => {
     if (!value) {
@@ -16,6 +32,7 @@ const parseList = (value, defaultVal = []) => {
 };
 
 const config = {
+    env: env,
     port: process.env.PORT || 3000,
     cors: {
         allowedOrigins: parseList(process.env.CORS_ALLOWED_ORIGINS, '') // coma separados
