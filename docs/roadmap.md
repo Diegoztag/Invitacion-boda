@@ -75,7 +75,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Cumplir con normas de protección de datos personales (LGPD/GDPR).
 - [x] SEO y metadata en landing page.
 - [ ] Migrar frontend a bundler moderno (Vite) y modularizar código.
-- [ ] Mantener sincronía con `docs/MIGRATION_ROADMAP.md`.
+- [x] Mantener sincronía con `docs/MIGRATION_ROADMAP.md` (Obsoleto: Integrado en este roadmap).
 
 ---
 
