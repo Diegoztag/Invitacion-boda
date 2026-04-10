@@ -21,8 +21,8 @@ class CreateInvitationUseCase {
      */
     async execute(invitationData) {
         const endOperation = this.logger.startOperation('createInvitation', {
-            guestNames: invitationData.guestNames,
-            numberOfPasses: invitationData.numberOfPasses
+            guestNames: invitationData?.guestNames,
+            numberOfPasses: invitationData?.numberOfPasses
         });
 
         try {
@@ -120,7 +120,7 @@ class CreateInvitationUseCase {
         // Normalizar nombres de invitados
         const sanitize =
             this.validationService && typeof this.validationService.sanitizeString === 'function'
-                ? this.validationService.sanitizeString
+                ? this.validationService.sanitizeString.bind(this.validationService)
                 : str => str;
 
         const guestNames = Array.isArray(normalized.guestNames)
@@ -170,24 +170,29 @@ class CreateInvitationUseCase {
     async validateBusinessRules(normalizedData) {
         // Verificar si ya existe una invitación con los mismos nombres
         if (typeof this.invitationRepository.findByGuestName === 'function') {
-            const existingInvitations = await this.invitationRepository.findByGuestName(
-                normalizedData.guestNames[0]
-            );
+            // Buscar por cada nombre para mejorar la detección de duplicados
+            for (const name of normalizedData.guestNames) {
+                const existingInvitations = await this.invitationRepository.findByGuestName(name);
 
-            const duplicateInvitation = existingInvitations.find(invitation => {
-                const existingNames = invitation.guestNames.map(name => name.toLowerCase());
-                const newNames = normalizedData.guestNames.map(name => name.toLowerCase());
+                const duplicateInvitation = existingInvitations.find(invitation => {
+                    const existingNames = invitation.guestNames.map(n => n.toLowerCase().trim());
+                    const newNames = normalizedData.guestNames.map(n => n.toLowerCase().trim());
 
-                return (
-                    existingNames.length === newNames.length &&
-                    existingNames.every(name => newNames.includes(name))
-                );
-            });
+                    // Considerar duplicado si hay una coincidencia exacta de todos los nombres
+                    // o si un nombre individual ya tiene una invitación activa
+                    const exactMatch = existingNames.length === newNames.length &&
+                        existingNames.every(n => newNames.includes(n));
+                    
+                    const partialMatch = existingNames.some(n => newNames.includes(n));
 
-            if (duplicateInvitation && duplicateInvitation.isActive()) {
-                throw new Error(
-                    `Ya existe una invitación activa para: ${normalizedData.guestNames.join(' y ')}`
-                );
+                    return exactMatch || partialMatch;
+                });
+
+                if (duplicateInvitation && duplicateInvitation.isActive()) {
+                    throw new Error(
+                        `Ya existe una invitación activa que incluye a: ${name}`
+                    );
+                }
             }
         }
 
