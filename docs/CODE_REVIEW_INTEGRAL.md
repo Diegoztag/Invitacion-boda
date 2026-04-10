@@ -495,3 +495,32 @@ describe('RSVPController', () => {
 
 6.  ✅ **Asegurar Endpoints Sensibles**:
     - **Estado**: Completado. Se añadió autenticación y autorización al endpoint de suscripción de notificaciones.
+
+---
+
+## 🔄 Ciclo 35: Limpieza de Código y Calidad (En Progreso)
+
+**Objetivo:** Mejorar la calidad del código eliminando advertencias del linter, código muerto y sentencias de depuración olvidadas.
+
+### 1. Corrección de Errores de Estilo (Linting)
+
+- **Problema:** Múltiples errores de indentación y uso incorrecto de comillas simples/dobles en varios archivos del backend y frontend.
+- **Solución:** Ejecutar `npm run lint:fix` para aplicar las reglas de estilo de forma automática y consistente.
+- **Estado:** ✅ Completado.
+
+### 2. Limpieza de Advertencias (Warnings)
+
+- **Problema:** Existen 52 advertencias relacionadas con `Unexpected console statement` (console.log) y variables definidas pero no usadas (ej. `err` en bloques catch).
+- **Solución:**
+    - Reemplazar `console.log` por el `Logger` en el backend o eliminarlos si son de depuración.
+    - Eliminar o utilizar las variables declaradas que no se están usando.
+- **Estado:** ⏳ Pendiente.
+
+---
+
+## 🎯 Próximos Pasos Recomendados
+
+1.  **Completar el Ciclo 35** limpiando todos los warnings del linter.
+2.  **Ejecutar las pruebas** para asegurar que no se ha roto nada.
+3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+4.  **Continuar con el Roadmap**, priorizando la migración a una base de datos real.

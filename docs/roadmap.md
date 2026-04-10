@@ -77,6 +77,11 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] Migrar frontend a bundler moderno (Vite) y modularizar código.
 - [x] Mantener sincronía con `docs/MIGRATION_ROADMAP.md` (Obsoleto: Integrado en este roadmap).
 
+### Ciclo 35: Limpieza de Código y Calidad
+
+- [x] **Corrección de Errores de Estilo**: Ejecutar `lint:fix` para aplicar reglas de estilo automáticamente.
+- [ ] **Limpieza de Advertencias**: Eliminar `console.log` y variables no usadas en frontend y backend.
+
 ---
 
 ## 🚀 Próximas Fases (Roadmap Técnico)
