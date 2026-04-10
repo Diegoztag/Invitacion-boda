@@ -48,12 +48,18 @@ export class AppFacade {
             await validationService.init();
         }
 
+        const i18nService = await this.diContainer.get('i18nService');
+        if (i18nService && i18nService.init) {
+            await i18nService.init();
+        }
+
         return {
             sectionGeneratorService,
             configurationService,
             invitationService,
             metaService,
-            validationService
+            validationService,
+            i18nService
         };
     }
 

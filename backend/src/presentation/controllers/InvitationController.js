@@ -4,11 +4,12 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
-import BaseController from './BaseController.js';
+const BaseController = require('./BaseController');
 
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
 const QueryBuilder = require('../../shared/utils/QueryBuilder');
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
 class InvitationController extends BaseController {
     constructor(
@@ -73,14 +74,18 @@ class InvitationController extends BaseController {
             const validation = this.validationService.validateInvitationData(createInvitationDTO);
 
             if (!validation.isValid) {
-                return this.sendError(res, new Error('Datos de invitaciรณn invรกlidos'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException('Datos de invitación inválidos', validation.errors),
+                    next
+                );
             }
 
             // Ejecutar caso de uso
             const result = await this.createInvitationUseCase.execute(validation.sanitized);
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({
@@ -130,7 +135,7 @@ class InvitationController extends BaseController {
             );
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({
@@ -230,7 +235,11 @@ class InvitationController extends BaseController {
             const { invitations } = req.body;
 
             if (!Array.isArray(invitations) || invitations.length === 0) {
-                return this.sendError(res, new Error('Se requiere un array de invitaciones'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException('Se requiere un array de invitaciones'),
+                    next
+                );
             }
 
             // Ejecutar importaciรณn en lote
@@ -271,7 +280,7 @@ class InvitationController extends BaseController {
             const result = await this.exportInvitationsUseCase.execute(format);
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({

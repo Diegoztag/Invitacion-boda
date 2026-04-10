@@ -3,8 +3,6 @@
  * Valida: descubrimiento de campos, validación en tiempo real, errores, submit
  */
 
-import { FormValidatorComponent } from '../form-validator';
-
 // Mock de Component MUST be before any imports
 jest.mock('../../base/component.js', () => ({
     Component: class {
@@ -43,7 +41,9 @@ jest.mock('../../../../shared/helpers/debounce.js', () => ({
 }));
 
 // NOW import the component after all mocks are defined
-describe('FormValidatorComponent', () => {
+import { FormValidator } from '../form-validator.js';
+
+describe('FormValidator', () => {
     let form;
     let validationService;
     let formValidator;
@@ -77,7 +77,7 @@ describe('FormValidatorComponent', () => {
 
         document.body.appendChild(form);
 
-        formValidator = new FormValidatorComponent(form, validationService, {
+        formValidator = new FormValidator(form, validationService, {
             validateOnInput: true,
             validateOnBlur: true,
             showErrorsInline: true
@@ -109,7 +109,7 @@ describe('FormValidatorComponent', () => {
         });
 
         it('debe respetar opciones de configuración', () => {
-            const customValidator = new FormValidatorComponent(form, validationService, {
+            const customValidator = new FormValidator(form, validationService, {
                 validateOnInput: false,
                 validateOnBlur: false,
                 showErrorsInline: false,
@@ -259,7 +259,7 @@ describe('FormValidatorComponent', () => {
                 validateOnBlur: false
             };
 
-            const customValidator = new FormValidatorComponent(form, validationService, options);
+            const customValidator = new FormValidator(form, validationService, options);
             await customValidator.init();
 
             const fullNameInput = form.querySelector('#fullName');
@@ -280,7 +280,7 @@ describe('FormValidatorComponent', () => {
                 validateOnBlur: true
             };
 
-            const customValidator = new FormValidatorComponent(form, validationService, options);
+            const customValidator = new FormValidator(form, validationService, options);
             await customValidator.init();
 
             const emailInput = form.querySelector('#email');
@@ -322,7 +322,7 @@ describe('FormValidatorComponent', () => {
         });
 
         it('debe ocultar errores inline si está deshabilitado', () => {
-            const customValidator = new FormValidatorComponent(form, validationService, {
+            const customValidator = new FormValidator(form, validationService, {
                 showErrorsInline: false
             });
 
@@ -330,7 +330,7 @@ describe('FormValidatorComponent', () => {
         });
 
         it('debe mostrar resumen de errores si está habilitado', () => {
-            const customValidator = new FormValidatorComponent(form, validationService, {
+            const customValidator = new FormValidator(form, validationService, {
                 showErrorsSummary: true
             });
 

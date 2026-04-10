@@ -147,9 +147,6 @@ function configureInvitationRoutes(invitationController, middleware) {
         asyncHandler(invitationController.deleteInvitation.bind(invitationController))
     );
 
-    // Manejo de errores específico para invitaciones
-    router.use(middleware.errorHandler);
-
     return router;
 }
 

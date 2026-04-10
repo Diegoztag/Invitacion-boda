@@ -1,4 +1,4 @@
 code,guestNames,numberOfPasses,phone,createdAt,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason,attendingNames,dietaryRestrictionsNames,dietaryRestrictionsDetails,generalMessage
-dd7c58a1,Juan Pérez|María García,2,+1234567890,2024-01-01T01:00:00.000Z,2,2024-01-01T01:30:00.000Z,2,0,0,0,confirmed,,,,Juan Pérez|María García,Sin restricciones,Sin restricciones,¡Felicidades! Estamos muy emocionados.
-451c704b,Pedro López,1,+0987654321,2024-01-01T02:30:00.000Z,0,2024-01-01T02:45:00.000Z,1,0,0,0,cancelled,,,,,,,"Lo sentimos, no podremos asistir"
-a825d1d1,Ana Rodríguez,1,,2024-01-01T03:00:00.000Z,0,,1,0,0,0,active,,,,,,,
+3M1PS0,Juan Pérez|María García,2,+1234567890,2024-01-01T01:00:00.000Z,2,2024-01-01T01:30:00.000Z,2,0,0,0,confirmed,,,,Juan Pérez|María García,Sin restricciones,Sin restricciones,¡Felicidades! Estamos muy emocionados.
+XWS7DB,Pedro López,1,+0987654321,2024-01-01T02:30:00.000Z,0,2024-01-01T02:45:00.000Z,1,0,0,0,cancelled,,,,,,,"Lo sentimos, no podremos asistir"
+RII45J,Ana Rodríguez,1,,2024-01-01T03:00:00.000Z,0,,1,0,0,0,active,,,,,,,

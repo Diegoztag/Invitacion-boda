@@ -13,6 +13,18 @@ class BaseController {
      * @param {number} statusCode - El código de estado HTTP.
      */
     sendSuccess(res, data, statusCode = 200) {
+        // Si data ya tiene success, asumimos que es el objeto de respuesta completo
+        // o si tiene propiedades específicas que esperamos en la raíz
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+            if (data.success !== undefined || data.invitation || data.confirmation) {
+                return res.status(statusCode).json({
+                    success: true,
+                    ...data
+                });
+            }
+        }
+
+        // Comportamiento por defecto: envolver en data
         res.status(statusCode).json({
             success: true,
             data
@@ -50,7 +62,8 @@ class BaseController {
             const result = await useCase.execute(...params);
             if (result && result.success === false) {
                 // Si el caso de uso retorna un error de negocio, lo manejamos
-                return this.sendError(res, new Error(result.error), next);
+                const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
             endOperation({
                 success: true
@@ -68,4 +81,4 @@ class BaseController {
     }
 }
 
-export default BaseController;
+module.exports = BaseController;

@@ -3,7 +3,7 @@
  * Valida: actualización de meta tags, título, Open Graph, restauración
  */
 
-import MetaService from '../meta-service';
+import { MetaService } from '../meta-service.js';
 
 describe('MetaService', () => {
     let metaService;

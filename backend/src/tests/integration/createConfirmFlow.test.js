@@ -1,5 +1,5 @@
-import request from 'supertest';
-import Server from '../../server';
+const request = require('supertest');
+const Server = require('../../server');
 
 describe('Integration - Create + Confirm Flow', () => {
     let app;
@@ -93,8 +93,13 @@ describe('Integration - Create + Confirm Flow', () => {
 
         const response = await request(app)
             .post(`/api/v1/confirmations/${createdInvitationCode}`)
-            .send(confirmationData)
-            .expect(201);
+            .send(confirmationData);
+
+        if (response.status !== 201) {
+            console.error('Error response:', response.body);
+        }
+
+        expect(response.status).toBe(201);
 
         expect(response.body.success).toBe(true);
         expect(response.body.invitation).toBeDefined();
@@ -127,10 +132,12 @@ describe('Integration - Create + Confirm Flow', () => {
             .expect(200);
 
         expect(response.body.success).toBe(true);
-        expect(response.body.stats).toBeDefined();
-        expect(response.body.stats.invitations.total).toBeGreaterThanOrEqual(1);
-        expect(response.body.stats.invitations.confirmed).toBeGreaterThanOrEqual(1);
-        expect(response.body.stats.confirmations.totalConfirmedGuests).toBeGreaterThanOrEqual(2);
+        expect(response.body.data.stats).toBeDefined();
+        expect(response.body.data.stats.invitations.total).toBeGreaterThanOrEqual(1);
+        expect(response.body.data.stats.invitations.confirmed).toBeGreaterThanOrEqual(1);
+        expect(response.body.data.stats.confirmations.totalConfirmedGuests).toBeGreaterThanOrEqual(
+            2
+        );
     });
 
     test('debe fallar al confirmar invitación inexistente', async () => {

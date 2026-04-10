@@ -1,4 +1,4 @@
-import csrf from 'csurf';
+const csrf = require('csurf');
 
 const csrfProtection = csrf({
     cookie: {
@@ -18,4 +18,4 @@ const csrfMiddleware = (req, res, next) => {
     return csrfProtection(req, res, next);
 };
 
-export default csrfMiddleware;
+module.exports = csrfMiddleware;

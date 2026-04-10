@@ -10,7 +10,10 @@ const Invitation = require('../../../core/entities/Invitation');
 const mockInvitationRepository = {
     save: jest.fn(),
     findByCode: jest.fn(),
-    importBatch: jest.fn()
+    importBatch: jest.fn(),
+    findByGuestName: jest.fn().mockResolvedValue([]),
+    findByPhone: jest.fn().mockResolvedValue([]),
+    findByTable: jest.fn().mockResolvedValue([])
 };
 
 const mockValidationService = {
@@ -18,19 +21,40 @@ const mockValidationService = {
     generateInvitationCode: jest.fn()
 };
 
+const mockConfig = {
+    guests: {
+        maxGuestsPerInvitation: 10
+    },
+    tables: {
+        maxPassesPerTable: 10
+    },
+    validation: {
+        app: {
+            generationMaxAttempts: 10
+        }
+    }
+};
+
 const mockLogger = {
     info: jest.fn(),
     error: jest.fn(),
-    warn: jest.fn()
+    warn: jest.fn(),
+    startOperation: jest.fn()
 };
 
 describe('CreateInvitationUseCase', () => {
     let useCase;
 
     beforeEach(() => {
+        mockLogger.startOperation.mockImplementation(() => jest.fn());
+        mockInvitationRepository.findByGuestName.mockResolvedValue([]);
+        mockInvitationRepository.findByPhone.mockResolvedValue([]);
+        mockInvitationRepository.findByTable.mockResolvedValue([]);
+
         useCase = new CreateInvitationUseCase(
             mockInvitationRepository,
             mockValidationService,
+            mockConfig,
             mockLogger
         );
 
@@ -112,7 +136,7 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Ya existe una invitación con el código INV001');
+            expect(result.error).toBe('No se pudo generar un código único después de 10 intentos');
             expect(mockInvitationRepository.save).not.toHaveBeenCalled();
         });
 
@@ -169,7 +193,7 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error creando invitación');
+            expect(result.error).toBe('Database error');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
@@ -187,7 +211,7 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error creando invitación');
+            expect(result.error).toBe('El número máximo de pases por invitación es 10');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
@@ -208,7 +232,9 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error creando invitación');
+            expect(result.error).toBe(
+                'La suma de pases específicos (1) debe coincidir con el total (2)'
+            );
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
@@ -312,7 +338,9 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error creando invitación');
+            expect(result.error).toBe(
+                'La mesa Mesa 1 no tiene suficiente espacio. Capacidad restante: 2 pases. Ocupado: 8'
+            );
             expect(mockLogger.error).toHaveBeenCalledWith(
                 'Table capacity exceeded',
                 expect.any(Object)
@@ -334,7 +362,7 @@ describe('CreateInvitationUseCase', () => {
 
             const mockInv = new Invitation({
                 code: 'INV002',
-                guestNames: ['Juan Pérez', 'María García'],
+                guestNames: ['Juan Pérez'],
                 numberOfPasses: 2,
                 status: 'pending'
             });
@@ -345,7 +373,7 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error creando invitación');
+            expect(result.error).toBe('Ya existe una invitación activa que incluye a: Juan Pérez');
         });
     });
 
@@ -467,6 +495,7 @@ describe('CreateInvitationUseCase', () => {
                     findByCode: jest.fn().mockResolvedValue(null)
                 },
                 mockValidationService,
+                mockConfig,
                 mockLogger
             );
 
@@ -502,6 +531,7 @@ describe('CreateInvitationUseCase', () => {
                     findByCode: jest.fn().mockResolvedValue(null)
                 },
                 mockValidationService,
+                mockConfig,
                 mockLogger
             );
 
@@ -531,6 +561,7 @@ describe('CreateInvitationUseCase', () => {
                     findByCode: jest.fn().mockResolvedValue(null)
                 },
                 mockValidationService,
+                mockConfig,
                 mockLogger
             );
 
@@ -566,6 +597,7 @@ describe('CreateInvitationUseCase', () => {
                     findByCode: jest.fn().mockResolvedValue(null)
                 },
                 mockValidationService,
+                mockConfig,
                 mockLogger
             );
 
@@ -604,6 +636,7 @@ describe('CreateInvitationUseCase', () => {
                     findByCode: jest.fn().mockResolvedValue(null)
                 },
                 mockValidationService,
+                mockConfig,
                 mockLogger
             );
 
@@ -695,7 +728,7 @@ describe('CreateInvitationUseCase', () => {
             const result = await useCase.execute(invitationData);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Error validando datos de invitación');
+            expect(result.error).toBe('Validation service error');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 

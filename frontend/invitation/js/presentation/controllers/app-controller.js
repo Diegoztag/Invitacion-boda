@@ -25,6 +25,7 @@ export class AppController {
         this.metaService = null; // Kept for ContentController dependency
         this.validationService = null; // Kept for RSVPController dependency
         this.configurationService = null; // Kept for ThemeController dependency
+        this.i18nService = null;
 
         // Controladores
         this.navigationController = null;
@@ -84,6 +85,9 @@ export class AppController {
             // 5. Configurar event listeners globales
             this._setupEventListeners();
 
+            // 5.5 Configurar i18n
+            this._setupI18n();
+
             // 6. Cargar datos iniciales
             await this._loadInitialData();
 
@@ -123,6 +127,7 @@ export class AppController {
         this.metaService = services.metaService;
         this.validationService = services.validationService;
         this.configurationService = services.configurationService;
+        this.i18nService = services.i18nService;
     }
 
     /**
@@ -255,6 +260,43 @@ export class AppController {
             handler: visibilityHandler
         });
 
+        // Language switcher events
+        const langEsBtn = document.getElementById('lang-es');
+        const langEnBtn = document.getElementById('lang-en');
+
+        if (langEsBtn && langEnBtn) {
+            const handleLangEs = () => {
+                if (this.i18nService) {
+                    this.i18nService.setLocale('es');
+                    langEsBtn.classList.add('active');
+                    langEnBtn.classList.remove('active');
+                }
+            };
+
+            const handleLangEn = () => {
+                if (this.i18nService) {
+                    this.i18nService.setLocale('en');
+                    langEnBtn.classList.add('active');
+                    langEsBtn.classList.remove('active');
+                }
+            };
+
+            langEsBtn.addEventListener('click', handleLangEs);
+            langEnBtn.addEventListener('click', handleLangEn);
+
+            this.eventListeners.set('lang-es', {
+                element: langEsBtn,
+                event: 'click',
+                handler: handleLangEs
+            });
+
+            this.eventListeners.set('lang-en', {
+                element: langEnBtn,
+                event: 'click',
+                handler: handleLangEn
+            });
+        }
+
         // Navigation events
         if (this.navigationController) {
             this.navigationController.on(EVENTS.NAVIGATION.SECTION_CHANGED, data => {
@@ -272,6 +314,65 @@ export class AppController {
                 this.handleInvitationLoaded(data);
             });
         }
+    }
+
+    /**
+     * Configura la internacionalización
+     */
+    _setupI18n() {
+        if (this.i18nService) {
+            // Suscribirse a cambios de idioma
+            this.i18nService.subscribe(() => {
+                this.updateI18nTexts();
+            });
+
+            // Actualizar botones según el idioma actual
+            const currentLocale = this.i18nService.currentLocale;
+            const langEsBtn = document.getElementById('lang-es');
+            const langEnBtn = document.getElementById('lang-en');
+
+            if (langEsBtn && langEnBtn) {
+                if (currentLocale === 'es') {
+                    langEsBtn.classList.add('active');
+                    langEnBtn.classList.remove('active');
+                } else {
+                    langEnBtn.classList.add('active');
+                    langEsBtn.classList.remove('active');
+                }
+            }
+
+            // Actualización inicial
+            this.updateI18nTexts();
+        }
+    }
+
+    /**
+     * Actualiza los textos en el DOM según el idioma actual
+     */
+    updateI18nTexts() {
+        if (!this.i18nService) {
+            return;
+        }
+
+        // Actualizar elementos con data-i18n
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const translation = this.i18nService.t(key);
+            if (translation !== key) {
+                el.textContent = translation;
+            }
+        });
+
+        // Actualizar placeholders
+        const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+        placeholders.forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            const translation = this.i18nService.t(key);
+            if (translation !== key) {
+                el.setAttribute('placeholder', translation);
+            }
+        });
     }
 
     /**

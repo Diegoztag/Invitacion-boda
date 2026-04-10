@@ -46,12 +46,19 @@
         <div class="heart-loader"></div>
     </div>
 
-    <!-- Theme Switcher -->
-    <div class="theme-switcher-container">
-        <button id="theme-switcher" class="theme-switcher">
-            <i class="fas fa-sun"></i>
-            <i class="fas fa-moon"></i>
-        </button>
+    <!-- Controls Container (Theme & Language) -->
+    <div class="controls-container">
+        <div class="lang-switcher-container">
+            <button id="lang-es" class="lang-btn active">ES</button>
+            <span class="lang-separator">|</span>
+            <button id="lang-en" class="lang-btn">EN</button>
+        </div>
+        <div class="theme-switcher-container">
+            <button id="theme-switcher" class="theme-switcher">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Navigation -->
@@ -64,14 +71,14 @@
                 <span></span>
             </div>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="#inicio" class="nav-link">Inicio</a></li>
-                <li><a href="#evento" class="nav-link">El Evento</a></li>
-                <li><a href="#itinerario" class="nav-link">Itinerario</a></li>
-                <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
-                <li><a href="#confirmacion" class="nav-link">Confirmar Asistencia</a></li>
-                <li><a href="#mesa-regalos" class="nav-link">Mesa de Regalos</a></li>
-                <li><a href="#carousel" class="nav-link">Galería</a></li>
-                <li><a href="#fotos" class="nav-link">Fotos</a></li>
+                <li><a href="#inicio" class="nav-link" data-i18n="nav.home">Inicio</a></li>
+                <li><a href="#evento" class="nav-link" data-i18n="nav.event">El Evento</a></li>
+                <li><a href="#itinerario" class="nav-link" data-i18n="nav.itinerary">Itinerario</a></li>
+                <li><a href="#ubicacion" class="nav-link" data-i18n="nav.location">Ubicación</a></li>
+                <li><a href="#confirmacion" class="nav-link" data-i18n="nav.rsvp">Confirmar Asistencia</a></li>
+                <li><a href="#mesa-regalos" class="nav-link" data-i18n="nav.gifts">Mesa de Regalos</a></li>
+                <li><a href="#carousel" class="nav-link" data-i18n="nav.gallery">Galería</a></li>
+                <li><a href="#fotos" class="nav-link" data-i18n="nav.photos">Fotos</a></li>
             </ul>
         </div>
     </nav>
@@ -81,7 +88,7 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title animate-fade-in" id="heroTitle">Diego & Fernanda</h1>
-            <p class="hero-subtitle animate-fade-in-delay" id="heroSubtitle">Nos casamos</p>
+            <p class="hero-subtitle animate-fade-in-delay" id="heroSubtitle" data-i18n="hero.subtitle">Nos casamos</p>
             <div class="hero-date animate-fade-in-delay-2">
                 <span class="date-day" id="dateDay">28</span>
                 <span class="date-month" id="dateMonth">Febrero</span>
@@ -90,19 +97,19 @@
             <div class="countdown" id="countdown" data-countdown="2026-02-28T17:30:00">
                 <div class="countdown-item">
                     <span class="countdown-value" id="days">00</span>
-                    <span class="countdown-label">Días</span>
+                    <span class="countdown-label" data-i18n="hero.days">Días</span>
                 </div>
                 <div class="countdown-item">
                     <span class="countdown-value" id="hours">00</span>
-                    <span class="countdown-label">Horas</span>
+                    <span class="countdown-label" data-i18n="hero.hours">Horas</span>
                 </div>
                 <div class="countdown-item">
                     <span class="countdown-value" id="minutes">00</span>
-                    <span class="countdown-label">Minutos</span>
+                    <span class="countdown-label" data-i18n="hero.minutes">Minutos</span>
                 </div>
                 <div class="countdown-item">
                     <span class="countdown-value" id="seconds">00</span>
-                    <span class="countdown-label">Segundos</span>
+                    <span class="countdown-label" data-i18n="hero.seconds">Segundos</span>
                 </div>
             </div>
         </div>
@@ -111,13 +118,13 @@
     <!-- Event Details Section -->
     <section id="evento" class="event section">
         <div class="container">
-            <h2 class="section-title">Detalles del Evento</h2>
+            <h2 class="section-title" data-i18n="event.title">Detalles del Evento</h2>
             <div class="event-cards">
                 <div class="event-card">
                     <div class="event-icon">
                         <i class="fas fa-heart" id="ceremonyIcon"></i>
                     </div>
-                    <h3 id="ceremonyName">Ceremonia Civil</h3>
+                    <h3 id="ceremonyName" data-i18n="event.ceremony">Ceremonia Civil</h3>
                     <p class="event-time" id="ceremonyTime">5:30 PM</p>
                     <p class="event-location" id="ceremonyVenue">Hacienda los Reyes</p>
                     <p id="ceremonyAddress">Ejido el 30</p>
@@ -126,16 +133,16 @@
                     <div class="event-icon">
                         <i class="fas fa-champagne-glasses" id="receptionIcon"></i>
                     </div>
-                    <h3 id="receptionName">Recepción</h3>
+                    <h3 id="receptionName" data-i18n="event.reception">Recepción</h3>
                     <p class="event-time" id="receptionTime">7:00 PM</p>
                     <p class="event-location" id="receptionVenue">Hacienda los Reyes</p>
                     <p id="receptionAddress">Ejido el 30</p>
                 </div>
             </div>
             <div class="dress-code">
-                <h3 id="dressCodeTitle">Código de Vestimenta</h3>
-                <p class="dress-code-main" id="dressCodeDescription">Formal - Evitar colores pasteles</p>
-                <p class="dress-code-note" id="dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
+                <h3 id="dressCodeTitle" data-i18n="event.dressCode">Código de Vestimenta</h3>
+                <p class="dress-code-main" id="dressCodeDescription" data-i18n="event.dressCodeDesc">Formal - Evitar colores pasteles</p>
+                <p class="dress-code-note" id="dressCodeNote" data-i18n="event.dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
                 <div class="dress-code-image">
                     <img src="./img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
                 </div>
@@ -146,55 +153,55 @@
     <!-- Itinerary Section -->
     <section id="itinerario" class="itinerary section">
         <div class="container">
-            <h2 class="section-title">Itinerario del Día</h2>
+            <h2 class="section-title" data-i18n="itinerary.title">Itinerario del Día</h2>
             <div class="itinerary-timeline" id="itineraryTimeline">
                 <div class="itinerary-item">
                     <div class="itinerary-time">5:00 PM</div>
                     <div class="itinerary-content">
-                        <h4>Ceremonia Civil</h4>
-                        <p>Firma de documentos</p>
+                        <h4 data-i18n="itinerary.ceremony">Ceremonia Civil</h4>
+                        <p data-i18n="itinerary.ceremonyDesc">Firma de documentos</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">5:30 PM</div>
                     <div class="itinerary-content">
-                        <h4>Sesión de Fotos</h4>
-                        <p>Fotos con familia y amigos</p>
+                        <h4 data-i18n="itinerary.photos">Sesión de Fotos</h4>
+                        <p data-i18n="itinerary.photosDesc">Fotos con familia y amigos</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">6:00 PM</div>
                     <div class="itinerary-content">
-                        <h4>Llegada de Invitados</h4>
-                        <p>Recepción en la hacienda</p>
+                        <h4 data-i18n="itinerary.arrival">Llegada de Invitados</h4>
+                        <p data-i18n="itinerary.arrivalDesc">Recepción en la hacienda</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">6:30 PM</div>
                     <div class="itinerary-content">
-                        <h4>Cocktail de Bienvenida</h4>
-                        <p>Aperitivos y bebidas</p>
+                        <h4 data-i18n="itinerary.cocktail">Cocktail de Bienvenida</h4>
+                        <p data-i18n="itinerary.cocktailDesc">Aperitivos y bebidas</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">8:00 PM</div>
                     <div class="itinerary-content">
-                        <h4>Cena</h4>
-                        <p>Banquete de celebración</p>
+                        <h4 data-i18n="itinerary.dinner">Cena</h4>
+                        <p data-i18n="itinerary.dinnerDesc">Banquete de celebración</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">8:30 PM</div>
                     <div class="itinerary-content">
-                        <h4>Primer Baile</h4>
-                        <p>Los novios abren la pista</p>
+                        <h4 data-i18n="itinerary.firstDance">Primer Baile</h4>
+                        <p data-i18n="itinerary.firstDanceDesc">Los novios abren la pista</p>
                     </div>
                 </div>
                 <div class="itinerary-item">
                     <div class="itinerary-time">9:00 PM</div>
                     <div class="itinerary-content">
-                        <h4>Fiesta</h4>
-                        <p>¡A bailar toda la noche!</p>
+                        <h4 data-i18n="itinerary.party">Fiesta</h4>
+                        <p data-i18n="itinerary.partyDesc">¡A bailar toda la noche!</p>
                     </div>
                 </div>
             </div>
@@ -204,13 +211,13 @@
     <!-- Location Section -->
     <section id="ubicacion" class="location section">
         <div class="container">
-            <h2 class="section-title">Ubicación</h2>
+            <h2 class="section-title" data-i18n="location.title">Ubicación</h2>
             <div class="location-content">
                 <div class="location-info">
                     <h3 id="locationVenueName">Hacienda los Reyes</h3>
                     <p><i class="fas fa-map-marker-alt"></i> <span id="locationAddress">Ejido el 30</span></p>
                     <button class="btn btn-primary" id="directionsButton" onclick="openInMaps()">
-                        <i class="fas fa-map-marked-alt"></i> Cómo llegar
+                        <i class="fas fa-map-marked-alt"></i> <span data-i18n="location.directions">Cómo llegar</span>
                     </button>
                 </div>
                 <div class="map-container">
@@ -223,8 +230,8 @@
     <!-- RSVP Section -->
     <section id="confirmacion" class="rsvp section" data-rsvp-container>
         <div class="container">
-            <h2 class="section-title" id="rsvpTitle">Confirma tu Asistencia</h2>
-            <p class="section-subtitle" id="rsvpSubtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
+            <h2 class="section-title" id="rsvpTitle" data-i18n="rsvp.title">Confirma tu Asistencia</h2>
+            <p class="section-subtitle" id="rsvpSubtitle" data-i18n="rsvp.subtitle">Por favor, confírmanos tu asistencia antes del 1 de Febrero</p>
 
             <!-- Nota de no niños -->
             <div id="noChildrenNote" class="no-children-note-rsvp" style="display: none;">
@@ -235,36 +242,36 @@
 
             <!-- Información de la invitación -->
             <div class="invitation-info" id="invitationInfo" style="display: none;">
-                <p class="guest-names">Invitación para: <span id="guestNames"></span></p>
-                <p class="guest-passes"><span id="numberOfPasses"></span> pases disponibles</p>
+                <p class="guest-names"><span data-i18n="rsvp.invitationFor">Invitación para:</span> <span id="guestNames"></span></p>
+                <p class="guest-passes"><span id="numberOfPasses"></span> <span data-i18n="rsvp.passesAvailable">pases disponibles</span></p>
             </div>
 
             <!-- Mensaje de invitación ya confirmada -->
             <div id="alreadyConfirmed" class="already-confirmed" style="display: none;">
                 <i class="fas fa-check-circle"></i>
-                <h3>¡Tu confirmación ya fue recibida!</h3>
-                <p>Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.</p>
+                <h3 data-i18n="rsvp.successTitle">¡Tu confirmación ya fue recibida!</h3>
+                <p data-i18n="rsvp.successMsg">Gracias por confirmar tu asistencia. Te esperamos con mucho cariño.</p>
             </div>
 
             <!-- Mensaje de invitación cancelada -->
             <div id="alreadyCancelled" class="already-cancelled" style="display: none;">
                 <i class="fas fa-times-circle"></i>
-                <h3>Invitación Declinada</h3>
-                <p>Lamentamos que no puedas acompañarnos. Gracias por avisarnos.</p>
+                <h3 data-i18n="rsvp.declinedTitle">Invitación Declinada</h3>
+                <p data-i18n="rsvp.declinedMsg">Lamentamos que no puedas acompañarnos. Gracias por avisarnos.</p>
             </div>
 
             <!-- Formulario de confirmación -->
             <form id="rsvpForm" class="rsvp-form" autocomplete="off" aria-labelledby="rsvpTitle">
                 <div class="form-group" role="group" aria-labelledby="attendanceLabel">
-                    <p id="attendanceLabel">¿Asistirás? *</p>
+                    <p id="attendanceLabel" data-i18n="rsvp.attending">¿Asistirás? *</p>
                     <div class="radio-group">
                         <label class="radio-label checkbox-style">
                             <input type="checkbox" name="attendance_check" value="si" class="attendance-check" aria-required="true">
-                            <span>Sí, con mucho gusto</span>
+                            <span data-i18n="rsvp.yes">Sí, con mucho gusto</span>
                         </label>
                         <label class="radio-label checkbox-style">
                             <input type="checkbox" name="attendance_check" value="no" class="attendance-check" aria-required="true">
-                            <span>Lo siento, no podré asistir</span>
+                            <span data-i18n="rsvp.no">Lo siento, no podré asistir</span>
                         </label>
                     </div>
                     <input type="hidden" name="attendance" id="attendanceValue" required aria-hidden="true">
@@ -272,15 +279,15 @@
 
                 <div id="attendanceDetails" style="display: none;" aria-live="polite">
                     <div class="form-group">
-                        <label for="attendingGuests">¿Cuántos asistirán? *</label>
+                        <label for="attendingGuests" data-i18n="rsvp.guestsCount">¿Cuántos asistirán? *</label>
                         <select id="attendingGuests" name="attendingGuests" class="form-control" aria-required="true">
                             <!-- Las opciones se llenarán dinámicamente -->
                         </select>
                     </div>
 
                     <div class="form-group" id="attendingNamesGroup" style="display: none;" role="group" aria-labelledby="namesLabel">
-                        <p id="namesLabel">Nombres de los asistentes *</p>
-                        <small id="namesHelp" class="form-text text-muted" style="display: block; margin-bottom: 10px; font-size: 0.85em; color: #666;">Marca con un check los invitados que asistirán</small>
+                        <p id="namesLabel" data-i18n="rsvp.guestNames">Nombres de los asistentes *</p>
+                        <small id="namesHelp" class="form-text text-muted" style="display: block; margin-bottom: 10px; font-size: 0.85em; color: #666;" data-i18n="rsvp.guestNamesHelp">Marca con un check los invitados que asistirán</small>
                         <div id="attendingNamesList" aria-describedby="namesHelp">
                             <!-- Los campos de nombres se agregarán dinámicamente -->
                         </div>
@@ -288,23 +295,23 @@
                 </div>
 
                 <div class="form-group" id="phoneGroup" style="display: none;" aria-live="polite">
-                    <label for="phone">Teléfono (WhatsApp) <span id="phoneRequired" aria-hidden="true">*</span></label>
+                    <label for="phone"><span data-i18n="rsvp.phone">Teléfono (WhatsApp)</span> <span id="phoneRequired" aria-hidden="true">*</span></label>
                     <input type="tel" id="phone" name="phone" pattern="[+]?[0-9]{10,15}" placeholder="+521234567890" title="Ingrese un número telefónico válido (10-15 dígitos, puede incluir +)" class="form-control" aria-describedby="phoneHelp">
-                    <small id="phoneHelp">Formato: +521234567890 o 1234567890</small>
+                    <small id="phoneHelp" data-i18n="rsvp.phoneHelp">Formato: +521234567890 o 1234567890</small>
                 </div>
 
                 <div class="form-group" id="dietaryGroup" style="display: none;" aria-live="polite">
-                    <label for="dietaryRestrictions">Restricciones Alimentarias</label>
-                    <input type="text" id="dietaryRestrictions" name="dietaryRestrictions" placeholder="Ej: Vegetariano, sin gluten, alergias..." aria-label="Restricciones Alimentarias">
+                    <label for="dietaryRestrictions" data-i18n="rsvp.dietary">Restricciones Alimentarias</label>
+                    <input type="text" id="dietaryRestrictions" name="dietaryRestrictions" placeholder="Ej: Vegetariano, sin gluten, alergias..." data-i18n-placeholder="rsvp.dietaryPlaceholder" aria-label="Restricciones Alimentarias">
                 </div>
 
                 <div class="form-group">
-                    <label for="message">Mensaje para los Novios</label>
-                    <textarea id="message" name="message" rows="4" placeholder="Comparte tus buenos deseos..." aria-label="Mensaje para los Novios"></textarea>
+                    <label for="message" data-i18n="rsvp.message">Mensaje para los Novios</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Comparte tus buenos deseos..." data-i18n-placeholder="rsvp.messagePlaceholder" aria-label="Mensaje para los Novios"></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block" aria-label="Enviar Confirmación">
-                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar Confirmación
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i> <span data-i18n="rsvp.submit">Enviar Confirmación</span>
                 </button>
             </form>
         </div>
@@ -325,7 +332,7 @@
                 <p class="footer-date" id="footerDate">28 de Febrero del 2026</p>
                 <p class="footer-hashtag" id="footerHashtag">#DiegoYFerSeCasan</p>
                 <div class="footer-credits">
-                    <p>Creado por Diego Zazueta</p>
+                    <p><span data-i18n="footer.created">Creado por</span> Diego Zazueta</p>
                     <p class="footer-contact">
                         <a href="mailto:diego.zazueta@example.com"><i class="fas fa-envelope"></i> diegoztag@gmail.com</a>
                     </p>

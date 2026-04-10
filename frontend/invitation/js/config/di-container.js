@@ -43,6 +43,7 @@ export class DIContainer {
             invitationService: this.createInvitationService,
             metaService: this.createMetaService,
             configurationService: this.createConfigurationService,
+            i18nService: this.createI18nService,
             validationService: this.createValidationService,
             sectionGeneratorService: this.createSectionGeneratorService,
             appFacade: this.createAppFacade,
@@ -78,6 +79,13 @@ export class DIContainer {
         const configurationService = new ConfigurationService();
         await configurationService.init();
         return configurationService;
+    }
+
+    async createI18nService() {
+        const { I18nService } = await import('../core/services/i18n-service.js');
+        const i18nService = new I18nService();
+        i18nService.init();
+        return i18nService;
     }
 
     async createValidationService() {

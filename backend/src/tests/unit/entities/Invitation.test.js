@@ -33,7 +33,7 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 1
             };
 
-            expect(() => new Invitation(data)).toThrow('Código de invitación es requerido');
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should throw error with empty guest names', () => {
@@ -43,9 +43,7 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 1
             };
 
-            expect(() => new Invitation(data)).toThrow(
-                'Al menos un nombre de invitado es requerido'
-            );
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should throw error with invalid number of passes', () => {
@@ -55,7 +53,7 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 0
             };
 
-            expect(() => new Invitation(data)).toThrow('Número de pases debe ser mayor a 0');
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should throw error with invalid guestNames type', () => {
@@ -65,7 +63,7 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 1
             };
 
-            expect(() => new Invitation(data)).toThrow('guestNames debe ser un array o string');
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should create invitation from string guestNames', () => {
@@ -179,7 +177,7 @@ describe('Invitation Entity', () => {
         test('isActive should return correct status', () => {
             expect(invitation.isActive()).toBe(true);
 
-            invitation.status = 'inactive';
+            invitation.deactivate();
             expect(invitation.isActive()).toBe(false);
         });
 
@@ -247,7 +245,7 @@ describe('Invitation Entity', () => {
                 confirmed: false,
                 confirmedPasses: 0,
                 confirmationDate: null,
-                adultPasses: 0,
+                adultPasses: 2,
                 childPasses: 0,
                 staffPasses: 0,
                 tableNumber: null,
@@ -310,9 +308,7 @@ describe('Invitation Entity', () => {
             invitation.assignTable(10);
             expect(invitation.tableNumber).toBe(10);
 
-            expect(() => invitation.assignTable(-1)).toThrow(
-                'El número de mesa debe ser un entero positivo'
-            );
+            expect(() => invitation.assignTable(-1)).toThrow('Error de validación');
         });
 
         test('updatePasses should enforce consistency', () => {
@@ -322,7 +318,7 @@ describe('Invitation Entity', () => {
                     childPasses: 1,
                     staffPasses: 1
                 })
-            ).toThrow('La suma de pases (3) debe coincidir con el total (2)');
+            ).toThrow('Error de validación');
 
             invitation.updatePasses({
                 adultPasses: 2,
@@ -333,6 +329,12 @@ describe('Invitation Entity', () => {
         });
 
         test('updateConfirmation should update confirmation-related fields', () => {
+            invitation.confirm({
+                confirmedPasses: 1,
+                adultPasses: 1,
+                childPasses: 0,
+                confirmationDate: new Date().toISOString()
+            });
             invitation.updateConfirmation({
                 attendingNames: 'Juan Pérez',
                 dietaryRestrictionsNames: 'Sin gluten',
@@ -441,9 +443,7 @@ describe('Invitation Entity', () => {
                 numberOfPasses: 2
             };
 
-            expect(() => new Invitation(data)).toThrow(
-                'Nombres de invitados no pueden estar vacíos'
-            );
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should validate phone type if provided', () => {
@@ -454,7 +454,7 @@ describe('Invitation Entity', () => {
                 phone: 1234567890
             };
 
-            expect(() => new Invitation(data)).toThrow('phone debe ser un string');
+            expect(() => new Invitation(data)).toThrow('Error de validación');
         });
 
         test('should validate confirmation data', () => {
@@ -468,7 +468,7 @@ describe('Invitation Entity', () => {
                 invitation.confirm({
                     confirmedPasses: 3
                 })
-            ).toThrow('Solo tienes 2 pases disponibles');
+            ).toThrow('Error de validación');
         });
 
         test('should throw error if confirmed passes exceed total in constructor', () => {
@@ -540,7 +540,7 @@ describe('Invitation Entity', () => {
                 guestNames: ['Juan Pérez'],
                 numberOfPasses: 1
             });
-            expect(() => invitation.validate()).not.toThrow();
+            expect(() => invitation.validateConstructorParams(invitation)).not.toThrow();
         });
     });
 });

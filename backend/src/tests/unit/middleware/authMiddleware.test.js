@@ -3,8 +3,8 @@
  * Verifica la lógica de generación/verificación de JWT y autenticación básica
  */
 
-import jwt from 'jsonwebtoken';
-import AuthMiddleware from '../../../presentation/middleware/authMiddleware';
+const jwt = require('jsonwebtoken');
+const AuthMiddleware = require('../../../presentation/middleware/authMiddleware');
 
 let auth;
 let logger;

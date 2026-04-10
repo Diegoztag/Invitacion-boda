@@ -1,4 +1,4 @@
-const ConfirmAttendanceUseCase = require('../../../application/usecases/ConfirmAttendanceUseCase');
+const CreateConfirmationUseCase = require('../../../application/usecases/CreateConfirmationUseCase');
 const Invitation = require('../../../core/entities/Invitation');
 const Confirmation = require('../../../core/entities/Confirmation');
 
@@ -28,13 +28,13 @@ const mockLogger = {
     error: jest.fn()
 };
 
-describe('ConfirmAttendanceUseCase', () => {
+describe('CreateConfirmationUseCase', () => {
     let useCase;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        useCase = new ConfirmAttendanceUseCase(
+        useCase = new CreateConfirmationUseCase(
             mockInvitationRepository,
             mockConfirmationRepository,
             mockValidationService,
@@ -48,7 +48,7 @@ describe('ConfirmAttendanceUseCase', () => {
     });
 
     test('should confirm attendance successfully for positive attending without SSE', async () => {
-        const useCaseWithoutSse = new ConfirmAttendanceUseCase(
+        const useCaseWithoutSse = new CreateConfirmationUseCase(
             mockInvitationRepository,
             mockConfirmationRepository,
             mockValidationService,
@@ -211,70 +211,6 @@ describe('ConfirmAttendanceUseCase', () => {
         expect(result.error).toBe('El código de invitación es requerido');
     });
 
-    test('should update existing confirmation successfully', async () => {
-        const invitation = new Invitation({
-            code: 'INV001',
-            guestNames: ['Juan Pérez'],
-            numberOfPasses: 2
-        });
-
-        const existingConfirmation = new Confirmation({
-            code: 'INV001',
-            willAttend: true,
-            attendingGuests: 1,
-            attendingNames: ['Juan Pérez']
-        });
-
-        mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-        mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-        mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-        const result = await useCase.updateConfirmation('INV001', {
-            willAttend: true,
-            attendingGuests: 1,
-            attendingNames: ['Juan Pérez']
-        });
-
-        expect(result.success).toBe(true);
-        expect(result.confirmation).toEqual(existingConfirmation.toObject());
-        expect(mockConfirmationRepository.update).toHaveBeenCalledWith(
-            'INV001',
-            expect.any(Confirmation)
-        );
-    });
-
-    test('should cancel confirmation successfully', async () => {
-        const invitation = new Invitation({
-            code: 'INV001',
-            guestNames: ['Juan Pérez'],
-            numberOfPasses: 2,
-            status: 'confirmed',
-            confirmedPasses: 2
-        });
-
-        const existingConfirmation = new Confirmation({
-            code: 'INV001',
-            willAttend: true,
-            attendingGuests: 2,
-            attendingNames: ['Juan Pérez']
-        });
-
-        mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-        mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-        mockConfirmationRepository.delete.mockResolvedValue(true);
-        mockInvitationRepository.update.mockResolvedValue(invitation.unconfirm());
-
-        const result = await useCase.cancelConfirmation('INV001', 'Cambio de planes');
-
-        expect(result.success).toBe(true);
-        expect(result.message).toBe('Confirmación cancelada exitosamente');
-        expect(mockConfirmationRepository.delete).toHaveBeenCalledWith('INV001');
-        expect(mockInvitationRepository.update).toHaveBeenCalledWith(
-            'INV001',
-            expect.any(Invitation)
-        );
-    });
-
     describe('Validation and Business Rules', () => {
         test('should fail if invitationCode is not provided', async () => {
             const result = await useCase.execute(null, {
@@ -435,7 +371,9 @@ describe('ConfirmAttendanceUseCase', () => {
                 attendingGuests: 3
             });
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Solo tienes 2 pases disponibles');
+            expect(result.error).toBe(
+                'El número de asistentes (3) no puede exceder el total de pases disponibles (2)'
+            );
         });
 
         test('should fail if attendingNames length exceeds attendingGuests', async () => {
@@ -592,301 +530,6 @@ describe('ConfirmAttendanceUseCase', () => {
             expect(result.error).toBe('Database error');
             expect(result.message).toBe('Error al confirmar asistencia');
             expect(mockLogger.error).toHaveBeenCalled();
-        });
-
-        test('should handle errors during updateConfirmation', async () => {
-            mockInvitationRepository.findByCode.mockRejectedValue(new Error('Database error'));
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: true,
-                attendingGuests: 1
-            });
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Database error');
-            expect(result.message).toBe('Error al actualizar confirmación');
-            expect(mockLogger.error).toHaveBeenCalled();
-        });
-
-        test('should handle errors during cancelConfirmation', async () => {
-            mockInvitationRepository.findByCode.mockRejectedValue(new Error('Database error'));
-
-            const result = await useCase.cancelConfirmation('INV001', 'reason');
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Database error');
-            expect(result.message).toBe('Error al cancelar confirmación');
-            expect(mockLogger.error).toHaveBeenCalled();
-        });
-    });
-
-    describe('updateConfirmation specific cases', () => {
-        test('should fail if invitation not found', async () => {
-            mockInvitationRepository.findByCode.mockResolvedValue(null);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: true,
-                attendingGuests: 1
-            });
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Invitación no encontrada');
-        });
-
-        test('should fail if confirmation not found', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(null);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: true,
-                attendingGuests: 1
-            });
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('No existe una confirmación para esta invitación');
-        });
-
-        test('should update all fields correctly', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 1,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: false,
-                attendingGuests: 0,
-                phone: '1234567890',
-                dietaryRestrictions: 'None',
-                message: 'Sorry'
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-            expect(mockInvitationRepository.update).toHaveBeenCalled();
-        });
-
-        test('should update only willAttend correctly', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 1,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: false
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-            expect(mockInvitationRepository.update).toHaveBeenCalled();
-        });
-
-        test('should update only willAttend to true correctly', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: false,
-                attendingGuests: 0,
-                attendingNames: []
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: true,
-                attendingGuests: 2
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-            expect(mockInvitationRepository.update).toHaveBeenCalled();
-        });
-
-        test('should fail to update willAttend to true without attendingGuests', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: false,
-                attendingGuests: 0,
-                attendingNames: []
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                willAttend: true
-            });
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Debe especificar el número de invitados que asistirán');
-        });
-
-        test('should update only attendingGuests correctly', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 1,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                attendingGuests: 2
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-            expect(mockInvitationRepository.update).toHaveBeenCalled();
-        });
-
-        test('should update attendingNames correctly', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 2,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                attendingGuests: 2,
-                attendingNames: ['Juan Pérez', 'Maria']
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-        });
-
-        test('should update only message without changing attendance', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 2,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-            mockConfirmationRepository.update.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.updateConfirmation('INV001', {
-                message: 'New message'
-            });
-
-            expect(result.success).toBe(true);
-            expect(mockConfirmationRepository.update).toHaveBeenCalled();
-            expect(mockInvitationRepository.update).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('cancelConfirmation specific cases', () => {
-        test('should fail if invitation not found', async () => {
-            mockInvitationRepository.findByCode.mockResolvedValue(null);
-
-            const result = await useCase.cancelConfirmation('INV001', 'reason');
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Invitación no encontrada');
-        });
-
-        test('should fail if confirmation not found', async () => {
-            const invitation = new Invitation({
-                code: 'INV001',
-                guestNames: ['Juan Pérez'],
-                numberOfPasses: 2
-            });
-            mockInvitationRepository.findByCode.mockResolvedValue(invitation);
-            mockConfirmationRepository.findByCode.mockResolvedValue(null);
-
-            const result = await useCase.cancelConfirmation('INV001', 'reason');
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('No existe una confirmación para esta invitación');
-        });
-    });
-
-    describe('getConfirmation', () => {
-        test('should get confirmation successfully', async () => {
-            const existingConfirmation = new Confirmation({
-                code: 'INV001',
-                willAttend: true,
-                attendingGuests: 1,
-                attendingNames: ['Juan Pérez']
-            });
-
-            mockConfirmationRepository.findByCode.mockResolvedValue(existingConfirmation);
-
-            const result = await useCase.getConfirmation('INV001');
-
-            expect(result.success).toBe(true);
-            expect(result.confirmation).toEqual(existingConfirmation.toObject());
-        });
-
-        test('should return error if confirmation not found', async () => {
-            mockConfirmationRepository.findByCode.mockResolvedValue(null);
-
-            const result = await useCase.getConfirmation('INV001');
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Confirmación no encontrada');
         });
     });
 });

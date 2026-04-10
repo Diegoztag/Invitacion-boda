@@ -3,6 +3,65 @@
  * Valida: inicialización, servicios, componentes, controladores, eventos
  */
 
+// Mock de AppFacade
+jest.mock('../../../core/facades/AppFacade.js', () => ({
+    AppFacade: {
+        getInstance: jest.fn(() => ({
+            initializeServices: jest.fn().mockResolvedValue({
+                metaService: { init: jest.fn().mockResolvedValue() },
+                configurationService: { init: jest.fn().mockResolvedValue() },
+                invitationService: { init: jest.fn().mockResolvedValue() },
+                validationService: { init: jest.fn().mockResolvedValue() },
+                sectionGeneratorService: { generateEnabledSections: jest.fn() }
+            }),
+            getService: jest.fn()
+        }))
+    }
+}));
+
+// Mock de ControllerFactory
+jest.mock('../controller-factory.js', () => ({
+    ControllerFactory: {
+        createNavigationController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        }),
+        createContentController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        }),
+        createRSVPController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn(),
+            populateFormWithInvitation: jest.fn()
+        }),
+        createCarouselController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        }),
+        createScrollAnimationController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        }),
+        createThemeController: jest.fn().mockResolvedValue({
+            init: jest.fn().mockResolvedValue(),
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        })
+    }
+}));
+
 // Mock de DIContainer
 jest.mock('../../../config/di-container.js', () => ({
     DIContainer: {
@@ -53,7 +112,8 @@ jest.mock('../navigation-controller.js', () => ({
     NavigationController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn()
     }))
 }));
 
@@ -61,7 +121,8 @@ jest.mock('../content-controller.js', () => ({
     ContentController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn()
     }))
 }));
 
@@ -69,7 +130,9 @@ jest.mock('../rsvp-controller.js', () => ({
     RsvpController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn(),
+        populateFormWithInvitation: jest.fn()
     }))
 }));
 
@@ -77,7 +140,8 @@ jest.mock('../carousel-controller.js', () => ({
     CarouselController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn()
     }))
 }));
 
@@ -85,7 +149,8 @@ jest.mock('../scroll-animation-controller.js', () => ({
     ScrollAnimationController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn()
     }))
 }));
 
@@ -93,7 +158,8 @@ jest.mock('../theme-controller.js', () => ({
     ThemeController: jest.fn().mockImplementation(() => ({
         init: jest.fn().mockResolvedValue(),
         on: jest.fn(),
-        emit: jest.fn()
+        emit: jest.fn(),
+        destroy: jest.fn()
     }))
 }));
 
@@ -169,6 +235,7 @@ describe('AppController', () => {
     let container;
     let appController;
     let mockDIContainer;
+    let mockAppFacade;
 
     beforeEach(() => {
         // Crear contenedor de prueba
@@ -195,11 +262,70 @@ describe('AppController', () => {
         const { DIContainer } = require('../../../config/di-container.js');
         DIContainer.getInstance.mockReturnValue(mockDIContainer);
 
+        // Configurar AppFacade mock
+        const { AppFacade } = require('../../../core/facades/AppFacade.js');
+        mockAppFacade = {
+            initializeServices: jest.fn().mockResolvedValue({
+                metaService: { init: jest.fn().mockResolvedValue() },
+                configurationService: { init: jest.fn().mockResolvedValue() },
+                invitationService: {
+                    init: jest.fn().mockResolvedValue(),
+                    loadInvitation: jest.fn().mockResolvedValue({ id: 'test-invitation' })
+                },
+                validationService: { init: jest.fn().mockResolvedValue() },
+                sectionGeneratorService: { generateEnabledSections: jest.fn() }
+            }),
+            getService: jest.fn(),
+            loadInitialData: jest.fn().mockResolvedValue({ id: 'test-invitation' })
+        };
+        AppFacade.getInstance.mockReturnValue(mockAppFacade);
+
+        // Mock DIContainer to return mockAppFacade
+        mockDIContainer.get.mockImplementation(serviceName => {
+            if (serviceName === 'appFacade') {
+                return Promise.resolve(mockAppFacade);
+            }
+            return Promise.resolve({});
+        });
+
         appController = new AppController(container, {
             autoInit: false,
             enableErrorHandling: false,
             enablePerformanceMonitoring: false
         });
+
+        // Mock controllers that are expected to be initialized
+        appController.navigationController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        };
+        appController.contentController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        };
+        appController.rsvpController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn(),
+            populateFormWithInvitation: jest.fn()
+        };
+        appController.carouselController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        };
+        appController.scrollAnimationController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        };
+        appController.themeController = {
+            on: jest.fn(),
+            emit: jest.fn(),
+            destroy: jest.fn()
+        };
     });
 
     afterEach(() => {
@@ -214,6 +340,8 @@ describe('AppController', () => {
             // Configurar mocks de servicios
             mockDIContainer.get.mockImplementation(serviceName => {
                 switch (serviceName) {
+                    case 'appFacade':
+                        return Promise.resolve(mockAppFacade);
                     case 'sectionGeneratorService':
                         return Promise.resolve({
                             generateEnabledSections: jest.fn()
@@ -246,7 +374,8 @@ describe('AppController', () => {
                         NavigationController: jest.fn().mockImplementation(() => ({
                             init: jest.fn().mockResolvedValue(),
                             on: jest.fn(),
-                            emit: jest.fn()
+                            emit: jest.fn(),
+                            destroy: jest.fn()
                         }))
                     });
                 }
@@ -340,8 +469,13 @@ describe('AppController', () => {
 
         it('no debe inicializar dos veces', async () => {
             // Configurar mocks
-            mockDIContainer.get.mockResolvedValue({
-                generateEnabledSections: jest.fn()
+            mockDIContainer.get.mockImplementation(serviceName => {
+                if (serviceName === 'appFacade') {
+                    return Promise.resolve(mockAppFacade);
+                }
+                return Promise.resolve({
+                    generateEnabledSections: jest.fn()
+                });
             });
 
             // Mockear imports dinámicos
@@ -351,7 +485,8 @@ describe('AppController', () => {
                         NavigationController: jest.fn().mockImplementation(() => ({
                             init: jest.fn().mockResolvedValue(),
                             on: jest.fn(),
-                            emit: jest.fn()
+                            emit: jest.fn(),
+                            destroy: jest.fn()
                         }))
                     });
                 }
@@ -436,46 +571,21 @@ describe('AppController', () => {
 
     describe('Service Initialization', () => {
         it('debe inicializar servicios correctamente', async () => {
-            const mockSectionGenerator = {
-                generateEnabledSections: jest.fn()
+            const mockServices = {
+                metaService: { init: jest.fn().mockResolvedValue() },
+                configurationService: { init: jest.fn().mockResolvedValue() },
+                invitationService: { init: jest.fn().mockResolvedValue() },
+                validationService: { init: jest.fn().mockResolvedValue() },
+                sectionGeneratorService: { generateEnabledSections: jest.fn() }
             };
-            const mockConfigService = {
-                init: jest.fn().mockResolvedValue()
-            };
-            const mockInvitationService = {
-                init: jest.fn().mockResolvedValue()
-            };
-            const mockMetaService = {
-                init: jest.fn().mockResolvedValue()
-            };
-            const mockValidationService = {
-                init: jest.fn().mockResolvedValue()
-            };
-
-            mockDIContainer.get.mockImplementation(serviceName => {
-                switch (serviceName) {
-                    case 'sectionGeneratorService':
-                        return Promise.resolve(mockSectionGenerator);
-                    case 'configurationService':
-                        return Promise.resolve(mockConfigService);
-                    case 'invitationService':
-                        return Promise.resolve(mockInvitationService);
-                    case 'metaService':
-                        return Promise.resolve(mockMetaService);
-                    case 'validationService':
-                        return Promise.resolve(mockValidationService);
-                    default:
-                        return Promise.resolve({});
-                }
-            });
+            mockAppFacade.initializeServices.mockResolvedValue(mockServices);
 
             await appController._initializeServices();
 
-            expect(mockSectionGenerator.generateEnabledSections).toHaveBeenCalled();
-            expect(appController.configurationService).toBe(mockConfigService);
-            expect(appController.invitationService).toBe(mockInvitationService);
-            expect(appController.metaService).toBe(mockMetaService);
-            expect(appController.validationService).toBe(mockValidationService);
+            expect(mockAppFacade.initializeServices).toHaveBeenCalled();
+            expect(appController.metaService).toBe(mockServices.metaService);
+            expect(appController.configurationService).toBe(mockServices.configurationService);
+            expect(appController.validationService).toBe(mockServices.validationService);
         });
     });
 
@@ -578,8 +688,8 @@ describe('AppController', () => {
             expect(appController.navigationController).toBeDefined();
             expect(appController.contentController).toBeDefined();
             expect(appController.rsvpController).toBeDefined();
-            expect(appController.carouselController).toBeDefined();
             expect(appController.scrollAnimationController).toBeDefined();
+            expect(appController.themeController).toBeDefined();
         });
     });
 
@@ -611,42 +721,17 @@ describe('AppController', () => {
 
     describe('Data Loading', () => {
         it('debe cargar datos iniciales', async () => {
-            const mockSectionGenerator = {
-                generateEnabledSections: jest.fn()
+            const mockServices = {
+                metaService: { init: jest.fn().mockResolvedValue() },
+                configurationService: { init: jest.fn().mockResolvedValue() },
+                invitationService: {
+                    init: jest.fn().mockResolvedValue(),
+                    loadInvitation: jest.fn().mockResolvedValue({ id: 'test-invitation' })
+                },
+                validationService: { init: jest.fn().mockResolvedValue() },
+                sectionGeneratorService: { generateEnabledSections: jest.fn() }
             };
-            const mockConfigService = {
-                init: jest.fn().mockResolvedValue()
-            };
-            const mockInvitationService = {
-                init: jest.fn().mockResolvedValue(),
-                loadInvitation: jest.fn().mockResolvedValue({
-                    id: 'test-invitation'
-                })
-            };
-            const mockMetaService = {
-                init: jest.fn().mockResolvedValue(),
-                loadDefaultMeta: jest.fn().mockResolvedValue()
-            };
-            const mockValidationService = {
-                init: jest.fn().mockResolvedValue()
-            };
-
-            mockDIContainer.get.mockImplementation(serviceName => {
-                switch (serviceName) {
-                    case 'sectionGeneratorService':
-                        return Promise.resolve(mockSectionGenerator);
-                    case 'configurationService':
-                        return Promise.resolve(mockConfigService);
-                    case 'invitationService':
-                        return Promise.resolve(mockInvitationService);
-                    case 'metaService':
-                        return Promise.resolve(mockMetaService);
-                    case 'validationService':
-                        return Promise.resolve(mockValidationService);
-                    default:
-                        return Promise.resolve({});
-                }
-            });
+            mockAppFacade.initializeServices.mockResolvedValue(mockServices);
 
             // Mockear URLSearchParams para simular que hay un ID en la URL
             const originalURLSearchParams = global.URLSearchParams;
@@ -662,7 +747,7 @@ describe('AppController', () => {
             await appController._initializeServices();
             await appController._loadInitialData();
 
-            expect(mockInvitationService.loadInvitation).toHaveBeenCalledWith('test-invitation');
+            expect(mockAppFacade.loadInitialData).toHaveBeenCalledWith('test-invitation');
             expect(appController.currentInvitation).toEqual({
                 id: 'test-invitation'
             });

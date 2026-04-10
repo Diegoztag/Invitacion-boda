@@ -432,6 +432,20 @@ class ValidationService {
         const rules = this.getConfirmationValidationRules();
         return this.validateObject(data, rules);
     }
+
+    /**
+     * Genera un código de invitación aleatorio
+     * @returns {string}
+     */
+    generateInvitationCode() {
+        const length = this.config.validation?.app?.codeLength || 6;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = '';
+        for (let i = 0; i < length; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+    }
 }
 
 module.exports = ValidationService;

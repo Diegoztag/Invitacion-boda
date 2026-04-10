@@ -33,7 +33,7 @@ class CreateConfirmationUseCase {
                 invitationCode,
                 confirmationData
             );
-            
+
             // Implementar transaccionalidad simulada (compensación)
             let savedConfirmation = null;
             try {
@@ -41,13 +41,13 @@ class CreateConfirmationUseCase {
                     invitation,
                     normalizedData
                 );
-                
+
                 const updatedInvitation = await this._updateAndNotify(
                     invitation,
                     savedConfirmation,
                     normalizedData
                 );
-                
+
                 return this._buildSuccessResponse(
                     updatedInvitation,
                     savedConfirmation,

@@ -129,9 +129,6 @@ function configureConfirmationRoutes(confirmationController, middleware) {
         asyncHandler(confirmationController.cancelConfirmation.bind(confirmationController))
     );
 
-    // Manejo de errores específico para confirmaciones
-    router.use(middleware.errorHandler);
-
     return router;
 }
 

@@ -4,7 +4,7 @@
  * Sigue principios Clean Architecture y SOLID
  */
 
-import BaseController from './BaseController.js';
+const BaseController = require('./BaseController');
 
 const {
     CreateConfirmationDTO,
@@ -12,10 +12,11 @@ const {
 } = require('../../application/dto/ConfirmationDTO');
 const { convertToCSV } = require('../../shared/utils/csv-formatter');
 const QueryBuilder = require('../../shared/utils/QueryBuilder');
+const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
 class ConfirmationController extends BaseController {
     constructor(
-        confirmAttendanceUseCase,
+        createConfirmationUseCase,
         updateConfirmationUseCase,
         cancelConfirmationUseCase,
         getConfirmationStatsUseCase,
@@ -28,7 +29,7 @@ class ConfirmationController extends BaseController {
         logger
     ) {
         super(logger);
-        this.confirmAttendanceUseCase = confirmAttendanceUseCase;
+        this.createConfirmationUseCase = createConfirmationUseCase;
         this.updateConfirmationUseCase = updateConfirmationUseCase;
         this.cancelConfirmationUseCase = cancelConfirmationUseCase;
         this.getConfirmationStatsUseCase = getConfirmationStatsUseCase;
@@ -55,7 +56,11 @@ class ConfirmationController extends BaseController {
 
             // Validar código
             if (!this.validationService.validateInvitationCode(code)) {
-                return this.sendError(res, new Error('Código de invitación inválido'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException('Código de invitación inválido'),
+                    next
+                );
             }
 
             // Validar datos de confirmación
@@ -64,7 +69,11 @@ class ConfirmationController extends BaseController {
                 this.validationService.validateConfirmationData(createConfirmationDTO);
 
             if (!validation.isValid) {
-                return this.sendError(res, new Error('Datos de confirmación inválidos'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException('Datos de confirmación inválidos', validation.errors),
+                    next
+                );
             }
 
             // Añadir attendingNames a los datos sanitizados
@@ -74,10 +83,10 @@ class ConfirmationController extends BaseController {
             };
 
             // Ejecutar caso de uso
-            const result = await this.confirmAttendanceUseCase.execute(code, confirmationData);
+            const result = await this.createConfirmationUseCase.execute(code, confirmationData);
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({
@@ -129,7 +138,11 @@ class ConfirmationController extends BaseController {
 
             // Validar código
             if (!this.validationService.validateInvitationCode(code)) {
-                return this.sendError(res, new Error('Código de invitación inválido'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException('Código de invitación inválido'),
+                    next
+                );
             }
 
             // Validar datos de actualización
@@ -138,14 +151,21 @@ class ConfirmationController extends BaseController {
                 this.validationService.validateConfirmationData(updateConfirmationDTO);
 
             if (!validation.isValid) {
-                return this.sendError(res, new Error('Datos de actualización inválidos'), next);
+                return this.sendError(
+                    res,
+                    new BusinessRuleException(
+                        'Datos de actualización inválidos',
+                        validation.errors
+                    ),
+                    next
+                );
             }
 
             // Ejecutar actualización
             const result = await this.updateConfirmationUseCase.execute(code, validation.sanitized);
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({
@@ -202,7 +222,7 @@ class ConfirmationController extends BaseController {
             );
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({
@@ -332,7 +352,7 @@ class ConfirmationController extends BaseController {
             const result = await this.exportConfirmationsUseCase.execute(format);
 
             if (!result.success) {
-                return this.sendError(res, new Error(result.error), next);
+                return this.sendError(res, new BusinessRuleException(result.error), next);
             }
 
             endOperation({

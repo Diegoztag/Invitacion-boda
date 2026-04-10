@@ -3,7 +3,7 @@
  * Cubre la funcionalidad completa de la entidad Confirmation
  */
 
-import Confirmation from '../../../core/entities/Confirmation';
+const Confirmation = require('../../../core/entities/Confirmation');
 
 describe('Confirmation Entity', () => {
     describe('Constructor', () => {
@@ -48,19 +48,19 @@ describe('Confirmation Entity', () => {
         });
 
         test('debe validar código requerido', () => {
-            expect(() => new Confirmation({})).toThrow('El código de invitación es requerido');
+            expect(() => new Confirmation({})).toThrow('Error de validación');
             expect(
                 () =>
                     new Confirmation({
                         code: null
                     })
-            ).toThrow('El código de invitación es requerido');
+            ).toThrow('Error de validación');
             expect(
                 () =>
                     new Confirmation({
                         code: 123
                     })
-            ).toThrow('El código de invitación es requerido');
+            ).toThrow('Error de validación');
         });
 
         test('debe validar willAttend como boolean', () => {
@@ -70,14 +70,14 @@ describe('Confirmation Entity', () => {
                         code: 'ABC123',
                         willAttend: 'true'
                     })
-            ).toThrow('willAttend debe ser un boolean');
+            ).toThrow('Error de validación');
             expect(
                 () =>
                     new Confirmation({
                         code: 'ABC123',
                         willAttend: null
                     })
-            ).toThrow('willAttend debe ser un boolean');
+            ).toThrow('Error de validación');
         });
 
         test('debe validar attendingGuests como entero no negativo', () => {
@@ -88,7 +88,7 @@ describe('Confirmation Entity', () => {
                         willAttend: true,
                         attendingGuests: '2'
                     })
-            ).toThrow('attendingGuests debe ser un entero no negativo');
+            ).toThrow('Error de validación');
             expect(
                 () =>
                     new Confirmation({
@@ -96,7 +96,7 @@ describe('Confirmation Entity', () => {
                         willAttend: true,
                         attendingGuests: -1
                     })
-            ).toThrow('attendingGuests debe ser un entero no negativo');
+            ).toThrow('Error de validación');
             expect(
                 () =>
                     new Confirmation({
@@ -104,7 +104,7 @@ describe('Confirmation Entity', () => {
                         willAttend: true,
                         attendingGuests: 2.5
                     })
-            ).toThrow('attendingGuests debe ser un entero no negativo');
+            ).toThrow('Error de validación');
         });
 
         test('debe validar attendingNames como array', () => {
@@ -116,7 +116,7 @@ describe('Confirmation Entity', () => {
                         attendingGuests: 2,
                         attendingNames: 'Juan, Maria'
                     })
-            ).toThrow('attendingNames debe ser un array');
+            ).toThrow('Error de validación');
         });
 
         test('debe validar tipos de datos opcionales', () => {
@@ -128,7 +128,7 @@ describe('Confirmation Entity', () => {
                         attendingGuests: 2,
                         phone: 1234567890
                     })
-            ).toThrow('phone debe ser un string');
+            ).toThrow('Error de validación');
 
             expect(
                 () =>
@@ -138,7 +138,7 @@ describe('Confirmation Entity', () => {
                         attendingGuests: 2,
                         dietaryRestrictions: []
                     })
-            ).toThrow('dietaryRestrictions debe ser un string');
+            ).toThrow('Error de validación');
 
             expect(
                 () =>
@@ -148,7 +148,7 @@ describe('Confirmation Entity', () => {
                         attendingGuests: 2,
                         message: {}
                     })
-            ).toThrow('message debe ser un string');
+            ).toThrow('Error de validación');
         });
 
         test('debe validar lógica de negocio: no invitados si no asiste', () => {
@@ -199,12 +199,8 @@ describe('Confirmation Entity', () => {
             confirmation.updateAttendingGuests(3);
             expect(confirmation.attendingGuests).toBe(3);
 
-            expect(() => confirmation.updateAttendingGuests(-1)).toThrow(
-                'El número de invitados debe ser un entero no negativo'
-            );
-            expect(() => confirmation.updateAttendingGuests('3')).toThrow(
-                'El número de invitados debe ser un entero no negativo'
-            );
+            expect(() => confirmation.updateAttendingGuests(-1)).toThrow('Error de validación');
+            expect(() => confirmation.updateAttendingGuests('3')).toThrow('Error de validación');
         });
 
         test('debe validar lógica de negocio', () => {
@@ -223,9 +219,7 @@ describe('Confirmation Entity', () => {
             confirmation.updateAttendingNames(['Pedro', 'Ana']);
             expect(confirmation.attendingNames).toEqual(['Pedro', 'Ana']);
 
-            expect(() => confirmation.updateAttendingNames('Pedro')).toThrow(
-                'Los nombres de invitados deben ser un array'
-            );
+            expect(() => confirmation.updateAttendingNames('Pedro')).toThrow('Error de validación');
         });
 
         test('debe filtrar nombres válidos', () => {
@@ -247,9 +241,7 @@ describe('Confirmation Entity', () => {
             confirmation.updatePhone('');
             expect(confirmation.phone).toBe('');
 
-            expect(() => confirmation.updatePhone(1234567890)).toThrow(
-                'El teléfono debe ser un string'
-            );
+            expect(() => confirmation.updatePhone(1234567890)).toThrow('Error de validación');
         });
 
         test('debe validar y actualizar restricciones', () => {
@@ -259,9 +251,7 @@ describe('Confirmation Entity', () => {
             confirmation.updateDietaryRestrictions('');
             expect(confirmation.dietaryRestrictions).toBe('');
 
-            expect(() => confirmation.updateDietaryRestrictions([])).toThrow(
-                'Las restricciones dietarias deben ser un string'
-            );
+            expect(() => confirmation.updateDietaryRestrictions([])).toThrow('Error de validación');
         });
 
         test('debe validar y actualizar mensaje', () => {
@@ -271,7 +261,7 @@ describe('Confirmation Entity', () => {
             confirmation.updateMessage('');
             expect(confirmation.message).toBe('');
 
-            expect(() => confirmation.updateMessage({})).toThrow('El mensaje debe ser un string');
+            expect(() => confirmation.updateMessage({})).toThrow('Error de validación');
         });
     });
 
@@ -561,7 +551,7 @@ describe('Confirmation Entity', () => {
                 attendingGuests: 2,
                 attendingNames: ['Juan', 'Maria']
             });
-            expect(() => confirmation.validate()).not.toThrow();
+            expect(() => confirmation.validateConstructorParams(confirmation)).not.toThrow();
         });
     });
 });

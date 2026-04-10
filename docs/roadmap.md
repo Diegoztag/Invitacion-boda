@@ -11,7 +11,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Fortalecer la Gestión de Secretos**: Eliminar credenciales y secretos hardcodeados de `authMiddleware.js` y forzar su configuración a través de variables de entorno.
 - [x] **Implementar Rate Limiting**: Añadir `rate limiting` al endpoint de `login` para prevenir ataques de fuerza bruta.
 - [x] **Integrar Protección CSRF**: Integrar el `validateMiddleware` de CSRF en todas las rutas POST, PUT, DELETE y PATCH.
-- [ ] **Forzar HTTPS en Producción**: Añadir un middleware que fuerce HTTPS y configure HSTS.
+- [x] **Forzar HTTPS en Producción**: Añadir un middleware que fuerce HTTPS y configure HSTS.
 
 ### Ciclo 27: Arquitectura del Backend (Finalizado)
 
@@ -48,11 +48,11 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Mejorar la Estrategia de Cobertura**: Aumentar los umbrales de cobertura en las configuraciones de Jest para asegurar que las partes críticas del sistema estén bien probadas.
 - [x] **Separar los Tipos de Pruebas**: Crear configuraciones de Jest separadas para tests unitarios y de integración para acelerar el ciclo de desarrollo.
 - [x] **Implementar Pruebas End-to-End (E2E)**: Añadir una suite de pruebas E2E con Cypress o Playwright para validar los flujos de usuario completos.
-- [ ] **Consolidar la Configuración de Jest**: Refactorizar los archivos de configuración de Jest para eliminar duplicados y simplificar el mantenimiento.
+- [x] **Consolidar la Configuración de Jest**: Refactorizar los archivos de configuración de Jest para eliminar duplicados y simplificar el mantenimiento.
 
 ### Ciclo 31: UX y Accesibilidad
 
-- [ ] Implementar internacionalización básica (ES/EN).
+- [x] Implementar internacionalización básica (ES/EN).
 - [ ] Revisar contrastes de colores y añadir modo oscuro opcional.
 - [ ] Añadir manejo offline o mensaje de falta de conexión.
 

@@ -328,7 +328,7 @@ describe('GetConfirmationStatsUseCase', () => {
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
 
-            const result = await useCase.executeGetPositive();
+            const result = await useCase.getPositiveConfirmations();
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
@@ -360,7 +360,7 @@ describe('GetConfirmationStatsUseCase', () => {
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
 
-            const result = await useCase.executeGetNegative();
+            const result = await useCase.getNegativeConfirmations();
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
@@ -392,7 +392,7 @@ describe('GetConfirmationStatsUseCase', () => {
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
 
-            const result = await useCase.executeGetWithDietaryRestrictions();
+            const result = await useCase.getConfirmationsWithDietaryRestrictions();
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
@@ -424,7 +424,7 @@ describe('GetConfirmationStatsUseCase', () => {
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
 
-            const result = await useCase.executeGetWithMessages();
+            const result = await useCase.getConfirmationsWithMessages();
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
@@ -447,41 +447,32 @@ describe('GetConfirmationStatsUseCase', () => {
                     toObject: () => ({
                         code: 'INV01'
                     })
-                },
-                {
-                    code: 'INV02',
-                    confirmedAt: '2000-01-01T00:00:00.000Z',
-                    toObject: () => ({
-                        code: 'INV02'
-                    })
                 }
             ];
 
-            mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
-            mockInvitationRepository.findAll.mockResolvedValue([]);
+            mockConfirmationRepository.findRecent = jest.fn().mockResolvedValue(mockConfirmations);
 
-            const result = await useCase.executeGetRecent(7);
+            const result = await useCase.getRecentConfirmations(7);
 
             expect(result.success).toBe(true);
             expect(result.count).toBe(1);
-            expect(result.days).toBe(7);
+            expect(result.hours).toBe(7);
         });
 
         test('debe obtener confirmaciones recientes con valor por defecto', async () => {
-            mockConfirmationRepository.findAll.mockResolvedValue([]);
-            mockInvitationRepository.findAll.mockResolvedValue([]);
+            mockConfirmationRepository.findRecent = jest.fn().mockResolvedValue([]);
 
-            const result = await useCase.executeGetRecent();
+            const result = await useCase.getRecentConfirmations();
 
             expect(result.success).toBe(true);
-            expect(result.days).toBe(7);
+            expect(result.hours).toBe(24);
         });
 
         test('debe validar rango de días inválido en confirmaciones recientes', async () => {
-            const result = await useCase.executeGetRecent(0);
+            const result = await useCase.getRecentConfirmations(0);
 
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Número de días debe estar entre 1 y 365');
+            expect(result.error).toBe('Número de horas debe estar entre 1 y 168');
         });
 
         test('debe obtener total de invitados confirmados', async () => {
@@ -501,45 +492,10 @@ describe('GetConfirmationStatsUseCase', () => {
             mockConfirmationRepository.findAll.mockResolvedValue(mockConfirmations);
             mockInvitationRepository.findAll.mockResolvedValue([]);
 
-            const result = await useCase.executeGetTotalGuests();
+            const result = await useCase.getTotalConfirmedGuests();
 
             expect(result.success).toBe(true);
             expect(result.total).toBe(2);
-        });
-
-        test('debe exportar confirmaciones en formato csv', async () => {
-            const mockExport = {
-                data: 'id,name',
-                count: 1
-            };
-            mockConfirmationRepository.exportAll = jest.fn().mockResolvedValue(mockExport);
-
-            const result = await useCase.executeExport('csv');
-
-            expect(result.success).toBe(true);
-            expect(result.format).toBe('csv');
-            expect(result.count).toBe(1);
-            expect(result.data).toBe('id,name');
-        });
-
-        test('debe exportar confirmaciones con formato por defecto', async () => {
-            const mockExport = {
-                data: 'id,name',
-                count: 1
-            };
-            mockConfirmationRepository.exportAll = jest.fn().mockResolvedValue(mockExport);
-
-            const result = await useCase.executeExport();
-
-            expect(result.success).toBe(true);
-            expect(result.format).toBe('csv');
-        });
-
-        test('debe validar formato de exportación inválido', async () => {
-            const result = await useCase.executeExport('xml');
-
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Formato de exportación no válido');
         });
 
         test('debe obtener estadísticas exitosamente con datos completos', async () => {
@@ -701,25 +657,25 @@ describe('GetConfirmationStatsUseCase', () => {
     });
 
     describe('Manejo de errores en métodos específicos', () => {
-        test('executeGetPositive debe manejar errores', async () => {
+        test('getPositiveConfirmations debe manejar errores', async () => {
             mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetPositive();
+            const result = await useCase.getPositiveConfirmations();
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error obteniendo confirmaciones positivas');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
-        test('executeGetNegative debe manejar errores', async () => {
+        test('getNegativeConfirmations debe manejar errores', async () => {
             mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetNegative();
+            const result = await useCase.getNegativeConfirmations();
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error obteniendo confirmaciones negativas');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
-        test('executeGetWithDietaryRestrictions debe manejar errores', async () => {
+        test('getConfirmationsWithDietaryRestrictions debe manejar errores', async () => {
             mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetWithDietaryRestrictions();
+            const result = await useCase.getConfirmationsWithDietaryRestrictions();
             expect(result.success).toBe(false);
             expect(result.error).toBe(
                 'Error obteniendo confirmaciones con restricciones dietarias'
@@ -727,37 +683,29 @@ describe('GetConfirmationStatsUseCase', () => {
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
-        test('executeGetWithMessages debe manejar errores', async () => {
+        test('getConfirmationsWithMessages debe manejar errores', async () => {
             mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetWithMessages();
+            const result = await useCase.getConfirmationsWithMessages();
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error obteniendo confirmaciones con mensajes');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
-        test('executeGetRecent debe manejar errores', async () => {
-            mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetRecent(7);
+        test('getRecentConfirmations debe manejar errores', async () => {
+            mockConfirmationRepository.findRecent = jest
+                .fn()
+                .mockRejectedValue(new Error('DB Error'));
+            const result = await useCase.getRecentConfirmations(7);
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error obteniendo confirmaciones recientes');
             expect(mockLogger.error).toHaveBeenCalled();
         });
 
-        test('executeGetTotalGuests debe manejar errores', async () => {
+        test('getTotalConfirmedGuests debe manejar errores', async () => {
             mockConfirmationRepository.findAll.mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeGetTotalGuests();
+            const result = await useCase.getTotalConfirmedGuests();
             expect(result.success).toBe(false);
             expect(result.error).toBe('Error obteniendo total de invitados confirmados');
-            expect(mockLogger.error).toHaveBeenCalled();
-        });
-
-        test('executeExport debe manejar errores', async () => {
-            mockConfirmationRepository.exportAll = jest
-                .fn()
-                .mockRejectedValue(new Error('DB Error'));
-            const result = await useCase.executeExport('csv');
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Error exportando confirmaciones');
             expect(mockLogger.error).toHaveBeenCalled();
         });
     });

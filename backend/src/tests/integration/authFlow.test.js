@@ -49,6 +49,6 @@ describe('Integration /auth and protected routes', () => {
 
         expect(withAuth.status).toBe(200);
         expect(withAuth.body.success).toBe(true);
-        expect(withAuth.body).toHaveProperty('stats');
+        expect(withAuth.body.data).toHaveProperty('stats');
     });
 });

@@ -63,7 +63,10 @@ function configureRoutes(controllers, middleware) {
     apiV1.use('/confirmations', confirmationRoutes);
 
     // Configurar rutas de notificaciones (SSE)
-    const notificationRoutes = configureNotificationRoutes(controllers.notificationController);
+    const notificationRoutes = configureNotificationRoutes(
+        controllers.notificationController,
+        middleware
+    );
     apiV1.use('/notifications', notificationRoutes);
 
     // Rutas adicionales para estadísticas generales (optimizada sin duplicaciones)
@@ -88,9 +91,6 @@ function configureRoutes(controllers, middleware) {
             method: req.method
         });
     });
-
-    // Manejo global de errores
-    router.use(middleware.globalErrorHandler);
 
     return router;
 }

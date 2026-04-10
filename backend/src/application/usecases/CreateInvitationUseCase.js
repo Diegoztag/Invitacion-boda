@@ -180,18 +180,17 @@ class CreateInvitationUseCase {
 
                     // Considerar duplicado si hay una coincidencia exacta de todos los nombres
                     // o si un nombre individual ya tiene una invitación activa
-                    const exactMatch = existingNames.length === newNames.length &&
+                    const exactMatch =
+                        existingNames.length === newNames.length &&
                         existingNames.every(n => newNames.includes(n));
-                    
+
                     const partialMatch = existingNames.some(n => newNames.includes(n));
 
                     return exactMatch || partialMatch;
                 });
 
                 if (duplicateInvitation && duplicateInvitation.isActive()) {
-                    throw new Error(
-                        `Ya existe una invitación activa que incluye a: ${name}`
-                    );
+                    throw new Error(`Ya existe una invitación activa que incluye a: ${name}`);
                 }
             }
         }

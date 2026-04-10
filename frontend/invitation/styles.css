@@ -4058,6 +4058,92 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+/* Controls Container (Theme & Language) */
+.controls-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 15px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.lang-switcher-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.lang-btn {
+    background: none;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 2px 5px;
+    transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+    color: var(--primary-color);
+}
+
+.lang-btn.active {
+    color: var(--primary-color);
+}
+
+.lang-separator {
+    color: var(--text-light);
+    opacity: 0.5;
+    font-size: 0.9rem;
+}
+
+.theme-switcher {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.theme-switcher:hover {
+    background: rgba(212, 165, 116, 0.1);
+    transform: scale(1.1);
+}
+
+.theme-switcher .fa-sun {
+    display: none;
+}
+
+.theme-switcher .fa-moon {
+    display: block;
+}
+
+/* Dark mode styles for theme switcher */
+body.dark-mode .theme-switcher .fa-sun {
+    display: block;
+}
+
+body.dark-mode .theme-switcher .fa-moon {
+    display: none;
+}
+
 /* Print Styles */
 @media print {
     .navbar,

@@ -58,7 +58,7 @@ module.exports = {
     },
 
     // Setup files
-    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js', '<rootDir>/tests/setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
 
     // Module paths
     moduleDirectories: ['node_modules', 'src'],
@@ -92,5 +92,5 @@ module.exports = {
     ],
 
     // Variables de entorno para tests
-    setupFiles: ['<rootDir>/src/tests/env.js', '<rootDir>/tests/env.js']
+    setupFiles: ['<rootDir>/src/tests/env.js']
 };
