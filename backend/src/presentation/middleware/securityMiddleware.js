@@ -184,7 +184,7 @@ class SecurityMiddleware {
     }
 
     /**
-     * Middleware de logging de requests
+     * Middleware de logging de requests y monitorización de tiempos de respuesta (APM básico)
      */
     get requestLogger() {
         return (req, res, next) => {
@@ -205,15 +205,27 @@ class SecurityMiddleware {
             res.send = function (data) {
                 const duration = Date.now() - startTime;
 
-                // Log de la respuesta
-                req.app.locals.logger.info('Request completed', {
-                    requestId: req.id,
-                    method: req.method,
-                    path: req.path,
-                    statusCode: res.statusCode,
-                    duration: `${duration}ms`,
-                    contentLength: res.get('Content-Length') || (data ? data.length : 0)
-                });
+                // Alerta si el tiempo de respuesta es mayor a 500ms
+                if (duration > 500) {
+                    req.app.locals.logger.warn('Slow API Request Detected', {
+                        requestId: req.id,
+                        method: req.method,
+                        path: req.path,
+                        statusCode: res.statusCode,
+                        duration: `${duration}ms`,
+                        contentLength: res.get('Content-Length') || (data ? data.length : 0)
+                    });
+                } else {
+                    // Log de la respuesta
+                    req.app.locals.logger.info('Request completed', {
+                        requestId: req.id,
+                        method: req.method,
+                        path: req.path,
+                        statusCode: res.statusCode,
+                        duration: `${duration}ms`,
+                        contentLength: res.get('Content-Length') || (data ? data.length : 0)
+                    });
+                }
 
                 return originalSend.call(this, data);
             };
