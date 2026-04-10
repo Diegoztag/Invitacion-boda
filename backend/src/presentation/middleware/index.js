@@ -22,6 +22,7 @@ function configureMiddleware(dependencies) {
 
     return {
         // Middleware de seguridad
+        forceHttps: securityMiddleware.forceHttps,
         helmet: securityMiddleware.helmet,
         compression: securityMiddleware.compression,
         cors: securityMiddleware.cors,
@@ -30,6 +31,9 @@ function configureMiddleware(dependencies) {
         requestId: securityMiddleware.requestId,
         requestLogger: securityMiddleware.requestLogger,
         csrfProtection: csrfMiddleware,
+        sendCsrfToken: (req, res) => {
+            res.json({ csrfToken: req.csrfToken() });
+        },
 
         // Middleware de validación
         validateParams: securityMiddleware.validateParams,

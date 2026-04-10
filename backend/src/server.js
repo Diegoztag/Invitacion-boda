@@ -32,7 +32,7 @@ const DeleteInvitationUseCase = require('./application/usecases/DeleteInvitation
 const UpdateInvitationUseCase = require('./application/usecases/UpdateInvitationUseCase'); // Añadido
 const GetInvitationStatsUseCase = require('./application/usecases/GetInvitationStatsUseCase'); // Añadido
 const ExportInvitationsUseCase = require('./application/usecases/ExportInvitationsUseCase'); // Añadido
-const ConfirmAttendanceUseCase = require('./application/usecases/ConfirmAttendanceUseCase');
+const CreateConfirmationUseCase = require('./application/usecases/CreateConfirmationUseCase');
 const UpdateConfirmationUseCase = require('./application/usecases/UpdateConfirmationUseCase');
 const CancelConfirmationUseCase = require('./application/usecases/CancelConfirmationUseCase');
 const GetConfirmationStatsUseCase = require('./application/usecases/GetConfirmationStatsUseCase');
@@ -88,7 +88,7 @@ class Server {
             config,
             logger
         );
-        const confirmAttendanceUseCase = new ConfirmAttendanceUseCase(
+        const createConfirmationUseCase = new CreateConfirmationUseCase(
             invitationRepository,
             confirmationRepository,
             validationService,
@@ -130,11 +130,7 @@ class Server {
             confirmationRepository,
             logger
         );
-        const getInvitationUseCase = new GetInvitationUseCase(
-            invitationRepository,
-            validationService,
-            logger
-        );
+        const getInvitationUseCase = new GetInvitationUseCase(invitationRepository, logger);
         const getInvitationsUseCase = new GetInvitationsUseCase(
             invitationRepository,
             config,
@@ -174,7 +170,7 @@ class Server {
             logger
         );
         const confirmationController = new ConfirmationController(
-            confirmAttendanceUseCase,
+            createConfirmationUseCase,
             updateConfirmationUseCase,
             cancelConfirmationUseCase,
             getConfirmationStatsUseCase,
@@ -315,6 +311,7 @@ class Server {
         });
 
         // Aplicar middleware global
+        this.app.use(middleware.forceHttps);
         this.app.use(middleware.helmet);
         this.app.use(middleware.compression);
         this.app.use(middleware.cors);

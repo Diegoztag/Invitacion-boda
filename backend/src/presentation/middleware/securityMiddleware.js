@@ -19,6 +19,21 @@ class SecurityMiddleware {
     }
 
     /**
+     * Middleware para forzar HTTPS en producción
+     */
+    get forceHttps() {
+        return (req, res, next) => {
+            if (process.env.NODE_ENV === 'production') {
+                // Verificar si la petición viene por HTTP (útil detrás de proxies como Heroku/AWS)
+                if (req.headers['x-forwarded-proto'] !== 'https' && req.protocol !== 'https') {
+                    return res.redirect(301, `https://${req.hostname}${req.url}`);
+                }
+            }
+            next();
+        };
+    }
+
+    /**
      * Configuración de Helmet para headers de seguridad
      */
     get helmet() {
