@@ -7,6 +7,7 @@ import { DIContainer } from '../../config/di-container.js';
 import { EVENTS } from '../../shared/constants/events.js';
 import { ComponentFactory } from '../components/component-factory.js';
 import { ControllerFactory } from './controller-factory.js';
+import { CookieConsent } from '../components/ui/cookie-consent.js';
 
 export class AppController {
     constructor(container, options = {}) {
@@ -173,6 +174,11 @@ export class AppController {
         if (mobileMenu) {
             this.components.set('mobile-menu', mobileMenu);
         }
+
+        // Cookie Consent
+        const cookieConsent = new CookieConsent();
+        cookieConsent.init();
+        this.components.set('cookie-consent', cookieConsent);
     }
 
     /**

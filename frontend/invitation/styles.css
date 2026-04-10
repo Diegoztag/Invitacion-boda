@@ -4274,3 +4274,62 @@ body.dark-mode .theme-switcher .fa-moon {
     from { transform: translateY(-100%); }
     to { transform: translateY(0); }
 }
+
+/* ==========================================================================
+   Cookie Consent Banner
+   ========================================================================== */
+
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-color, #333333);
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+body.dark-mode .cookie-consent-banner {
+    background-color: var(--card-bg, #1e1e1e);
+    color: var(--text-dark, #f0f0f0);
+    border-top: 1px solid var(--border-color, #333);
+}
+
+.cookie-consent-banner.fade-out {
+    opacity: 0;
+    transform: translateY(100%);
+}
+
+.cookie-consent-content {
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+}
+
+.cookie-consent-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+    .cookie-consent-content {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .cookie-consent-content p {
+        margin-right: 2rem;
+    }
+}
