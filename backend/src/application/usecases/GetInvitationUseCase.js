@@ -7,8 +7,9 @@ const BusinessRuleException = require('../../shared/exceptions/BusinessRuleExcep
  */
 
 class GetInvitationUseCase {
-    constructor(invitationRepository, logger) {
+    constructor(invitationRepository, cacheService, logger) {
         this.invitationRepository = invitationRepository;
+        this.cacheService = cacheService;
         this.logger = logger;
     }
 
@@ -21,9 +22,24 @@ class GetInvitationUseCase {
         const endOperation = this.logger.startOperation('getInvitation', { code });
 
         try {
+            const cacheKey = `invitation_${code}`;
+            const cachedInvitation = this.cacheService ? this.cacheService.get(cacheKey) : null;
+
+            if (cachedInvitation) {
+                this.logger.debug(`Retrieved invitation ${code} from cache`);
+                endOperation({ success: true, cached: true });
+                return { invitation: cachedInvitation };
+            }
+
             const invitation = await this._findAndValidateInvitation(code);
-            endOperation({ success: true });
-            return { invitation: invitation.toObject() };
+            const invitationObj = invitation.toObject();
+
+            if (this.cacheService) {
+                this.cacheService.set(cacheKey, invitationObj, 300); // 5 minutos
+            }
+
+            endOperation({ success: true, cached: false });
+            return { invitation: invitationObj };
         } catch (error) {
             endOperation({ error: error.message }, 'error');
             this._handleError(error, { code });

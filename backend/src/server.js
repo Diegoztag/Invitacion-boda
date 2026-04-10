@@ -53,6 +53,7 @@ const errorHandler = require('./presentation/middleware/errorHandler');
 // Importar servicios de infraestructura
 const CsvStorage = require('./infrastructure/services/CsvStorage');
 const SseService = require('./infrastructure/services/SseService');
+const CacheService = require('./infrastructure/services/CacheService');
 const NotificationController = require('./presentation/controllers/NotificationController');
 
 class Server {
@@ -76,6 +77,7 @@ class Server {
         const validationService = new ValidationService(config, logger);
         const csvStorage = new CsvStorage(logger);
         const sseService = new SseService(logger);
+        const cacheService = new CacheService(logger);
 
         // 2. Instanciar repositorios
         const invitationRepository = new CsvInvitationRepository(csvStorage, logger);
@@ -130,7 +132,11 @@ class Server {
             confirmationRepository,
             logger
         );
-        const getInvitationUseCase = new GetInvitationUseCase(invitationRepository, logger);
+        const getInvitationUseCase = new GetInvitationUseCase(
+            invitationRepository,
+            cacheService,
+            logger
+        );
         const getInvitationsUseCase = new GetInvitationsUseCase(
             invitationRepository,
             config,
@@ -186,6 +192,9 @@ class Server {
 
         // 5. Registrar en el contenedor (para compatibilidad con tests y otras partes)
         this.container.register('logger', () => logger, {
+            singleton: true
+        });
+        this.container.register('cacheService', () => cacheService, {
             singleton: true
         });
         this.container.register('validationService', () => validationService, {

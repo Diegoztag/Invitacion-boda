@@ -9,6 +9,7 @@ const BusinessRuleException = require('../../../shared/exceptions/BusinessRuleEx
 
 describe('GetInvitationUseCase', () => {
     let mockInvitationRepository;
+    let mockCacheService;
     let mockLogger;
     let useCase;
 
@@ -18,13 +19,20 @@ describe('GetInvitationUseCase', () => {
             findByCode: jest.fn()
         };
 
+        // Mock del cache service
+        mockCacheService = {
+            get: jest.fn(),
+            set: jest.fn()
+        };
+
         // Mock del logger (startOperation devuelve una función endOperation)
         mockLogger = {
             startOperation: jest.fn(() => jest.fn()),
-            error: jest.fn()
+            error: jest.fn(),
+            debug: jest.fn()
         };
 
-        useCase = new GetInvitationUseCase(mockInvitationRepository, mockLogger);
+        useCase = new GetInvitationUseCase(mockInvitationRepository, mockCacheService, mockLogger);
     });
 
     describe('execute (obtener por código)', () => {
