@@ -4244,3 +4244,33 @@ body.dark-mode .theme-switcher .fa-moon {
         page-break-inside: avoid;
     }
 }
+
+/* Offline Banner */
+.offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 9999;
+    font-family: var(--font-secondary, 'Montserrat', sans-serif);
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease-out;
+}
+
+.offline-banner i {
+    font-size: 1.1rem;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}

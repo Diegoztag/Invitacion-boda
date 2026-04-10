@@ -54,7 +54,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 - [x] Implementar internacionalización básica (ES/EN).
 - [x] Revisar contrastes de colores y añadir modo oscuro opcional.
-- [ ] Añadir manejo offline o mensaje de falta de conexión.
+- [x] Añadir manejo offline o mensaje de falta de conexión.
 
 ### Ciclo 32: Rendimiento y Escalabilidad
 

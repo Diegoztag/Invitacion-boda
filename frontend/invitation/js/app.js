@@ -25,6 +25,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Inicializar la aplicación
         await appController.init();
 
+        // Registrar Service Worker para soporte offline
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                console.log('ServiceWorker registrado con éxito:', registration.scope);
+            } catch (error) {
+                console.error('Error al registrar el ServiceWorker:', error);
+            }
+        }
+
         // Log de éxito (solo en desarrollo)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             //
