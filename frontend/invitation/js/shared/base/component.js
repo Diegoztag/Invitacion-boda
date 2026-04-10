@@ -7,7 +7,7 @@ export class Component {
     constructor(container = null) {
         this.container = container;
         this.eventListeners = new Map();
-        this.isDestroyed = false;
+        this._isDestroyed = false;
 
         // Bind methods para mantener contexto
         this.emit = this.emit.bind(this);
@@ -343,7 +343,7 @@ export class Component {
         }
 
         // Marcar como destruido
-        this.isDestroyed = true;
+        this._isDestroyed = true;
 
         // Limpiar referencia al container
         this.container = null;

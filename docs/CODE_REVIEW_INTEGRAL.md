@@ -347,6 +347,7 @@ validateEmail(email) {
 ### **🟡 ESTADO ACTUAL DE TESTING (Revisión 24/03/2026)**
 
 - 🟢 **Buena Base de Pruebas Unitarias**: Existe una configuración de Jest tanto para el frontend como para el backend, con pruebas unitarias para las partes críticas del sistema.
+- 🟢 **Cobertura de Casos de Uso Mejorada**: Se han añadido pruebas unitarias para los casos de uso restantes (`ExportConfirmations`, `ExportInvitations`, `CancelConfirmation`, `DeleteInvitation`, `UpdateInvitation`, `UpdateConfirmation`), superando el 80% de cobertura en la capa de aplicación.
 - 🟡 **Cobertura de Código Mejorable**:
     - **Frontend**: Los umbrales de cobertura para los controladores son bajos (`60%`), lo que podría indicar que la lógica compleja no está siendo probada.
     - **Backend**: El umbral de cobertura global está en `0`, lo que puede ocultar la falta de pruebas en nuevos módulos.

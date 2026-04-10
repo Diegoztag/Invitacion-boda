@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.93% </span>
+                <span class="strong">64.51% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>78/122</span>
+                <span class='fraction'>80/124</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.72% </span>
+                <span class="strong">38.46% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>25/72</span>
+                <span class='fraction'>30/78</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.63% </span>
+                <span class="strong">64.22% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>77/121</span>
+                <span class='fraction'>79/123</span>
             </div>
         
             
@@ -586,7 +586,19 @@
 <a name='L521'></a><a href='#L521'>521</a>
 <a name='L522'></a><a href='#L522'>522</a>
 <a name='L523'></a><a href='#L523'>523</a>
-<a name='L524'></a><a href='#L524'>524</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L524'></a><a href='#L524'>524</a>
+<a name='L525'></a><a href='#L525'>525</a>
+<a name='L526'></a><a href='#L526'>526</a>
+<a name='L527'></a><a href='#L527'>527</a>
+<a name='L528'></a><a href='#L528'>528</a>
+<a name='L529'></a><a href='#L529'>529</a>
+<a name='L530'></a><a href='#L530'>530</a>
+<a name='L531'></a><a href='#L531'>531</a>
+<a name='L532'></a><a href='#L532'>532</a>
+<a name='L533'></a><a href='#L533'>533</a>
+<a name='L534'></a><a href='#L534'>534</a>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -795,6 +807,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1295,7 +1319,7 @@ class SecurityMiddleware {
     }
 &nbsp;
     /**
-     * Middleware de logging de requests
+     * Middleware de logging de requests y monitorización de tiempos de respuesta (APM básico)
      */
     get requestLogger() {
         return (req, res, next) =&gt; {
@@ -1316,15 +1340,27 @@ class SecurityMiddleware {
             res.send = function (data) {
                 const duration = Date.now() - startTime;
 &nbsp;
-                // Log de la respuesta
-                req.app.locals.logger.info('Request completed', {
-                    requestId: req.id,
-                    method: req.method,
-                    path: req.path,
-                    statusCode: res.statusCode,
-                    duration: `${duration}ms`,
-                    contentLength: res.get('Content-Length') || (data ? data.length : <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>
-                });
+                // Alerta si el tiempo de respuesta es mayor a 500ms
+                if (duration &gt; 500) {
+                    req.app.locals.logger.warn('Slow API Request Detected', {
+                        requestId: req.id,
+                        method: req.method,
+                        path: req.path,
+                        statusCode: res.statusCode,
+                        duration: `${duration}ms`,
+                        contentLength: res.get('Content-Length') || (data ? data.length : <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>
+                    });
+                } else {
+                    // Log de la respuesta
+                    req.app.locals.logger.info('Request completed', {
+                        requestId: req.id,
+                        method: req.method,
+                        path: req.path,
+                        statusCode: res.statusCode,
+                        duration: `${duration}ms`,
+                        contentLength: res.get('Content-Length') || (data ? data.length : <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>
+                    });
+                }
 &nbsp;
                 return originalSend.call(this, data);
             };
@@ -1639,7 +1675,7 @@ module.exports = SecurityMiddleware;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-10T17:56:07.407Z
+                at 2026-04-10T23:11:13.724Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
