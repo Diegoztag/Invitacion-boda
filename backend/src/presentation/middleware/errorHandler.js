@@ -2,9 +2,15 @@
  * Middleware de manejo de errores para estandarizar las respuestas de error.
  */
 const BaseException = require('../../shared/exceptions/BaseException');
+const Logger = require('../../shared/utils/Logger');
+const logger = new Logger({ serviceName: 'ErrorHandler' });
 
 const errorHandler = (err, req, res, _next) => {
-    console.log('ERROR HANDLER CAUGHT:', err.name, err.message, err.statusCode);
+    logger.error('ERROR HANDLER CAUGHT:', {
+        name: err.name,
+        message: err.message,
+        statusCode: err.statusCode
+    });
     // Verificar si es una excepción personalizada (por instancia o por propiedades)
     if (
         err instanceof BaseException ||

@@ -113,7 +113,7 @@ export class FormValidator extends Component {
             try {
                 const customRules = JSON.parse(element.getAttribute('data-validation-rules'));
                 Object.assign(rules, customRules);
-            } catch (err) {
+            } catch (_err) {
                 // Silently ignore JSON parsing errors
             }
         }

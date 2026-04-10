@@ -514,13 +514,12 @@ describe('RSVPController', () => {
 - **Solución:**
     - Reemplazar `console.log` por el `Logger` en el backend o eliminarlos si son de depuración.
     - Eliminar o utilizar las variables declaradas que no se están usando.
-- **Estado:** ⏳ Pendiente.
+- **Estado:** ✅ Completado.
 
 ---
 
 ## 🎯 Próximos Pasos Recomendados
 
-1.  **Completar el Ciclo 35** limpiando todos los warnings del linter.
-2.  **Ejecutar las pruebas** para asegurar que no se ha roto nada.
-3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
-4.  **Continuar con el Roadmap**, priorizando la migración a una base de datos real.
+1.  **Ejecutar las pruebas** para asegurar que no se ha roto nada.
+2.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+3.  **Continuar con el Roadmap**, priorizando la migración a una base de datos real.

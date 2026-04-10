@@ -77,10 +77,16 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [ ] Migrar frontend a bundler moderno (Vite) y modularizar código.
 - [x] Mantener sincronía con `docs/MIGRATION_ROADMAP.md` (Obsoleto: Integrado en este roadmap).
 
-### Ciclo 35: Limpieza de Código y Calidad
+### Ciclo 35: Limpieza de Código y Calidad (Finalizado)
 
 - [x] **Corrección de Errores de Estilo**: Ejecutar `lint:fix` para aplicar reglas de estilo automáticamente.
-- [ ] **Limpieza de Advertencias**: Eliminar `console.log` y variables no usadas en frontend y backend.
+- [x] **Limpieza de Advertencias**: Eliminar `console.log` y variables no usadas en frontend y backend.
+
+### Ciclo 36: Pruebas y Verificación Final (Pendiente)
+
+- [ ] **Ejecutar Pruebas del Backend**: Correr la suite de pruebas de Jest para el backend (`npm run test` en la carpeta backend).
+- [ ] **Ejecutar Pruebas del Frontend**: Correr la suite de pruebas de Jest para el frontend (`npm run test` en la raíz).
+- [ ] **Revisar Cobertura**: Analizar los reportes de cobertura y añadir pruebas si es necesario para mantener un nivel aceptable.
 
 ---
 

@@ -15,7 +15,7 @@ export class ComponentFactory {
             const countdown = new CountdownComponent(element, targetDate);
             await countdown.init();
             return countdown;
-        } catch (err) {
+        } catch (_err) {
             return null;
         }
     }

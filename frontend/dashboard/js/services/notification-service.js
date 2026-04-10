@@ -228,7 +228,7 @@ class NotificationService {
                 this.handleSseMessage(event)
             );
             this.eventSource.onerror = () => this.handleSseError();
-        } catch (err) {
+        } catch (_err) {
             this.handleSseError(err);
         }
     }

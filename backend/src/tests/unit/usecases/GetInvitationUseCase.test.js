@@ -120,7 +120,7 @@ describe('GetInvitationUseCase', () => {
 
             try {
                 await useCase.execute('ABC123');
-            } catch (e) {}
+            } catch (_e) {}
 
             expect(mockLogger.error).toHaveBeenCalled();
         });

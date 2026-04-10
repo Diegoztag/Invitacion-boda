@@ -65,7 +65,7 @@ class EventBus {
         this.events[event].forEach(callback => {
             try {
                 callback(finalData);
-            } catch (error) {
+            } catch (_error) {
                 //
             }
         });

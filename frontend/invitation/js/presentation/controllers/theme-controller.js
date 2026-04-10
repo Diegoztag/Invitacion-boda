@@ -136,7 +136,7 @@ export class ThemeController {
             this.eventListeners.get(`custom-${event}`).forEach(callback => {
                 try {
                     callback(data);
-                } catch (error) {
+                } catch (_error) {
                     //
                 }
             });

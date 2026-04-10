@@ -30,7 +30,7 @@ export class Component {
         listeners.forEach(listener => {
             try {
                 listener(data);
-            } catch (error) {
+            } catch (_error) {
                 //
             }
         });

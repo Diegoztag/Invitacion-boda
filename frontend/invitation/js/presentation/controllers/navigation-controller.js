@@ -380,7 +380,7 @@ export class NavigationController {
 
         try {
             window.history.pushState({ section: sectionId }, '', newUrl);
-        } catch (error) {
+        } catch (_error) {
             //
         }
     }

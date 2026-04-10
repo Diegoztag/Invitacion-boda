@@ -55,7 +55,7 @@ export class InvitationService {
             this.emit(EVENTS.CONTENT.LOADED, { invitation });
 
             return invitation;
-        } catch (error) {
+        } catch (_error) {
             this.emit(EVENTS.CONTENT.ERROR, { error: error.message, code: normalizedCode });
             throw error;
         }
@@ -312,7 +312,7 @@ export class InvitationService {
         this.eventListeners.get(event).forEach(callback => {
             try {
                 callback(data);
-            } catch (err) {
+            } catch (_err) {
                 //
             }
         });

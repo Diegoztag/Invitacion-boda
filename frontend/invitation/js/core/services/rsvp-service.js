@@ -24,7 +24,7 @@ export class RSVPService {
         try {
             const invitation = await this.invitationService.loadInvitation(invitationId);
             return invitation;
-        } catch (err) {
+        } catch (_err) {
             throw new Error('Failed to load invitation data.');
         }
     }

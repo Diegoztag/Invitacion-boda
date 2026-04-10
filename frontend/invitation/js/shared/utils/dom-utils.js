@@ -25,7 +25,7 @@ export class DOMUtils {
     static querySelector(selector, context = document) {
         try {
             return context.querySelector(selector);
-        } catch (error) {
+        } catch (_error) {
             return null;
         }
     }

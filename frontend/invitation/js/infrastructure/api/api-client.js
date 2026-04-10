@@ -23,7 +23,7 @@ export class ApiClient {
             try {
                 const response = await this.get('/csrf-token');
                 this.csrfToken = response.csrfToken;
-            } catch (error) {
+            } catch (_error) {
                 console.error('Error al obtener el token CSRF', error);
             }
         }
