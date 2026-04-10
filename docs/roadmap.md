@@ -61,8 +61,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Cachear respuestas frecuentes (memoria/Redis).
 - [ ] Evaluar migración de CSV a base de datos (relacional o NoSQL).
 - [ ] Optimizar paginación y consultas en repositorios.
-- [ ] Comprimir/minificar recursos front-end y habilitar Service Worker.
-- [ ] Monitorizar tiempos de respuesta (APM) y definir alertas.
+- [x] Comprimir/minificar recursos front-end y habilitar Service Worker.
+- [x] Monitorizar tiempos de respuesta (APM) y definir alertas.
 
 ### Ciclo 33: Documentación y Operaciones
 

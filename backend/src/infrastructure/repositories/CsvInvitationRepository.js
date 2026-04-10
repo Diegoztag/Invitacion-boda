@@ -723,6 +723,18 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     async findPaginated(page = 1, limit = 10, filters = {}, sort = {}, includeInactive = false) {
         try {
+            // Intentar obtener del caché si no hay filtros complejos
+            const cacheKey = `paginated_${page}_${limit}_${JSON.stringify(filters)}_${JSON.stringify(sort)}_${includeInactive}`;
+            if (this.csvStorage.cacheService) {
+                const cached = this.csvStorage.cacheService.get(cacheKey);
+                if (cached) {
+                    return {
+                        data: cached.data.map(data => new Invitation(data)),
+                        pagination: cached.pagination
+                    };
+                }
+            }
+
             const invitations = await this.findAll(filters, includeInactive);
 
             // Aplicar ordenamiento
@@ -748,7 +760,7 @@ class CsvInvitationRepository extends IInvitationRepository {
             const offset = (page - 1) * limit;
             const paginatedInvitations = invitations.slice(offset, offset + limit);
 
-            return {
+            const result = {
                 data: paginatedInvitations,
                 pagination: {
                     page,
@@ -759,6 +771,20 @@ class CsvInvitationRepository extends IInvitationRepository {
                     hasPrev: page > 1
                 }
             };
+
+            // Guardar en caché
+            if (this.csvStorage.cacheService) {
+                this.csvStorage.cacheService.set(
+                    cacheKey,
+                    {
+                        data: result.data.map(inv => inv.toObject()),
+                        pagination: result.pagination
+                    },
+                    300 // 5 minutos
+                );
+            }
+
+            return result;
         } catch (error) {
             this.logger.error('Error finding paginated invitations', {
                 page,
