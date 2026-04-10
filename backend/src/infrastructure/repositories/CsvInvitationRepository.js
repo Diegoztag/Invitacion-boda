@@ -778,6 +778,14 @@ class CsvInvitationRepository extends IInvitationRepository {
      */
     async readAllInvitations() {
         try {
+            // Intentar obtener del caché primero
+            if (this.csvStorage.cacheService) {
+                const cached = this.csvStorage.cacheService.get('all_invitations');
+                if (cached) {
+                    return cached.map(data => new Invitation(data));
+                }
+            }
+
             const rawInvitations = await this.csvStorage.readInvitations();
             const invitations = [];
 
@@ -792,6 +800,15 @@ class CsvInvitationRepository extends IInvitationRepository {
                         error: error.message
                     });
                 }
+            }
+
+            // Guardar en caché
+            if (this.csvStorage.cacheService) {
+                this.csvStorage.cacheService.set(
+                    'all_invitations',
+                    invitations.map(inv => inv.toObject()),
+                    300 // 5 minutos
+                );
             }
 
             return invitations;
@@ -812,6 +829,12 @@ class CsvInvitationRepository extends IInvitationRepository {
         try {
             const csvData = invitations.map(invitation => this.invitationToCsvData(invitation));
             await this.csvStorage.writeInvitations(csvData);
+
+            // Invalidar caché
+            if (this.csvStorage.cacheService) {
+                this.csvStorage.cacheService.del('all_invitations');
+                this.csvStorage.cacheService.deletePattern('stats_*');
+            }
         } catch (error) {
             this.logger.error('Error writing invitations to CSV', {
                 error: error.message

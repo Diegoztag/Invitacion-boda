@@ -75,9 +75,9 @@ class Server {
         // 1. Instanciar dependencias base
         const logger = new Logger();
         const validationService = new ValidationService(config, logger);
-        const csvStorage = new CsvStorage(logger);
-        const sseService = new SseService(logger);
         const cacheService = new CacheService(logger);
+        const csvStorage = new CsvStorage(logger, cacheService);
+        const sseService = new SseService(logger);
 
         // 2. Instanciar repositorios
         const invitationRepository = new CsvInvitationRepository(csvStorage, logger);

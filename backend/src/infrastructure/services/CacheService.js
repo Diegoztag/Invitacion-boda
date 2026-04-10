@@ -56,6 +56,23 @@ class CacheService {
     }
 
     /**
+     * Elimina claves que coinciden con un patrón
+     * @param {string} pattern - Patrón a buscar (ej. 'stats_*')
+     * @returns {number} Número de elementos eliminados
+     */
+    deletePattern(pattern) {
+        this.logger.debug(`Deleting cache for pattern: ${pattern}`);
+        const keys = this.cache.keys();
+        const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+        const keysToDelete = keys.filter(key => regex.test(key));
+
+        if (keysToDelete.length > 0) {
+            return this.cache.del(keysToDelete);
+        }
+        return 0;
+    }
+
+    /**
      * Limpia toda la caché
      */
     flush() {

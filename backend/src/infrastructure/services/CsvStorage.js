@@ -9,8 +9,9 @@ const { parse } = require('csv-parse/sync');
 const { stringify } = require('csv-stringify/sync');
 
 class CsvStorage {
-    constructor(logger) {
+    constructor(logger, cacheService) {
         this.logger = logger;
+        this.cacheService = cacheService;
 
         // Permitir sobreescritura de rutas de archivos mediante variables de entorno (útil para tests)
         const defaultDataPath = path.join(__dirname, '../../../data');
