@@ -82,12 +82,19 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Corrección de Errores de Estilo**: Ejecutar `lint:fix` para aplicar reglas de estilo automáticamente.
 - [x] **Limpieza de Advertencias**: Eliminar `console.log` y variables no usadas en frontend y backend.
 
-### Ciclo 36: Pruebas y Verificación Final (En Progreso)
+### Ciclo 36: Pruebas y Verificación Final (Finalizado)
 
 - [x] **Ejecutar Pruebas del Backend**: Correr la suite de pruebas de Jest para el backend (`npm run test` en la carpeta backend).
 - [x] **Ejecutar Pruebas del Frontend**: Correr la suite de pruebas de Jest para el frontend (`npm run test` en la raíz).
 - [x] **Revisar Cobertura**: Analizar los reportes de cobertura y añadir pruebas si es necesario para mantener un nivel aceptable.
 - [x] **Completar Cobertura de Casos de Uso**: Añadir pruebas unitarias para los casos de uso restantes (`ExportConfirmations`, `ExportInvitations`, `CancelConfirmation`, `DeleteInvitation`, `UpdateInvitation`, `UpdateConfirmation`).
+
+### Ciclo 37: Testing Avanzado y Cobertura (En Progreso)
+
+- [ ] **Completar Cobertura de Controladores (Backend)**: Añadir pruebas unitarias para `InvitationController` y `ConfirmationController`.
+- [ ] **Completar Cobertura de Controladores (Frontend)**: Añadir pruebas unitarias para los controladores del frontend que faltan.
+- [ ] **Separar Pruebas Unitarias y de Integración**: Crear configuraciones y scripts de npm separados para ejecutar pruebas unitarias y de integración de forma independiente.
+- [ ] **Pruebas de Integración**: Crear pruebas de integración para los flujos críticos (ej. creación de invitación -> confirmación -> actualización de estadísticas).
 
 ---
 

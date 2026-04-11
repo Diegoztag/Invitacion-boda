@@ -499,7 +499,7 @@ describe('RSVPController', () => {
 
 ---
 
-## 🔄 Ciclo 35: Limpieza de Código y Calidad (En Progreso)
+## 🔄 Ciclo 35: Limpieza de Código y Calidad (Finalizado)
 
 **Objetivo:** Mejorar la calidad del código eliminando advertencias del linter, código muerto y sentencias de depuración olvidadas.
 
@@ -519,8 +519,46 @@ describe('RSVPController', () => {
 
 ---
 
+## 🔄 Ciclo 36: Pruebas y Verificación Final (Finalizado)
+
+**Objetivo:** Asegurar que todas las capas de la aplicación tengan una cobertura de pruebas adecuada, especialmente los casos de uso.
+
+- **Estado:** ✅ Completado. Se añadieron pruebas unitarias para todos los casos de uso restantes y se verificó la ejecución exitosa de las suites de frontend y backend.
+
+---
+
+## 🔄 Ciclo 37: Testing Avanzado y Cobertura (En Progreso)
+
+**Objetivo:** Resolver la deuda técnica de testing pendiente, enfocándose en los controladores y la separación de pruebas unitarias y de integración.
+
+### 1. Completar Cobertura de Controladores (Backend)
+
+- **Problema:** Los controladores del backend (`InvitationController`, `ConfirmationController`) carecen de pruebas unitarias exhaustivas.
+- **Solución:** Crear suites de pruebas unitarias mockeando los casos de uso correspondientes.
+- **Estado:** ⏳ Pendiente.
+
+### 2. Completar Cobertura de Controladores (Frontend)
+
+- **Problema:** Algunos controladores del frontend tienen baja cobertura.
+- **Solución:** Añadir pruebas unitarias para los controladores faltantes.
+- **Estado:** ⏳ Pendiente.
+
+### 3. Separar Pruebas Unitarias y de Integración
+
+- **Problema:** No hay una distinción clara en la ejecución de pruebas unitarias y de integración.
+- **Solución:** Crear configuraciones de Jest separadas y scripts de npm (`test:unit`, `test:integration`).
+- **Estado:** ⏳ Pendiente.
+
+### 4. Pruebas de Integración
+
+- **Problema:** Faltan pruebas que validen los flujos completos (ej. creación -> confirmación).
+- **Solución:** Implementar pruebas de integración para los flujos críticos.
+- **Estado:** ⏳ Pendiente.
+
+---
+
 ## 🎯 Próximos Pasos Recomendados
 
-1.  **Ejecutar las pruebas** para asegurar que no se ha roto nada.
-2.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
-3.  **Continuar con el Roadmap**, priorizando la migración a una base de datos real.
+1.  **Completar el Ciclo 37** para asegurar una base de código robusta y testeable.
+2.  **Iniciar la Fase 1 del Roadmap Técnico**: Migración a una base de datos real (PostgreSQL/SQLite).
+3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
