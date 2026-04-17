@@ -89,12 +89,12 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Revisar Cobertura**: Analizar los reportes de cobertura y añadir pruebas si es necesario para mantener un nivel aceptable.
 - [x] **Completar Cobertura de Casos de Uso**: Añadir pruebas unitarias para los casos de uso restantes (`ExportConfirmations`, `ExportInvitations`, `CancelConfirmation`, `DeleteInvitation`, `UpdateInvitation`, `UpdateConfirmation`).
 
-### Ciclo 37: Testing Avanzado y Cobertura (En Progreso)
+### Ciclo 37: Testing Avanzado y Cobertura (Finalizado)
 
 - [x] **Completar Cobertura de Controladores (Backend)**: Añadir pruebas unitarias para `InvitationController` y `ConfirmationController`.
-- [ ] **Completar Cobertura de Controladores (Frontend)**: Añadir pruebas unitarias para los controladores del frontend que faltan.
-- [ ] **Separar Pruebas Unitarias y de Integración**: Crear configuraciones y scripts de npm separados para ejecutar pruebas unitarias y de integración de forma independiente.
-- [ ] **Pruebas de Integración**: Crear pruebas de integración para los flujos críticos (ej. creación de invitación -> confirmación -> actualización de estadísticas).
+- [x] **Completar Cobertura de Controladores (Frontend)**: Añadir pruebas unitarias para los controladores del frontend que faltan.
+- [x] **Separar Pruebas Unitarias y de Integración**: Crear configuraciones y scripts de npm separados para ejecutar pruebas unitarias y de integración de forma independiente.
+- [x] **Pruebas de Integración**: Crear pruebas de integración para los flujos críticos (ej. creación de invitación -> confirmación -> actualización de estadísticas).
 
 ---
 

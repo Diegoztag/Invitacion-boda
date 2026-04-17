@@ -7,6 +7,8 @@
         "start": "node src/server.js",
         "dev": "nodemon src/server.js",
         "test": "jest",
+        "test:unit": "jest --config jest.config.unit.js",
+        "test:integration": "jest --config jest.config.integration.js",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
         "test:ci": "jest --ci --coverage --watchAll=false",

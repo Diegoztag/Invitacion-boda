@@ -527,7 +527,7 @@ describe('RSVPController', () => {
 
 ---
 
-## 🔄 Ciclo 37: Testing Avanzado y Cobertura (En Progreso)
+## 🔄 Ciclo 37: Testing Avanzado y Cobertura (Finalizado)
 
 **Objetivo:** Resolver la deuda técnica de testing pendiente, enfocándose en los controladores y la separación de pruebas unitarias y de integración.
 
@@ -535,25 +535,25 @@ describe('RSVPController', () => {
 
 - **Problema:** Los controladores del backend (`InvitationController`, `ConfirmationController`) carecen de pruebas unitarias exhaustivas.
 - **Solución:** Crear suites de pruebas unitarias mockeando los casos de uso correspondientes.
-- **Estado:** ⏳ Pendiente.
+- **Estado:** ✅ Completado.
 
 ### 2. Completar Cobertura de Controladores (Frontend)
 
 - **Problema:** Algunos controladores del frontend tienen baja cobertura.
 - **Solución:** Añadir pruebas unitarias para los controladores faltantes.
-- **Estado:** ⏳ Pendiente.
+- **Estado:** ✅ Completado.
 
 ### 3. Separar Pruebas Unitarias y de Integración
 
 - **Problema:** No hay una distinción clara en la ejecución de pruebas unitarias y de integración.
 - **Solución:** Crear configuraciones de Jest separadas y scripts de npm (`test:unit`, `test:integration`).
-- **Estado:** ⏳ Pendiente.
+- **Estado:** ✅ Completado.
 
 ### 4. Pruebas de Integración
 
 - **Problema:** Faltan pruebas que validen los flujos completos (ej. creación -> confirmación).
 - **Solución:** Implementar pruebas de integración para los flujos críticos.
-- **Estado:** ⏳ Pendiente.
+- **Estado:** ✅ Completado.
 
 ---
 

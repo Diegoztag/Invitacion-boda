@@ -1,71 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="32" failures="0" errors="0" time="6.185">
-  <testsuite name="InvitationController" errors="0" failures="0" skipped="0" timestamp="2026-04-11T00:49:19" time="2.752" tests="13">
-    <testcase classname="InvitationController getInvitation should call getInvitationUseCase and return success" name="InvitationController getInvitation should call getInvitationUseCase and return success" time="0.052">
-    </testcase>
-    <testcase classname="InvitationController createInvitation should return error if validation fails" name="InvitationController createInvitation should return error if validation fails" time="0.005">
-    </testcase>
-    <testcase classname="InvitationController createInvitation should call createInvitationUseCase and return success" name="InvitationController createInvitation should call createInvitationUseCase and return success" time="0.004">
-    </testcase>
-    <testcase classname="InvitationController getInvitations should call getInvitationsUseCase and return success" name="InvitationController getInvitations should call getInvitationsUseCase and return success" time="0.004">
-    </testcase>
-    <testcase classname="InvitationController updateInvitation should call updateInvitationUseCase and return success" name="InvitationController updateInvitation should call updateInvitationUseCase and return success" time="0.003">
-    </testcase>
-    <testcase classname="InvitationController deleteInvitation should call deleteInvitationUseCase and return success" name="InvitationController deleteInvitation should call deleteInvitationUseCase and return success" time="0.003">
-    </testcase>
-    <testcase classname="InvitationController restoreInvitation should call restoreInvitationUseCase and return success" name="InvitationController restoreInvitation should call restoreInvitationUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="InvitationController getStats should call getInvitationStatsUseCase and return success" name="InvitationController getStats should call getInvitationStatsUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="InvitationController importInvitations should return error if invitations array is missing or empty" name="InvitationController importInvitations should return error if invitations array is missing or empty" time="0.002">
-    </testcase>
-    <testcase classname="InvitationController importInvitations should call createInvitationUseCase.executeBatch and return success" name="InvitationController importInvitations should call createInvitationUseCase.executeBatch and return success" time="0.002">
-    </testcase>
-    <testcase classname="InvitationController searchByName should call searchInvitationsByNameUseCase and return success" name="InvitationController searchByName should call searchInvitationsByNameUseCase and return success" time="0.009">
-    </testcase>
-    <testcase classname="InvitationController exportInvitations should export as json by default" name="InvitationController exportInvitations should export as json by default" time="0.003">
-    </testcase>
-    <testcase classname="InvitationController exportInvitations should export as csv if requested" name="InvitationController exportInvitations should export as csv if requested" time="0.003">
+<testsuites name="jest tests" tests="10" failures="0" errors="0" time="28.167">
+  <testsuite name="Integration /auth and protected routes" errors="0" failures="0" skipped="0" timestamp="2026-04-17T18:26:56" time="23.04" tests="1">
+    <testcase classname="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" name="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" time="0.822">
     </testcase>
   </testsuite>
-  <testsuite name="ConfirmationController" errors="0" failures="0" skipped="0" timestamp="2026-04-11T00:49:19" time="2.78" tests="19">
-    <testcase classname="ConfirmationController confirmAttendance should return error if code is invalid" name="ConfirmationController confirmAttendance should return error if code is invalid" time="0.046">
+  <testsuite name="Integration - Create + Confirm Flow" errors="0" failures="0" skipped="0" timestamp="2026-04-17T18:26:56" time="23.171" tests="9">
+    <testcase classname="Integration - Create + Confirm Flow debe crear invitación exitosamente" name="Integration - Create + Confirm Flow debe crear invitación exitosamente" time="0.137">
     </testcase>
-    <testcase classname="ConfirmationController confirmAttendance should return error if validation fails" name="ConfirmationController confirmAttendance should return error if validation fails" time="0.003">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación creada" name="Integration - Create + Confirm Flow debe obtener la invitación creada" time="0.076">
     </testcase>
-    <testcase classname="ConfirmationController confirmAttendance should call createConfirmationUseCase and return success" name="ConfirmationController confirmAttendance should call createConfirmationUseCase and return success" time="0.011">
+    <testcase classname="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" name="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" time="0.062">
     </testcase>
-    <testcase classname="ConfirmationController getConfirmation should call getConfirmationUseCase and return success" name="ConfirmationController getConfirmation should call getConfirmationUseCase and return success" time="0.003">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" name="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" time="0.039">
     </testcase>
-    <testcase classname="ConfirmationController updateConfirmation should return error if code is invalid" name="ConfirmationController updateConfirmation should return error if code is invalid" time="0.003">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" name="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" time="0.036">
     </testcase>
-    <testcase classname="ConfirmationController updateConfirmation should return error if validation fails" name="ConfirmationController updateConfirmation should return error if validation fails" time="0.007">
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" time="0.065">
     </testcase>
-    <testcase classname="ConfirmationController updateConfirmation should call updateConfirmationUseCase and return success" name="ConfirmationController updateConfirmation should call updateConfirmationUseCase and return success" time="0.003">
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" time="0.039">
     </testcase>
-    <testcase classname="ConfirmationController cancelConfirmation should call cancelConfirmationUseCase and return success" name="ConfirmationController cancelConfirmation should call cancelConfirmationUseCase and return success" time="0.002">
+    <testcase classname="Integration - Create + Confirm Flow debe manejar confirmación negativa" name="Integration - Create + Confirm Flow debe manejar confirmación negativa" time="0.09">
     </testcase>
-    <testcase classname="ConfirmationController getConfirmations should call getConfirmationsUseCase and return success" name="ConfirmationController getConfirmations should call getConfirmationsUseCase and return success" time="0.007">
-    </testcase>
-    <testcase classname="ConfirmationController getStats should call getConfirmationStatsUseCase and return success" name="ConfirmationController getStats should call getConfirmationStatsUseCase and return success" time="0.003">
-    </testcase>
-    <testcase classname="ConfirmationController getPositiveConfirmations should call getConfirmationStatsUseCase and return success" name="ConfirmationController getPositiveConfirmations should call getConfirmationStatsUseCase and return success" time="0.003">
-    </testcase>
-    <testcase classname="ConfirmationController getNegativeConfirmations should call getConfirmationStatsUseCase and return success" name="ConfirmationController getNegativeConfirmations should call getConfirmationStatsUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="ConfirmationController getConfirmationsWithDietaryRestrictions should call getConfirmationStatsUseCase and return success" name="ConfirmationController getConfirmationsWithDietaryRestrictions should call getConfirmationStatsUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="ConfirmationController getConfirmationsWithMessages should call getConfirmationStatsUseCase and return success" name="ConfirmationController getConfirmationsWithMessages should call getConfirmationStatsUseCase and return success" time="0.006">
-    </testcase>
-    <testcase classname="ConfirmationController getRecentConfirmations should call getConfirmationStatsUseCase with hours and return success" name="ConfirmationController getRecentConfirmations should call getConfirmationStatsUseCase with hours and return success" time="0.003">
-    </testcase>
-    <testcase classname="ConfirmationController searchByName should call searchConfirmationsByNameUseCase and return success" name="ConfirmationController searchByName should call searchConfirmationsByNameUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="ConfirmationController getTotalConfirmedGuests should call getConfirmationStatsUseCase and return success" name="ConfirmationController getTotalConfirmedGuests should call getConfirmationStatsUseCase and return success" time="0.002">
-    </testcase>
-    <testcase classname="ConfirmationController exportConfirmations should export as csv by default" name="ConfirmationController exportConfirmations should export as csv by default" time="0.004">
-    </testcase>
-    <testcase classname="ConfirmationController exportConfirmations should export as json if requested" name="ConfirmationController exportConfirmations should export as json if requested" time="0.004">
+    <testcase classname="Integration - Create + Confirm Flow debe validar datos de confirmación" name="Integration - Create + Confirm Flow debe validar datos de confirmación" time="0.069">
     </testcase>
   </testsuite>
 </testsuites>
