@@ -46,7 +46,8 @@ export class ThemeController {
      * Descubre los elementos del DOM
      */
     discoverElements() {
-        this.themeToggleButton = this.container.querySelector(SELECTORS.THEME.TOGGLE_BUTTON);
+        const selector = SELECTORS?.THEME?.TOGGLE_BUTTON || '.theme-toggle';
+        this.themeToggleButton = this.container.querySelector(selector);
 
         if (!this.themeToggleButton) {
             //
@@ -58,7 +59,8 @@ export class ThemeController {
      */
     setupEventListeners() {
         if (this.themeToggleButton) {
-            this.themeToggleButton.addEventListener('click', () => this.toggleTheme());
+            this.toggleThemeHandler = () => this.toggleTheme();
+            this.themeToggleButton.addEventListener('click', this.toggleThemeHandler);
         }
     }
 
@@ -100,7 +102,8 @@ export class ThemeController {
         }
 
         // Emitir evento de cambio de tema
-        this.emit(EVENTS.THEME.CHANGED, { theme: this.currentTheme });
+        const eventName = EVENTS?.THEME?.CHANGED || 'theme:changed';
+        this.emit(eventName, { theme: this.currentTheme });
     }
 
     /**
@@ -147,8 +150,9 @@ export class ThemeController {
      * Destruye el controlador
      */
     destroy() {
-        if (this.themeToggleButton) {
-            this.themeToggleButton.removeEventListener('click', () => this.toggleTheme());
+        if (this.themeToggleButton && this.toggleThemeHandler) {
+            this.themeToggleButton.removeEventListener('click', this.toggleThemeHandler);
+            this.toggleThemeHandler = null;
         }
         this.isInitialized = false;
     }
