@@ -100,16 +100,16 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ## 🚀 Próximas Fases (Roadmap Técnico)
 
-### Fase 1: Migración de la Base de Datos (Q2 2026)
+### Fase 1: Migración de la Base de Datos (Q2 2026) (Finalizado)
 
 **Objetivo**: Reemplazar el almacenamiento basado en archivos CSV por una base de datos relacional para mejorar la escalabilidad, la integridad de los datos y el rendimiento.
 
 - **Tareas**:
-    - [ ] **Selección de la Base de Datos**: Evaluar opciones como PostgreSQL, SQLite o MySQL.
-    - [ ] **Diseño del Esquema**: Crear el esquema de la base de datos para las tablas `invitations` y `confirmations`.
-    - [ ] **Implementación de Repositorios**: Crear nuevas implementaciones de `IInvitationRepository` y `IConfirmationRepository` (ej. `SqlInvitationRepository`).
-    - [ ] **Script de Migración**: Desarrollar un script para migrar los datos existentes de los archivos CSV a la nueva base de datos.
-    - [ ] **Actualización de Pruebas**: Adaptar las pruebas de integración para que funcionen con la nueva base de datos.
+    - [x] **Selección de la Base de Datos**: Evaluar opciones como PostgreSQL, SQLite o MySQL.
+    - [x] **Diseño del Esquema**: Crear el esquema de la base de datos para las tablas `invitations` y `confirmations`.
+    - [x] **Implementación de Repositorios**: Crear nuevas implementaciones de `IInvitationRepository` y `IConfirmationRepository` (ej. `SqlInvitationRepository`).
+    - [x] **Script de Migración**: Desarrollar un script para migrar los datos existentes de los archivos CSV a la nueva base de datos.
+    - [x] **Actualización de Pruebas**: Adaptar las pruebas de integración para que funcionen con la nueva base de datos.
 
 ### Fase 2: Mejoras en el Dashboard (Q2 2026)
 

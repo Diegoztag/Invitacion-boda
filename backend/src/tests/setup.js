@@ -7,15 +7,15 @@
 process.env.TZ = 'UTC';
 
 // Mock de console para tests más limpios
-global.console = {
-    ...console,
-    // Silenciar logs durante tests
-    log: jest.fn(),
-    debug: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn()
-};
+// global.console = {
+//     ...console,
+//     // Silenciar logs durante tests
+//     log: jest.fn(),
+//     debug: jest.fn(),
+//     info: jest.fn(),
+//     warn: jest.fn(),
+//     error: jest.fn()
+// };
 
 // Configurar timeouts globales
 jest.setTimeout(10000);

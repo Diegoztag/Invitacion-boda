@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="10" failures="0" errors="0" time="28.167">
-  <testsuite name="Integration /auth and protected routes" errors="0" failures="0" skipped="0" timestamp="2026-04-17T18:26:56" time="23.04" tests="1">
-    <testcase classname="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" name="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" time="0.822">
+<testsuites name="jest tests" tests="9" failures="0" errors="0" time="8.924">
+  <testsuite name="Integration - Create + Confirm Flow" errors="0" failures="0" skipped="0" timestamp="2026-04-18T00:37:29" time="8.353" tests="9">
+    <testcase classname="Integration - Create + Confirm Flow debe crear invitación exitosamente" name="Integration - Create + Confirm Flow debe crear invitación exitosamente" time="0.114">
     </testcase>
-  </testsuite>
-  <testsuite name="Integration - Create + Confirm Flow" errors="0" failures="0" skipped="0" timestamp="2026-04-17T18:26:56" time="23.171" tests="9">
-    <testcase classname="Integration - Create + Confirm Flow debe crear invitación exitosamente" name="Integration - Create + Confirm Flow debe crear invitación exitosamente" time="0.137">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación creada" name="Integration - Create + Confirm Flow debe obtener la invitación creada" time="0.04">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación creada" name="Integration - Create + Confirm Flow debe obtener la invitación creada" time="0.076">
+    <testcase classname="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" name="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" time="0.104">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" name="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" time="0.062">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" name="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" time="0.03">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" name="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" time="0.039">
+    <testcase classname="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" name="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" time="0.035">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" name="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" time="0.036">
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" time="0.052">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" time="0.065">
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" time="0.031">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" time="0.039">
+    <testcase classname="Integration - Create + Confirm Flow debe manejar confirmación negativa" name="Integration - Create + Confirm Flow debe manejar confirmación negativa" time="0.102">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe manejar confirmación negativa" name="Integration - Create + Confirm Flow debe manejar confirmación negativa" time="0.09">
-    </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe validar datos de confirmación" name="Integration - Create + Confirm Flow debe validar datos de confirmación" time="0.069">
+    <testcase classname="Integration - Create + Confirm Flow debe validar datos de confirmación" name="Integration - Create + Confirm Flow debe validar datos de confirmación" time="0.066">
     </testcase>
   </testsuite>
 </testsuites>

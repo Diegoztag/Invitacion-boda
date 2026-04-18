@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>21/24</span>
+                <span class='fraction'>16/24</span>
             </div>
         
             
@@ -177,32 +177,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,9 +254,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -276,7 +276,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Get Invitation Stats Use Case
  * Caso de uso para obtener estadísticas de invitaciones
@@ -333,14 +333,14 @@ class GetInvitationStatsUseCase {
                             ? (invitationStats.confirmedPasses / invitationStats.confirmed).toFixed(
                                   2
                               )
-                            : '0.00'
+                            : <span class="branch-1 cbranch-no" title="branch not covered" >'0.00'</span>
                 },
                 passDistribution: {
                     // Desglose de pases activos
-                    activeAdultPasses: invitationStats.activeAdultPasses || 0,
+                    activeAdultPasses: invitationStats.activeAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
                     activeChildPasses: invitationStats.activeChildPasses || 0,
                     activeStaffPasses: invitationStats.activeStaffPasses || 0,
-                    totalActivePasses: invitationStats.totalActivePasses || 0,
+                    totalActivePasses: invitationStats.totalActivePasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
 &nbsp;
                     // Porcentajes de distribución
                     distributionPercentages: invitationStats.distributionPercentages || <span class="branch-1 cbranch-no" title="branch not covered" >{</span>
@@ -350,10 +350,10 @@ class GetInvitationStatsUseCase {
                     },
 &nbsp;
                     // Desglose de pases confirmados
-                    confirmedAdultPasses: invitationStats.confirmedAdultPasses || 0,
+                    confirmedAdultPasses: invitationStats.confirmedAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
                     confirmedChildPasses: invitationStats.confirmedChildPasses || 0,
                     confirmedStaffPasses: invitationStats.confirmedStaffPasses || 0,
-                    totalConfirmedPasses: invitationStats.totalConfirmedPasses || 0
+                    totalConfirmedPasses: invitationStats.totalConfirmedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0</span>
                 },
                 rates: {
                     confirmationRate,
@@ -391,7 +391,7 @@ module.exports = GetInvitationStatsUseCase;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-17T18:27:27.359Z
+                at 2026-04-18T00:37:43.781Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

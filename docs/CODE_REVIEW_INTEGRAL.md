@@ -559,6 +559,19 @@ describe('RSVPController', () => {
 
 ## 🎯 Próximos Pasos Recomendados
 
-1.  **Completar el Ciclo 37** para asegurar una base de código robusta y testeable.
-2.  **Iniciar la Fase 1 del Roadmap Técnico**: Migración a una base de datos real (PostgreSQL/SQLite).
-3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+1.  **Iniciar la Fase 2 del Roadmap Técnico**: Mejoras en el Dashboard.
+2.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+
+---
+
+## 🚀 Fases del Roadmap Técnico Completadas
+
+### Fase 1: Migración de la Base de Datos (Q2 2026) - **COMPLETADO**
+
+- **Problema**: El uso de archivos CSV para el almacenamiento de datos es propenso a errores de concurrencia, no escala bien y dificulta las consultas complejas.
+- **Solución**: Migrar a una base de datos relacional (SQLite).
+- **Acción**:
+    - Se diseñó el esquema de la base de datos con tablas para `invitations` y `confirmations`.
+    - Se implementaron los repositorios `SqliteInvitationRepository` y `SqliteConfirmationRepository` utilizando `sqlite3`.
+    - Se creó un script de migración (`migrate-csv-to-sqlite.js`) para transferir los datos de los CSV a la nueva base de datos.
+    - Se actualizaron las pruebas de integración para funcionar con la nueva base de datos.

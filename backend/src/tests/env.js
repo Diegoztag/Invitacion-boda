@@ -10,3 +10,4 @@ process.env.JWT_SECRET = 'test-jwt-secret-key';
 process.env.ADMIN_PASSWORD = 'test-admin-password';
 process.env.CSV_INVITATIONS_PATH = './test-data/invitations.csv';
 process.env.CSV_CONFIRMATIONS_PATH = './test-data/confirmations.csv';
+process.env.SQLITE_DB_PATH = ':memory:';

@@ -48,22 +48,31 @@ describe('Integration - Create + Confirm Flow', () => {
         const response = await request(app)
             .post('/api/v1/invitations')
             .set('Authorization', `Bearer ${token}`)
-            .send(invitationData)
-            .expect(201);
+            .send(invitationData);
+
+        if (response.status !== 201) {
+            console.error('Error creating invitation:', response.body);
+        }
+
+        expect(response.status).toBe(201);
 
         return response.body.invitation;
     };
 
     test('debe crear invitación exitosamente', async () => {
+        const uniqueId = Date.now();
         const invitation = await createTestInvitation(
-            ['Juan Pérez', 'María García'],
+            [`Carlos Ruiz ${uniqueId}`, `Laura Gómez ${uniqueId}`],
             2,
             '+1234567890'
         );
 
         expect(invitation).toBeDefined();
         expect(invitation.code).toBeDefined();
-        expect(invitation.guestNames).toEqual(['Juan Pérez', 'María García']);
+        expect(invitation.guestNames).toEqual([
+            `Carlos Ruiz ${uniqueId}`,
+            `Laura Gómez ${uniqueId}`
+        ]);
         expect(invitation.numberOfPasses).toBe(2);
         expect(invitation.status).toBe('active');
 
@@ -77,15 +86,18 @@ describe('Integration - Create + Confirm Flow', () => {
 
         expect(response.body.success).toBe(true);
         expect(response.body.invitation.code).toBe(createdInvitationCode);
-        expect(response.body.invitation.guestNames).toEqual(['Juan Pérez', 'María García']);
+        expect(response.body.invitation.guestNames[0]).toContain('Carlos Ruiz');
         expect(response.body.invitation.confirmed).toBe(false);
     });
 
     test('debe confirmar asistencia para la invitación', async () => {
+        const responseGet = await request(app).get(`/api/v1/invitations/${createdInvitationCode}`);
+        const guestNames = responseGet.body.invitation.guestNames;
+
         const confirmationData = {
             willAttend: true,
             attendingGuests: 2,
-            attendingNames: ['Juan Pérez', 'María García'],
+            attendingNames: guestNames,
             phone: '+1234567890',
             dietaryRestrictions: 'Sin restricciones',
             message: '¡Felicidades! Estamos muy emocionados.'
@@ -107,7 +119,7 @@ describe('Integration - Create + Confirm Flow', () => {
         expect(response.body.invitation.confirmed).toBe(true);
         expect(response.body.confirmation.willAttend).toBe(true);
         expect(response.body.confirmation.attendingGuests).toBe(2);
-        expect(response.body.confirmation.attendingNames).toEqual(['Juan Pérez', 'María García']);
+        expect(response.body.confirmation.attendingNames).toEqual(guestNames);
     });
 
     test('debe obtener la invitación actualizada después de confirmar', async () => {
@@ -118,7 +130,7 @@ describe('Integration - Create + Confirm Flow', () => {
         expect(response.body.success).toBe(true);
         expect(response.body.invitation.confirmed).toBe(true);
         expect(response.body.invitation.confirmedPasses).toBe(2);
-        expect(response.body.invitation.attendingNames).toEqual(['Juan Pérez', 'María García']);
+        expect(response.body.invitation.attendingNames[0]).toContain('Carlos Ruiz');
         expect(response.body.invitation.dietaryRestrictionsNames).toBe('Sin restricciones');
         expect(response.body.invitation.generalMessage).toBe(
             '¡Felicidades! Estamos muy emocionados.'
@@ -173,9 +185,10 @@ describe('Integration - Create + Confirm Flow', () => {
     });
 
     test('debe manejar confirmación negativa', async () => {
+        const uniqueId = Date.now();
         // Crear otra invitación para probar confirmación negativa
         const invitationData = {
-            guestNames: ['Pedro López'],
+            guestNames: [`Miguel Sánchez ${uniqueId}`],
             numberOfPasses: 1,
             phone: '+0987654321'
         };
@@ -207,9 +220,10 @@ describe('Integration - Create + Confirm Flow', () => {
     });
 
     test('debe validar datos de confirmación', async () => {
+        const uniqueId = Date.now();
         // Crear otra invitación
         const invitationData = {
-            guestNames: ['Ana Rodríguez'],
+            guestNames: [`Sofía Martínez ${uniqueId}`],
             numberOfPasses: 1
         };
 

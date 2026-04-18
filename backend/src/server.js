@@ -21,8 +21,9 @@ const Logger = require('./shared/utils/logger');
 const ValidationService = require('./shared/utils/ValidationService');
 
 // Importar repositorios
-const CsvInvitationRepository = require('./infrastructure/repositories/CsvInvitationRepository');
-const CsvConfirmationRepository = require('./infrastructure/repositories/CsvConfirmationRepository');
+const SqliteInvitationRepository = require('./infrastructure/repositories/SqliteInvitationRepository');
+const SqliteConfirmationRepository = require('./infrastructure/repositories/SqliteConfirmationRepository');
+const { initDatabase } = require('./infrastructure/database/init-db');
 
 // Importar casos de uso
 const CreateInvitationUseCase = require('./application/usecases/CreateInvitationUseCase');
@@ -82,8 +83,8 @@ class Server {
         const sseService = new SseService(logger);
 
         // 2. Instanciar repositorios
-        const invitationRepository = new CsvInvitationRepository(csvStorage, logger);
-        const confirmationRepository = new CsvConfirmationRepository(csvStorage, logger);
+        const invitationRepository = new SqliteInvitationRepository();
+        const confirmationRepository = new SqliteConfirmationRepository();
 
         // 3. Instanciar casos de uso
         const createInvitationUseCase = new CreateInvitationUseCase(
@@ -511,9 +512,9 @@ class Server {
         const logger = this.container.resolve('logger');
 
         try {
-            // Inicializar el servicio de almacenamiento CSV
-            const csvStorage = this.container.resolve('csvStorage');
-            await csvStorage.initialize();
+            // Inicializar la base de datos SQLite
+            await initDatabase();
+            logger.info('Database initialized successfully');
 
             const invitationRepository = this.container.resolve('invitationRepository');
             const confirmationRepository = this.container.resolve('confirmationRepository');
@@ -537,6 +538,14 @@ class Server {
      */
     async stop() {
         const logger = this.container.resolve('logger');
+        const { closeDbConnection } = require('./infrastructure/database/sqlite-connection');
+
+        try {
+            await closeDbConnection();
+            logger.info('Database connection closed');
+        } catch (error) {
+            logger.error('Error closing database connection', { error: error.message });
+        }
 
         return new Promise(resolve => {
             if (this.server) {
