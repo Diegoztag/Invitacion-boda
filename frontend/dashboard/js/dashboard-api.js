@@ -649,9 +649,9 @@ export class AdminAPI {
 function getBackendUrl() {
     // Intentar obtener la URL desde WEDDING_CONFIG, con fallback a localhost
     if (typeof window !== 'undefined' && window.WEDDING_CONFIG?.api?.backendUrl) {
-        return window.WEDDING_CONFIG.api.backendUrl;
+        return window.WEDDING_CONFIG.api.backendUrl + '/api/v1';
     }
-    return 'http://localhost:3000/api';
+    return 'http://localhost:3000/api/v1';
 }
 
 export const adminAPI = new AdminAPI(getBackendUrl());

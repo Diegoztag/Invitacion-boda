@@ -101,25 +101,31 @@ class SecurityMiddleware {
      */
     get cors() {
         return (req, res, next) => {
-            // obtener orígenes desde la configuración, si no existe se usa un conjunto seguro por defecto
-            // const defaultOrigins = [
-            //     'http://localhost:3000',
-            //     'http://localhost:3001', // Browser-sync
-            //     'http://localhost:8080',
-            //     'https://localhost:3000',
-            //     'https://localhost:3001', // Browser-sync HTTPS
-            //     'https://localhost:8080'
-            // ];
+            const defaultOrigins = [
+                'http://localhost:3000',
+                'http://localhost:3001',
+                'http://localhost:8080',
+                'https://localhost:3000',
+                'https://localhost:3001',
+                'https://localhost:8080'
+            ];
 
-            // const allowedOrigins =
-            //     this.config &&
-            //     this.config.cors &&
-            //     Array.isArray(this.config.cors.allowedOrigins) &&
-            //     this.config.cors.allowedOrigins.length > 0
-            //         ? this.config.cors.allowedOrigins
-            //         : defaultOrigins;
+            const allowedOrigins =
+                this.config &&
+                this.config.cors &&
+                Array.isArray(this.config.cors.allowedOrigins) &&
+                this.config.cors.allowedOrigins.length > 0
+                    ? this.config.cors.allowedOrigins
+                    : defaultOrigins;
 
-            // const _origin = req.headers.origin;
+            const origin = req.headers.origin;
+
+            if (allowedOrigins.includes(origin)) {
+                res.setHeader('Access-Control-Allow-Origin', origin);
+            } else if (process.env.NODE_ENV !== 'production') {
+                // En desarrollo, permitir cualquier origen si no está en la lista
+                res.setHeader('Access-Control-Allow-Origin', origin || '*');
+            }
 
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.setHeader(
