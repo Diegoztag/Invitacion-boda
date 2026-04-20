@@ -96,12 +96,12 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Separar Pruebas Unitarias y de Integración**: Crear configuraciones y scripts de npm separados para ejecutar pruebas unitarias y de integración de forma independiente.
 - [x] **Pruebas de Integración**: Crear pruebas de integración para los flujos críticos (ej. creación de invitación -> confirmación -> actualización de estadísticas).
 
-### Ciclo 38: Optimización Post-Migración Vite y Performance
+### Ciclo 38: Optimización Post-Migración Vite y Performance (Finalizado)
 
-- [ ] **Configuración Avanzada de Vite**: Optimizar el chunking (separar vendor de código de aplicación) en `vite.config.js`.
-- [ ] **Lazy Loading de Componentes**: Implementar carga diferida para componentes no críticos (ej. modales, carrusel) para mejorar el tiempo de carga inicial.
-- [ ] **Optimización de Imágenes**: Asegurar que todas las imágenes se sirvan en formatos modernos (WebP/AVIF) y utilizar `srcset` para diferentes resoluciones.
-- [ ] **Minificación Avanzada**: Revisar la configuración de Terser/esbuild en Vite para eliminar console.logs en producción y optimizar el bundle.
+- [x] **Configuración Avanzada de Vite**: Optimizar el chunking (separar vendor de código de aplicación) en `vite.config.js`.
+- [x] **Lazy Loading de Componentes**: Implementar carga diferida para componentes no críticos (ej. modales, carrusel) para mejorar el tiempo de carga inicial.
+- [x] **Optimización de Imágenes**: Asegurar que todas las imágenes se sirvan en formatos modernos (WebP/AVIF) y utilizar `srcset` para diferentes resoluciones.
+- [x] **Minificación Avanzada**: Revisar la configuración de Terser/esbuild en Vite para eliminar console.logs en producción y optimizar el bundle.
 
 ### Ciclo 39: Accesibilidad (a11y) y SEO Avanzado
 
