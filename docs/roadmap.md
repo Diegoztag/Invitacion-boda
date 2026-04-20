@@ -109,12 +109,12 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Sitemap y Robots.txt**: Generar dinámicamente o estáticamente un `sitemap.xml` y `robots.txt` para mejorar la indexación.
 - [x] **Microdatos (Schema.org)**: Añadir marcado de datos estructurados (Event) para que los motores de búsqueda entiendan los detalles de la boda.
 
-### Ciclo 40: PWA y Performance Avanzado
+### Ciclo 40: PWA y Performance Avanzado (Finalizado)
 
-- [ ] **PWA Completa**: Añadir `manifest.json` y meta etiquetas para iOS/Android para permitir la instalación de la aplicación.
-- [ ] **Optimización de Imágenes**: Implementar lazy loading nativo (`loading="lazy"`) en las imágenes para mejorar el tiempo de carga inicial.
-- [ ] **Seguridad Frontend**: Añadir Content Security Policy (CSP) en el `index.html` para prevenir ataques XSS.
-- [ ] **Performance**: Preconectar a dominios externos (Google Fonts, FontAwesome) usando `<link rel="preconnect">`.
+- [x] **PWA Completa**: Añadir `manifest.json` y meta etiquetas para iOS/Android para permitir la instalación de la aplicación.
+- [x] **Optimización de Imágenes**: Implementar lazy loading nativo (`loading="lazy"`) en las imágenes para mejorar el tiempo de carga inicial.
+- [x] **Seguridad Frontend**: Añadir Content Security Policy (CSP) en el `index.html` para prevenir ataques XSS.
+- [x] **Performance**: Preconectar a dominios externos (Google Fonts, FontAwesome) usando `<link rel="preconnect">`.
 
 ---
 
