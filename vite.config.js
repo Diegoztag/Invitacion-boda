@@ -1,7 +1,27 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig({
+    plugins: [
+        ViteImageOptimizer({
+            png: {
+                quality: 80
+            },
+            jpeg: {
+                quality: 80
+            },
+            jpg: {
+                quality: 80
+            },
+            webp: {
+                quality: 80
+            },
+            avif: {
+                quality: 70
+            }
+        })
+    ],
     root: 'frontend',
     build: {
         outDir: '../dist',
