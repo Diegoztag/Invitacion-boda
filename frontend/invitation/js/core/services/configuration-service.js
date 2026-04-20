@@ -28,9 +28,30 @@ export class ConfigurationService {
     }
 
     /**
-     * Carga la configuración desde WEDDING_CONFIG
+     * Carga la configuración desde el backend o WEDDING_CONFIG
      */
-    loadConfiguration() {
+    async loadConfiguration() {
+        try {
+            const backendUrl = window.WEDDING_CONFIG?.api?.backendUrl || '/api';
+            const response = await fetch(`${backendUrl}/settings`);
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.data) {
+                    this.config = result.data;
+                    // Actualizar WEDDING_CONFIG global para compatibilidad
+                    window.WEDDING_CONFIG = { ...window.WEDDING_CONFIG, ...this.config };
+                    return;
+                }
+            }
+        } catch (error) {
+            console.warn(
+                'No se pudo cargar la configuración del backend, usando configuración local',
+                error
+            );
+        }
+
+        // Fallback a configuración local
         this.config = window.WEDDING_CONFIG || {};
 
         if (!this.config || Object.keys(this.config).length === 0) {
@@ -564,7 +585,7 @@ export class ConfigurationService {
      * Recarga la configuración y la aplica
      */
     async reloadConfiguration() {
-        this.loadConfiguration();
+        await this.loadConfiguration();
         await this.applyConfigurationToDOM();
     }
 
