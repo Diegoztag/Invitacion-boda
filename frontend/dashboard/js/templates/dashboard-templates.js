@@ -8,10 +8,10 @@ export class DashboardTemplates {
      * Template para stat card
      */
     static statCard(config) {
-        const { icon, iconClass = 'primary', title, value, subtitle, badge } = config;
+        const { icon, iconClass = 'primary', title, value, subtitle, badge, tooltip } = config;
 
         return `
-            <div class="stat-card">
+            <div class="stat-card" ${tooltip ? `title="${tooltip}"` : ''}>
                 <div class="stat-header">
                     <div class="stat-icon ${iconClass}">
                         <i class="${icon}"></i>
@@ -19,7 +19,7 @@ export class DashboardTemplates {
                     ${badge ? `<span class="stat-badge ${badge.class}">${badge.text}</span>` : ''}
                 </div>
                 <div class="stat-content">
-                    <p>${title}</p>
+                    <p>${title} ${tooltip ? '<i class="fas fa-info-circle text-muted" style="font-size: 0.8em; margin-left: 4px;"></i>' : ''}</p>
                     <h3>${value}</h3>
                     ${subtitle ? `<p class="stat-subtitle">${subtitle}</p>` : ''}
                 </div>
@@ -150,6 +150,14 @@ export class DashboardTemplates {
                                         <option value="unassigned">Sin mesa asignada</option>
                                     </select>
                                 </div>
+                                
+                                <div class="filter-group">
+                                    <select id="phoneFilter" class="filter-select">
+                                        <option value="">Teléfono: Todos</option>
+                                        <option value="with_phone">Con teléfono</option>
+                                        <option value="without_phone">Sin teléfono</option>
+                                    </select>
+                                </div>
                             </div>
                             
                             <div class="filters-actions">
@@ -191,10 +199,10 @@ export class DashboardTemplates {
                     <table class="recent-confirmations-table">
                         <thead>
                             <tr>
-                                <th>Invitado</th>
-                                <th>Estado</th>
-                                <th>Pases</th>
-                                <th>Mesa</th>
+                                <th class="sortable" data-sort="guestNames">Invitado <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="status">Estado <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="numberOfPasses">Pases <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="tableNumber">Mesa <i class="fas fa-sort"></i></th>
                                 <th>Mensaje</th>
                                 <th class="table-header-detail">Detalle</th>
                             </tr>
@@ -344,41 +352,49 @@ export const STAT_CARD_CONFIGS = {
     totalPasses: {
         icon: 'fas fa-user-check',
         iconClass: 'primary',
-        title: 'Invitados'
+        title: 'Invitados',
+        tooltip: 'Total de pases asignados a todas las invitaciones activas'
     },
     confirmedPasses: {
         icon: 'fas fa-check-circle',
         iconClass: 'success',
-        title: 'Confirmados'
+        title: 'Confirmados',
+        tooltip: 'Total de pases que han confirmado su asistencia'
     },
     pendingPasses: {
         icon: 'fas fa-hourglass-half',
         iconClass: 'warning',
-        title: 'Por Confirmar'
+        title: 'Por Confirmar',
+        tooltip: 'Total de pases que aún no han respondido'
     },
     cancelledPasses: {
         icon: 'fas fa-times-circle',
         iconClass: 'danger',
-        title: 'No asistirán'
+        title: 'No asistirán',
+        tooltip: 'Total de pases que han declinado la invitación'
     },
     totalInvitations: {
         icon: 'fas fa-envelope',
         iconClass: 'primary',
-        title: 'Total Invitaciones'
+        title: 'Total Invitaciones',
+        tooltip: 'Número total de invitaciones (grupos/familias) enviadas'
     },
     confirmedInvitations: {
         icon: 'fas fa-check-circle',
         iconClass: 'success',
-        title: 'Invitaciones Confirmadas'
+        title: 'Invitaciones Confirmadas',
+        tooltip: 'Invitaciones donde al menos un invitado ha confirmado'
     },
     pendingInvitations: {
         icon: 'fas fa-hourglass-half',
         iconClass: 'warning',
-        title: 'Invitaciones Pendientes'
+        title: 'Invitaciones Pendientes',
+        tooltip: 'Invitaciones que aún no tienen respuesta'
     },
     cancelledInvitations: {
         icon: 'fas fa-times-circle',
         iconClass: 'danger',
-        title: 'Invitaciones Canceladas'
+        title: 'Invitaciones Canceladas',
+        tooltip: 'Invitaciones donde todos los invitados han declinado'
     }
 };

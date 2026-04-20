@@ -26,6 +26,10 @@ export class InvitationsController {
                 table: '',
                 phone: ''
             },
+            sort: {
+                field: 'createdAt',
+                direction: 'desc'
+            },
             pagination: {
                 total: 0,
                 totalPages: 1,
@@ -90,6 +94,58 @@ export class InvitationsController {
 
         // Setup button event listeners
         this.setupButtonEventListeners();
+
+        // Setup table sorting listeners
+        this.setupTableSortingListeners();
+    }
+
+    /**
+     * Configura los event listeners para el ordenamiento de la tabla
+     */
+    setupTableSortingListeners() {
+        document.addEventListener('click', async e => {
+            const th = e.target.closest('th.sortable');
+            if (th) {
+                const field = th.dataset.sort;
+                if (field) {
+                    // Toggle direction if same field, otherwise default to asc
+                    if (this.state.sort.field === field) {
+                        this.state.sort.direction =
+                            this.state.sort.direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        this.state.sort.field = field;
+                        this.state.sort.direction = 'asc';
+                    }
+
+                    // Update UI
+                    this.updateSortUI();
+
+                    // Reload data
+                    this.state.page = 1;
+                    await this.loadInvitations();
+                }
+            }
+        });
+    }
+
+    /**
+     * Actualiza la UI de ordenamiento en la tabla
+     */
+    updateSortUI() {
+        const headers = document.querySelectorAll('th.sortable');
+        headers.forEach(th => {
+            const icon = th.querySelector('i');
+            if (icon) {
+                // Reset all icons
+                icon.className = 'fas fa-sort';
+
+                // Set active icon
+                if (th.dataset.sort === this.state.sort.field) {
+                    icon.className =
+                        this.state.sort.direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+                }
+            }
+        });
     }
 
     /**
@@ -231,6 +287,12 @@ export class InvitationsController {
             params.phone = phone;
         }
 
+        // Mapeo de ordenamiento
+        if (this.state.sort.field) {
+            params.sortField = this.state.sort.field;
+            params.sortDirection = this.state.sort.direction;
+        }
+
         return params;
     }
 
@@ -369,6 +431,9 @@ export class InvitationsController {
             numbersContainerId: 'paginationNumbers',
             onPageChange: newPage => this.changePage(newPage)
         });
+
+        // Update sort UI after rendering
+        this.updateSortUI();
     }
 
     /**

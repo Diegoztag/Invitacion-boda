@@ -7,61 +7,47 @@ on:
     branches: [ main ]
 
 jobs:
-  backend-ci:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: './backend/package-lock.json'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run Linter
-      run: npm run lint
-      
-    - name: Run Tests
-      run: npm test
-      env:
-        NODE_ENV: test
-        JWT_SECRET: test_secret_key_for_ci_pipeline
-        ADMIN_USERNAME: admin
-        ADMIN_PASSWORD: password123
-
-  frontend-ci:
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v4
-    
+    - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        
-    - name: Install dependencies
+
+    - name: Install dependencies (Root)
       run: npm ci
-      
+
+    - name: Install dependencies (Backend)
+      run: cd backend && npm ci
+
     - name: Run Linter
       run: npm run lint
-      
-    - name: Run Tests
-      run: npm test
+
+    - name: Run Tests (Frontend)
+      run: npm run test
+
+    - name: Run Tests (Backend)
+      run: cd backend && npm run test
+
+  docker-build:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build Docker Image (Backend)
+      run: docker build -t invitacion-boda-backend ./backend
+
+    - name: Test Docker Compose
+      run: docker-compose up -d

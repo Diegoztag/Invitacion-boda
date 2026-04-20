@@ -575,3 +575,23 @@ describe('RSVPController', () => {
     - Se implementaron los repositorios `SqliteInvitationRepository` y `SqliteConfirmationRepository` utilizando `sqlite3`.
     - Se creó un script de migración (`migrate-csv-to-sqlite.js`) para transferir los datos de los CSV a la nueva base de datos.
     - Se actualizaron las pruebas de integración para funcionar con la nueva base de datos.
+
+### Fase 2: Mejoras en el Dashboard (Q2 2026) - **COMPLETADO**
+
+- **Gestión de Configuración Dinámica**: **COMPLETADO**
+    - Se implementó la tabla `settings` en SQLite y el repositorio `SqliteSettingsRepository`.
+    - Se crearon los endpoints en el backend para obtener y actualizar la configuración.
+    - Se creó la vista de configuración en el dashboard del frontend y se conectó con el backend.
+- **Refinamiento de la Interfaz**: **COMPLETADO**
+    - Se mejoró el sistema de filtrado y búsqueda de invitaciones (Implementado popover de filtros y ordenamiento por columnas).
+    - Se rediseñaron los modales de creación y edición para una mejor usabilidad (Implementada lógica de campos dinámicos de invitados).
+- **Flujo de Importación de CSV**: **COMPLETADO**
+    - Se corrigió y mejoró el flujo de importación masiva de invitaciones (Implementado modal con drag and drop y validación).
+
+### Fase 3: DevOps y Despliegue (Q3 2026) - **COMPLETADO**
+
+- **Containerización con Docker**: **COMPLETADO**
+    - Se creó un `Dockerfile` para el backend.
+    - Se creó un `docker-compose.yml` para orquestar el backend y el frontend.
+- **Pipeline de CI/CD**: **COMPLETADO**
+    - Se configuró un pipeline con GitHub Actions (`.github/workflows/ci.yml`) que ejecuta automáticamente las pruebas, el linting y construye la imagen de Docker en cada push a la rama principal.

@@ -397,10 +397,45 @@ class SqliteInvitationRepository extends IInvitationRepository {
             params.push(filters.status);
         }
 
+        if (filters.passes) {
+            if (filters.passes === '4+') {
+                query += ' AND numberOfPasses >= 4';
+                countQuery += ' AND numberOfPasses >= 4';
+            } else {
+                query += ' AND numberOfPasses = ?';
+                countQuery += ' AND numberOfPasses = ?';
+                params.push(parseInt(filters.passes));
+            }
+        }
+
+        if (filters.table) {
+            if (filters.table === 'assigned') {
+                query += ' AND tableNumber IS NOT NULL';
+                countQuery += ' AND tableNumber IS NOT NULL';
+            } else if (filters.table === 'unassigned') {
+                query += ' AND tableNumber IS NULL';
+                countQuery += ' AND tableNumber IS NULL';
+            } else {
+                query += ' AND tableNumber = ?';
+                countQuery += ' AND tableNumber = ?';
+                params.push(parseInt(filters.table));
+            }
+        }
+
+        if (filters.phone) {
+            if (filters.phone === 'with_phone') {
+                query += ' AND phone IS NOT NULL AND phone != ""';
+                countQuery += ' AND phone IS NOT NULL AND phone != ""';
+            } else if (filters.phone === 'without_phone') {
+                query += ' AND (phone IS NULL OR phone = "")';
+                countQuery += ' AND (phone IS NULL OR phone = "")';
+            }
+        }
+
         if (filters.search) {
-            query += ' AND (guestNames LIKE ? OR code LIKE ?)';
-            countQuery += ' AND (guestNames LIKE ? OR code LIKE ?)';
-            params.push(`%${filters.search}%`, `%${filters.search}%`);
+            query += ' AND (guestNames LIKE ? OR code LIKE ? OR phone LIKE ?)';
+            countQuery += ' AND (guestNames LIKE ? OR code LIKE ? OR phone LIKE ?)';
+            params.push(`%${filters.search}%`, `%${filters.search}%`, `%${filters.search}%`);
         }
 
         // Ordenamiento
