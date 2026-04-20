@@ -51,6 +51,15 @@ async function initDatabase() {
       );
     `);
 
+        // Crear tabla de configuraciones
+        await db.exec(`
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      );
+    `);
+
         // Crear índices para mejorar el rendimiento
         await db.exec(`
       CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);

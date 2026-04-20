@@ -1,54 +1,105 @@
+import { adminAPI } from '../dashboard-api.js';
+import { showToast } from '../components/dashboard-modal.js';
+
 export class ConfigurationController {
-    constructor(apiService, notificationService) {
-        this.apiService = apiService;
-        this.notificationService = notificationService;
-        this.configForm = document.getElementById('config-form');
-        this.testEmailButton = document.getElementById('test-email-button');
+    constructor() {
+        this.container = document.getElementById('configuracion');
+        this.form = document.getElementById('config-form');
+        this.settings = {};
     }
 
     async init() {
-        this.setupEventListeners();
-        await this.loadConfiguration();
-    }
+        if (!this.container || !this.form) {
+            return;
+        }
 
-    setupEventListeners() {
-        this.configForm.addEventListener('submit', this.handleFormSubmit.bind(this));
-        this.testEmailButton.addEventListener('click', this.handleTestEmail.bind(this));
+        await this.loadConfiguration();
+        this.render();
+        this.setupEventListeners();
     }
 
     async loadConfiguration() {
         try {
-            const config = await this.apiService.getConfiguration();
-            this.populateForm(config);
-        } catch {
-            this.notificationService.show('Error al cargar la configuración', 'error');
+            const result = await adminAPI.fetchSettings();
+            if (result.success) {
+                this.settings = result.data.data || {};
+            } else {
+                showToast('Error al cargar la configuración', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+            showToast('Error al cargar la configuración', 'error');
         }
     }
 
-    populateForm(_config) {
-        // Populate form fields with config data
-        // Example: document.getElementById('email-host').value = config.email.host;
-    }
+    render() {
+        // Limpiar el formulario existente excepto el botón de submit
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        this.form.innerHTML = '';
 
-    async handleFormSubmit(event) {
-        event.preventDefault();
-        const formData = new FormData(this.configForm);
-        const configData = Object.fromEntries(formData.entries());
+        const fieldsHtml = `
+            <div class="form-group">
+                <label for="weddingDate">Fecha de la Boda</label>
+                <input type="date" id="weddingDate" name="weddingDate" value="${this.settings.weddingDate || ''}" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="locationName">Nombre del Lugar</label>
+                <input type="text" id="locationName" name="locationName" value="${this.settings.locationName || ''}" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="locationUrl">URL de Google Maps</label>
+                <input type="url" id="locationUrl" name="locationUrl" value="${this.settings.locationUrl || ''}" class="form-control">
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label for="enableConfirmations" class="checkbox-label">
+                    <input type="checkbox" id="enableConfirmations" name="enableConfirmations" ${this.settings.enableConfirmations !== false ? 'checked' : ''}>
+                    Habilitar Confirmaciones
+                </label>
+            </div>
+        `;
 
-        try {
-            await this.apiService.updateConfiguration(configData);
-            this.notificationService.show('Configuración guardada con éxito');
-        } catch {
-            this.notificationService.show('Error al guardar la configuración', 'error');
+        this.form.insertAdjacentHTML('afterbegin', fieldsHtml);
+        if (submitBtn) {
+            this.form.appendChild(submitBtn);
+        } else {
+            this.form.insertAdjacentHTML(
+                'beforeend',
+                '<button type="submit" class="btn btn-primary">Guardar Cambios</button>'
+            );
         }
     }
 
-    async handleTestEmail() {
-        try {
-            await this.apiService.sendTestEmail();
-            this.notificationService.show('Correo de prueba enviado');
-        } catch {
-            this.notificationService.show('Error al enviar el correo de prueba', 'error');
+    setupEventListeners() {
+        if (!this.form) {
+            return;
         }
+
+        this.form.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const formData = new FormData(this.form);
+            const newSettings = {
+                weddingDate: formData.get('weddingDate'),
+                locationName: formData.get('locationName'),
+                locationUrl: formData.get('locationUrl'),
+                enableConfirmations: formData.get('enableConfirmations') === 'on'
+            };
+
+            try {
+                const result = await adminAPI.updateSettings(newSettings);
+                if (result.success) {
+                    showToast('Configuración guardada correctamente', 'success');
+                    this.settings = newSettings;
+                } else {
+                    showToast('Error al guardar la configuración', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showToast('Error al guardar la configuración', 'error');
+            }
+        });
     }
 }

@@ -159,6 +159,26 @@ export class AdminAPI {
     }
 
     /**
+     * Obtiene la configuración dinámica
+     * @returns {Promise<Object>} Configuración o error
+     */
+    async fetchSettings() {
+        return this.fetchWithErrorHandling('/settings');
+    }
+
+    /**
+     * Actualiza la configuración dinámica
+     * @param {Object} settings - Nueva configuración
+     * @returns {Promise<Object>} Resultado de la actualización
+     */
+    async updateSettings(settings) {
+        return this.fetchWithErrorHandling('/settings', {
+            method: 'PUT',
+            body: JSON.stringify(settings)
+        });
+    }
+
+    /**
      * Obtiene todas las invitaciones
      * @param {Object} options - Opciones de filtrado y paginación
      * @returns {Promise<Object>} Invitaciones o error

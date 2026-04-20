@@ -9,6 +9,7 @@ const configureInvitationRoutes = require('./invitationRoutes');
 const configureConfirmationRoutes = require('./confirmationRoutes');
 const configureNotificationRoutes = require('./notificationRoutes');
 const configureAuthRoutes = require('./authRoutes');
+const configureSettingsRoutes = require('./settingsRoutes');
 
 /**
  * Configura todas las rutas de la aplicación
@@ -68,6 +69,10 @@ function configureRoutes(controllers, middleware) {
         middleware
     );
     apiV1.use('/notifications', notificationRoutes);
+
+    // Configurar rutas de configuración
+    const settingsRoutes = configureSettingsRoutes(controllers.settingsController, middleware);
+    apiV1.use('/settings', settingsRoutes);
 
     // Rutas adicionales para estadísticas generales (optimizada sin duplicaciones)
     apiV1.get(

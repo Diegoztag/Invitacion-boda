@@ -23,6 +23,7 @@ const ValidationService = require('./shared/utils/ValidationService');
 // Importar repositorios
 const SqliteInvitationRepository = require('./infrastructure/repositories/SqliteInvitationRepository');
 const SqliteConfirmationRepository = require('./infrastructure/repositories/SqliteConfirmationRepository');
+const SqliteSettingsRepository = require('./infrastructure/repositories/SqliteSettingsRepository');
 const { initDatabase } = require('./infrastructure/database/init-db');
 
 // Importar casos de uso
@@ -47,6 +48,7 @@ const SearchConfirmationsByNameUseCase = require('./application/usecases/SearchC
 // Importar controladores
 const InvitationController = require('./presentation/controllers/InvitationController');
 const ConfirmationController = require('./presentation/controllers/ConfirmationController');
+const SettingsController = require('./presentation/controllers/SettingsController');
 
 // Importar configuración de rutas y middleware
 const configureRoutes = require('./presentation/routes');
@@ -85,6 +87,7 @@ class Server {
         // 2. Instanciar repositorios
         const invitationRepository = new SqliteInvitationRepository();
         const confirmationRepository = new SqliteConfirmationRepository();
+        const settingsRepository = new SqliteSettingsRepository();
 
         // 3. Instanciar casos de uso
         const createInvitationUseCase = new CreateInvitationUseCase(
@@ -192,6 +195,7 @@ class Server {
             logger
         );
         const notificationController = new NotificationController(sseService, logger);
+        const settingsController = new SettingsController(settingsRepository);
 
         // 5. Registrar en el contenedor (para compatibilidad con tests y otras partes)
         this.container.register('logger', () => logger, {
@@ -213,6 +217,9 @@ class Server {
             singleton: true
         });
         this.container.register('confirmationRepository', () => confirmationRepository, {
+            singleton: true
+        });
+        this.container.register('settingsRepository', () => settingsRepository, {
             singleton: true
         });
         this.container.register('createInvitationUseCase', () => createInvitationUseCase, {
@@ -288,6 +295,9 @@ class Server {
         this.container.register('notificationController', () => notificationController, {
             singleton: true
         });
+        this.container.register('settingsController', () => settingsController, {
+            singleton: true
+        });
     }
 
     /**
@@ -343,6 +353,27 @@ class Server {
         // Hacer logger disponible globalmente en la app
         this.app.locals.logger = logger;
 
+        // Interceptar config.js para inyectar configuración dinámica
+        this.app.get('/config.js', async (req, res) => {
+            try {
+                const settingsRepository = this.container.resolve('settingsRepository');
+                const settings = await settingsRepository.getSettings();
+                const configPath = path.join(__dirname, '../../frontend/public/config.js');
+                const fs = require('fs').promises;
+                const configContent = await fs.readFile(configPath, 'utf8');
+
+                // Inyectar los settings dinámicos al principio del archivo
+                const injectedContent = `window.__DYNAMIC_SETTINGS__ = ${JSON.stringify(settings)};\n\n${configContent}`;
+
+                res.type('application/javascript').send(injectedContent);
+            } catch (error) {
+                const logger = this.container.resolve('logger');
+                logger.error('Error serving dynamic config.js', { error: error.message });
+                // Fallback al archivo estático
+                res.sendFile(path.join(__dirname, '../../frontend/public/config.js'));
+            }
+        });
+
         // Servir archivos estáticos del frontend con estructura modular
         this.app.use(
             '/dashboard',
@@ -378,7 +409,8 @@ class Server {
         const controllers = {
             invitationController: this.container.resolve('invitationController'),
             confirmationController: this.container.resolve('confirmationController'),
-            notificationController: this.container.resolve('notificationController')
+            notificationController: this.container.resolve('notificationController'),
+            settingsController: this.container.resolve('settingsController')
         };
 
         // Configurar middleware
