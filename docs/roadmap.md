@@ -103,11 +103,11 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Optimización de Imágenes**: Asegurar que todas las imágenes se sirvan en formatos modernos (WebP/AVIF) y utilizar `srcset` para diferentes resoluciones.
 - [x] **Minificación Avanzada**: Revisar la configuración de Terser/esbuild en Vite para eliminar console.logs en producción y optimizar el bundle.
 
-### Ciclo 39: Accesibilidad (a11y) y SEO Avanzado
+### Ciclo 39: Accesibilidad (a11y) y SEO Avanzado (Finalizado)
 
-- [ ] **Auditoría de Accesibilidad**: Ejecutar Lighthouse y corregir problemas de contraste, etiquetas ARIA faltantes y navegación por teclado.
-- [ ] **Sitemap y Robots.txt**: Generar dinámicamente o estáticamente un `sitemap.xml` y `robots.txt` para mejorar la indexación.
-- [ ] **Microdatos (Schema.org)**: Añadir marcado de datos estructurados (Event) para que los motores de búsqueda entiendan los detalles de la boda.
+- [x] **Auditoría de Accesibilidad**: Ejecutar Lighthouse y corregir problemas de contraste, etiquetas ARIA faltantes y navegación por teclado.
+- [x] **Sitemap y Robots.txt**: Generar dinámicamente o estáticamente un `sitemap.xml` y `robots.txt` para mejorar la indexación.
+- [x] **Microdatos (Schema.org)**: Añadir marcado de datos estructurados (Event) para que los motores de búsqueda entiendan los detalles de la boda.
 
 ---
 
