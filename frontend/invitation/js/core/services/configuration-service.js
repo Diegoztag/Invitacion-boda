@@ -450,26 +450,52 @@ export class ConfigurationService {
      * Aplica tema y colores
      */
     applyTheme() {
-        const theme = this.config.theme || {};
+        const theme = this.config.theme;
 
-        if (theme.primaryColor) {
-            document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
+        // Si el tema es un string (nueva configuraciÃ³n de plantilla)
+        if (typeof theme === 'string') {
+            // Remover clases de tema anteriores
+            document.body.classList.remove(
+                'theme-classic',
+                'theme-modern',
+                'theme-elegant',
+                'theme-minimalist'
+            );
+
+            // Aplicar nueva clase de tema
+            if (theme) {
+                document.body.classList.add(`theme-${theme}`);
+            } else {
+                document.body.classList.add('theme-classic'); // Default
+            }
         }
+        // Compatibilidad hacia atrÃ¡s (si theme es un objeto con colores)
+        else if (theme && typeof theme === 'object') {
+            if (theme.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
+            }
 
-        if (theme.secondaryColor) {
-            document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor);
-        }
+            if (theme.secondaryColor) {
+                document.documentElement.style.setProperty(
+                    '--secondary-color',
+                    theme.secondaryColor
+                );
+            }
 
-        if (theme.accentColor) {
-            document.documentElement.style.setProperty('--accent-color', theme.accentColor);
-        }
+            if (theme.accentColor) {
+                document.documentElement.style.setProperty('--accent-color', theme.accentColor);
+            }
 
-        if (theme.textDark) {
-            document.documentElement.style.setProperty('--text-dark', theme.textDark);
-        }
+            if (theme.textDark) {
+                document.documentElement.style.setProperty('--text-dark', theme.textDark);
+            }
 
-        if (theme.textLight) {
-            document.documentElement.style.setProperty('--text-light', theme.textLight);
+            if (theme.textLight) {
+                document.documentElement.style.setProperty('--text-light', theme.textLight);
+            }
+        } else {
+            // Default si no hay tema
+            document.body.classList.add('theme-classic');
         }
     }
 

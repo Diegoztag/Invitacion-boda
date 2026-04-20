@@ -582,6 +582,7 @@ describe('RSVPController', () => {
     - Se implementó la tabla `settings` en SQLite y el repositorio `SqliteSettingsRepository`.
     - Se crearon los endpoints en el backend para obtener y actualizar la configuración.
     - Se creó la vista de configuración en el dashboard del frontend y se conectó con el backend.
+    - Se actualizó el frontend de la invitación para consumir la configuración dinámica desde el backend.
 - **Refinamiento de la Interfaz**: **COMPLETADO**
     - Se mejoró el sistema de filtrado y búsqueda de invitaciones (Implementado popover de filtros y ordenamiento por columnas).
     - Se rediseñaron los modales de creación y edición para una mejor usabilidad (Implementada lógica de campos dinámicos de invitados).

@@ -53,6 +53,16 @@ export class ConfigurationController {
                 <input type="url" id="locationUrl" name="locationUrl" value="${this.settings.locationUrl || ''}" class="form-control">
             </div>
             
+            <div class="form-group">
+                <label for="theme">Plantilla de DiseÃ±o</label>
+                <select id="theme" name="theme" class="form-control">
+                    <option value="classic" ${this.settings.theme === 'classic' || !this.settings.theme ? 'selected' : ''}>ClÃ¡sico</option>
+                    <option value="modern" ${this.settings.theme === 'modern' ? 'selected' : ''}>Moderno</option>
+                    <option value="elegant" ${this.settings.theme === 'elegant' ? 'selected' : ''}>Elegante</option>
+                    <option value="minimalist" ${this.settings.theme === 'minimalist' ? 'selected' : ''}>Minimalista</option>
+                </select>
+            </div>
+
             <div class="form-group checkbox-group">
                 <label for="enableConfirmations" class="checkbox-label">
                     <input type="checkbox" id="enableConfirmations" name="enableConfirmations" ${this.settings.enableConfirmations !== false ? 'checked' : ''}>
@@ -85,6 +95,7 @@ export class ConfigurationController {
                 weddingDate: formData.get('weddingDate'),
                 locationName: formData.get('locationName'),
                 locationUrl: formData.get('locationUrl'),
+                theme: formData.get('theme'),
                 enableConfirmations: formData.get('enableConfirmations') === 'on'
             };
 

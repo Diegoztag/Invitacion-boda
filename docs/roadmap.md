@@ -138,9 +138,9 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 **Objetivo**: Añadir características que aporten un valor significativo a la aplicación.
 
 - **Tareas**:
-    - [ ] **Notificaciones en Tiempo Real**: Implementar notificaciones push o por correo electrónico cuando un invitado confirme su asistencia.
+    - [x] **Notificaciones en Tiempo Real**: Implementar notificaciones push o por correo electrónico cuando un invitado confirme su asistencia (Implementado mediante SSE en el dashboard).
     - [ ] **Personalización de Plantillas**: Permitir a los usuarios elegir entre diferentes plantillas de diseño para la invitación.
-    - [ ] **Internacionalización (i18n)**: Añadir soporte para múltiples idiomas.
+    - [x] **Internacionalización (i18n)**: Añadir soporte para múltiples idiomas (Implementado `i18n-service.js`).
 
 ---
 
