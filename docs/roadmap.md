@@ -70,11 +70,11 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] Configurar CI/CD para build, lint, test y deploy.
 - [x] Definir entorno de staging y gestionar variables sensibles.
 
-### Ciclo 34: Otros Temas
+### Ciclo 34: Otros Temas (Finalizado)
 
 - [x] Cumplir con normas de protección de datos personales (LGPD/GDPR).
 - [x] SEO y metadata en landing page.
-- [ ] Migrar frontend a bundler moderno (Vite) y modularizar código.
+- [x] Migrar frontend a bundler moderno (Vite) y modularizar código.
 - [x] Mantener sincronía con `docs/MIGRATION_ROADMAP.md` (Obsoleto: Integrado en este roadmap).
 
 ### Ciclo 35: Limpieza de Código y Calidad (Finalizado)
@@ -95,6 +95,19 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Completar Cobertura de Controladores (Frontend)**: Añadir pruebas unitarias para los controladores del frontend que faltan.
 - [x] **Separar Pruebas Unitarias y de Integración**: Crear configuraciones y scripts de npm separados para ejecutar pruebas unitarias y de integración de forma independiente.
 - [x] **Pruebas de Integración**: Crear pruebas de integración para los flujos críticos (ej. creación de invitación -> confirmación -> actualización de estadísticas).
+
+### Ciclo 38: Optimización Post-Migración Vite y Performance
+
+- [ ] **Configuración Avanzada de Vite**: Optimizar el chunking (separar vendor de código de aplicación) en `vite.config.js`.
+- [ ] **Lazy Loading de Componentes**: Implementar carga diferida para componentes no críticos (ej. modales, carrusel) para mejorar el tiempo de carga inicial.
+- [ ] **Optimización de Imágenes**: Asegurar que todas las imágenes se sirvan en formatos modernos (WebP/AVIF) y utilizar `srcset` para diferentes resoluciones.
+- [ ] **Minificación Avanzada**: Revisar la configuración de Terser/esbuild en Vite para eliminar console.logs en producción y optimizar el bundle.
+
+### Ciclo 39: Accesibilidad (a11y) y SEO Avanzado
+
+- [ ] **Auditoría de Accesibilidad**: Ejecutar Lighthouse y corregir problemas de contraste, etiquetas ARIA faltantes y navegación por teclado.
+- [ ] **Sitemap y Robots.txt**: Generar dinámicamente o estáticamente un `sitemap.xml` y `robots.txt` para mejorar la indexación.
+- [ ] **Microdatos (Schema.org)**: Añadir marcado de datos estructurados (Event) para que los motores de búsqueda entiendan los detalles de la boda.
 
 ---
 
@@ -139,7 +152,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 - **Tareas**:
     - [x] **Notificaciones en Tiempo Real**: Implementar notificaciones push o por correo electrónico cuando un invitado confirme su asistencia (Implementado mediante SSE en el dashboard).
-    - [ ] **Personalización de Plantillas**: Permitir a los usuarios elegir entre diferentes plantillas de diseño para la invitación.
+    - [x] **Personalización de Plantillas**: Permitir a los usuarios elegir entre diferentes plantillas de diseño para la invitación.
     - [x] **Internacionalización (i18n)**: Añadir soporte para múltiples idiomas (Implementado `i18n-service.js`).
 
 ---

@@ -557,10 +557,32 @@ describe('RSVPController', () => {
 
 ---
 
+## 🚀 Análisis Post-Migración a Vite (Revisión 20/04/2026)
+
+### **🟢 ESTADO ACTUAL (Vite Integrado)**
+
+- 🟢 **Bundler Moderno**: Se ha reemplazado el enfoque tradicional por Vite, mejorando drásticamente los tiempos de desarrollo (HMR) y la optimización del build de producción.
+- 🟢 **Configuración Centralizada**: `vite.config.js` maneja el proxy para el backend y la configuración de múltiples puntos de entrada (invitación, dashboard, login).
+- 🟢 **Resolución de Módulos**: Se han corregido las importaciones y el manejo de rutas estáticas.
+
+### **🚀 OPORTUNIDADES DE MEJORA (Nuevos Ciclos)**
+
+1.  **Optimización de Performance (Ciclo 38)**:
+    - **Chunking Avanzado**: Separar las dependencias de terceros del código de la aplicación para mejorar el cacheo del navegador.
+    - **Lazy Loading**: Cargar componentes pesados (como el carrusel o modales) solo cuando sean necesarios.
+    - **Optimización de Assets**: Asegurar el uso de formatos de imagen modernos (WebP) y compresión adecuada.
+
+2.  **Accesibilidad y SEO (Ciclo 39)**:
+    - **Auditoría a11y**: Mejorar la navegación por teclado y el soporte para lectores de pantalla (etiquetas ARIA).
+    - **SEO Técnico**: Implementar `sitemap.xml`, `robots.txt` y datos estructurados (Schema.org) para el evento.
+
+---
+
 ## 🎯 Próximos Pasos Recomendados
 
-1.  **Iniciar la Fase 2 del Roadmap Técnico**: Mejoras en el Dashboard.
-2.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+1.  **Ejecutar el Ciclo 38**: Optimización Post-Migración Vite y Performance.
+2.  **Ejecutar el Ciclo 39**: Accesibilidad (a11y) y SEO Avanzado.
+3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
 
 ---
 

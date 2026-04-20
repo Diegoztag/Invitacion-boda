@@ -121,8 +121,8 @@ const WEDDING_CONFIG = {
         backendUrl:
             typeof window !== 'undefined' &&
             (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                ? '/api' // Desarrollo local (ruta relativa para usar el mismo puerto)
-                : 'https://web-gqbxdo8fjh1g.up-de-fra1-k8s-1.apps.run-on-seenode.com/api', // Producción (Seenode)
+                ? '' // Desarrollo local (ruta relativa para usar el mismo puerto, Vite proxy maneja /api)
+                : 'https://web-gqbxdo8fjh1g.up-de-fra1-k8s-1.apps.run-on-seenode.com', // Producción (Seenode)
         googleMapsApiKey: 'YOUR_API_KEY',
 
         // Configuración de autenticación para el dashboard

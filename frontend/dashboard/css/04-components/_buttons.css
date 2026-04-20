@@ -8,7 +8,7 @@
     /* --- Local Configuration --- */
     /* Padding */
     --btn-padding-mobile: var(--spacing-sm) var(--spacing-md);
-    --btn-padding-tablet: 12px 24px;btn-csv
+    --btn-padding-tablet: 12px 24px;
     --btn-padding-desktop: var(--spacing-md) var(--spacing-lg);
 
     /* Dimensions */
