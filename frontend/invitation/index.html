@@ -34,8 +34,24 @@
     <meta property="og:image:secure_url" content="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
     <meta property="og:image:type" content="image/jpeg">
 
+    <!-- PWA y Meta etiquetas móviles -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fer & Diego">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg">
+
+    <!-- Preconnect para mejorar performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Content Security Policy (CSP) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://i.ibb.co; connect-src 'self' http://localhost:3000 https://api.invitacion-boda-fernanda-diego.com; frame-src 'self' https://www.google.com;">
 
     <link rel="stylesheet" href="./styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
@@ -184,7 +200,7 @@
                 <p class="dress-code-main" id="dressCodeDescription" data-i18n="event.dressCodeDesc">Formal - Evitar colores pasteles</p>
                 <p class="dress-code-note" id="dressCodeNote" data-i18n="event.dressCodeNote">Recuerden que será al aire libre, asistan bien abrigados</p>
                 <div class="dress-code-image">
-                    <img src="./img/dressCode.png" alt="Ejemplo de código de vestimenta formal" />
+                    <img src="./img/dressCode.png" alt="Ejemplo de código de vestimenta formal" loading="lazy" />
                 </div>
             </div>
         </div>
