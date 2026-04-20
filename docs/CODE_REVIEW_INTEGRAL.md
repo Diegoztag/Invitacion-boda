@@ -580,9 +580,14 @@ describe('RSVPController', () => {
 
 ## 🎯 Próximos Pasos Recomendados
 
-1.  **Ejecutar el Ciclo 38**: Optimización Post-Migración Vite y Performance.
-2.  **Ejecutar el Ciclo 39**: Accesibilidad (a11y) y SEO Avanzado.
-3.  **Revisar los logs** en producción para identificar posibles problemas de rendimiento.
+El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólida, la seguridad es robusta y la cobertura de pruebas es excelente. Se han completado todos los ciclos hasta el 39.
+
+**Nuevo Ciclo de Mejoras (Ciclo 40: PWA y Performance Avanzado):**
+
+1.  **PWA Completa**: Añadir `manifest.json` y meta etiquetas para iOS/Android para permitir la instalación de la aplicación.
+2.  **Optimización de Imágenes**: Implementar lazy loading nativo (`loading="lazy"`) en las imágenes para mejorar el tiempo de carga inicial.
+3.  **Seguridad Frontend**: Añadir Content Security Policy (CSP) en el `index.html` para prevenir ataques XSS.
+4.  **Performance**: Preconectar a dominios externos (Google Fonts, FontAwesome) usando `<link rel="preconnect">`.
 
 ---
 
