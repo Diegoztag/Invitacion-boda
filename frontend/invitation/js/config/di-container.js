@@ -109,8 +109,9 @@ export class DIContainer {
     async createRSVPFacade(container) {
         const { RSVPFacade } = await import('../core/facades/RSVPFacade.js');
         const { RSVPService } = await import('../core/services/rsvp-service.js');
-        const apiClient = await container.resolve('apiClient');
-        const rsvpService = new RSVPService(apiClient);
+        const invitationService = await container.resolve('invitationService');
+        const validationService = await container.resolve('validationService');
+        const rsvpService = new RSVPService(invitationService, validationService);
         return new RSVPFacade(rsvpService);
     }
 

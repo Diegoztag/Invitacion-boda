@@ -1,21 +1,21 @@
 {
-  "name": "Boda Fernanda & Diego",
-  "short_name": "Fer & Diego",
-  "description": "Invitación de boda de Fernanda & Diego. 28 de Febrero 2026.",
-  "start_url": "/invitation/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#d4af37",
-  "icons": [
-    {
-      "src": "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
-    }
-  ]
+    "name": "Boda Fernanda & Diego",
+    "short_name": "Fer & Diego",
+    "description": "Invitación de boda de Fernanda & Diego. 28 de Febrero 2026.",
+    "start_url": "/invitation/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#d4af37",
+    "icons": [
+        {
+            "src": "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
 }

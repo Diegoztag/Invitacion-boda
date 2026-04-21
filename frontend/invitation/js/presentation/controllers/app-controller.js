@@ -480,6 +480,10 @@ export class AppController {
      * @param {Error} error - Error ocurrido
      */
     handleInitializationError(error) {
+        console.error('Error de inicialización:', error);
+        if (error && error.stack) {
+            console.error('Stack trace:', error.stack);
+        }
         // Mostrar mensaje de error al usuario
         const errorMessage = document.createElement('div');
         errorMessage.className = 'app-error-message';

@@ -19,7 +19,7 @@ export class ConfigurationService {
         }
 
         // Cargar configuración
-        this.loadConfiguration();
+        await this.loadConfiguration();
 
         // Aplicar configuración al DOM
         await this.applyConfigurationToDOM();
@@ -37,7 +37,7 @@ export class ConfigurationService {
 
             if (response.ok) {
                 const result = await response.json();
-                if (result.success && result.data) {
+                if (result.success && result.data && Object.keys(result.data).length > 0) {
                     this.config = result.data;
                     // Actualizar WEDDING_CONFIG global para compatibilidad
                     window.WEDDING_CONFIG = { ...window.WEDDING_CONFIG, ...this.config };

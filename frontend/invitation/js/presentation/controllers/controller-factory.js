@@ -110,4 +110,22 @@ export class ControllerFactory {
             return null;
         }
     }
+
+    /**
+     * Crea e inicializa el ThemeController.
+     * @param {HTMLElement} container - El contenedor principal de la aplicación.
+     * @param {import('../../core/services/configuration-service.js').ConfigurationService} configurationService - El servicio de configuración.
+     * @returns {Promise<import('./theme-controller.js').ThemeController|null>}
+     */
+    static async createThemeController(container, configurationService) {
+        try {
+            const { ThemeController } = await import('./theme-controller.js');
+            const controller = new ThemeController(container, configurationService);
+            await controller.init();
+            return controller;
+        } catch (error) {
+            console.error('Error creating ThemeController:', error);
+            return null;
+        }
+    }
 }
