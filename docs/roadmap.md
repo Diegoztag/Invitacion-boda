@@ -116,6 +116,13 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Seguridad Frontend**: Añadir Content Security Policy (CSP) en el `index.html` para prevenir ataques XSS.
 - [x] **Performance**: Preconectar a dominios externos (Google Fonts, FontAwesome) usando `<link rel="preconnect">`.
 
+### Ciclo 41: Refinamiento de la Landing Page y Onboarding (Finalizado)
+
+- [x] **SEO y Meta Tags en la Landing Page**: Añadir meta tags para SEO y Open Graph en `frontend/index.html`.
+- [x] **Accesibilidad en la Landing Page**: Verificar contrastes, etiquetas ARIA y navegación por teclado.
+- [x] **Integración del Flujo de Registro**: Implementar un flujo de registro o un mock claro para los botones de "Comenzar Gratis".
+- [x] **Optimización de Assets de la Landing Page**: Asegurar que las imágenes usen lazy loading y estén optimizadas.
+
 ---
 
 ## 🚀 Próximas Fases (Roadmap Técnico)

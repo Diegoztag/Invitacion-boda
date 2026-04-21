@@ -580,14 +580,14 @@ describe('RSVPController', () => {
 
 ## 🎯 Próximos Pasos Recomendados
 
-El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólida, la seguridad es robusta y la cobertura de pruebas es excelente. Se han completado todos los ciclos hasta el 39.
+El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólida, la seguridad es robusta y la cobertura de pruebas es excelente. Se han completado todos los ciclos hasta el 40.
 
-**Nuevo Ciclo de Mejoras (Ciclo 40: PWA y Performance Avanzado):**
+**Nuevo Ciclo de Mejoras (Ciclo 41: Refinamiento de la Landing Page y Onboarding):**
 
-1.  **PWA Completa**: Añadir `manifest.json` y meta etiquetas para iOS/Android para permitir la instalación de la aplicación.
-2.  **Optimización de Imágenes**: Implementar lazy loading nativo (`loading="lazy"`) en las imágenes para mejorar el tiempo de carga inicial.
-3.  **Seguridad Frontend**: Añadir Content Security Policy (CSP) en el `index.html` para prevenir ataques XSS.
-4.  **Performance**: Preconectar a dominios externos (Google Fonts, FontAwesome) usando `<link rel="preconnect">`.
+1.  **SEO y Meta Tags en la Landing Page**: Asegurar que `frontend/index.html` tenga los meta tags correctos para SEO y Open Graph.
+2.  **Accesibilidad en la Landing Page**: Verificar contrastes, etiquetas ARIA y navegación por teclado en la nueva landing page.
+3.  **Integración del Flujo de Registro**: Mejorar la experiencia de usuario al hacer clic en "Comenzar Gratis", implementando un flujo de registro o un mock claro.
+4.  **Optimización de Assets de la Landing Page**: Asegurar que las imágenes de la landing page estén optimizadas y usen lazy loading.
 
 ---
 
