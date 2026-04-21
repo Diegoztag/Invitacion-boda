@@ -100,6 +100,7 @@ const WEDDING_CONFIG = {
 
     // Colores del tema (para fácil personalización)
     theme: {
+        template: 'default', // 'default', 'elegant', 'modern', 'rustic'
         primaryColor: '#d4a574',
         secondaryColor: '#8b7355',
         accentColor: '#f8f4e6',
@@ -131,7 +132,7 @@ const WEDDING_CONFIG = {
             authType: 'basic', // 'basic' o 'jwt'
             credentials: {
                 username: 'admin',
-                password: 'password'
+                password: 'supersecretadminpassword123'
             }
         }
     },

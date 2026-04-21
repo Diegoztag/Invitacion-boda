@@ -102,11 +102,24 @@ export class DashboardController {
             const eventDate = new Date(WEDDING_CONFIG.event.date);
             const distance = eventDate.getTime() - now;
 
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
             if (distance < 0) {
-                document.getElementById('days').textContent = '00';
-                document.getElementById('hours').textContent = '00';
-                document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
+                if (daysEl) {
+                    daysEl.textContent = '00';
+                }
+                if (hoursEl) {
+                    hoursEl.textContent = '00';
+                }
+                if (minutesEl) {
+                    minutesEl.textContent = '00';
+                }
+                if (secondsEl) {
+                    secondsEl.textContent = '00';
+                }
                 return;
             }
 
@@ -115,10 +128,18 @@ export class DashboardController {
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            if (daysEl) {
+                daysEl.textContent = String(days).padStart(2, '0');
+            }
+            if (hoursEl) {
+                hoursEl.textContent = String(hours).padStart(2, '0');
+            }
+            if (minutesEl) {
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+            }
+            if (secondsEl) {
+                secondsEl.textContent = String(seconds).padStart(2, '0');
+            }
         };
 
         updateTimer();
@@ -460,7 +481,12 @@ export class DashboardController {
      * Actualiza el gráfico de confirmaciones usando la nueva estructura optimizada
      */
     updateConfirmationChart(stats) {
-        const ctx = document.getElementById('confirmationChart').getContext('2d');
+        const canvas = document.getElementById('confirmationChart');
+        if (!canvas) {
+            console.error('Canvas confirmationChart no encontrado en el DOM');
+            return;
+        }
+        const ctx = canvas.getContext('2d');
 
         if (this.confirmationChart) {
             this.confirmationChart.destroy();

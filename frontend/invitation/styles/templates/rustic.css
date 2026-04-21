@@ -1,0 +1,68 @@
+/* Plantilla Rústica */
+:root {
+    --primary-color: #8b5a2b;
+    --secondary-color: #556b2f;
+    --accent-color: #f5deb3;
+    --text-dark: #3e2723;
+    --text-light: #795548;
+    --font-primary: 'Amatic SC', cursive;
+    --font-secondary: 'Caveat', cursive;
+}
+
+body {
+    font-family: var(--font-secondary);
+    color: var(--text-dark);
+    background-color: #fffaf0;
+    font-size: 1.2rem;
+}
+
+h1, h2, h3, h4, h5, h6, .font-primary {
+    font-family: var(--font-primary);
+    font-weight: 700;
+}
+
+.hero-section {
+    background-color: var(--accent-color);
+    border-bottom: 10px solid var(--secondary-color);
+}
+
+.hero-content h1 {
+    font-size: 6rem;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: 2px dashed #ffffff;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+.section-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 3.5rem;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="20"><path d="M0 10 Q 25 0, 50 10 T 100 10" fill="none" stroke="%238b5a2b" stroke-width="2"/></svg>');
+    background-repeat: repeat-x;
+    background-position: bottom;
+    padding-bottom: 20px;
+}
+
+.card {
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    box-shadow: 3px 3px 0px var(--secondary-color);
+    background-color: #ffffff;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="%23fffaf0"/><rect width="1" height="1" fill="%23f5deb3"/></svg>');
+}

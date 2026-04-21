@@ -54,12 +54,12 @@ export class ConfigurationController {
             </div>
             
             <div class="form-group">
-                <label for="theme">Plantilla de DiseÃ±o</label>
+                <label for="theme">Plantilla de Diseño</label>
                 <select id="theme" name="theme" class="form-control">
-                    <option value="classic" ${this.settings.theme === 'classic' || !this.settings.theme ? 'selected' : ''}>ClÃ¡sico</option>
-                    <option value="modern" ${this.settings.theme === 'modern' ? 'selected' : ''}>Moderno</option>
+                    <option value="default" ${this.settings.theme === 'default' || !this.settings.theme ? 'selected' : ''}>Por Defecto</option>
                     <option value="elegant" ${this.settings.theme === 'elegant' ? 'selected' : ''}>Elegante</option>
-                    <option value="minimalist" ${this.settings.theme === 'minimalist' ? 'selected' : ''}>Minimalista</option>
+                    <option value="modern" ${this.settings.theme === 'modern' ? 'selected' : ''}>Moderno</option>
+                    <option value="rustic" ${this.settings.theme === 'rustic' ? 'selected' : ''}>Rústico</option>
                 </select>
             </div>
 

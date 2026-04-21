@@ -452,25 +452,39 @@ export class ConfigurationService {
     applyTheme() {
         const theme = this.config.theme;
 
-        // Si el tema es un string (nueva configuraciÃ³n de plantilla)
-        if (typeof theme === 'string') {
-            // Remover clases de tema anteriores
-            document.body.classList.remove(
-                'theme-classic',
-                'theme-modern',
-                'theme-elegant',
-                'theme-minimalist'
-            );
+        if (theme && typeof theme === 'object') {
+            // Aplicar plantilla si existe
+            if (theme.template) {
+                document.body.classList.remove(
+                    'theme-default',
+                    'theme-elegant',
+                    'theme-modern',
+                    'theme-rustic'
+                );
+                document.body.classList.add(`theme-${theme.template}`);
 
-            // Aplicar nueva clase de tema
-            if (theme) {
-                document.body.classList.add(`theme-${theme}`);
-            } else {
-                document.body.classList.add('theme-classic'); // Default
+                // Cargar CSS de la plantilla
+                if (theme.template !== 'default') {
+                    const linkId = 'template-css';
+                    let link = document.getElementById(linkId);
+
+                    if (!link) {
+                        link = document.createElement('link');
+                        link.id = linkId;
+                        link.rel = 'stylesheet';
+                        document.head.appendChild(link);
+                    }
+
+                    link.href = `styles/templates/${theme.template}.css`;
+                } else {
+                    const link = document.getElementById('template-css');
+                    if (link) {
+                        link.remove();
+                    }
+                }
             }
-        }
-        // Compatibilidad hacia atrÃ¡s (si theme es un objeto con colores)
-        else if (theme && typeof theme === 'object') {
+
+            // Aplicar colores
             if (theme.primaryColor) {
                 document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
             }
@@ -495,7 +509,7 @@ export class ConfigurationService {
             }
         } else {
             // Default si no hay tema
-            document.body.classList.add('theme-classic');
+            document.body.classList.add('theme-default');
         }
     }
 

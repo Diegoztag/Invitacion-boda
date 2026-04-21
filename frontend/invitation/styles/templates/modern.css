@@ -1,0 +1,68 @@
+/* Plantilla Moderna */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #e74c3c;
+    --accent-color: #ecf0f1;
+    --text-dark: #34495e;
+    --text-light: #95a5a6;
+    --font-primary: 'Montserrat', sans-serif;
+    --font-secondary: 'Open Sans', sans-serif;
+}
+
+body {
+    font-family: var(--font-secondary);
+    color: var(--text-dark);
+    background-color: #f9f9f9;
+}
+
+h1, h2, h3, h4, h5, h6, .font-primary {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.hero-section {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.hero-content h1 {
+    font-size: 4.5rem;
+    color: #ffffff;
+    text-transform: lowercase;
+    font-weight: 800;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 35px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(231, 76, 60, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(231, 76, 60, 0.4);
+}
+
+.section-title {
+    color: var(--primary-color);
+    text-align: left;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    border-left: 5px solid var(--secondary-color);
+    padding-left: 15px;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    background-color: #ffffff;
+    overflow: hidden;
+}

@@ -623,3 +623,13 @@ El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólid
     - Se creó un `docker-compose.yml` para orquestar el backend y el frontend.
 - **Pipeline de CI/CD**: **COMPLETADO**
     - Se configuró un pipeline con GitHub Actions (`.github/workflows/ci.yml`) que ejecuta automáticamente las pruebas, el linting y construye la imagen de Docker en cada push a la rama principal.
+
+### Fase 4: Funcionalidades Avanzadas (Q4 2026) - **COMPLETADO**
+
+- **Notificaciones en Tiempo Real**: **COMPLETADO**
+    - Se implementaron notificaciones push o por correo electrónico cuando un invitado confirme su asistencia (Implementado mediante SSE en el dashboard).
+- **Personalización de Plantillas**: **COMPLETADO**
+    - Se permitió a los usuarios elegir entre diferentes plantillas de diseño para la invitación (`elegant`, `modern`, `rustic`).
+    - Se refactorizó la carga de CSS de plantillas hacia el `ConfigurationService` para una mejor separación de responsabilidades.
+- **Internacionalización (i18n)**: **COMPLETADO**
+    - Se añadió soporte para múltiples idiomas (Implementado `i18n-service.js`).
