@@ -28,7 +28,7 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                main: resolve(__dirname, 'frontend/index.html'),
+                main: resolve(__dirname, 'frontend/landing/index.html'),
                 invitation: resolve(__dirname, 'frontend/invitation/index.html'),
                 dashboard: resolve(__dirname, 'frontend/dashboard/index.html'),
                 login: resolve(__dirname, 'frontend/dashboard/login.html')
