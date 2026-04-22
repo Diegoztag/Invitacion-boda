@@ -59,6 +59,7 @@ const errorHandler = require('./presentation/middleware/errorHandler');
 const CsvStorage = require('./infrastructure/services/CsvStorage');
 const SseService = require('./infrastructure/services/SseService');
 const CacheService = require('./infrastructure/services/CacheService');
+const BackupService = require('./infrastructure/storage/backup');
 const NotificationController = require('./presentation/controllers/NotificationController');
 
 class Server {
@@ -83,6 +84,7 @@ class Server {
         const cacheService = new CacheService(logger);
         const csvStorage = new CsvStorage(logger, cacheService);
         const sseService = new SseService(logger);
+        const backupService = new BackupService(logger, config);
 
         // 2. Instanciar repositorios
         const invitationRepository = new SqliteInvitationRepository();
@@ -298,6 +300,9 @@ class Server {
         this.container.register('settingsController', () => settingsController, {
             singleton: true
         });
+        this.container.register('backupService', () => backupService, {
+            singleton: true
+        });
     }
 
     /**
@@ -500,6 +505,10 @@ class Server {
 
             // Inicializar repositorios
             await this.initializeRepositories();
+
+            // Inicializar servicio de backup
+            const backupService = this.container.resolve('backupService');
+            backupService.init();
 
             // Iniciar servidor HTTP
             this.server = this.app.listen(this.port, () => {

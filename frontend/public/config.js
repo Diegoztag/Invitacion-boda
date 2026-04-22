@@ -111,7 +111,8 @@ const WEDDING_CONFIG = {
     // URLs de imágenes
     images: {
         // Imagen de fondo del hero - puedes usar una URL o una ruta local
-        heroBackground: 'https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg',
+        heroBackground:
+            'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop',
         ceremonyIcon: 'fas fa-heart',
         receptionIcon: 'fas fa-champagne-glasses'
     },
@@ -243,7 +244,7 @@ Favor de confirmar antes del ${WEDDING_CONFIG.event.confirmationDeadline}📅.\n
         description: '28 de Febrero 2026',
 
         // Imagen principal para compartir (mínimo 1200x630px para mejor visualización)
-        image: 'https://i.ibb.co/8LppdWnK/IMG-6253-3.jpg',
+        image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop',
 
         // Nombre del sitio
         siteName: 'Boda Fernanda & Diego',

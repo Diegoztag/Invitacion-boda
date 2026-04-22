@@ -2,7 +2,11 @@
  * Logger Service
  * Servicio de logging con diferentes niveles y formatos
  * Sigue principios SOLID: Single Responsibility
+ * Implementado con Winston
  */
+
+const winston = require('winston');
+const path = require('path');
 
 class Logger {
     constructor(options = {}) {
@@ -13,26 +17,51 @@ class Logger {
         this.format = options.format || 'json';
         this.serviceName = options.serviceName || 'wedding-app';
 
-        // Niveles de logging
-        this.levels = {
-            error: 0,
-            warn: 1,
-            info: 2,
-            debug: 3,
-            trace: 4
-        };
+        // Configurar Winston
+        const transports = [];
 
-        // Colores para consola
-        this.colors = {
-            error: '\x1b[31m', // Rojo
-            warn: '\x1b[33m', // Amarillo
-            info: '\x1b[36m', // Cian
-            debug: '\x1b[35m', // Magenta
-            trace: '\x1b[37m', // Blanco
-            reset: '\x1b[0m'
-        };
+        if (this.enableConsole) {
+            transports.push(
+                new winston.transports.Console({
+                    format:
+                        this.format === 'json'
+                            ? winston.format.combine(
+                                  winston.format.timestamp(),
+                                  winston.format.json()
+                              )
+                            : winston.format.combine(
+                                  winston.format.colorize(),
+                                  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+                                  winston.format.printf(
+                                      ({ level, message, timestamp, service, ...meta }) => {
+                                          const metaStr = Object.keys(meta).length
+                                              ? `\n${JSON.stringify(meta, null, 2)}`
+                                              : '';
+                                          return `[${timestamp}] ${level} [${service || this.serviceName}]: ${message}${metaStr}`;
+                                      }
+                                  )
+                              )
+                })
+            );
+        }
 
-        this.currentLevel = this.levels[this.level] || this.levels.info;
+        if (this.enableFile) {
+            transports.push(
+                new winston.transports.File({
+                    filename: this.filePath,
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    )
+                })
+            );
+        }
+
+        this.winstonLogger = winston.createLogger({
+            level: this.level,
+            defaultMeta: { service: this.serviceName },
+            transports: transports
+        });
     }
 
     /**
@@ -77,7 +106,7 @@ class Logger {
      * @param {Object} meta - Metadatos adicionales
      */
     trace(message, meta = {}) {
-        this.log('trace', message, meta);
+        this.log('silly', message, meta); // Winston usa 'silly' en lugar de 'trace'
     }
 
     /**
@@ -88,96 +117,15 @@ class Logger {
      * @private
      */
     log(level, message, meta = {}) {
-        // Verificar si el nivel está habilitado
-        if (this.levels[level] > this.currentLevel) {
-            return;
+        const logMeta = { ...meta };
+
+        if (level === 'error' && meta.error instanceof Error) {
+            logMeta.stack = meta.error.stack;
+            logMeta.errorName = meta.error.name;
+            logMeta.errorMessage = meta.error.message;
         }
 
-        const logEntry = this.createLogEntry(level, message, meta);
-
-        if (this.enableConsole) {
-            this.logToConsole(logEntry);
-        }
-
-        if (this.enableFile) {
-            this.logToFile(logEntry);
-        }
-    }
-
-    /**
-     * Crea una entrada de log estructurada
-     * @param {string} level - Nivel del log
-     * @param {string} message - Mensaje
-     * @param {Object} meta - Metadatos
-     * @returns {Object}
-     * @private
-     */
-    createLogEntry(level, message, meta) {
-        const timestamp = new Date().toISOString();
-
-        return {
-            timestamp,
-            level: level.toUpperCase(),
-            service: this.serviceName,
-            message,
-            ...meta,
-            // Agregar información del stack si es un error
-            ...(level === 'error' &&
-                meta.error instanceof Error && {
-                    stack: meta.error.stack,
-                    errorName: meta.error.name,
-                    errorMessage: meta.error.message
-                })
-        };
-    }
-
-    /**
-     * Registra en consola
-     * @param {Object} logEntry - Entrada de log
-     * @private
-     */
-    logToConsole(logEntry) {
-        const { level, timestamp, message, service, ...meta } = logEntry;
-        const color = this.colors[level.toLowerCase()] || this.colors.info;
-        const reset = this.colors.reset;
-
-        if (this.format === 'json') {
-            process.stdout.write(`${JSON.stringify(logEntry, null, 2)}\n`);
-        } else {
-            // Formato legible para humanos
-            const metaStr =
-                Object.keys(meta).length > 0 ? `\n${JSON.stringify(meta, null, 2)}` : '';
-
-            process.stdout.write(
-                `${color}[${timestamp}] ${level} [${service}]: ${message}${reset}${metaStr}\n`
-            );
-        }
-    }
-
-    /**
-     * Registra en archivo
-     * @param {Object} logEntry - Entrada de log
-     * @private
-     */
-    async logToFile(logEntry) {
-        try {
-            const fs = require('fs').promises;
-            const path = require('path');
-
-            // Crear directorio si no existe
-            const logDir = path.dirname(this.filePath);
-            await fs.mkdir(logDir, {
-                recursive: true
-            });
-
-            // Escribir al archivo
-            const logLine = `${JSON.stringify(logEntry)}\n`;
-            await fs.appendFile(this.filePath, logLine);
-        } catch (error) {
-            // Si falla el logging a archivo, al menos mostrar en consola
-            process.stderr.write(`Error writing to log file: ${error}\n`);
-            process.stdout.write(`Original log entry: ${JSON.stringify(logEntry)}\n`);
-        }
+        this.winstonLogger.log(level, message, logMeta);
     }
 
     /**
@@ -304,11 +252,7 @@ class Logger {
             serviceName: this.serviceName
         });
 
-        // Sobrescribir el método createLogEntry para incluir el contexto
-        const originalCreateLogEntry = childLogger.createLogEntry.bind(childLogger);
-        childLogger.createLogEntry = (level, message, meta) => {
-            return originalCreateLogEntry(level, message, { ...context, ...meta });
-        };
+        childLogger.winstonLogger = this.winstonLogger.child(context);
 
         return childLogger;
     }
@@ -327,10 +271,8 @@ class Logger {
      * @param {string} level - Nuevo nivel
      */
     setLevel(level) {
-        if (this.levels[level] !== undefined) {
-            this.level = level;
-            this.currentLevel = this.levels[level];
-        }
+        this.level = level;
+        this.winstonLogger.level = level;
     }
 
     /**
@@ -339,7 +281,7 @@ class Logger {
      * @returns {boolean}
      */
     isLevelEnabled(level) {
-        return this.levels[level] <= this.currentLevel;
+        return this.winstonLogger.isLevelEnabled(level);
     }
 
     /**
@@ -353,8 +295,6 @@ class Logger {
 
         try {
             const fs = require('fs').promises;
-            const path = require('path');
-
             const logDir = path.dirname(this.filePath);
             const files = await fs.readdir(logDir);
 

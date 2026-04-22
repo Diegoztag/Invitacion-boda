@@ -581,12 +581,12 @@ describe('RSVPController', () => {
 
 El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólida, la seguridad es robusta y la cobertura de pruebas es excelente. Se han completado todos los ciclos hasta el 40.
 
-**Nuevo Ciclo de Mejoras (Ciclo 41: Refinamiento de la Landing Page y Onboarding):**
+**Nuevo Ciclo de Mejoras (Ciclo 42: Refinamiento de Seguridad y Observabilidad):**
 
-1.  **SEO y Meta Tags en la Landing Page**: Asegurar que `frontend/index.html` tenga los meta tags correctos para SEO y Open Graph.
-2.  **Accesibilidad en la Landing Page**: Verificar contrastes, etiquetas ARIA y navegación por teclado en la nueva landing page.
-3.  **Integración del Flujo de Registro**: Mejorar la experiencia de usuario al hacer clic en "Comenzar Gratis", implementando un flujo de registro o un mock claro.
-4.  **Optimización de Assets de la Landing Page**: Asegurar que las imágenes de la landing page estén optimizadas y usen lazy loading.
+1.  **Cabeceras de Seguridad (Helmet)**: Integrar `helmet` en el backend para proteger contra vulnerabilidades web comunes.
+2.  **Configuración Estricta de CORS**: Restringir los orígenes permitidos en CORS para mayor seguridad.
+3.  **Logging Estructurado**: Implementar un logger profesional (ej. Winston o Pino) para mejor trazabilidad.
+4.  **Backup Automático de SQLite**: Crear un script o tarea programada para realizar copias de seguridad de la base de datos SQLite.
 
 ---
 

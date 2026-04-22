@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitButton.disabled = true;
 
                 // Obtener la URL base de la API desde la configuración global
-                const API_BASE_URL = window.APP_CONFIG?.API_URL || 'http://localhost:3000/api';
+                const API_BASE_URL =
+                    (window.WEDDING_CONFIG?.api?.backendUrl || 'http://localhost:3000') + '/api/v1';
 
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
@@ -103,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     // Guardar token
-                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('dashboardToken', data.token);
                     // Redirigir al dashboard
                     window.location.href = '/dashboard/index.html';
                 } else {

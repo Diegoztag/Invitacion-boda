@@ -98,7 +98,9 @@ describe('AuthMiddleware (unit)', () => {
 
     describe('verifyBasicAuth', () => {
         test('should accept correct credentials', () => {
-            const credentials = Buffer.from(`admin:${auth.adminPassword}`).toString('base64');
+            const credentials = Buffer.from(`${auth.adminUsername}:${auth.adminPassword}`).toString(
+                'base64'
+            );
             const req = {};
             const res = {
                 status: jest.fn().mockReturnThis(),
@@ -114,7 +116,7 @@ describe('AuthMiddleware (unit)', () => {
         });
 
         test('should reject wrong credentials', () => {
-            const credentials = Buffer.from('admin:wrong').toString('base64');
+            const credentials = Buffer.from(`${auth.adminUsername}:wrong`).toString('base64');
             const req = {};
             const res = {
                 status: jest.fn().mockReturnThis(),
@@ -138,7 +140,7 @@ describe('AuthMiddleware (unit)', () => {
         test('should return token with valid creds', () => {
             const req = {
                 body: {
-                    username: 'admin',
+                    username: auth.adminUsername,
                     password: auth.adminPassword
                 },
                 ip: '127.0.0.1'

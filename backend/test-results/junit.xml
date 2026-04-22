@@ -1,27 +1,517 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="10" failures="0" errors="0" time="5.623">
-  <testsuite name="Integration /auth and protected routes" errors="0" failures="0" skipped="0" timestamp="2026-04-22T03:30:30" time="4.228" tests="1">
-    <testcase classname="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" name="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" time="0.188">
+<testsuites name="jest tests" tests="240" failures="0" errors="0" time="11.58">
+  <testsuite name="CreateInvitationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="2.903" tests="27">
+    <testcase classname="CreateInvitationUseCase execute should create invitation successfully" name="CreateInvitationUseCase execute should create invitation successfully" time="0.054">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail with invalid data" name="CreateInvitationUseCase execute should fail with invalid data" time="0.092">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail when code already exists" name="CreateInvitationUseCase execute should fail when code already exists" time="0.015">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should retry code generation when duplicate found" name="CreateInvitationUseCase execute should retry code generation when duplicate found" time="0.007">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should handle repository errors" name="CreateInvitationUseCase execute should handle repository errors" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail when max passes exceeded" name="CreateInvitationUseCase execute should fail when max passes exceeded" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail when specific passes do not match total" name="CreateInvitationUseCase execute should fail when specific passes do not match total" time="0.008">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should use sanitizeString and sanitizePhone if available" name="CreateInvitationUseCase execute should use sanitizeString and sanitizePhone if available" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should warn if phone is already in use" name="CreateInvitationUseCase execute should warn if phone is already in use" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail if table capacity is exceeded" name="CreateInvitationUseCase execute should fail if table capacity is exceeded" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should fail if duplicate guest name exists" name="CreateInvitationUseCase execute should fail if duplicate guest name exists" time="0.004">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should process batch successfully" name="CreateInvitationUseCase executeBatch should process batch successfully" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should handle batch with errors" name="CreateInvitationUseCase executeBatch should handle batch with errors" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should fail with empty batch" name="CreateInvitationUseCase executeBatch should fail with empty batch" time="0.001">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should handle batch processing errors" name="CreateInvitationUseCase executeBatch should handle batch processing errors" time="0.001">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should fallback to manual batch if importBatch is not available" name="CreateInvitationUseCase executeBatch should fallback to manual batch if importBatch is not available" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should use saveBatch if available when importBatch is not" name="CreateInvitationUseCase executeBatch should use saveBatch if available when importBatch is not" time="0.004">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should handle saveBatch failure" name="CreateInvitationUseCase executeBatch should handle saveBatch failure" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should handle sequential save failure when saveBatch is not available" name="CreateInvitationUseCase executeBatch should handle sequential save failure when saveBatch is not available" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase executeBatch should handle sequential save success when saveBatch is not available" name="CreateInvitationUseCase executeBatch should handle sequential save success when saveBatch is not available" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase generateUniqueCode should generate unique code on first try" name="CreateInvitationUseCase generateUniqueCode should generate unique code on first try" time="0.001">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase generateUniqueCode should retry until unique code is found" name="CreateInvitationUseCase generateUniqueCode should retry until unique code is found" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase generateUniqueCode should fail after max retries" name="CreateInvitationUseCase generateUniqueCode should fail after max retries" time="0.002">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase Edge Cases should handle null/undefined input" name="CreateInvitationUseCase Edge Cases should handle null/undefined input" time="0.001">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase Edge Cases should handle validation service errors" name="CreateInvitationUseCase Edge Cases should handle validation service errors" time="0.005">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase Edge Cases should handle code generation errors" name="CreateInvitationUseCase Edge Cases should handle code generation errors" time="0.003">
+    </testcase>
+    <testcase classname="CreateInvitationUseCase execute should create invitation successfully" name="CreateInvitationUseCase execute should create invitation successfully" time="0.003">
     </testcase>
   </testsuite>
-  <testsuite name="Integration - Create + Confirm Flow" errors="0" failures="0" skipped="0" timestamp="2026-04-22T03:30:30" time="4.519" tests="9">
-    <testcase classname="Integration - Create + Confirm Flow debe crear invitación exitosamente" name="Integration - Create + Confirm Flow debe crear invitación exitosamente" time="0.067">
+  <testsuite name="InvitationController" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="2.835" tests="13">
+    <testcase classname="InvitationController getInvitation should call getInvitationUseCase and return success" name="InvitationController getInvitation should call getInvitationUseCase and return success" time="0.04">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación creada" name="Integration - Create + Confirm Flow debe obtener la invitación creada" time="0.02">
+    <testcase classname="InvitationController createInvitation should return error if validation fails" name="InvitationController createInvitation should return error if validation fails" time="0.005">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" name="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" time="0.058">
+    <testcase classname="InvitationController createInvitation should call createInvitationUseCase and return success" name="InvitationController createInvitation should call createInvitationUseCase and return success" time="0.003">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" name="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" time="0.019">
+    <testcase classname="InvitationController getInvitations should call getInvitationsUseCase and return success" name="InvitationController getInvitations should call getInvitationsUseCase and return success" time="0.004">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" name="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" time="0.03">
+    <testcase classname="InvitationController updateInvitation should call updateInvitationUseCase and return success" name="InvitationController updateInvitation should call updateInvitationUseCase and return success" time="0.002">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" time="0.037">
+    <testcase classname="InvitationController deleteInvitation should call deleteInvitationUseCase and return success" name="InvitationController deleteInvitation should call deleteInvitationUseCase and return success" time="0.003">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" time="0.017">
+    <testcase classname="InvitationController restoreInvitation should call restoreInvitationUseCase and return success" name="InvitationController restoreInvitation should call restoreInvitationUseCase and return success" time="0.003">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe manejar confirmación negativa" name="Integration - Create + Confirm Flow debe manejar confirmación negativa" time="0.075">
+    <testcase classname="InvitationController getStats should call getInvitationStatsUseCase and return success" name="InvitationController getStats should call getInvitationStatsUseCase and return success" time="0.001">
     </testcase>
-    <testcase classname="Integration - Create + Confirm Flow debe validar datos de confirmación" name="Integration - Create + Confirm Flow debe validar datos de confirmación" time="0.035">
+    <testcase classname="InvitationController importInvitations should return error if invitations array is missing or empty" name="InvitationController importInvitations should return error if invitations array is missing or empty" time="0.001">
+    </testcase>
+    <testcase classname="InvitationController importInvitations should call createInvitationUseCase.executeBatch and return success" name="InvitationController importInvitations should call createInvitationUseCase.executeBatch and return success" time="0.005">
+    </testcase>
+    <testcase classname="InvitationController searchByName should call searchInvitationsByNameUseCase and return success" name="InvitationController searchByName should call searchInvitationsByNameUseCase and return success" time="0.002">
+    </testcase>
+    <testcase classname="InvitationController exportInvitations should export as json by default" name="InvitationController exportInvitations should export as json by default" time="0.002">
+    </testcase>
+    <testcase classname="InvitationController exportInvitations should export as csv if requested" name="InvitationController exportInvitations should export as csv if requested" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="DeleteInvitationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="2.68" tests="3">
+    <testcase classname="DeleteInvitationUseCase debe eliminar (desactivar) una invitación exitosamente" name="DeleteInvitationUseCase debe eliminar (desactivar) una invitación exitosamente" time="0.033">
+    </testcase>
+    <testcase classname="DeleteInvitationUseCase debe fallar si la invitación no existe" name="DeleteInvitationUseCase debe fallar si la invitación no existe" time="0.028">
+    </testcase>
+    <testcase classname="DeleteInvitationUseCase debe manejar errores del repositorio" name="DeleteInvitationUseCase debe manejar errores del repositorio" time="0.013">
+    </testcase>
+  </testsuite>
+  <testsuite name="GetInvitationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:24" time="0.659" tests="8">
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe obtener invitación exitosamente" name="GetInvitationUseCase execute (obtener por código) debe obtener invitación exitosamente" time="0.004">
+    </testcase>
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe fallar con código inválido" name="GetInvitationUseCase execute (obtener por código) debe fallar con código inválido" time="0.036">
+    </testcase>
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe fallar con código no string" name="GetInvitationUseCase execute (obtener por código) debe fallar con código no string" time="0.003">
+    </testcase>
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe fallar cuando invitación no existe" name="GetInvitationUseCase execute (obtener por código) debe fallar cuando invitación no existe" time="0.002">
+    </testcase>
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe fallar cuando invitación no está activa" name="GetInvitationUseCase execute (obtener por código) debe fallar cuando invitación no está activa" time="0.001">
+    </testcase>
+    <testcase classname="GetInvitationUseCase execute (obtener por código) debe manejar errores del repositorio" name="GetInvitationUseCase execute (obtener por código) debe manejar errores del repositorio" time="0.002">
+    </testcase>
+    <testcase classname="GetInvitationUseCase Logging debe registrar operaciones exitosas" name="GetInvitationUseCase Logging debe registrar operaciones exitosas" time="0.001">
+    </testcase>
+    <testcase classname="GetInvitationUseCase Logging debe registrar errores" name="GetInvitationUseCase Logging debe registrar errores" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Invitation Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="3.084" tests="39">
+    <testcase classname="Invitation Entity Constructor should create invitation with valid data" name="Invitation Entity Constructor should create invitation with valid data" time="0.084">
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with invalid code" name="Invitation Entity Constructor should throw error with invalid code" time="0.08">
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with empty guest names" name="Invitation Entity Constructor should throw error with empty guest names" time="0.003">
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with invalid number of passes" name="Invitation Entity Constructor should throw error with invalid number of passes" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should throw error with invalid guestNames type" name="Invitation Entity Constructor should throw error with invalid guestNames type" time="0.009">
+    </testcase>
+    <testcase classname="Invitation Entity Constructor should create invitation from string guestNames" name="Invitation Entity Constructor should create invitation from string guestNames" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirm should set confirmation data" name="Invitation Entity Methods confirm should set confirmation data" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirm should throw error if already confirmed" name="Invitation Entity Methods confirm should throw error if already confirmed" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirm should set status to cancelled if confirmedPasses is 0" name="Invitation Entity Methods confirm should set status to cancelled if confirmedPasses is 0" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirm should throw error if inactive" name="Invitation Entity Methods confirm should throw error if inactive" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods cancel should set cancellation data" name="Invitation Entity Methods cancel should set cancellation data" time="0.003">
+    </testcase>
+    <testcase classname="Invitation Entity Methods deactivate should set status to inactive" name="Invitation Entity Methods deactivate should set status to inactive" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods activate should set status to pending when not confirmed" name="Invitation Entity Methods activate should set status to pending when not confirmed" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods isActive should return correct status" name="Invitation Entity Methods isActive should return correct status" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods isConfirmed should return confirmation status" name="Invitation Entity Methods isConfirmed should return confirmation status" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods getPendingPasses should calculate correctly" name="Invitation Entity Methods getPendingPasses should calculate correctly" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods getGuestNamesString should join names" name="Invitation Entity Methods getGuestNamesString should join names" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods phone property should reflect the value provided at construction" name="Invitation Entity Methods phone property should reflect the value provided at construction" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods clone should create deep copy" name="Invitation Entity Methods clone should create deep copy" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods toObject should return plain object" name="Invitation Entity Methods toObject should return plain object" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods update should change invitation fields and preserve consistency" name="Invitation Entity Methods update should change invitation fields and preserve consistency" time="0.003">
+    </testcase>
+    <testcase classname="Invitation Entity Methods assignTable should update table number and reject invalid values" name="Invitation Entity Methods assignTable should update table number and reject invalid values" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods updatePasses should enforce consistency" name="Invitation Entity Methods updatePasses should enforce consistency" time="0.01">
+    </testcase>
+    <testcase classname="Invitation Entity Methods updateConfirmation should update confirmation-related fields" name="Invitation Entity Methods updateConfirmation should update confirmation-related fields" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods getDietaryRestrictionsInfo should return correct summary" name="Invitation Entity Methods getDietaryRestrictionsInfo should return correct summary" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Methods equals and toString should work correctly" name="Invitation Entity Methods equals and toString should work correctly" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods isFullyConfirmed should reflect status after confirm" name="Invitation Entity Methods isFullyConfirmed should reflect status after confirm" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods unconfirm should reset confirmation state" name="Invitation Entity Methods unconfirm should reset confirmation state" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods fromObject should create instance" name="Invitation Entity Methods fromObject should create instance" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods confirmSimple should update fields" name="Invitation Entity Methods confirmSimple should update fields" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Methods cancel should update fields" name="Invitation Entity Methods cancel should update fields" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate guest names format" name="Invitation Entity Validation should validate guest names format" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate phone type if provided" name="Invitation Entity Validation should validate phone type if provided" time="0.013">
+    </testcase>
+    <testcase classname="Invitation Entity Validation should validate confirmation data" name="Invitation Entity Validation should validate confirmation data" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity Validation should throw error if confirmed passes exceed total in constructor" name="Invitation Entity Validation should throw error if confirmed passes exceed total in constructor" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should handle null/undefined values gracefully" name="Invitation Entity Edge Cases should handle null/undefined values gracefully" time="0.001">
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should trim whitespace from guest names" name="Invitation Entity Edge Cases should trim whitespace from guest names" time="0">
+    </testcase>
+    <testcase classname="Invitation Entity Edge Cases should handle large number of guests" name="Invitation Entity Edge Cases should handle large number of guests" time="0.002">
+    </testcase>
+    <testcase classname="Invitation Entity validate should validate a valid invitation" name="Invitation Entity validate should validate a valid invitation" time="0.013">
+    </testcase>
+  </testsuite>
+  <testsuite name="ExportInvitationsUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="2.915" tests="3">
+    <testcase classname="ExportInvitationsUseCase debe exportar invitaciones exitosamente" name="ExportInvitationsUseCase debe exportar invitaciones exitosamente" time="0.051">
+    </testcase>
+    <testcase classname="ExportInvitationsUseCase debe usar json como formato por defecto" name="ExportInvitationsUseCase debe usar json como formato por defecto" time="0.005">
+    </testcase>
+    <testcase classname="ExportInvitationsUseCase debe manejar errores del repositorio" name="ExportInvitationsUseCase debe manejar errores del repositorio" time="0.033">
+    </testcase>
+  </testsuite>
+  <testsuite name="CancelConfirmationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:24" time="0.688" tests="4">
+    <testcase classname="CancelConfirmationUseCase debe cancelar una confirmación exitosamente" name="CancelConfirmationUseCase debe cancelar una confirmación exitosamente" time="0.006">
+    </testcase>
+    <testcase classname="CancelConfirmationUseCase debe fallar si la invitación no existe" name="CancelConfirmationUseCase debe fallar si la invitación no existe" time="0.001">
+    </testcase>
+    <testcase classname="CancelConfirmationUseCase debe fallar si la confirmación no existe" name="CancelConfirmationUseCase debe fallar si la confirmación no existe" time="0.002">
+    </testcase>
+    <testcase classname="CancelConfirmationUseCase debe manejar errores del repositorio" name="CancelConfirmationUseCase debe manejar errores del repositorio" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="GetConfirmationStatsUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:24" time="0.793" tests="25">
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener estadísticas exitosamente con datos completos" name="GetConfirmationStatsUseCase execute debe obtener estadísticas exitosamente con datos completos" time="0.009">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe filtrar confirmaciones de invitaciones inactivas" name="GetConfirmationStatsUseCase execute debe filtrar confirmaciones de invitaciones inactivas" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe manejar caso sin confirmaciones" name="GetConfirmationStatsUseCase execute debe manejar caso sin confirmaciones" time="0.01">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe manejar caso sin invitaciones" name="GetConfirmationStatsUseCase execute debe manejar caso sin invitaciones" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe manejar errores del repositorio de invitaciones" name="GetConfirmationStatsUseCase execute debe manejar errores del repositorio de invitaciones" time="0.043">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe manejar errores del repositorio de confirmaciones" name="GetConfirmationStatsUseCase execute debe manejar errores del repositorio de confirmaciones" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones positivas" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones positivas" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones negativas" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones negativas" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones con restricciones dietarias" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones con restricciones dietarias" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones con mensajes" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones con mensajes" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones recientes" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones recientes" time="0.02">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener confirmaciones recientes con valor por defecto" name="GetConfirmationStatsUseCase execute debe obtener confirmaciones recientes con valor por defecto" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe validar rango de días inválido en confirmaciones recientes" name="GetConfirmationStatsUseCase execute debe validar rango de días inválido en confirmaciones recientes" time="0">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener total de invitados confirmados" name="GetConfirmationStatsUseCase execute debe obtener total de invitados confirmados" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase execute debe obtener estadísticas exitosamente con datos completos" name="GetConfirmationStatsUseCase execute debe obtener estadísticas exitosamente con datos completos" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase _getActiveConfirmations (método privado) debe filtrar confirmaciones de invitaciones inactivas" name="GetConfirmationStatsUseCase _getActiveConfirmations (método privado) debe filtrar confirmaciones de invitaciones inactivas" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase _getActiveConfirmations (método privado) debe devolver todas las confirmaciones si no hay invitaciones inactivas" name="GetConfirmationStatsUseCase _getActiveConfirmations (método privado) debe devolver todas las confirmaciones si no hay invitaciones inactivas" time="0">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Logging debe registrar operación exitosa" name="GetConfirmationStatsUseCase Logging debe registrar operación exitosa" time="0">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Logging debe registrar errores" name="GetConfirmationStatsUseCase Logging debe registrar errores" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getPositiveConfirmations debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getPositiveConfirmations debe manejar errores" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getNegativeConfirmations debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getNegativeConfirmations debe manejar errores" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getConfirmationsWithDietaryRestrictions debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getConfirmationsWithDietaryRestrictions debe manejar errores" time="0.001">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getConfirmationsWithMessages debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getConfirmationsWithMessages debe manejar errores" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getRecentConfirmations debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getRecentConfirmations debe manejar errores" time="0.002">
+    </testcase>
+    <testcase classname="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getTotalConfirmedGuests debe manejar errores" name="GetConfirmationStatsUseCase Manejo de errores en métodos específicos getTotalConfirmedGuests debe manejar errores" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthMiddleware (unit)" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="3.916" tests="10">
+    <testcase classname="AuthMiddleware (unit) generateToken / verifyJWT should create and validate a token" name="AuthMiddleware (unit) generateToken / verifyJWT should create and validate a token" time="0.07">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) generateToken / verifyJWT should reject invalid token" name="AuthMiddleware (unit) generateToken / verifyJWT should reject invalid token" time="0.004">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) generateToken / verifyJWT should reject expired token" name="AuthMiddleware (unit) generateToken / verifyJWT should reject expired token" time="0.003">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) verifyBasicAuth should accept correct credentials" name="AuthMiddleware (unit) verifyBasicAuth should accept correct credentials" time="0.002">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) verifyBasicAuth should reject wrong credentials" name="AuthMiddleware (unit) verifyBasicAuth should reject wrong credentials" time="0.002">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) login endpoint should return token with valid creds" name="AuthMiddleware (unit) login endpoint should return token with valid creds" time="0.003">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) login endpoint should reject missing fields" name="AuthMiddleware (unit) login endpoint should reject missing fields" time="0.001">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) requirePermissions allows when permission exists" name="AuthMiddleware (unit) requirePermissions allows when permission exists" time="0.002">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) requirePermissions blocks when permission missing" name="AuthMiddleware (unit) requirePermissions blocks when permission missing" time="0.002">
+    </testcase>
+    <testcase classname="AuthMiddleware (unit) authenticate should authenticate with valid token" name="AuthMiddleware (unit) authenticate should authenticate with valid token" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="ExportConfirmationsUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:25" time="0.496" tests="5">
+    <testcase classname="ExportConfirmationsUseCase debe exportar confirmaciones en formato csv exitosamente" name="ExportConfirmationsUseCase debe exportar confirmaciones en formato csv exitosamente" time="0.005">
+    </testcase>
+    <testcase classname="ExportConfirmationsUseCase debe exportar confirmaciones en formato json exitosamente" name="ExportConfirmationsUseCase debe exportar confirmaciones en formato json exitosamente" time="0.001">
+    </testcase>
+    <testcase classname="ExportConfirmationsUseCase debe usar csv como formato por defecto" name="ExportConfirmationsUseCase debe usar csv como formato por defecto" time="0.001">
+    </testcase>
+    <testcase classname="ExportConfirmationsUseCase debe retornar error si el formato no es válido" name="ExportConfirmationsUseCase debe retornar error si el formato no es válido" time="0.001">
+    </testcase>
+    <testcase classname="ExportConfirmationsUseCase debe manejar errores del repositorio" name="ExportConfirmationsUseCase debe manejar errores del repositorio" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="UpdateConfirmationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="3.661" tests="7">
+    <testcase classname="UpdateConfirmationUseCase debe actualizar una confirmación exitosamente" name="UpdateConfirmationUseCase debe actualizar una confirmación exitosamente" time="0.032">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe fallar si el código de invitación no es válido" name="UpdateConfirmationUseCase debe fallar si el código de invitación no es válido" time="0.015">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe fallar si los datos de actualización no son válidos" name="UpdateConfirmationUseCase debe fallar si los datos de actualización no son válidos" time="0.005">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe fallar si la invitación no existe" name="UpdateConfirmationUseCase debe fallar si la invitación no existe" time="0.003">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe fallar si la confirmación no existe" name="UpdateConfirmationUseCase debe fallar si la confirmación no existe" time="0.002">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe desconfirmar la invitación si willAttend es false" name="UpdateConfirmationUseCase debe desconfirmar la invitación si willAttend es false" time="0.005">
+    </testcase>
+    <testcase classname="UpdateConfirmationUseCase debe manejar errores del repositorio" name="UpdateConfirmationUseCase debe manejar errores del repositorio" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="CreateConfirmationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="3.866" tests="28">
+    <testcase classname="CreateConfirmationUseCase should confirm attendance successfully for positive attending without SSE" name="CreateConfirmationUseCase should confirm attendance successfully for positive attending without SSE" time="0.055">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should confirm attendance successfully for positive attending" name="CreateConfirmationUseCase should confirm attendance successfully for positive attending" time="0.006">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should fail when invitation does not exist" name="CreateConfirmationUseCase should fail when invitation does not exist" time="0.046">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should fail when invitation already confirmed" name="CreateConfirmationUseCase should fail when invitation already confirmed" time="0.003">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should fail when confirmation already exists in repository" name="CreateConfirmationUseCase should fail when confirmation already exists in repository" time="0.003">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should enforce validation for required attending guests when willAttend true" name="CreateConfirmationUseCase should enforce validation for required attending guests when willAttend true" time="0.006">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase should fail with invalid invitation code" name="CreateConfirmationUseCase should fail with invalid invitation code" time="0.021">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if invitationCode is not provided" name="CreateConfirmationUseCase Validation and Business Rules should fail if invitationCode is not provided" time="0.001">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if confirmationData is not an object" name="CreateConfirmationUseCase Validation and Business Rules should fail if confirmationData is not an object" time="0.001">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if confirmationData is not an object (string)" name="CreateConfirmationUseCase Validation and Business Rules should fail if confirmationData is not an object (string)" time="0.001">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if invitationCode is not a string" name="CreateConfirmationUseCase Validation and Business Rules should fail if invitationCode is not a string" time="0.004">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if willAttend is not a boolean" name="CreateConfirmationUseCase Validation and Business Rules should fail if willAttend is not a boolean" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if willAttend is not a boolean (number)" name="CreateConfirmationUseCase Validation and Business Rules should fail if willAttend is not a boolean (number)" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests is not a non-negative integer" time="0.005">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames is not an array" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames is not an array" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames is not an array (object)" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames is not an array (object)" time="0.007">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if phone format is invalid" name="CreateConfirmationUseCase Validation and Business Rules should fail if phone format is invalid" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should pass if phone is not provided" name="CreateConfirmationUseCase Validation and Business Rules should pass if phone is not provided" time="0.001">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if invitation is inactive" name="CreateConfirmationUseCase Validation and Business Rules should fail if invitation is inactive" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests &gt; 0 when willAttend is false" time="0.001">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingGuests exceeds numberOfPasses" time="0.034">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" name="CreateConfirmationUseCase Validation and Business Rules should fail if attendingNames length exceeds attendingGuests" time="0.004">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if message exceeds 500 characters" name="CreateConfirmationUseCase Validation and Business Rules should fail if message exceeds 500 characters" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" name="CreateConfirmationUseCase Validation and Business Rules should fail if dietaryRestrictions exceeds 200 characters" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" name="CreateConfirmationUseCase Validation and Business Rules should normalize phone and dietaryRestrictions" time="0.006">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should normalize empty attendingNames" name="CreateConfirmationUseCase Validation and Business Rules should normalize empty attendingNames" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Validation and Business Rules should normalize message" name="CreateConfirmationUseCase Validation and Business Rules should normalize message" time="0.002">
+    </testcase>
+    <testcase classname="CreateConfirmationUseCase Error Handling should handle errors during execute" name="CreateConfirmationUseCase Error Handling should handle errors during execute" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="Confirmation Entity" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="3.896" tests="35">
+    <testcase classname="Confirmation Entity Constructor debe crear una confirmación válida con parámetros mínimos" name="Confirmation Entity Constructor debe crear una confirmación válida con parámetros mínimos" time="0.084">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe crear una confirmación con todos los parámetros" name="Confirmation Entity Constructor debe crear una confirmación con todos los parámetros" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar código requerido" name="Confirmation Entity Constructor debe validar código requerido" time="0.111">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar willAttend como boolean" name="Confirmation Entity Constructor debe validar willAttend como boolean" time="0.004">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar attendingGuests como entero no negativo" name="Confirmation Entity Constructor debe validar attendingGuests como entero no negativo" time="0.012">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar attendingNames como array" name="Confirmation Entity Constructor debe validar attendingNames como array" time="0.011">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar tipos de datos opcionales" name="Confirmation Entity Constructor debe validar tipos de datos opcionales" time="0.004">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar lógica de negocio: no invitados si no asiste" name="Confirmation Entity Constructor debe validar lógica de negocio: no invitados si no asiste" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Constructor debe validar lógica de negocio: nombres no pueden exceder invitados" name="Confirmation Entity Constructor debe validar lógica de negocio: nombres no pueden exceder invitados" time="0.005">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización updateAttendance debe cambiar asistencia y limpiar datos si no asiste" name="Confirmation Entity Métodos de actualización updateAttendance debe cambiar asistencia y limpiar datos si no asiste" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización updateAttendingGuests debe validar y actualizar invitados" name="Confirmation Entity Métodos de actualización updateAttendingGuests debe validar y actualizar invitados" time="0.005">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar lógica de negocio" name="Confirmation Entity Métodos de actualización debe validar lógica de negocio" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe ajustar nombres si es necesario" name="Confirmation Entity Métodos de actualización debe ajustar nombres si es necesario" time="0">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar y actualizar nombres" name="Confirmation Entity Métodos de actualización debe validar y actualizar nombres" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe filtrar nombres válidos" name="Confirmation Entity Métodos de actualización debe filtrar nombres válidos" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar cantidad máxima" name="Confirmation Entity Métodos de actualización debe validar cantidad máxima" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar y actualizar teléfono" name="Confirmation Entity Métodos de actualización debe validar y actualizar teléfono" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar y actualizar restricciones" name="Confirmation Entity Métodos de actualización debe validar y actualizar restricciones" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de actualización debe validar y actualizar mensaje" name="Confirmation Entity Métodos de actualización debe validar y actualizar mensaje" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta isPositive e isNegative deben funcionar correctamente" name="Confirmation Entity Métodos de consulta isPositive e isNegative deben funcionar correctamente" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta hasAllGuestNames debe verificar si tiene todos los nombres" name="Confirmation Entity Métodos de consulta hasAllGuestNames debe verificar si tiene todos los nombres" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta hasDietaryRestrictions debe verificar restricciones dietarias" name="Confirmation Entity Métodos de consulta hasDietaryRestrictions debe verificar restricciones dietarias" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta hasMessage debe verificar mensaje" name="Confirmation Entity Métodos de consulta hasMessage debe verificar mensaje" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta hasPhone debe verificar teléfono" name="Confirmation Entity Métodos de consulta hasPhone debe verificar teléfono" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta getMissingNamesCount debe calcular nombres faltantes" name="Confirmation Entity Métodos de consulta getMissingNamesCount debe calcular nombres faltantes" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de consulta getSummary debe generar resumen correcto" name="Confirmation Entity Métodos de consulta getSummary debe generar resumen correcto" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de conversión y comparación toObject debe convertir a objeto plano" name="Confirmation Entity Métodos de conversión y comparación toObject debe convertir a objeto plano" time="0">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de conversión y comparación fromObject debe crear instancia desde objeto" name="Confirmation Entity Métodos de conversión y comparación fromObject debe crear instancia desde objeto" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de conversión y comparación clone debe crear copia independiente" name="Confirmation Entity Métodos de conversión y comparación clone debe crear copia independiente" time="0.002">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de conversión y comparación equals debe comparar confirmaciones correctamente" name="Confirmation Entity Métodos de conversión y comparación equals debe comparar confirmaciones correctamente" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos de conversión y comparación toString debe generar representación correcta" name="Confirmation Entity Métodos de conversión y comparación toString debe generar representación correcta" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos estáticos createNegative debe crear confirmación negativa" name="Confirmation Entity Métodos estáticos createNegative debe crear confirmación negativa" time="0.003">
+    </testcase>
+    <testcase classname="Confirmation Entity Métodos estáticos createPositive debe crear confirmación positiva" name="Confirmation Entity Métodos estáticos createPositive debe crear confirmación positiva" time="0.007">
+    </testcase>
+    <testcase classname="Confirmation Entity Getters deben ser inmutables attendingNames debe devolver copia" name="Confirmation Entity Getters deben ser inmutables attendingNames debe devolver copia" time="0.001">
+    </testcase>
+    <testcase classname="Confirmation Entity validate debe validar una confirmación correcta" name="Confirmation Entity validate debe validar una confirmación correcta" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="UpdateInvitationUseCase" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="3.469" tests="4">
+    <testcase classname="UpdateInvitationUseCase debe actualizar una invitación exitosamente" name="UpdateInvitationUseCase debe actualizar una invitación exitosamente" time="0.031">
+    </testcase>
+    <testcase classname="UpdateInvitationUseCase debe fallar si la invitación no existe" name="UpdateInvitationUseCase debe fallar si la invitación no existe" time="0.029">
+    </testcase>
+    <testcase classname="UpdateInvitationUseCase debe ignorar campos no permitidos" name="UpdateInvitationUseCase debe ignorar campos no permitidos" time="0.002">
+    </testcase>
+    <testcase classname="UpdateInvitationUseCase debe manejar errores del repositorio" name="UpdateInvitationUseCase debe manejar errores del repositorio" time="0.016">
+    </testcase>
+  </testsuite>
+  <testsuite name="ConfirmationController" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:22" time="3.83" tests="19">
+    <testcase classname="ConfirmationController confirmAttendance should return error if code is invalid" name="ConfirmationController confirmAttendance should return error if code is invalid" time="0.029">
+    </testcase>
+    <testcase classname="ConfirmationController confirmAttendance should return error if validation fails" name="ConfirmationController confirmAttendance should return error if validation fails" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController confirmAttendance should call createConfirmationUseCase and return success" name="ConfirmationController confirmAttendance should call createConfirmationUseCase and return success" time="0.003">
+    </testcase>
+    <testcase classname="ConfirmationController getConfirmation should call getConfirmationUseCase and return success" name="ConfirmationController getConfirmation should call getConfirmationUseCase and return success" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController updateConfirmation should return error if code is invalid" name="ConfirmationController updateConfirmation should return error if code is invalid" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController updateConfirmation should return error if validation fails" name="ConfirmationController updateConfirmation should return error if validation fails" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController updateConfirmation should call updateConfirmationUseCase and return success" name="ConfirmationController updateConfirmation should call updateConfirmationUseCase and return success" time="0.003">
+    </testcase>
+    <testcase classname="ConfirmationController cancelConfirmation should call cancelConfirmationUseCase and return success" name="ConfirmationController cancelConfirmation should call cancelConfirmationUseCase and return success" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController getConfirmations should call getConfirmationsUseCase and return success" name="ConfirmationController getConfirmations should call getConfirmationsUseCase and return success" time="0.003">
+    </testcase>
+    <testcase classname="ConfirmationController getStats should call getConfirmationStatsUseCase and return success" name="ConfirmationController getStats should call getConfirmationStatsUseCase and return success" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController getPositiveConfirmations should call getConfirmationStatsUseCase and return success" name="ConfirmationController getPositiveConfirmations should call getConfirmationStatsUseCase and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController getNegativeConfirmations should call getConfirmationStatsUseCase and return success" name="ConfirmationController getNegativeConfirmations should call getConfirmationStatsUseCase and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController getConfirmationsWithDietaryRestrictions should call getConfirmationStatsUseCase and return success" name="ConfirmationController getConfirmationsWithDietaryRestrictions should call getConfirmationStatsUseCase and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController getConfirmationsWithMessages should call getConfirmationStatsUseCase and return success" name="ConfirmationController getConfirmationsWithMessages should call getConfirmationStatsUseCase and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController getRecentConfirmations should call getConfirmationStatsUseCase with hours and return success" name="ConfirmationController getRecentConfirmations should call getConfirmationStatsUseCase with hours and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController searchByName should call searchConfirmationsByNameUseCase and return success" name="ConfirmationController searchByName should call searchConfirmationsByNameUseCase and return success" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController getTotalConfirmedGuests should call getConfirmationStatsUseCase and return success" name="ConfirmationController getTotalConfirmedGuests should call getConfirmationStatsUseCase and return success" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationController exportConfirmations should export as csv by default" name="ConfirmationController exportConfirmations should export as csv by default" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationController exportConfirmations should export as json if requested" name="ConfirmationController exportConfirmations should export as json if requested" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Integration /auth and protected routes" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="8.136" tests="1">
+    <testcase classname="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" name="Integration /auth and protected routes login returns JWT and stats endpoint respects auth" time="0.3">
+    </testcase>
+  </testsuite>
+  <testsuite name="Integration - Create + Confirm Flow" errors="0" failures="0" skipped="0" timestamp="2026-04-22T04:25:21" time="9.562" tests="9">
+    <testcase classname="Integration - Create + Confirm Flow debe crear invitación exitosamente" name="Integration - Create + Confirm Flow debe crear invitación exitosamente" time="0.132">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación creada" name="Integration - Create + Confirm Flow debe obtener la invitación creada" time="0.036">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" name="Integration - Create + Confirm Flow debe confirmar asistencia para la invitación" time="0.104">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" name="Integration - Create + Confirm Flow debe obtener la invitación actualizada después de confirmar" time="0.024">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" name="Integration - Create + Confirm Flow debe obtener estadísticas actualizadas" time="0.031">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación inexistente" time="0.043">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" name="Integration - Create + Confirm Flow debe fallar al confirmar invitación ya confirmada" time="0.024">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe manejar confirmación negativa" name="Integration - Create + Confirm Flow debe manejar confirmación negativa" time="0.11">
+    </testcase>
+    <testcase classname="Integration - Create + Confirm Flow debe validar datos de confirmación" name="Integration - Create + Confirm Flow debe validar datos de confirmación" time="0.055">
     </testcase>
   </testsuite>
 </testsuites>

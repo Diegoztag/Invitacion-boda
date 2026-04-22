@@ -1,1 +1,1 @@
-fix(auth): eliminar credenciales hardcodeadas y usar variables de entorno
+test: fix authMiddleware tests using correct env variables  
