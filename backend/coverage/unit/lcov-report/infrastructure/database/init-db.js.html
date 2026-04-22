@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -139,7 +139,16 @@
 <a name='L74'></a><a href='#L74'>74</a>
 <a name='L75'></a><a href='#L75'>75</a>
 <a name='L76'></a><a href='#L76'>76</a>
-<a name='L77'></a><a href='#L77'>77</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -185,6 +194,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -221,13 +239,13 @@
  * Inicializa el esquema de la base de datos
  */
 async function <span class="fstat-no" title="function not covered" >initDatabase(</span>) {
-  const db = <span class="cstat-no" title="statement not covered" >await getDbConnection();</span>
+    const db = <span class="cstat-no" title="statement not covered" >await getDbConnection();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    console.log('Inicializando esquema de base de datos...');</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >        console.log('Inicializando esquema de base de datos...');</span>
 &nbsp;
-    // Crear tabla de invitaciones
-<span class="cstat-no" title="statement not covered" >    await db.exec(`</span>
+        // Crear tabla de invitaciones
+<span class="cstat-no" title="statement not covered" >        await db.exec(`</span>
       CREATE TABLE IF NOT EXISTS invitations (
         code TEXT PRIMARY KEY,
         guestNames TEXT NOT NULL,
@@ -251,10 +269,10 @@ async function <span class="fstat-no" title="function not covered" >initDatabase
       );
     `);
 &nbsp;
-    // Crear tabla de confirmaciones (para mantener el historial o detalles adicionales si es necesario)
-    // Aunque la entidad Invitation ya guarda la confirmación, mantenemos la tabla por si se requiere
-    // un registro separado de confirmaciones como en el CSV original.
-<span class="cstat-no" title="statement not covered" >    await db.exec(`</span>
+        // Crear tabla de confirmaciones (para mantener el historial o detalles adicionales si es necesario)
+        // Aunque la entidad Invitation ya guarda la confirmación, mantenemos la tabla por si se requiere
+        // un registro separado de confirmaciones como en el CSV original.
+<span class="cstat-no" title="statement not covered" >        await db.exec(`</span>
       CREATE TABLE IF NOT EXISTS confirmations (
         code TEXT PRIMARY KEY,
         willAttend INTEGER NOT NULL DEFAULT 0,
@@ -268,28 +286,37 @@ async function <span class="fstat-no" title="function not covered" >initDatabase
       );
     `);
 &nbsp;
-    // Crear índices para mejorar el rendimiento
-<span class="cstat-no" title="statement not covered" >    await db.exec(`</span>
+        // Crear tabla de configuraciones
+<span class="cstat-no" title="statement not covered" >        await db.exec(`</span>
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      );
+    `);
+&nbsp;
+        // Crear índices para mejorar el rendimiento
+<span class="cstat-no" title="statement not covered" >        await db.exec(`</span>
       CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
       CREATE INDEX IF NOT EXISTS idx_confirmations_willAttend ON confirmations(willAttend);
     `);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    console.log('Esquema de base de datos inicializado correctamente.');</span>
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error al inicializar la base de datos:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw error;</span>
-  }
+<span class="cstat-no" title="statement not covered" >        console.log('Esquema de base de datos inicializado correctamente.');</span>
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >        console.error('Error al inicializar la base de datos:', error);</span>
+<span class="cstat-no" title="statement not covered" >        throw error;</span>
+    }
 }
 &nbsp;
 // Si se ejecuta directamente
 <span class="cstat-no" title="statement not covered" >if (require.main === module) {</span>
-<span class="cstat-no" title="statement not covered" >  initDatabase()</span>
-    .then(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >process.exit(0))</span>
-    .catch(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >process.exit(1))</span>;
+<span class="cstat-no" title="statement not covered" >    initDatabase()</span>
+        .then(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >process.exit(0))</span>
+        .catch(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >process.exit(1))</span>;
 }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >module.exports = {</span>
-  initDatabase
+    initDatabase
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -298,7 +325,7 @@ async function <span class="fstat-no" title="function not covered" >initDatabase
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-17T18:46:56.588Z
+                at 2026-04-22T03:19:17.703Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

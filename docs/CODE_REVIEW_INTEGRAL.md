@@ -324,9 +324,8 @@ validateEmail(email) {
 
 ### **🔴 VULNERABILIDADES PENDIENTES (Revisión 24/03/2026)**
 
-1.  **Gestión de Secretos Débil**:
-    - **Credenciales por Defecto**: La contraseña de administrador (`admin123`) y el secreto de JWT están hardcodeados como valores por defecto en `authMiddleware.js`.
-    - **Recomendación**: Eliminar los valores por defecto y forzar la configuración a través de variables de entorno. Utilizar un secreto de JWT largo y aleatorio.
+1.  ✅ **Gestión de Secretos Débil (Resuelto)**:
+    - **Estado**: Completado. Se eliminaron las credenciales hardcodeadas de `authMiddleware.js` y se forzó el uso de `ADMIN_USERNAME` y `ADMIN_PASSWORD` a través de variables de entorno.
 
 2.  **Falta de Rate Limiting**:
     - **Vulnerabilidad**: El endpoint de `login` no tiene protección contra ataques de fuerza bruta.

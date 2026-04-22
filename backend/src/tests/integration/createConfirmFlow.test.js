@@ -21,7 +21,7 @@ describe('Integration - Create + Confirm Flow', () => {
         const loginResponse = await request(app)
             .post('/api/v1/auth/login')
             .send({
-                username: 'admin',
+                username: authMiddleware.adminUsername,
                 password: authMiddleware.adminPassword
             })
             .expect(200);
@@ -59,8 +59,14 @@ describe('Integration - Create + Confirm Flow', () => {
         return response.body.invitation;
     };
 
+    let counter = 0;
+    const getUniqueId = () => {
+        counter++;
+        return `${Date.now()}_${counter}_${Math.floor(Math.random() * 10000)}`;
+    };
+
     test('debe crear invitación exitosamente', async () => {
-        const uniqueId = Date.now();
+        const uniqueId = getUniqueId();
         const invitation = await createTestInvitation(
             [`Carlos Ruiz ${uniqueId}`, `Laura Gómez ${uniqueId}`],
             2,
@@ -185,7 +191,7 @@ describe('Integration - Create + Confirm Flow', () => {
     });
 
     test('debe manejar confirmación negativa', async () => {
-        const uniqueId = Date.now();
+        const uniqueId = getUniqueId();
         // Crear otra invitación para probar confirmación negativa
         const invitationData = {
             guestNames: [`Miguel Sánchez ${uniqueId}`],
@@ -220,7 +226,7 @@ describe('Integration - Create + Confirm Flow', () => {
     });
 
     test('debe validar datos de confirmación', async () => {
-        const uniqueId = Date.now();
+        const uniqueId = getUniqueId();
         // Crear otra invitación
         const invitationData = {
             guestNames: [`Sofía Martínez ${uniqueId}`],

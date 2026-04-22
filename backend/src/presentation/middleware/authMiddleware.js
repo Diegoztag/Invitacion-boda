@@ -18,6 +18,7 @@ class AuthMiddleware {
         }
 
         this.secretKey = process.env.JWT_SECRET;
+        this.adminUsername = process.env.ADMIN_USERNAME || 'admin';
         this.adminPassword = process.env.ADMIN_PASSWORD;
     }
 
@@ -160,9 +161,9 @@ class AuthMiddleware {
             const decoded = Buffer.from(credentials, 'base64').toString('utf-8');
             const [username, password] = decoded.split(':');
 
-            if (username === 'admin' && password === this.adminPassword) {
+            if (username === this.adminUsername && password === this.adminPassword) {
                 req.user = {
-                    id: 'admin',
+                    id: this.adminUsername,
                     role: 'admin',
                     permissions: ['read', 'write', 'delete']
                 };
@@ -300,7 +301,7 @@ class AuthMiddleware {
                 });
             }
 
-            if (username === 'admin' && password === this.adminPassword) {
+            if (username === this.adminUsername && password === this.adminPassword) {
                 const token = this.generateToken();
 
                 endOperation({
@@ -311,7 +312,7 @@ class AuthMiddleware {
                     success: true,
                     token,
                     user: {
-                        id: 'admin',
+                        id: this.adminUsername,
                         role: 'admin',
                         permissions: ['read', 'write', 'delete']
                     },

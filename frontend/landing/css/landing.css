@@ -88,20 +88,6 @@ html.dark .navbar {
     gap: 0.5rem;
 }
 
-.brand-logo {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background: linear-gradient(to bottom right, var(--color-primary), #9333ea);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-family: var(--font-display);
-    font-weight: bold;
-    font-size: 1.25rem;
-}
-
 .brand-text {
     font-family: var(--font-display);
     font-weight: bold;

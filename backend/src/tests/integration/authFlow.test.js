@@ -26,11 +26,10 @@ describe('Integration /auth and protected routes', () => {
     test('login returns JWT and stats endpoint respects auth', async () => {
         // obtener contraseña actual de middleware para asegurarnos de usar la correcta
         const authMiddleware = serverInstance.container.resolve('authMiddleware');
+        const username = authMiddleware.adminUsername;
         const password = authMiddleware.adminPassword;
 
-        const loginRes = await request(app)
-            .post('/api/v1/auth/login')
-            .send({ username: 'admin', password });
+        const loginRes = await request(app).post('/api/v1/auth/login').send({ username, password });
 
         expect(loginRes.status).toBe(200);
         expect(loginRes.body.success).toBe(true);
