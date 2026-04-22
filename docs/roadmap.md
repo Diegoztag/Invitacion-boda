@@ -123,12 +123,19 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Integración del Flujo de Registro**: Implementar un flujo de registro o un mock claro para los botones de "Comenzar Gratis".
 - [x] **Optimización de Assets de la Landing Page**: Asegurar que las imágenes usen lazy loading y estén optimizadas.
 
-### Ciclo 42: Refinamiento de Seguridad y Observabilidad (En Progreso)
+### Ciclo 42: Refinamiento de Seguridad y Observabilidad (Finalizado)
 
-- [ ] **Cabeceras de Seguridad (Helmet)**: Integrar `helmet` en el backend para proteger contra vulnerabilidades web comunes.
-- [ ] **Configuración Estricta de CORS**: Restringir los orígenes permitidos en CORS para mayor seguridad.
-- [ ] **Logging Estructurado**: Implementar un logger profesional (ej. Winston o Pino) para mejor trazabilidad.
-- [ ] **Backup Automático de SQLite**: Crear un script o tarea programada para realizar copias de seguridad de la base de datos SQLite.
+- [x] **Cabeceras de Seguridad (Helmet)**: Integrar `helmet` en el backend para proteger contra vulnerabilidades web comunes.
+- [x] **Configuración Estricta de CORS**: Restringir los orígenes permitidos en CORS para mayor seguridad.
+- [x] **Logging Estructurado**: Implementar un logger profesional (ej. Winston o Pino) para mejor trazabilidad.
+- [x] **Backup Automático de SQLite**: Crear un script o tarea programada para realizar copias de seguridad de la base de datos SQLite.
+
+### Ciclo 43: Aumento de Cobertura y Refinamiento de Infraestructura (En Progreso)
+
+- [x] **Aumentar Cobertura de Pruebas en Infraestructura**: Añadir pruebas unitarias para `CacheService`, `CsvStorage`, `SseService` y `backup.js` (Completado: `SqliteConfirmationRepository`, `SqliteInvitationRepository`, `CacheService`, `CsvStorage`, `SseService`, `backup.js`).
+- [ ] **Aumentar Cobertura en Utilidades Compartidas**: Añadir pruebas unitarias para `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js`.
+- [ ] **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso.
+- [ ] **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario.
 
 ---
 
@@ -178,4 +185,4 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 ---
 
-> **Nota:** Cada cambio debe corresponder a un commit individual con mensaje claro. Revisa este roadmap con frecuencia y ajusta prioridades conforme avanzamos.
+> **Nota:** Cada cambio debe corresponder a un commit individual con mensaje claro y en español. Revisa este roadmap con frecuencia y ajusta prioridades conforme avanzamos.
