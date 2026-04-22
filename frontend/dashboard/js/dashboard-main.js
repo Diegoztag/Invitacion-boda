@@ -41,8 +41,29 @@ class AdminApp {
     }
 
     async checkAuthentication() {
-        // Bypass authentication for debugging
-        return;
+        const token = localStorage.getItem('dashboardToken');
+        if (!token) {
+            window.location.href = '/dashboard/login.html';
+            return;
+        }
+
+        try {
+            const API_BASE_URL =
+                (window.WEDDING_CONFIG?.api?.backendUrl || 'http://localhost:3000') + '/api/v1';
+            const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                localStorage.removeItem('dashboardToken');
+                window.location.href = '/dashboard/login.html';
+            }
+        } catch (error) {
+            console.error('Error verificando autenticación:', error);
+            // Si hay error de red, permitimos continuar con el token existente
+        }
     }
 
     initializeDynamicContent() {

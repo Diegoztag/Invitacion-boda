@@ -1,1 +1,1 @@
-test: fix authMiddleware tests using correct env variables  
+fix(frontend): manejar errores 401 y redirigir a login en dashboard

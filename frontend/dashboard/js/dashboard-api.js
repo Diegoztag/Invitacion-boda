@@ -117,6 +117,10 @@ export class AdminAPI {
     async fetchWithErrorHandling(endpoint, options = {}) {
         try {
             const url = `${this.backendUrl}${endpoint}`;
+
+            // Asegurarnos de que el token esté actualizado antes de cada petición
+            this.setupAuthentication();
+
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -124,6 +128,13 @@ export class AdminAPI {
                     ...options.headers
                 }
             });
+
+            if (response.status === 401) {
+                // Token inválido o expirado
+                localStorage.removeItem('dashboardToken');
+                window.location.href = '/dashboard/login.html';
+                return { success: false, error: 'Sesión expirada', type: 'auth' };
+            }
 
             if (!response.ok) {
                 const error = new Error(`HTTP error! status: ${response.status}`);
