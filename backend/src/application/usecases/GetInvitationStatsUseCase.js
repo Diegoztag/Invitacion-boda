@@ -16,6 +16,42 @@ class GetInvitationStatsUseCase {
             // Obtener estadísticas unificadas desde invitaciones
             const invitationStats = await this.invitationRepository.getStats();
 
+            // Calcular campos derivados
+            const totalActivePasses =
+                (invitationStats.activeAdultPasses || 0) +
+                (invitationStats.activeChildPasses || 0) +
+                (invitationStats.activeStaffPasses || 0);
+
+            const totalLiberatedPasses =
+                (invitationStats.totalIssuedPasses || 0) - (invitationStats.confirmedPasses || 0);
+            const pendingPasses =
+                (invitationStats.totalIssuedPasses || 0) - (invitationStats.confirmedPasses || 0);
+            const totalConfirmedPasses = invitationStats.confirmedPasses || 0;
+
+            const distributionPercentages = {
+                adults:
+                    totalActivePasses > 0
+                        ? (
+                              ((invitationStats.activeAdultPasses || 0) / totalActivePasses) *
+                              100
+                          ).toFixed(2)
+                        : 0,
+                children:
+                    totalActivePasses > 0
+                        ? (
+                              ((invitationStats.activeChildPasses || 0) / totalActivePasses) *
+                              100
+                          ).toFixed(2)
+                        : 0,
+                staff:
+                    totalActivePasses > 0
+                        ? (
+                              ((invitationStats.activeStaffPasses || 0) / totalActivePasses) *
+                              100
+                          ).toFixed(2)
+                        : 0
+            };
+
             // Calcular tasas de confirmación y asistencia
             const confirmationRate =
                 invitationStats.active > 0
@@ -41,14 +77,14 @@ class GetInvitationStatsUseCase {
                     inactive: invitationStats.inactive,
                     totalPasses: invitationStats.totalIssuedPasses,
                     occupiedPasses: invitationStats.occupiedPasses,
-                    cancelledPasses: invitationStats.totalLiberatedPasses
+                    cancelledPasses: totalLiberatedPasses
                 },
                 confirmations: {
                     total: invitationStats.confirmed,
                     positive: invitationStats.confirmed,
                     negative: invitationStats.cancelled,
                     totalConfirmedGuests: invitationStats.confirmedPasses,
-                    pendingPasses: invitationStats.pendingPasses,
+                    pendingPasses: pendingPasses,
                     averageGuestsPerConfirmation:
                         invitationStats.confirmed > 0
                             ? (invitationStats.confirmedPasses / invitationStats.confirmed).toFixed(
@@ -61,20 +97,16 @@ class GetInvitationStatsUseCase {
                     activeAdultPasses: invitationStats.activeAdultPasses || 0,
                     activeChildPasses: invitationStats.activeChildPasses || 0,
                     activeStaffPasses: invitationStats.activeStaffPasses || 0,
-                    totalActivePasses: invitationStats.totalActivePasses || 0,
+                    totalActivePasses: totalActivePasses,
 
                     // Porcentajes de distribución
-                    distributionPercentages: invitationStats.distributionPercentages || {
-                        adults: 0,
-                        children: 0,
-                        staff: 0
-                    },
+                    distributionPercentages: distributionPercentages,
 
                     // Desglose de pases confirmados
                     confirmedAdultPasses: invitationStats.confirmedAdultPasses || 0,
                     confirmedChildPasses: invitationStats.confirmedChildPasses || 0,
                     confirmedStaffPasses: invitationStats.confirmedStaffPasses || 0,
-                    totalConfirmedPasses: invitationStats.totalConfirmedPasses || 0
+                    totalConfirmedPasses: totalConfirmedPasses
                 },
                 rates: {
                     confirmationRate,

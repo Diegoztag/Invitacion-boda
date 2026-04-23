@@ -1,1 +1,1 @@
-fix(frontend): manejar errores 401 y redirigir a login en dashboard
+refactor(backend): mover logica de negocio de SqliteInvitationRepository a GetInvitationStatsUseCase  

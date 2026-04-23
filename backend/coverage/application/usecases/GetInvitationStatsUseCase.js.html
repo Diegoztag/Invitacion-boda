@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">84.21% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/14</span>
+                <span class='fraction'>16/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">67.39% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>16/24</span>
+                <span class='fraction'>31/46</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">84.21% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/14</span>
+                <span class='fraction'>16/19</span>
             </div>
         
             
@@ -170,7 +170,25 @@
 <a name='L105'></a><a href='#L105'>105</a>
 <a name='L106'></a><a href='#L106'>106</a>
 <a name='L107'></a><a href='#L107'>107</a>
-<a name='L108'></a><a href='#L108'>108</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,6 +212,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -203,10 +243,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,6 +331,28 @@ class GetInvitationStatsUseCase {
             // Obtener estadísticas unificadas desde invitaciones
             const invitationStats = await this.invitationRepository.getStats();
 &nbsp;
+            // Calcular campos derivados
+            const totalActivePasses = 
+                (invitationStats.activeAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span> + 
+                (invitationStats.activeChildPasses || 0) + 
+                (invitationStats.activeStaffPasses || 0);
+                
+            const totalLiberatedPasses = (invitationStats.totalIssuedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span> - (invitationStats.confirmedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>;
+            const pendingPasses = (invitationStats.totalIssuedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span> - (invitationStats.confirmedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>;
+            const totalConfirmedPasses = invitationStats.confirmedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
+&nbsp;
+            const distributionPercentages = {
+                adults: totalActivePasses &gt; 0
+                    ? (((invitationStats.activeAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0)</span> / totalActivePasses) * 100).toFixed(2)
+                    : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+                children: totalActivePasses &gt; 0
+                    ? (((invitationStats.activeChildPasses || 0) / totalActivePasses) * 100).toFixed(2)
+                    : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+                staff: totalActivePasses &gt; 0
+                    ? (((invitationStats.activeStaffPasses || 0) / totalActivePasses) * 100).toFixed(2)
+                    : <span class="branch-1 cbranch-no" title="branch not covered" >0</span>
+            };
+&nbsp;
             // Calcular tasas de confirmación y asistencia
             const confirmationRate =
                 invitationStats.active &gt; 0
@@ -320,14 +378,14 @@ class GetInvitationStatsUseCase {
                     inactive: invitationStats.inactive,
                     totalPasses: invitationStats.totalIssuedPasses,
                     occupiedPasses: invitationStats.occupiedPasses,
-                    cancelledPasses: invitationStats.totalLiberatedPasses
+                    cancelledPasses: totalLiberatedPasses
                 },
                 confirmations: {
                     total: invitationStats.confirmed,
                     positive: invitationStats.confirmed,
                     negative: invitationStats.cancelled,
                     totalConfirmedGuests: invitationStats.confirmedPasses,
-                    pendingPasses: invitationStats.pendingPasses,
+                    pendingPasses: pendingPasses,
                     averageGuestsPerConfirmation:
                         invitationStats.confirmed &gt; 0
                             ? (invitationStats.confirmedPasses / invitationStats.confirmed).toFixed(
@@ -340,20 +398,16 @@ class GetInvitationStatsUseCase {
                     activeAdultPasses: invitationStats.activeAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
                     activeChildPasses: invitationStats.activeChildPasses || 0,
                     activeStaffPasses: invitationStats.activeStaffPasses || 0,
-                    totalActivePasses: invitationStats.totalActivePasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+                    totalActivePasses: totalActivePasses,
 &nbsp;
                     // Porcentajes de distribución
-                    distributionPercentages: invitationStats.distributionPercentages || <span class="branch-1 cbranch-no" title="branch not covered" >{</span>
-                        adults: 0,
-                        children: 0,
-                        staff: 0
-                    },
+                    distributionPercentages: distributionPercentages,
 &nbsp;
                     // Desglose de pases confirmados
                     confirmedAdultPasses: invitationStats.confirmedAdultPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
                     confirmedChildPasses: invitationStats.confirmedChildPasses || 0,
                     confirmedStaffPasses: invitationStats.confirmedStaffPasses || 0,
-                    totalConfirmedPasses: invitationStats.totalConfirmedPasses || <span class="branch-1 cbranch-no" title="branch not covered" >0</span>
+                    totalConfirmedPasses: totalConfirmedPasses
                 },
                 rates: {
                     confirmationRate,
@@ -391,7 +445,7 @@ module.exports = GetInvitationStatsUseCase;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-22T16:55:42.847Z
+                at 2026-04-23T16:35:20.818Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

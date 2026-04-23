@@ -170,22 +170,13 @@ describe('SqliteInvitationRepository', () => {
                 cancelled: 2,
                 totalIssuedPasses: 20,
                 occupiedPasses: 15,
-                totalLiberatedPasses: 5,
                 confirmedPasses: 15,
-                pendingPasses: 5,
                 activeAdultPasses: 10,
                 activeChildPasses: 5,
                 activeStaffPasses: 2,
-                totalActivePasses: 17,
                 confirmedAdultPasses: 8,
                 confirmedChildPasses: 4,
-                confirmedStaffPasses: 1,
-                totalConfirmedPasses: 15,
-                distributionPercentages: {
-                    adults: '58.82',
-                    children: '29.41',
-                    staff: '11.76'
-                }
+                confirmedStaffPasses: 1
             });
         });
     });

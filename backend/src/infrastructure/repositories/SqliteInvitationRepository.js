@@ -264,11 +264,6 @@ class SqliteInvitationRepository extends IInvitationRepository {
             'SELECT SUM(staffPasses) as sum FROM invitations WHERE status IN ("confirmed", "partial")'
         );
 
-        const totalActivePasses =
-            (activeAdultPasses.sum || 0) +
-            (activeChildPasses.sum || 0) +
-            (activeStaffPasses.sum || 0);
-
         return {
             total: totalInvitations.count || 0,
             active: activeInvitations.count || 0,
@@ -280,34 +275,15 @@ class SqliteInvitationRepository extends IInvitationRepository {
 
             totalIssuedPasses: totalPasses.sum || 0,
             occupiedPasses: confirmedPasses.sum || 0,
-            totalLiberatedPasses: (totalPasses.sum || 0) - (confirmedPasses.sum || 0),
             confirmedPasses: confirmedPasses.sum || 0,
-            pendingPasses: (totalPasses.sum || 0) - (confirmedPasses.sum || 0),
 
             activeAdultPasses: activeAdultPasses.sum || 0,
             activeChildPasses: activeChildPasses.sum || 0,
             activeStaffPasses: activeStaffPasses.sum || 0,
-            totalActivePasses: totalActivePasses,
 
             confirmedAdultPasses: confirmedAdultPasses.sum || 0,
             confirmedChildPasses: confirmedChildPasses.sum || 0,
-            confirmedStaffPasses: confirmedStaffPasses.sum || 0,
-            totalConfirmedPasses: confirmedPasses.sum || 0,
-
-            distributionPercentages: {
-                adults:
-                    totalActivePasses > 0
-                        ? (((activeAdultPasses.sum || 0) / totalActivePasses) * 100).toFixed(2)
-                        : 0,
-                children:
-                    totalActivePasses > 0
-                        ? (((activeChildPasses.sum || 0) / totalActivePasses) * 100).toFixed(2)
-                        : 0,
-                staff:
-                    totalActivePasses > 0
-                        ? (((activeStaffPasses.sum || 0) / totalActivePasses) * 100).toFixed(2)
-                        : 0
-            }
+            confirmedStaffPasses: confirmedStaffPasses.sum || 0
         };
     }
 
