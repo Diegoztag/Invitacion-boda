@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">84.61% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>11/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>5/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">84.61% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>11/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -109,28 +109,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
@@ -143,29 +143,29 @@
  * @param {Array&lt;Object&gt;} data - Los datos a convertir.
  * @returns {string} La cadena de texto en formato CSV.
  */
-function <span class="fstat-no" title="function not covered" >convertToCSV(</span>data) {
-<span class="cstat-no" title="statement not covered" >    if (!data || data.length === 0) {</span>
+function convertToCSV(data) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!data || data.length === 0) {
 <span class="cstat-no" title="statement not covered" >        return '';</span>
     }
 &nbsp;
-    const headers = <span class="cstat-no" title="statement not covered" >Object.keys(data[0]);</span>
-    const csvRows = <span class="cstat-no" title="statement not covered" >[headers.join(',')];</span>
+    const headers = Object.keys(data[0]);
+    const csvRows = [headers.join(',')];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    for (const row of data) {</span>
-        const values = <span class="cstat-no" title="statement not covered" >headers.map(<span class="fstat-no" title="function not covered" >he</span>ader =&gt; {</span>
-            const value = <span class="cstat-no" title="statement not covered" >row[header];</span>
-<span class="cstat-no" title="statement not covered" >            if (Array.isArray(value)) {</span>
+    for (const row of data) {
+        const values = headers.map(header =&gt; {
+            const value = row[header];
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (Array.isArray(value)) {
 <span class="cstat-no" title="statement not covered" >                return `"${value.join('|')}"`;</span>
             }
-<span class="cstat-no" title="statement not covered" >            return `"${value || ''}"`;</span>
+            return `"${value || <span class="branch-1 cbranch-no" title="branch not covered" >''}</span>"`;
         });
-<span class="cstat-no" title="statement not covered" >        csvRows.push(values.join(','));</span>
+        csvRows.push(values.join(','));
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return csvRows.join('\n');</span>
+    return csvRows.join('\n');
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >module.exports = {</span>
+module.exports = {
     convertToCSV
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -175,7 +175,7 @@ function <span class="fstat-no" title="function not covered" >convertToCSV(</spa
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-23T16:03:00.509Z
+                at 2026-04-23T20:00:09.884Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -147,6 +147,7 @@ describe('SqliteInvitationRepository', () => {
                 .mockResolvedValueOnce({ count: 2 }) // inactiveInvitations
                 .mockResolvedValueOnce({ sum: 20 }) // totalPasses
                 .mockResolvedValueOnce({ sum: 15 }) // confirmedPasses
+                .mockResolvedValueOnce({ sum: 18 }) // occupiedPasses
                 .mockResolvedValueOnce({ count: 3 }) // confirmedInvitations
                 .mockResolvedValueOnce({ count: 1 }) // partialInvitations
                 .mockResolvedValueOnce({ count: 4 }) // pendingInvitations
@@ -169,7 +170,7 @@ describe('SqliteInvitationRepository', () => {
                 pending: 4,
                 cancelled: 2,
                 totalIssuedPasses: 20,
-                occupiedPasses: 15,
+                occupiedPasses: 18,
                 confirmedPasses: 15,
                 activeAdultPasses: 10,
                 activeChildPasses: 5,

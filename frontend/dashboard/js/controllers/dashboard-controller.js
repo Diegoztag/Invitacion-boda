@@ -11,6 +11,7 @@ import {
     renderTableRow
 } from '../dashboard-utils.js';
 import { showToast } from '../components/dashboard-modal.js';
+import { notificationService } from '../services/notification-service.js';
 
 export class DashboardController {
     constructor() {
@@ -392,9 +393,14 @@ export class DashboardController {
     async loadRecentConfirmations() {
         try {
             // Usar 0 días para obtener las últimas confirmaciones absolutas, sin importar la fecha
-            const result = await adminAPI.fetchRecentConfirmations(0, 5);
+            // Aumentamos el límite a 20 para tener historial en el panel de notificaciones
+            const result = await adminAPI.fetchRecentConfirmations(0, 20);
             if (APIHelpers.isSuccess(result)) {
-                this.displayRecentConfirmations(result.confirmations);
+                // Mostrar solo las primeras 5 en la tabla del dashboard
+                this.displayRecentConfirmations(result.confirmations.slice(0, 5));
+
+                // Cargar todas las obtenidas en el panel de notificaciones
+                notificationService.loadInitialNotifications(result.confirmations);
             } else {
                 throw new Error(APIHelpers.getErrorMessage(result));
             }

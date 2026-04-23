@@ -8,6 +8,7 @@ import { EVENTS } from '../../shared/constants/events.js';
 import { ComponentFactory } from '../components/component-factory.js';
 import { ControllerFactory } from './controller-factory.js';
 import { CookieConsent } from '../components/ui/cookie-consent.js';
+import { errorHandler } from '../../shared/utils/error-handler.js';
 
 export class AppController {
     constructor(container, options = {}) {
@@ -461,17 +462,10 @@ export class AppController {
      * Configura manejo de errores
      */
     _setupErrorHandling() {
-        // Configurar manejo de errores personalizado
-        window.addEventListener('error', event => {
-            this.logError('JavaScript Error', event.error, {
-                filename: event.filename,
-                lineno: event.lineno,
-                colno: event.colno
-            });
-        });
-
-        window.addEventListener('unhandledrejection', event => {
-            this.logError('Unhandled Promise Rejection', event.reason);
+        // El manejo de errores global ya está configurado en errorHandler.js
+        // Solo necesitamos escuchar los eventos de error de la aplicación
+        this.on(EVENTS.APP.ERROR, data => {
+            errorHandler.handle(data.error, data.phase || 'App');
         });
     }
 
@@ -508,9 +502,8 @@ export class AppController {
      * @param {Event} event - Evento de error
      */
     handleGlobalError(error, event) {
-        this.logError('Global Error', error, {
-            event
-        });
+        // Delegar al manejador de errores centralizado
+        errorHandler.handle(error, 'Global');
 
         // Emitir evento de error
         this.emit(EVENTS.APP.ERROR, {
@@ -526,8 +519,8 @@ export class AppController {
      * @param {Object} context - Contexto adicional
      */
     logError(type, error, context = {}) {
-        // Implementar lógica de logging si es necesario
-        console.error(type, error, context);
+        // Delegar al manejador de errores centralizado
+        errorHandler.handle(error, type);
     }
 
     /**

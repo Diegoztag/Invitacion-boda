@@ -1,1 +1,0 @@
-refactor(backend): mover logica de negocio de SqliteInvitationRepository a GetInvitationStatsUseCase  

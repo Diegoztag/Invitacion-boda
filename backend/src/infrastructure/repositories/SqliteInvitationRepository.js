@@ -231,6 +231,16 @@ class SqliteInvitationRepository extends IInvitationRepository {
             'SELECT SUM(confirmedPasses) as sum FROM invitations WHERE status != "inactive"'
         );
 
+        const occupiedPasses = await db.get(
+            `SELECT SUM(
+                CASE 
+                    WHEN status IN ('confirmed', 'partial') THEN confirmedPasses 
+                    WHEN status IN ('pending', 'active', '') OR status IS NULL THEN numberOfPasses 
+                    ELSE 0 
+                END
+            ) as sum FROM invitations WHERE status != 'inactive'`
+        );
+
         const confirmedInvitations = await db.get(
             'SELECT COUNT(*) as count FROM invitations WHERE status = "confirmed"'
         );
@@ -238,7 +248,7 @@ class SqliteInvitationRepository extends IInvitationRepository {
             'SELECT COUNT(*) as count FROM invitations WHERE status = "partial"'
         );
         const pendingInvitations = await db.get(
-            'SELECT COUNT(*) as count FROM invitations WHERE status = "pending"'
+            'SELECT COUNT(*) as count FROM invitations WHERE status IN ("pending", "active", "") OR status IS NULL'
         );
         const cancelledInvitations = await db.get(
             'SELECT COUNT(*) as count FROM invitations WHERE status = "cancelled"'
@@ -274,7 +284,7 @@ class SqliteInvitationRepository extends IInvitationRepository {
             cancelled: cancelledInvitations.count || 0,
 
             totalIssuedPasses: totalPasses.sum || 0,
-            occupiedPasses: confirmedPasses.sum || 0,
+            occupiedPasses: occupiedPasses.sum || 0,
             confirmedPasses: confirmedPasses.sum || 0,
 
             activeAdultPasses: activeAdultPasses.sum || 0,

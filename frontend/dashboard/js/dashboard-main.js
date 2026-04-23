@@ -9,6 +9,7 @@ import { NavigationController } from './controllers/navigation-controller.js';
 import { ConfigurationController } from './controllers/configuration-controller.js';
 import { showToast } from './components/dashboard-modal.js';
 import { RenderService } from './services/render-service.js';
+import { notificationService } from './services/notification-service.js';
 
 class AdminApp {
     constructor() {
@@ -29,6 +30,9 @@ class AdminApp {
             await this.initializeControllers();
             this.setupGlobalEventListeners();
             this.setupErrorHandling();
+
+            // Iniciar monitoreo de notificaciones
+            notificationService.startMonitoring();
 
             this.isInitialized = true;
         } catch (error) {

@@ -1,4 +1,0 @@
-code,guestNames,numberOfPasses,phone,createdAt,confirmedPasses,confirmationDate,adultPasses,childPasses,staffPasses,tableNumber,status,cancelledAt,cancelledBy,cancellationReason,attendingNames,dietaryRestrictionsNames,dietaryRestrictionsDetails,generalMessage
-0KWUAO,Juan Pérez|María García,2,+1234567890,2024-01-01T01:00:00.000Z,2,2024-01-01T01:30:00.000Z,2,0,0,0,confirmed,,,,Juan Pérez|María García,Sin restricciones,Sin restricciones,¡Felicidades! Estamos muy emocionados.
-SSVSIG,Pedro López,1,+0987654321,2024-01-01T02:30:00.000Z,0,2024-01-01T02:45:00.000Z,1,0,0,0,cancelled,,,,,,,"Lo sentimos, no podremos asistir"
-QDWMX9,Ana Rodríguez,1,,2024-01-01T03:00:00.000Z,0,,1,0,0,0,active,,,,,,,
