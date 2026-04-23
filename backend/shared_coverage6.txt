@@ -1,0 +1,204 @@
+
+> wedding-invitation-backend@2.0.0 test:unit
+> jest --config jest.config.unit.js src/tests/unit/shared/utils
+
+PASS unit src/tests/unit/shared/utils/DIContainer.test.js (22.197 s)
+  DIContainer
+    register
+      √ should register a dependency successfully (372 ms)
+      √ should throw an error if name is not a string (440 ms)
+      √ should throw an error if factory is not a function (23 ms)
+    resolve
+      √ should resolve a registered dependency (9 ms)
+      √ should throw an error if dependency is not found (17 ms)
+      √ should create a new instance each time if not singleton (4 ms)
+      √ should return the same instance if singleton (24 ms)
+    remove
+      √ should remove a registered dependency (12 ms)
+      √ should remove singleton instance when removing dependency (22 ms)
+    clear
+      √ should remove all dependencies (3 ms)
+    getRegisteredDependencies
+      √ should return an array of registered dependency names (6 ms)
+    getDependencyInfo
+      √ should return info for a registered dependency (4 ms)
+      √ should return isInstantiated true after resolving a singleton (2 ms)
+      √ should return null for non-existent dependency (9 ms)
+
+PASS unit src/tests/unit/shared/utils/QueryBuilder.test.js (22.31 s)
+  QueryBuilder
+    buildFromRequest
+      √ should build query with default values (464 ms)
+      √ should use config default limit if provided (8 ms)
+      √ should parse pagination and sorting parameters (14 ms)
+      √ should handle invalid pagination parameters gracefully (8 ms)
+      √ should parse filters correctly (16 ms)
+    _parseFilters
+      √ should ignore empty, null, or undefined values (8 ms)
+      √ should convert boolean strings to booleans (2 ms)
+      √ should convert numeric strings to numbers except for specific fields (30 ms)
+      √ should keep regular strings as strings (11 ms)
+
+PASS unit src/tests/unit/shared/utils/ValidationService.test.js (23.576 s)
+  ValidationService
+    validateEmail
+      √ should return true for valid emails (183 ms)
+      √ should return false for invalid emails (14 ms)
+    validatePhone
+      √ should return true for valid strict phones (11 ms)
+      √ should return false for invalid strict phones (6 ms)
+    validatePhoneLoose
+      √ should return true for valid loose phones (4 ms)
+      √ should return false for invalid loose phones (8 ms)
+    validateName
+      √ should return true for valid names (14 ms)
+      √ should return false for invalid names (7 ms)
+    validateInvitationCode
+      √ should return true for valid codes (9 ms)
+      √ should return false for invalid codes (18 ms)
+    validateNumberRange
+      √ should return true if number is in range (7 ms)
+      √ should return false if number is out of range or invalid (14 ms)
+    validateStringLength
+      √ should return true if string length is in range (2 ms)
+      √ should return false if string length is out of range or invalid (5 ms)
+    sanitizeString
+      √ should remove dangerous characters (8 ms)
+      √ should handle invalid inputs (16 ms)
+    sanitizePhone
+      √ should keep only valid phone characters (3 ms)
+      √ should handle invalid inputs (11 ms)
+    sanitizeEmail
+      √ should keep only valid email characters and lowercase (9 ms)
+      √ should handle invalid inputs (9 ms)
+    validateObject
+      √ should validate and sanitize a valid object (37 ms)
+      √ should return errors for invalid object (10 ms)
+      √ should handle default values (10 ms)
+    validateInvitationData
+      √ should validate valid invitation data (7 ms)
+      √ should reject invalid invitation data (4 ms)
+    validateConfirmationData
+      √ should validate valid confirmation data (2 ms)
+      √ should reject invalid confirmation data (3 ms)
+    generateInvitationCode
+      √ should generate a code of correct length (2 ms)
+
+PASS unit src/tests/unit/shared/utils/Logger.test.js (25.961 s)
+  Logger
+    constructor
+      √ should initialize with default options (89 ms)
+      √ should initialize with custom options (254 ms)
+    logging methods
+      √ should log error (15 ms)
+      √ should log error with Error object (130 ms)
+      √ should log warn (6 ms)
+      √ should log info (4 ms)
+      √ should log debug (5 ms)
+      √ should log trace (silly) (7 ms)
+    specialized logging methods
+      √ should start and complete operation (12 ms)
+      √ should log HTTP request (5 ms)
+      √ should log HTTP request as warn if status >= 400 (3 ms)
+      √ should log database error (8 ms)
+      √ should log validation error (5 ms)
+      √ should log security event (8 ms)
+      √ should log metric (13 ms)
+    utility methods
+      √ should create a child logger (5 ms)
+      √ should set level (5 ms)
+      √ should check if level is enabled (9 ms)
+    cleanOldLogs
+      √ should do nothing if file logging is disabled (4 ms)
+      √ should delete old log files (23 ms)
+      √ should handle errors during cleanup (20 ms)
+
+--------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------
+File                                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                              
+--------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------
+All files                             |    6.79 |    10.68 |    7.26 |    6.91 |                                                                                
+ application/dto                      |       0 |        0 |       0 |       0 |                                                                                
+  ConfirmationDTO.js                  |       0 |        0 |       0 |       0 | 21-67                                                                          
+  InvitationDTO.js                    |       0 |        0 |       0 |       0 | 30-87                                                                          
+ application/usecases                 |       0 |        0 |       0 |       0 |                                                                                
+  CancelConfirmationUseCase.js        |       0 |        0 |       0 |       0 | 7-66                                                                           
+  CreateConfirmationUseCase.js        |       0 |        0 |       0 |       0 | 7-379                                                                          
+  CreateInvitationUseCase.js          |       0 |        0 |       0 |       0 | 7-419                                                                          
+  DeleteInvitationUseCase.js          |       0 |        0 |       0 |       0 | 1-60                                                                           
+  ExportConfirmationsUseCase.js       |       0 |        0 |       0 |       0 | 8-52                                                                           
+  ExportInvitationsUseCase.js         |       0 |        0 |       0 |       0 | 8-47                                                                           
+  GetConfirmationStatsUseCase.js      |       0 |        0 |       0 |       0 | 8-363                                                                          
+  GetConfirmationUseCase.js           |       0 |        0 |       0 |       0 | 7-53                                                                           
+  GetConfirmationsUseCase.js          |       0 |        0 |       0 |       0 | 7-87                                                                           
+  GetInvitationStatsUseCase.js        |       0 |        0 |       0 |       0 | 8-107                                                                          
+  GetInvitationUseCase.js             |       0 |        0 |       0 |       0 | 1-89                                                                           
+  GetInvitationsUseCase.js            |       0 |        0 |       0 |       0 | 7-71                                                                           
+  RestoreInvitationUseCase.js         |       0 |        0 |       0 |       0 | 1-74                                                                           
+  SearchConfirmationsByNameUseCase.js |       0 |        0 |       0 |       0 | 7-54                                                                           
+  SearchInvitationsByNameUseCase.js   |       0 |        0 |       0 |       0 | 7-52                                                                           
+  UpdateConfirmationUseCase.js        |       0 |        0 |       0 |       0 | 13-162                                                                         
+  UpdateInvitationUseCase.js          |       0 |        0 |       0 |       0 | 1-77                                                                           
+ core/entities                        |       0 |        0 |       0 |       0 |                                                                                
+  Confirmation.js                     |       0 |        0 |       0 |       0 | 7-399                                                                          
+  Invitation.js                       |       0 |        0 |       0 |       0 | 7-686                                                                          
+ core/repositories                    |       0 |        0 |       0 |       0 |                                                                                
+  IConfirmationRepository.js          |       0 |        0 |       0 |       0 | 17-203                                                                         
+  IInvitationRepository.js            |       0 |        0 |       0 |       0 | 17-168                                                                         
+ infrastructure/database              |       0 |        0 |       0 |       0 |                                                                                
+  init-db.js                          |       0 |        0 |       0 |       0 | 1-83                                                                           
+  migrate-csv-to-sqlite.js            |       0 |        0 |       0 |       0 | 1-148                                                                          
+  sqlite-connection.js                |       0 |        0 |       0 |       0 | 1-41                                                                           
+ infrastructure/repositories          |       0 |        0 |       0 |       0 |                                                                                
+  CsvConfirmationRepository.js        |       0 |        0 |       0 |       0 | 7-702                                                                          
+  CsvInvitationRepository.js          |       0 |        0 |       0 |       0 | 7-1113                                                                         
+  SqliteConfirmationRepository.js     |       0 |        0 |       0 |       0 | 1-290                                                                          
+  SqliteInvitationRepository.js       |       0 |        0 |       0 |       0 | 1-484                                                                          
+  SqliteSettingsRepository.js         |       0 |        0 |       0 |       0 | 1-65                                                                           
+ infrastructure/services              |       0 |        0 |       0 |       0 |                                                                                
+  CacheService.js                     |       0 |        0 |       0 |       0 | 1-92                                                                           
+  CsvStorage.js                       |       0 |        0 |       0 |       0 | 6-314                                                                          
+  SseService.js                       |       0 |      100 |       0 |       0 | 7-74                                                                           
+ infrastructure/storage               |       0 |        0 |       0 |       0 |                                                                                
+  backup.js                           |       0 |        0 |       0 |       0 | 6-126                                                                          
+ presentation/controllers             |       0 |        0 |       0 |       0 |                                                                                
+  BaseController.js                   |       0 |        0 |       0 |       0 | 6-84                                                                           
+  ConfirmationController.js           |       0 |        0 |       0 |       0 | 7-414                                                                          
+  InvitationController.js             |       0 |        0 |       0 |       0 | 7-329                                                                          
+  NotificationController.js           |       0 |      100 |       0 |       0 | 7-26                                                                           
+  SettingsController.js               |       0 |        0 |       0 |       0 | 3-49                                                                           
+ presentation/middleware              |       0 |        0 |       0 |       0 |                                                                                
+  authMiddleware.js                   |       0 |        0 |       0 |       0 | 7-400                                                                          
+  csrf.js                             |       0 |        0 |       0 |       0 | 1-21                                                                           
+  errorHandler.js                     |       0 |        0 |       0 |       0 | 4-45                                                                           
+  fileUploadValidator.js              |       0 |        0 |       0 |       0 | 7-47                                                                           
+  index.js                            |       0 |      100 |       0 |       0 | 7-62                                                                           
+  rateLimiter.js                      |       0 |      100 |     100 |       0 | 1-10                                                                           
+  securityMiddleware.js               |       0 |        0 |       0 |       0 | 7-541                                                                          
+ presentation/routes                  |       0 |        0 |       0 |       0 |                                                                                
+  authRoutes.js                       |       0 |      100 |       0 |       0 | 6-61                                                                           
+  confirmationRoutes.js               |       0 |      100 |       0 |       0 | 7-135                                                                          
+  index.js                            |       0 |        0 |       0 |       0 | 7-103                                                                          
+  invitationRoutes.js                 |       0 |      100 |       0 |       0 | 7-208                                                                          
+  notificationRoutes.js               |       0 |      100 |       0 |       0 | 1-19                                                                           
+  settingsRoutes.js                   |       0 |      100 |       0 |       0 | 1-13                                                                           
+ shared/container                     |       0 |        0 |       0 |       0 |                                                                                
+  DIContainer.js                      |       0 |        0 |       0 |       0 | 9-220                                                                          
+ shared/exceptions                    |       0 |        0 |       0 |       0 |                                                                                
+  BaseException.js                    |       0 |      100 |       0 |       0 | 7-15                                                                           
+  BusinessRuleException.js            |       0 |        0 |       0 |       0 | 1-13                                                                           
+  NotFoundException.js                |       0 |        0 |       0 |       0 | 1-14                                                                           
+  ValidationException.js              |       0 |        0 |       0 |       0 | 1-13                                                                           
+ shared/utils                         |   85.54 |    80.63 |      94 |   85.42 |                                                                                
+  DIContainer.js                      |     100 |      100 |     100 |     100 |                                                                                
+  Logger.js                           |   95.31 |     54.9 |      95 |   95.31 | 24-40                                                                          
+  QueryBuilder.js                     |     100 |      100 |     100 |     100 |                                                                                
+  ValidationService.js                |   84.12 |    89.74 |     100 |   83.87 | 61,201-202,208-209,213-214,227-228,242-243,256-257,263-264,273-274,281,292-295 
+  csv-formatter.js                    |       0 |        0 |       0 |       0 | 12-33                                                                          
+--------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------
+Jest: Coverage data for src/core/entities/ was not found.
+Jest: Coverage data for src/application/usecases/ was not found.
+Test Suites: 4 passed, 4 total
+Tests:       72 passed, 72 total
+Snapshots:   0 total
+Time:        70.915 s
+Ran all test suites matching /src\\tests\\unit\\shared\\utils/i.

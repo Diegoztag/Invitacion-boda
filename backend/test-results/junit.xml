@@ -1,29 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="12" failures="0" errors="0" time="6.85">
-  <testsuite name="CacheService" errors="0" failures="0" skipped="0" timestamp="2026-04-22T19:11:11" time="5.943" tests="12">
-    <testcase classname="CacheService constructor should initialize NodeCache with default TTL" name="CacheService constructor should initialize NodeCache with default TTL" time="0.037">
+<testsuites name="jest tests" tests="72" failures="0" errors="0" time="35.538">
+  <testsuite name="DIContainer" errors="0" failures="0" skipped="0" timestamp="2026-04-23T16:01:59" time="22.197" tests="14">
+    <testcase classname="DIContainer register should register a dependency successfully" name="DIContainer register should register a dependency successfully" time="0.372">
     </testcase>
-    <testcase classname="CacheService constructor should initialize NodeCache with custom TTL" name="CacheService constructor should initialize NodeCache with custom TTL" time="0.079">
+    <testcase classname="DIContainer register should throw an error if name is not a string" name="DIContainer register should throw an error if name is not a string" time="0.44">
     </testcase>
-    <testcase classname="CacheService get should return value and log hit if key exists" name="CacheService get should return value and log hit if key exists" time="0.041">
+    <testcase classname="DIContainer register should throw an error if factory is not a function" name="DIContainer register should throw an error if factory is not a function" time="0.023">
     </testcase>
-    <testcase classname="CacheService get should return undefined and log miss if key does not exist" name="CacheService get should return undefined and log miss if key does not exist" time="0.009">
+    <testcase classname="DIContainer resolve should resolve a registered dependency" name="DIContainer resolve should resolve a registered dependency" time="0.009">
     </testcase>
-    <testcase classname="CacheService set should set value without TTL" name="CacheService set should set value without TTL" time="0.037">
+    <testcase classname="DIContainer resolve should throw an error if dependency is not found" name="DIContainer resolve should throw an error if dependency is not found" time="0.017">
     </testcase>
-    <testcase classname="CacheService set should set value with TTL" name="CacheService set should set value with TTL" time="0.008">
+    <testcase classname="DIContainer resolve should create a new instance each time if not singleton" name="DIContainer resolve should create a new instance each time if not singleton" time="0.004">
     </testcase>
-    <testcase classname="CacheService del should delete key" name="CacheService del should delete key" time="0.01">
+    <testcase classname="DIContainer resolve should return the same instance if singleton" name="DIContainer resolve should return the same instance if singleton" time="0.024">
     </testcase>
-    <testcase classname="CacheService del should delete multiple keys" name="CacheService del should delete multiple keys" time="0.007">
+    <testcase classname="DIContainer remove should remove a registered dependency" name="DIContainer remove should remove a registered dependency" time="0.012">
     </testcase>
-    <testcase classname="CacheService deletePattern should delete keys matching pattern" name="CacheService deletePattern should delete keys matching pattern" time="0.011">
+    <testcase classname="DIContainer remove should remove singleton instance when removing dependency" name="DIContainer remove should remove singleton instance when removing dependency" time="0.022">
     </testcase>
-    <testcase classname="CacheService deletePattern should return 0 if no keys match pattern" name="CacheService deletePattern should return 0 if no keys match pattern" time="0.004">
+    <testcase classname="DIContainer clear should remove all dependencies" name="DIContainer clear should remove all dependencies" time="0.003">
     </testcase>
-    <testcase classname="CacheService flush should flush all cache" name="CacheService flush should flush all cache" time="0.008">
+    <testcase classname="DIContainer getRegisteredDependencies should return an array of registered dependency names" name="DIContainer getRegisteredDependencies should return an array of registered dependency names" time="0.006">
     </testcase>
-    <testcase classname="CacheService getStats should return cache stats" name="CacheService getStats should return cache stats" time="0.01">
+    <testcase classname="DIContainer getDependencyInfo should return info for a registered dependency" name="DIContainer getDependencyInfo should return info for a registered dependency" time="0.004">
+    </testcase>
+    <testcase classname="DIContainer getDependencyInfo should return isInstantiated true after resolving a singleton" name="DIContainer getDependencyInfo should return isInstantiated true after resolving a singleton" time="0.002">
+    </testcase>
+    <testcase classname="DIContainer getDependencyInfo should return null for non-existent dependency" name="DIContainer getDependencyInfo should return null for non-existent dependency" time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="QueryBuilder" errors="0" failures="0" skipped="0" timestamp="2026-04-23T16:02:00" time="22.31" tests="9">
+    <testcase classname="QueryBuilder buildFromRequest should build query with default values" name="QueryBuilder buildFromRequest should build query with default values" time="0.464">
+    </testcase>
+    <testcase classname="QueryBuilder buildFromRequest should use config default limit if provided" name="QueryBuilder buildFromRequest should use config default limit if provided" time="0.008">
+    </testcase>
+    <testcase classname="QueryBuilder buildFromRequest should parse pagination and sorting parameters" name="QueryBuilder buildFromRequest should parse pagination and sorting parameters" time="0.014">
+    </testcase>
+    <testcase classname="QueryBuilder buildFromRequest should handle invalid pagination parameters gracefully" name="QueryBuilder buildFromRequest should handle invalid pagination parameters gracefully" time="0.008">
+    </testcase>
+    <testcase classname="QueryBuilder buildFromRequest should parse filters correctly" name="QueryBuilder buildFromRequest should parse filters correctly" time="0.016">
+    </testcase>
+    <testcase classname="QueryBuilder _parseFilters should ignore empty, null, or undefined values" name="QueryBuilder _parseFilters should ignore empty, null, or undefined values" time="0.008">
+    </testcase>
+    <testcase classname="QueryBuilder _parseFilters should convert boolean strings to booleans" name="QueryBuilder _parseFilters should convert boolean strings to booleans" time="0.002">
+    </testcase>
+    <testcase classname="QueryBuilder _parseFilters should convert numeric strings to numbers except for specific fields" name="QueryBuilder _parseFilters should convert numeric strings to numbers except for specific fields" time="0.03">
+    </testcase>
+    <testcase classname="QueryBuilder _parseFilters should keep regular strings as strings" name="QueryBuilder _parseFilters should keep regular strings as strings" time="0.011">
+    </testcase>
+  </testsuite>
+  <testsuite name="ValidationService" errors="0" failures="0" skipped="0" timestamp="2026-04-23T16:01:59" time="23.576" tests="28">
+    <testcase classname="ValidationService validateEmail should return true for valid emails" name="ValidationService validateEmail should return true for valid emails" time="0.183">
+    </testcase>
+    <testcase classname="ValidationService validateEmail should return false for invalid emails" name="ValidationService validateEmail should return false for invalid emails" time="0.014">
+    </testcase>
+    <testcase classname="ValidationService validatePhone should return true for valid strict phones" name="ValidationService validatePhone should return true for valid strict phones" time="0.011">
+    </testcase>
+    <testcase classname="ValidationService validatePhone should return false for invalid strict phones" name="ValidationService validatePhone should return false for invalid strict phones" time="0.006">
+    </testcase>
+    <testcase classname="ValidationService validatePhoneLoose should return true for valid loose phones" name="ValidationService validatePhoneLoose should return true for valid loose phones" time="0.004">
+    </testcase>
+    <testcase classname="ValidationService validatePhoneLoose should return false for invalid loose phones" name="ValidationService validatePhoneLoose should return false for invalid loose phones" time="0.008">
+    </testcase>
+    <testcase classname="ValidationService validateName should return true for valid names" name="ValidationService validateName should return true for valid names" time="0.014">
+    </testcase>
+    <testcase classname="ValidationService validateName should return false for invalid names" name="ValidationService validateName should return false for invalid names" time="0.007">
+    </testcase>
+    <testcase classname="ValidationService validateInvitationCode should return true for valid codes" name="ValidationService validateInvitationCode should return true for valid codes" time="0.009">
+    </testcase>
+    <testcase classname="ValidationService validateInvitationCode should return false for invalid codes" name="ValidationService validateInvitationCode should return false for invalid codes" time="0.018">
+    </testcase>
+    <testcase classname="ValidationService validateNumberRange should return true if number is in range" name="ValidationService validateNumberRange should return true if number is in range" time="0.007">
+    </testcase>
+    <testcase classname="ValidationService validateNumberRange should return false if number is out of range or invalid" name="ValidationService validateNumberRange should return false if number is out of range or invalid" time="0.014">
+    </testcase>
+    <testcase classname="ValidationService validateStringLength should return true if string length is in range" name="ValidationService validateStringLength should return true if string length is in range" time="0.002">
+    </testcase>
+    <testcase classname="ValidationService validateStringLength should return false if string length is out of range or invalid" name="ValidationService validateStringLength should return false if string length is out of range or invalid" time="0.005">
+    </testcase>
+    <testcase classname="ValidationService sanitizeString should remove dangerous characters" name="ValidationService sanitizeString should remove dangerous characters" time="0.008">
+    </testcase>
+    <testcase classname="ValidationService sanitizeString should handle invalid inputs" name="ValidationService sanitizeString should handle invalid inputs" time="0.016">
+    </testcase>
+    <testcase classname="ValidationService sanitizePhone should keep only valid phone characters" name="ValidationService sanitizePhone should keep only valid phone characters" time="0.003">
+    </testcase>
+    <testcase classname="ValidationService sanitizePhone should handle invalid inputs" name="ValidationService sanitizePhone should handle invalid inputs" time="0.011">
+    </testcase>
+    <testcase classname="ValidationService sanitizeEmail should keep only valid email characters and lowercase" name="ValidationService sanitizeEmail should keep only valid email characters and lowercase" time="0.009">
+    </testcase>
+    <testcase classname="ValidationService sanitizeEmail should handle invalid inputs" name="ValidationService sanitizeEmail should handle invalid inputs" time="0.009">
+    </testcase>
+    <testcase classname="ValidationService validateObject should validate and sanitize a valid object" name="ValidationService validateObject should validate and sanitize a valid object" time="0.037">
+    </testcase>
+    <testcase classname="ValidationService validateObject should return errors for invalid object" name="ValidationService validateObject should return errors for invalid object" time="0.01">
+    </testcase>
+    <testcase classname="ValidationService validateObject should handle default values" name="ValidationService validateObject should handle default values" time="0.01">
+    </testcase>
+    <testcase classname="ValidationService validateInvitationData should validate valid invitation data" name="ValidationService validateInvitationData should validate valid invitation data" time="0.007">
+    </testcase>
+    <testcase classname="ValidationService validateInvitationData should reject invalid invitation data" name="ValidationService validateInvitationData should reject invalid invitation data" time="0.004">
+    </testcase>
+    <testcase classname="ValidationService validateConfirmationData should validate valid confirmation data" name="ValidationService validateConfirmationData should validate valid confirmation data" time="0.002">
+    </testcase>
+    <testcase classname="ValidationService validateConfirmationData should reject invalid confirmation data" name="ValidationService validateConfirmationData should reject invalid confirmation data" time="0.003">
+    </testcase>
+    <testcase classname="ValidationService generateInvitationCode should generate a code of correct length" name="ValidationService generateInvitationCode should generate a code of correct length" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Logger" errors="0" failures="0" skipped="0" timestamp="2026-04-23T16:02:00" time="25.961" tests="21">
+    <testcase classname="Logger constructor should initialize with default options" name="Logger constructor should initialize with default options" time="0.089">
+    </testcase>
+    <testcase classname="Logger constructor should initialize with custom options" name="Logger constructor should initialize with custom options" time="0.254">
+    </testcase>
+    <testcase classname="Logger logging methods should log error" name="Logger logging methods should log error" time="0.015">
+    </testcase>
+    <testcase classname="Logger logging methods should log error with Error object" name="Logger logging methods should log error with Error object" time="0.13">
+    </testcase>
+    <testcase classname="Logger logging methods should log warn" name="Logger logging methods should log warn" time="0.006">
+    </testcase>
+    <testcase classname="Logger logging methods should log info" name="Logger logging methods should log info" time="0.004">
+    </testcase>
+    <testcase classname="Logger logging methods should log debug" name="Logger logging methods should log debug" time="0.005">
+    </testcase>
+    <testcase classname="Logger logging methods should log trace (silly)" name="Logger logging methods should log trace (silly)" time="0.007">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should start and complete operation" name="Logger specialized logging methods should start and complete operation" time="0.012">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log HTTP request" name="Logger specialized logging methods should log HTTP request" time="0.005">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log HTTP request as warn if status &gt;= 400" name="Logger specialized logging methods should log HTTP request as warn if status &gt;= 400" time="0.003">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log database error" name="Logger specialized logging methods should log database error" time="0.008">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log validation error" name="Logger specialized logging methods should log validation error" time="0.005">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log security event" name="Logger specialized logging methods should log security event" time="0.008">
+    </testcase>
+    <testcase classname="Logger specialized logging methods should log metric" name="Logger specialized logging methods should log metric" time="0.013">
+    </testcase>
+    <testcase classname="Logger utility methods should create a child logger" name="Logger utility methods should create a child logger" time="0.005">
+    </testcase>
+    <testcase classname="Logger utility methods should set level" name="Logger utility methods should set level" time="0.005">
+    </testcase>
+    <testcase classname="Logger utility methods should check if level is enabled" name="Logger utility methods should check if level is enabled" time="0.009">
+    </testcase>
+    <testcase classname="Logger cleanOldLogs should do nothing if file logging is disabled" name="Logger cleanOldLogs should do nothing if file logging is disabled" time="0.004">
+    </testcase>
+    <testcase classname="Logger cleanOldLogs should delete old log files" name="Logger cleanOldLogs should delete old log files" time="0.023">
+    </testcase>
+    <testcase classname="Logger cleanOldLogs should handle errors during cleanup" name="Logger cleanOldLogs should handle errors during cleanup" time="0.02">
     </testcase>
   </testsuite>
 </testsuites>
