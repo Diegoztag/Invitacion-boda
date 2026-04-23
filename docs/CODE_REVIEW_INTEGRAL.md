@@ -595,10 +595,10 @@ El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólid
 
 **Nuevo Ciclo de Mejoras (Ciclo 43: Aumento de Cobertura y Refinamiento de Infraestructura):**
 
-1.  ✅ **Aumentar Cobertura de Pruebas en Infraestructura**: Los repositorios (`SqliteConfirmationRepository`, `SqliteInvitationRepository`) y servicios (`CacheService`, `CsvStorage`, `SseService`, `backup.js`) tienen muy baja cobertura. (Servicios y backup completados).
-2.  **Aumentar Cobertura en Utilidades Compartidas**: `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js` necesitan más pruebas.
-3.  **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso.
-4.  **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario.
+1.  ✅ **Aumentar Cobertura de Pruebas en Infraestructura**: Los repositorios (`SqliteConfirmationRepository`, `SqliteInvitationRepository`) y servicios (`CacheService`, `CsvStorage`, `SseService`, `backup.js`) tienen muy baja cobertura. (Completado).
+2.  ✅ **Aumentar Cobertura en Utilidades Compartidas**: `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js` necesitan más pruebas. (Completado).
+3.  ✅ **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso. (Completado).
+4.  ✅ **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario. (Completado).
 
 ---
 

@@ -134,8 +134,8 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 
 - [x] **Aumentar Cobertura de Pruebas en Infraestructura**: Añadir pruebas unitarias para `CacheService`, `CsvStorage`, `SseService` y `backup.js` (Completado: `SqliteConfirmationRepository`, `SqliteInvitationRepository`, `CacheService`, `CsvStorage`, `SseService`, `backup.js`).
 - [x] **Aumentar Cobertura en Utilidades Compartidas**: Añadir pruebas unitarias para `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js`.
-- [ ] **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso.
-- [ ] **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario.
+- [x] **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso.
+- [x] **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario.
 
 ---
 

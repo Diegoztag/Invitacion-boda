@@ -1,9 +1,11 @@
+import { toastService } from '../../presentation/components/ui/toast.js';
+
 /**
  * Manejador de errores centralizado
  * Captura, registra y muestra errores de forma consistente
  */
 export class ErrorHandler {
-    constructor(logger, alertService) {
+    constructor(logger, alertService = toastService) {
         this.logger = logger;
         this.alertService = alertService;
         this.init();

@@ -61,7 +61,7 @@ export class ApiClient {
 
             if (!response.ok) {
                 // Intentar obtener detalles del error del cuerpo de la respuesta
-                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                let errorMessage = `Error del servidor (${response.status})`;
                 try {
                     const errorData = await response.json();
                     if (errorData && errorData.error) {
@@ -71,7 +71,14 @@ export class ApiClient {
                         }
                     }
                 } catch {
-                    // Si no es JSON, usar el texto de estado
+                    // Si no es JSON, usar un mensaje genérico
+                    if (response.status >= 500) {
+                        errorMessage = 'Error interno del servidor. Por favor, intenta más tarde.';
+                    } else if (response.status === 404) {
+                        errorMessage = 'Recurso no encontrado.';
+                    } else if (response.status === 403 || response.status === 401) {
+                        errorMessage = 'No tienes permiso para realizar esta acción.';
+                    }
                 }
                 throw new Error(errorMessage);
             }
@@ -83,7 +90,13 @@ export class ApiClient {
             clearTimeout(timeoutId);
 
             if (error.name === 'AbortError') {
-                throw new Error(`Request timeout after ${this.config.timeout}ms`);
+                throw new Error(
+                    'La petición tardó demasiado tiempo. Por favor, verifica tu conexión e intenta de nuevo.'
+                );
+            }
+
+            if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+                throw new Error('Error de conexión. Por favor, verifica tu conexión a internet.');
             }
 
             throw error;
