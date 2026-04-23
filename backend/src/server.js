@@ -56,7 +56,6 @@ const configureMiddleware = require('./presentation/middleware');
 const errorHandler = require('./presentation/middleware/errorHandler');
 
 // Importar servicios de infraestructura
-const CsvStorage = require('./infrastructure/services/CsvStorage');
 const SseService = require('./infrastructure/services/SseService');
 const CacheService = require('./infrastructure/services/CacheService');
 const BackupService = require('./infrastructure/storage/backup');
@@ -82,7 +81,6 @@ class Server {
         const logger = new Logger();
         const validationService = new ValidationService(config, logger);
         const cacheService = new CacheService(logger);
-        const csvStorage = new CsvStorage(logger, cacheService);
         const sseService = new SseService(logger);
         const backupService = new BackupService(logger, config);
 
@@ -207,9 +205,6 @@ class Server {
             singleton: true
         });
         this.container.register('validationService', () => validationService, {
-            singleton: true
-        });
-        this.container.register('csvStorage', () => csvStorage, {
             singleton: true
         });
         this.container.register('sseService', () => sseService, {
