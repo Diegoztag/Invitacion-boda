@@ -130,7 +130,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Logging Estructurado**: Implementar un logger profesional (ej. Winston o Pino) para mejor trazabilidad.
 - [x] **Backup Automático de SQLite**: Crear un script o tarea programada para realizar copias de seguridad de la base de datos SQLite.
 
-### Ciclo 43: Aumento de Cobertura y Refinamiento de Infraestructura (En Progreso)
+### Ciclo 43: Aumento de Cobertura y Refinamiento de Infraestructura (Finalizado)
 
 - [x] **Aumentar Cobertura de Pruebas en Infraestructura**: Añadir pruebas unitarias para `CacheService`, `CsvStorage`, `SseService` y `backup.js` (Completado: `SqliteConfirmationRepository`, `SqliteInvitationRepository`, `CacheService`, `CsvStorage`, `SseService`, `backup.js`).
 - [x] **Aumentar Cobertura en Utilidades Compartidas**: Añadir pruebas unitarias para `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js`.

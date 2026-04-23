@@ -48,12 +48,12 @@ export class ErrorHandler {
                     'Error de seguridad. Por favor, recarga la página e intenta de nuevo.'
                 );
             } else {
-                this.alertService.showError(
-                    `Ocurrió un error en ${context.toLowerCase()}: ${errorMessage}`
-                );
+                // Mostrar el mensaje directamente, ya que la mayoría de los errores
+                // (especialmente de la API) ya están formateados de forma amigable
+                this.alertService.showError(errorMessage);
             }
         } else {
-            alert(`Ocurrió un error en ${context.toLowerCase()}: ${errorMessage}`);
+            alert(errorMessage);
         }
     }
 
