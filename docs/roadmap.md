@@ -136,6 +136,7 @@ Este documento sirve como guía de buenas prácticas, mejoras y correcciones par
 - [x] **Aumentar Cobertura en Utilidades Compartidas**: Añadir pruebas unitarias para `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js`.
 - [x] **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso.
 - [x] **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario. (Revisado: `ApiClient`, `ErrorHandler` y `ToastService` ya implementan un manejo robusto y amigable).
+- [x] **Eliminar Código Muerto**: Eliminar la funcionalidad de exportación a CSV de los controladores y del frontend, ya que no se utiliza.
 
 ---
 
