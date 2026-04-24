@@ -10,7 +10,6 @@ const {
     CreateConfirmationDTO,
     UpdateConfirmationDTO
 } = require('../../application/dto/ConfirmationDTO');
-const { convertToCSV } = require('../../shared/utils/csv-formatter');
 const QueryBuilder = require('../../shared/utils/QueryBuilder');
 const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 

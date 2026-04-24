@@ -7,7 +7,6 @@
 const BaseController = require('./BaseController');
 
 const { CreateInvitationDTO, UpdateInvitationDTO } = require('../../application/dto/InvitationDTO');
-const { convertToCSV } = require('../../shared/utils/csv-formatter');
 const QueryBuilder = require('../../shared/utils/QueryBuilder');
 const BusinessRuleException = require('../../shared/exceptions/BusinessRuleException');
 
