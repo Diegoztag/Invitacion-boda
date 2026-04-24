@@ -41,6 +41,24 @@ function configureInvitationRoutes(invitationController, middleware) {
 
     /**
      * @swagger
+     * /api/invitations/stats:
+     *   get:
+     *     summary: Obtiene estadísticas de las invitaciones
+     *     tags: [Invitations]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Estadísticas de invitaciones
+     */
+    router.get(
+        '/stats',
+        middleware.authenticate,
+        asyncHandler(invitationController.getStats.bind(invitationController))
+    );
+
+    /**
+     * @swagger
      * /api/invitations/search/{name}:
      *   get:
      *     summary: Busca invitaciones por nombre
