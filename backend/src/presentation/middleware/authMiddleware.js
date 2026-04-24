@@ -34,10 +34,11 @@ class AuthMiddleware {
         });
 
         try {
-            // Verificar header de autorizaciรณn
+            // Verificar header de autorizaciรณn o query parameter (para SSE)
             const authHeader = req.headers.authorization;
+            const queryToken = req.query.token;
 
-            if (!authHeader) {
+            if (!authHeader && !queryToken) {
                 endOperation({
                     authenticated: false,
                     reason: 'no_auth_header'
@@ -49,9 +50,14 @@ class AuthMiddleware {
             }
 
             // Verificar si es Bearer token (JWT)
-            if (authHeader.startsWith('Bearer ')) {
+            if (authHeader && authHeader.startsWith('Bearer ')) {
                 const token = authHeader.substring(7);
                 return this.verifyJWT(token, req, res, next, endOperation);
+            }
+
+            // Verificar si hay token en query parameter (para SSE)
+            if (queryToken) {
+                return this.verifyJWT(queryToken, req, res, next, endOperation);
             }
 
             // Verificar si es Basic auth

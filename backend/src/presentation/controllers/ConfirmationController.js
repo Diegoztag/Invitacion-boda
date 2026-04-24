@@ -338,48 +338,6 @@ class ConfirmationController extends BaseController {
     }
 
     /**
-     * Exporta confirmaciones
-     * GET /api/confirmations/export
-     */
-    async exportConfirmations(req, res, next) {
-        const endOperation = this.logger.startOperation('exportConfirmations', {
-            ip: req.ip
-        });
-
-        try {
-            const { format = 'csv' } = req.query;
-
-            const result = await this.exportConfirmationsUseCase.execute(format);
-
-            if (!result.success) {
-                return this.sendError(res, new BusinessRuleException(result.error), next);
-            }
-
-            endOperation({
-                exported: result.count,
-                format
-            });
-
-            if (format === 'csv') {
-                res.setHeader('Content-Type', 'text/csv');
-                res.setHeader('Content-Disposition', 'attachment; filename=confirmations.csv');
-                const csvData = convertToCSV(result.data);
-                res.send(csvData);
-            } else {
-                this.sendSuccess(res, result);
-            }
-        } catch (error) {
-            endOperation(
-                {
-                    error: error.message
-                },
-                'error'
-            );
-            this.sendError(res, error, next);
-        }
-    }
-
-    /**
      * Busca confirmaciones por nombre
      * GET /api/confirmations/search/:name
      */

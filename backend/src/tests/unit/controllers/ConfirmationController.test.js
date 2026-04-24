@@ -313,30 +313,4 @@ describe('ConfirmationController', () => {
             expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
         });
     });
-
-    describe('exportConfirmations', () => {
-        it('should export as csv by default', async () => {
-            req.query = {};
-            const mockResult = { success: true, data: [{ code: 'INV123' }], count: 1 };
-            mockExportConfirmationsUseCase.execute.mockResolvedValue(mockResult);
-
-            await controller.exportConfirmations(req, res, next);
-
-            expect(mockExportConfirmationsUseCase.execute).toHaveBeenCalledWith('csv');
-            expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv');
-            expect(res.send).toHaveBeenCalled();
-        });
-
-        it('should export as json if requested', async () => {
-            req.query = { format: 'json' };
-            const mockResult = { success: true, data: [{ code: 'INV123' }], count: 1 };
-            mockExportConfirmationsUseCase.execute.mockResolvedValue(mockResult);
-
-            await controller.exportConfirmations(req, res, next);
-
-            expect(mockExportConfirmationsUseCase.execute).toHaveBeenCalledWith('json');
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
-        });
-    });
 });

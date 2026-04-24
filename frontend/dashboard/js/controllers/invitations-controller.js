@@ -1015,11 +1015,27 @@ export class InvitationsController {
      * Exporta todas las invitaciones
      */
     async exportAllInvitations() {
-        const result = await adminAPI.downloadInvitationsCSV();
-        if (result.success) {
-            showToast('Archivo CSV descargado exitosamente', 'success');
-        } else {
-            showToast('Error al descargar el archivo CSV', 'error');
+        try {
+            showToast('Preparando archivo CSV...', 'info');
+
+            // Obtener todas las invitaciones (con un límite alto para asegurar que vengan todas)
+            const params = {
+                limit: 10000,
+                includeInactive: true,
+                ...this.mapFiltersToBackendParams() // Mantener los filtros actuales si los hay
+            };
+
+            const result = await adminAPI.fetchInvitations(params);
+
+            if (APIHelpers.isSuccess(result) && result.invitations) {
+                // Usar el método de exportación del cliente
+                adminAPI.exportToCSV(result.invitations, 'invitaciones_boda');
+                showToast('Archivo CSV descargado exitosamente', 'success');
+            } else {
+                throw new Error(APIHelpers.getErrorMessage(result));
+            }
+        } catch (error) {
+            showToast(error.message || 'Error al generar el archivo CSV', 'error');
         }
     }
 

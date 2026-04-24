@@ -266,50 +266,6 @@ class InvitationController extends BaseController {
     }
 
     /**
-     * Exporta invitaciones
-     * GET /api/invitations/export
-     */
-    async exportInvitations(req, res, next) {
-        const endOperation = this.logger.startOperation('exportInvitations', {
-            ip: req.ip
-        });
-
-        try {
-            const { format = 'json' } = req.query;
-
-            const result = await this.exportInvitationsUseCase.execute(format);
-
-            if (!result.success) {
-                return this.sendError(res, new BusinessRuleException(result.error), next);
-            }
-
-            endOperation({
-                exported: result.count,
-                format
-            });
-
-            if (format === 'csv') {
-                res.setHeader('Content-Type', 'text/csv');
-                res.setHeader('Content-Disposition', 'attachment; filename=invitations.csv');
-
-                // Convertir a CSV
-                const csvData = convertToCSV(result.data);
-                res.send(csvData);
-            } else {
-                this.sendSuccess(res, result);
-            }
-        } catch (error) {
-            endOperation(
-                {
-                    error: error.message
-                },
-                'error'
-            );
-            this.sendError(res, error, next);
-        }
-    }
-
-    /**
      * Busca invitaciones por nombre
      * GET /api/invitations/search/:name
      */

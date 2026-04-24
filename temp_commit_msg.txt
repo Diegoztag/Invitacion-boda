@@ -1,1 +1,0 @@
-fix(backend): corregir calculo de estadisticas en SqliteInvitationRepository

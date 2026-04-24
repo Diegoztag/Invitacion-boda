@@ -16,7 +16,7 @@ const WEDDING_CONFIG = {
 
     // Detalles del evento
     event: {
-        date: new Date('2026-02-28T17:30:00'),
+        date: new Date('2026-04-28T17:30:00'),
         dateDisplay: {
             day: '28',
             month: 'Febrero',

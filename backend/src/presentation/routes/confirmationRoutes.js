@@ -100,13 +100,6 @@ function configureConfirmationRoutes(confirmationController, middleware) {
         asyncHandler(confirmationController.getTotalConfirmedGuests.bind(confirmationController))
     );
 
-    // Exportación
-    router.get(
-        '/export',
-        middleware.validateQuery,
-        asyncHandler(confirmationController.exportConfirmations.bind(confirmationController))
-    );
-
     // Búsqueda
     router.get(
         '/search/:name',

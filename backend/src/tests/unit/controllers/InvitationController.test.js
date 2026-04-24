@@ -236,30 +236,4 @@ describe('InvitationController', () => {
             expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
         });
     });
-
-    describe('exportInvitations', () => {
-        it('should export as json by default', async () => {
-            req.query = {};
-            const mockResult = { success: true, data: [{ code: 'INV123' }], count: 1 };
-            mockExportInvitationsUseCase.execute.mockResolvedValue(mockResult);
-
-            await controller.exportInvitations(req, res, next);
-
-            expect(mockExportInvitationsUseCase.execute).toHaveBeenCalledWith('json');
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
-        });
-
-        it('should export as csv if requested', async () => {
-            req.query = { format: 'csv' };
-            const mockResult = { success: true, data: [{ code: 'INV123' }], count: 1 };
-            mockExportInvitationsUseCase.execute.mockResolvedValue(mockResult);
-
-            await controller.exportInvitations(req, res, next);
-
-            expect(mockExportInvitationsUseCase.execute).toHaveBeenCalledWith('csv');
-            expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv');
-            expect(res.send).toHaveBeenCalled();
-        });
-    });
 });

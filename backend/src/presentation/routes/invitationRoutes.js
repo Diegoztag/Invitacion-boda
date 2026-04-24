@@ -87,15 +87,6 @@ function configureInvitationRoutes(invitationController, middleware) {
         }
     });
 
-    // Exportación (Privada)
-    // IMPORTANTE: Debe ir antes de /:code para evitar conflicto
-    router.get(
-        '/export',
-        middleware.authenticate,
-        middleware.validateQuery,
-        asyncHandler(invitationController.exportInvitations.bind(invitationController))
-    );
-
     // Importación masiva (Privada)
     router.post(
         '/import',

@@ -117,6 +117,7 @@ class GetInvitationStatsUseCase {
             endOperation({ success: true });
 
             return {
+                success: true,
                 stats,
                 message: 'Estadísticas obtenidas exitosamente'
             };

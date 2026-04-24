@@ -221,7 +221,17 @@ class NotificationService {
         }
 
         try {
-            this.eventSource = new EventSource(`${this.config.backendUrl}/notifications/stream`);
+            // Obtener el token para pasarlo en la URL
+            const token = localStorage.getItem('dashboardToken');
+            const url = new URL(
+                `${this.config.backendUrl}/notifications/stream`,
+                window.location.origin
+            );
+            if (token) {
+                url.searchParams.append('token', token);
+            }
+
+            this.eventSource = new EventSource(url.toString());
 
             this.eventSource.onopen = () => this.handleSseOpen();
             this.eventSource.addEventListener('confirmation', event =>
@@ -229,7 +239,7 @@ class NotificationService {
             );
             this.eventSource.onerror = () => this.handleSseError();
         } catch (_err) {
-            this.handleSseError(err);
+            this.handleSseError();
         }
     }
 
