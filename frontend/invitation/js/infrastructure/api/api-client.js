@@ -55,6 +55,14 @@ export class ApiClient {
         const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
         config.signal = controller.signal;
 
+        // Verificar conexión antes de intentar la petición
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+            clearTimeout(timeoutId);
+            throw new Error(
+                'No hay conexión a internet. Por favor, verifica tu red e intenta de nuevo.'
+            );
+        }
+
         try {
             const response = await fetch(url, config);
             clearTimeout(timeoutId);
@@ -96,7 +104,14 @@ export class ApiClient {
             }
 
             if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-                throw new Error('Error de conexión. Por favor, verifica tu conexión a internet.');
+                throw new Error(
+                    'Error de conexión con el servidor. Por favor, verifica tu conexión a internet o intenta más tarde.'
+                );
+            }
+
+            // Fallback por si la conexión se perdió durante la petición
+            if (typeof navigator !== 'undefined' && !navigator.onLine) {
+                throw new Error('Se perdió la conexión a internet. Por favor, verifica tu red.');
             }
 
             throw error;

@@ -598,7 +598,7 @@ El proyecto ha alcanzado un nivel de madurez muy alto. La arquitectura es sólid
 1.  ✅ **Aumentar Cobertura de Pruebas en Infraestructura**: Los repositorios (`SqliteConfirmationRepository`, `SqliteInvitationRepository`) y servicios (`CacheService`, `CsvStorage`, `SseService`, `backup.js`) tienen muy baja cobertura. (Completado).
 2.  ✅ **Aumentar Cobertura en Utilidades Compartidas**: `DIContainer.js`, `Logger.js`, `QueryBuilder.js` y `ValidationService.js` necesitan más pruebas. (Completado).
 3.  ✅ **Refactorización de Repositorios**: Revisar si hay lógica de negocio filtrada en los repositorios SQLite que debería estar en los casos de uso. (Completado).
-4.  ✅ **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario. (Completado: `ApiClient`, `ErrorHandler` y `ToastService` ya implementan un manejo robusto y amigable).
+4.  ✅ **Mejorar Manejo de Errores en Frontend**: Revisar si el frontend maneja adecuadamente los errores de red y muestra mensajes amigables al usuario. (Completado: Se mejoró `ApiClient` para manejar la pérdida de conexión a internet y mostrar mensajes más claros, trabajando en conjunto con `ErrorHandler` y `ToastService`).
 
 ---
 
